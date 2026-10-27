@@ -60,20 +60,6 @@ the Compendium), and **Bonds** (the rank panel inside History). Turning Weather 
 reading immediately rather than at the next interval. **Offline** cuts the network for everything,
 downloads included.
 
-## Your library
-
-The app reads `/storage/emulated/0/Music/Sonarar` and the `library_manifest.json` beside it. The
-manifest is built on a computer by the tools in [`tools/`](tools):
-
-```bash
-python3 tools/build_library.py     # scan and plan; writes only a report
-python3 tools/execute_library.py   # transcode, tag, write covers, manifest and gain
-```
-
-Needs Python 3 (standard library only) plus `ffmpeg`/`ffprobe`. Re-running skips finished tracks.
-Paths come from `--source` / `--project` / `--adb`, then `PERSONAR_*` environment variables, then your
-`Music` folder.
-
 ## Build from source
 
 Flutter **3.47.6**, Dart **3.13.5**.
@@ -97,13 +83,6 @@ off, the GPS is never touched.
 The build contains no analytics, tracking or advertising. Its only network calls are weather
 (`api.open-meteo.com`), a coarse position fallback (`ipapi.co`), nearby places (Overpass), and YouTube
 downloads on request. None of them carry an account.
-
-## Known limitations
-
-- **No in-app folder picker.** The library path is fixed and needs the tools; this is the next feature.
-- **Replay gain is measured, not applied.** Tracks carry `gain_db`; playback ignores it.
-- **Arrival detection is foreground only** — no screen-off geofencing.
-- **Location is a framework reading**, so the context reports "detected" or nothing, never a guess.
 
 ## Licence
 

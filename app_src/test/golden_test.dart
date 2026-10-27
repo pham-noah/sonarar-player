@@ -40,7 +40,8 @@ final _lib = [
 ];
 
 AppState _stateFor({required ContextBand band, required int hour}) {
-  final s = AppState();
+  final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
   s.updateContext(PlayContext(
       band: band, whereabouts: Whereabouts.home, sky: Sky.unknown, localHour: hour));
   s.attachLibrary(_lib);

@@ -80,6 +80,34 @@ void main() {
       expect(back.contextMix, isTrue);
     });
 
+    test('the six optional layers ship off too', () {
+      const fresh = AppPrefs.initial;
+      expect(fresh.placesEnabled, isFalse);
+      expect(fresh.learnFromSkips, isFalse);
+      expect(fresh.weatherVariants, isFalse);
+      expect(fresh.autoSkin, isFalse);
+      expect(fresh.recordHistory, isFalse);
+      expect(fresh.personaLayer, isFalse);
+    });
+
+    test('and each one is remembered when switched on', () {
+      final on = AppPrefs.initial.copyWith(
+        placesEnabled: true,
+        learnFromSkips: true,
+        weatherVariants: true,
+        autoSkin: true,
+        recordHistory: true,
+        personaLayer: true,
+      );
+      final back = AppPrefs.fromJson(on.toJson());
+      expect(back.placesEnabled, isTrue);
+      expect(back.learnFromSkips, isTrue);
+      expect(back.weatherVariants, isTrue);
+      expect(back.autoSkin, isTrue);
+      expect(back.recordHistory, isTrue);
+      expect(back.personaLayer, isTrue);
+    });
+
     test('an older settings file without the keys lands on off', () {
       final back = AppPrefs.fromJson(const {'allow_network': true});
       expect(back.contextWeather, isFalse);

@@ -270,6 +270,7 @@ class _HomeShellState extends State<HomeShell>
     onChanged: _onContextMoved,
     allowNetwork: () => _prefs.allowNetwork,
     weatherEnabled: () => _prefs.contextWeather,
+    placesEnabled: () => _prefs.placesEnabled,
   );
 
   Map<String, LoopPoints> _loopPoints = {};
@@ -381,6 +382,11 @@ class _HomeShellState extends State<HomeShell>
       contextEnabled: _prefs.allowNetwork && _prefs.contextMix,
     );
     widget.state.setClockEnabled(_prefs.contextClock);
+    widget.state.applyOptionalFeatures(
+      learn: _prefs.learnFromSkips,
+      autoSkin: _prefs.autoSkin,
+      variants: _prefs.weatherVariants,
+    );
     _applyLayoutPref();
   }
 
@@ -512,6 +518,24 @@ class _HomeShellState extends State<HomeShell>
         ContextBand.darkHour => 'Late night',
         null => null,
       };
+
+  bool _askedStorage = false;
+  bool _askedNotifications = false;
+
+  Future<void> _ensurePlaybackPermissions() async {
+    if (!_askedStorage && _storageAccess != StorageAccess.granted) {
+      _askedStorage = true;
+      _storageAccess = await StoragePermission.request();
+      if (mounted) setState(() {});
+      // ignore: avoid_print
+      print('[Sonarar] storage after request=$_storageAccess');
+    }
+    if (!_askedNotifications) {
+      _askedNotifications = true;
+      _notificationAccess = await StoragePermission.requestNotification();
+      if (mounted) setState(() {});
+    }
+  }
 
   void _playNowMix() {
     final mix = widget.state.dynamicMix();
@@ -1005,16 +1029,11 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _load() async {
     _boot(0.02, 'checking permissions');
 
-    final status = await StoragePermission.status();
+    _storageAccess = await StoragePermission.status();
+    _notificationAccess = await StoragePermission.notificationStatus();
     // ignore: avoid_print
-    print('[Sonarar] storage status=$status');
-
+    print('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
     if (mounted) setState(() {});
-    _storageAccess = await StoragePermission.request();
-
-    _notificationAccess = await StoragePermission.requestNotification();
-    // ignore: avoid_print
-    print('[Sonarar] notifications=$_notificationAccess');
     // ignore: avoid_print
     print('[Sonarar] storage after request=$_storageAccess');
 
@@ -1058,6 +1077,11 @@ class _HomeShellState extends State<HomeShell>
       contextEnabled: _prefs.allowNetwork && _prefs.contextMix,
     );
     widget.state.setClockEnabled(_prefs.contextClock);
+    widget.state.applyOptionalFeatures(
+      learn: _prefs.learnFromSkips,
+      autoSkin: _prefs.autoSkin,
+      variants: _prefs.weatherVariants,
+    );
     _applyLayoutPref();
     widget.state.setPlaces(_ctx.placeBook);
 
@@ -1580,7 +1604,7 @@ class _HomeShellState extends State<HomeShell>
       track: track,
       positionWhenStopped: at,
     );
-    if (event != null && at > Duration.zero) {
+    if (event != null && at > Duration.zero && _prefs.recordHistory) {
       unawaited(_appendThenRefresh(event));
     }
   }
@@ -1907,6 +1931,7 @@ class _HomeShellState extends State<HomeShell>
   void _queueFromDrag(Track track) {
     if (widget.state.queue == null) {
       // ignore: discarded_futures
+      unawaited(_ensurePlaybackPermissions());
       widget.state.playTrack(track);
       _toast('Playing from — ${track.title}');
       setState(() {});
@@ -2094,13 +2119,13 @@ class _HomeShellState extends State<HomeShell>
         skin: skin,
         events: _lastEvents,
         tracks: _repo.tracks,
-        ranks: BondsScreen(
+        ranks: (_prefs.personaLayer ? BondsScreen(
           state: widget.state,
           events: _lastEvents,
           tracks: _repo.tracks,
           onNoteSaved: _bondsCallbacks().noteSaved,
           onReset: _bondsCallbacks().reset,
-        ),
+        ) : const SizedBox.shrink()),
       );
 
   String? _dynamicBlurb() {
@@ -2342,6 +2367,7 @@ class _HomeShellState extends State<HomeShell>
         preciseFix: _ctx.hasFix &&
             fixCanTellPlacesApart(_ctx.place!.source, _ctx.place!.accuracyMetres),
         onPick: (t) {
+          unawaited(_ensurePlaybackPermissions());
           widget.state.playTrack(t);
           setState(() => _panel = PlayerPanel.none);
           // ignore: discarded_futures
@@ -2985,6 +3011,9 @@ class _HomeShellState extends State<HomeShell>
   }
 
   void _selectTab(AppTab t) {
+    if (!_askedStorage && t == AppTab.library) {
+      unawaited(_ensurePlaybackPermissions());
+    }
     _rememberTab(t);
 
     final from = AppTab.values.indexOf(_tab);
@@ -3393,14 +3422,14 @@ children: [
         tracks: _repo.tracks,
         inline: true,
 
-        ranks: BondsScreen(
+        ranks: (_prefs.personaLayer ? BondsScreen(
           state: widget.state,
           events: _lastEvents,
           tracks: _repo.tracks,
           inline: true,
           onNoteSaved: _bondsCallbacks().noteSaved,
           onReset: _bondsCallbacks().reset,
-        ),
+        ) : const SizedBox.shrink()),
       ),
     ),
     _InlineDoor.velvetRoom: (

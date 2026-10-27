@@ -16,9 +16,11 @@ Package `com.noah.sonarar` · version 0.1.0 · GPL-3.0-or-later
 - **Places.** Home, uni, the gym — arriving changes the music, leaving changes it back.
 - **Weather.** A real forecast from Open-Meteo (no key, no account). Rain sounds different from a
   clear evening.
-- **They are switches, and they ship off.** Weather, time of day and the dynamic mix are three
-  separate settings. Off — the default — the app is a plain local player: no forecast, the hour does
-  not reshuffle the queue or repaint the theme, and the queue is whatever you put in it.
+- **They are switches, and they ship off.** Weather, time of day, places, the dynamic mix, weather
+  variants, the auto theme, learning from skips, play history and the Bonds panel are each their own
+  setting. Off — the default — the app is a plain local player: no forecast, no location read, the hour
+  does not reshuffle the queue or repaint the theme, nothing is logged, and the queue is whatever you
+  put in it.
 - **Six skins** — Abyss, Amber, Crimson, Minimal, Mono, Bloom — each with its own palette, type and
   layout.
 - **Lyrics**, with romaji readings for Japanese and Korean tracks.
@@ -77,6 +79,13 @@ Standard-library Python 3 plus `ffmpeg`/`ffprobe`. Safe to re-run: finished trac
   Places and weather still resolve normally.
 - **Location is a framework reading, not a background service.** If no fix is available the context
   says "not detected" rather than presenting a guess as known.
+
+## Permissions
+
+Nothing is asked for at launch. Location is requested the first time **Places** is switched on and
+nothing else reads it, so with Places off the app never touches GPS. Storage is requested when you
+open the Library, and notifications when you first press play. Deny any of them and the rest of the
+app still runs.
 
 ## Network
 

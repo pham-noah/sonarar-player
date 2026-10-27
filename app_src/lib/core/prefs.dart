@@ -18,6 +18,12 @@ class AppPrefs {
     this.contextWeather = false,
     this.contextClock = false,
     this.contextMix = false,
+    this.placesEnabled = false,
+    this.learnFromSkips = false,
+    this.weatherVariants = false,
+    this.autoSkin = false,
+    this.recordHistory = false,
+    this.personaLayer = false,
     this.cycleCharacterArt = true,
     this.showVisualiser = true,
     this.showRomaji = true,
@@ -66,6 +72,18 @@ class AppPrefs {
   final bool contextClock;
 
   final bool contextMix;
+
+  final bool placesEnabled;
+
+  final bool learnFromSkips;
+
+  final bool weatherVariants;
+
+  final bool autoSkin;
+
+  final bool recordHistory;
+
+  final bool personaLayer;
 
   final bool cycleCharacterArt;
 
@@ -137,6 +155,12 @@ class AppPrefs {
     bool? contextWeather,
     bool? contextClock,
     bool? contextMix,
+    bool? placesEnabled,
+    bool? learnFromSkips,
+    bool? weatherVariants,
+    bool? autoSkin,
+    bool? recordHistory,
+    bool? personaLayer,
     bool? cycleCharacterArt,
     bool? showVisualiser,
     bool? showRomaji,
@@ -179,6 +203,12 @@ class AppPrefs {
         contextWeather: contextWeather ?? this.contextWeather,
         contextClock: contextClock ?? this.contextClock,
         contextMix: contextMix ?? this.contextMix,
+        placesEnabled: placesEnabled ?? this.placesEnabled,
+        learnFromSkips: learnFromSkips ?? this.learnFromSkips,
+        weatherVariants: weatherVariants ?? this.weatherVariants,
+        autoSkin: autoSkin ?? this.autoSkin,
+        recordHistory: recordHistory ?? this.recordHistory,
+        personaLayer: personaLayer ?? this.personaLayer,
         cycleCharacterArt: cycleCharacterArt ?? this.cycleCharacterArt,
         showVisualiser: showVisualiser ?? this.showVisualiser,
         showRomaji: showRomaji ?? this.showRomaji,
@@ -227,6 +257,12 @@ class AppPrefs {
         'context_weather': contextWeather,
         'context_clock': contextClock,
         'context_mix': contextMix,
+        'places_enabled': placesEnabled,
+        'learn_from_skips': learnFromSkips,
+        'weather_variants': weatherVariants,
+        'auto_skin': autoSkin,
+        'record_history': recordHistory,
+        'persona_layer': personaLayer,
         'cycle_character_art': cycleCharacterArt,
         'show_visualiser': showVisualiser,
         'show_romaji': showRomaji,
@@ -275,6 +311,12 @@ class AppPrefs {
       contextWeather: _bool(raw['context_weather']) ?? initial.contextWeather,
       contextClock: _bool(raw['context_clock']) ?? initial.contextClock,
       contextMix: _bool(raw['context_mix']) ?? initial.contextMix,
+      placesEnabled: _bool(raw['places_enabled']) ?? initial.placesEnabled,
+      learnFromSkips: _bool(raw['learn_from_skips']) ?? initial.learnFromSkips,
+      weatherVariants: _bool(raw['weather_variants']) ?? initial.weatherVariants,
+      autoSkin: _bool(raw['auto_skin']) ?? initial.autoSkin,
+      recordHistory: _bool(raw['record_history']) ?? initial.recordHistory,
+      personaLayer: _bool(raw['persona_layer']) ?? initial.personaLayer,
 
       cycleCharacterArt:
           _bool(raw['cycle_character_art']) ?? initial.cycleCharacterArt,

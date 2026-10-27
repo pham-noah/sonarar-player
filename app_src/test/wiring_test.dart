@@ -33,7 +33,8 @@ PlayContext _ctx({required ContextBand band, int hour = 18, bool raining = false
 void main() {
   group('the engine is actually wired into the queue', () {
     test('the whole library reaches the queue — nothing is removed by the app', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening));
       s.attachLibrary(_lib());
 
@@ -42,7 +43,8 @@ void main() {
     });
 
     test('and no band changes that — there is no length rule left to be context-driven', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.darkHour, hour: 0));
       s.attachLibrary(_lib());
 
@@ -50,13 +52,15 @@ void main() {
     });
 
     test('the app exposes the library it was given', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.attachLibrary(_lib());
       expect(s.library.length, _lib().length);
     });
 
     test('an empty library leaves a usable, empty state', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening));
       s.attachLibrary(const []);
       expect(s.currentTrack, isNull);
@@ -66,7 +70,8 @@ void main() {
 
   group('a band change recomputes; a clock tick does not', () {
     test('the queue changes when the SITUATION changes — not merely the band', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.setPlaylists(PlaylistList([
         Playlist(id: 'v_afternoon', name: 'Afternoon', trackIds: const ['n1']),
         Playlist(id: 'v_rain', name: 'Rain', trackIds: const ['n4']),
@@ -86,7 +91,8 @@ void main() {
     });
 
     test('a BAND change alone leaves the order alone — the ranking no longer reads length', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.afternoon, hour: 14));
       s.attachLibrary(_lib());
       final afternoon = s.queue!.order.map((t) => t.id).toList();
@@ -98,7 +104,8 @@ void main() {
     });
 
     test('re-publishing the SAME band does not churn the queue', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening, hour: 19));
       s.attachLibrary(_lib());
 
@@ -112,7 +119,8 @@ void main() {
     });
 
     test('the current track survives a band change', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.afternoon, hour: 14));
       s.attachLibrary(_lib());
 
@@ -127,7 +135,8 @@ void main() {
     });
 
     test('a band change keeps the queue non-empty', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.afternoon, hour: 14));
       s.attachLibrary(_lib());
       s.updateContext(_ctx(band: ContextBand.night, hour: 23));
@@ -137,14 +146,16 @@ void main() {
 
   group('context reaches the app through updateContext', () {
     test('the playlist context reflects the last published band', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.morning, hour: 8));
       expect(s.playlistContext!.band, ContextBand.morning);
       expect(s.playlistContext!.localHour, 8);
     });
 
     test('the skin still follows the context (no regression)', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.darkHour, hour: 0));
       expect(s.skin.id.name, 'abyss');
       s.updateContext(_ctx(band: ContextBand.night, hour: 23));
@@ -154,7 +165,8 @@ void main() {
 
   group('play feedback reaches the engine', () {
     test('skipping early twice suppresses the track in that band', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening, hour: 19));
       s.attachLibrary(_lib());
 
@@ -171,7 +183,8 @@ void main() {
     });
 
     test('a completed listen is recorded as an acceptance', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening, hour: 19));
       s.attachLibrary(_lib());
       final target = s.queue!.current!;
@@ -183,7 +196,8 @@ void main() {
     });
 
     test('a late skip records nothing', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening, hour: 19));
       s.attachLibrary(_lib());
       final target = s.queue!.current!;
@@ -194,7 +208,8 @@ void main() {
     });
 
     test('recording feedback with no context yet is safe', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.attachLibrary(_lib());
       s.recordPlayOutcome(
         track: _lib().first,
@@ -205,13 +220,15 @@ void main() {
 
   group('library fit is exposed to the UI', () {
     test('the real composition reports P4R and P5R as unserved', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.attachLibrary(_lib());
       expect(s.fitFor(s.skin.id).total, _lib().length);
     });
 
     test('a fit query on an empty library does not divide by zero', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.attachLibrary(const []);
       expect(s.fitFor(s.skin.id).isThin, isTrue);
     });
@@ -219,7 +236,8 @@ void main() {
 
   group('resume still works with the engine in the path', () {
     test('a resume overrides the engine ordering', () {
-      final s = AppState();
+      final s = AppState()
+        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
       s.updateContext(_ctx(band: ContextBand.evening, hour: 19));
       final lib = _lib();
       s.attachLibrary(lib);

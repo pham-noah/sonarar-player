@@ -162,6 +162,25 @@ class AppState extends ChangeNotifier {
   bool _clockOn = true;
   bool get clockOn => _clockOn;
 
+  bool _learnFromSkips = false;
+  bool _autoSkin = false;
+  bool _weatherVariants = false;
+  bool get learnFromSkips => _learnFromSkips;
+  bool get autoSkin => _autoSkin;
+  bool get weatherVariantsOn => _weatherVariants;
+
+  void applyOptionalFeatures({
+    required bool learn,
+    required bool autoSkin,
+    required bool variants,
+  }) {
+    final skinMoved = _autoSkin != autoSkin;
+    _learnFromSkips = learn;
+    _autoSkin = autoSkin;
+    _weatherVariants = variants;
+    if (skinMoved) notifyListeners();
+  }
+
   void setClockEnabled(bool value) {
     if (_clockOn == value) return;
     _clockOn = value;
@@ -778,7 +797,7 @@ class AppState extends ChangeNotifier {
 
     final nextId = _preset != null
         ? _preset!.skinId
-        : (!_clockOn
+        : ((!_clockOn || !_autoSkin)
             ? _skin.id
             : ((!_pref.isManual && rule?.theme != null)
                 ? rule!.theme!
@@ -857,6 +876,7 @@ class AppState extends ChangeNotifier {
     if (!_sleeping) _removeSleepOverride(q);
 
     if (_source != QueueSource.live) return;
+    if (!_weatherVariants) return;
     final situationNow = situationVariantTag(
 
       sky: _playlistCtx?.sky ?? Sky.unknown,
@@ -992,7 +1012,7 @@ class AppState extends ChangeNotifier {
     };
     if (feedback == SkipFeedback.none) return;
 
-    _memory.record(track.id, ctx.band, feedback);
+    if (_learnFromSkips) _memory.record(track.id, ctx.band, feedback);
   }
 
   PlayEvent? playEventFor({

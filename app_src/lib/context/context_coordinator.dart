@@ -22,6 +22,7 @@ class ContextCoordinator {
     required this.onChanged,
     required this.allowNetwork,
     required this.weatherEnabled,
+    required this.placesEnabled,
   });
 
   final void Function() onChanged;
@@ -29,6 +30,8 @@ class ContextCoordinator {
   final bool Function() allowNetwork;
 
   final bool Function() weatherEnabled;
+
+  final bool Function() placesEnabled;
 
   final WeatherService weather = WeatherService(timeout: kWeatherTimeout);
   final LocationService location = LocationService();
@@ -146,10 +149,11 @@ class ContextCoordinator {
   }
 
   Future<void> resolvePlaceThenWeather({Future<void> Function()? onArrival}) async {
-    if (!allowNetwork()) {
+    if (!allowNetwork() || !placesEnabled()) {
       _place = null;
       _currentPlaceId = null;
       onChanged();
+      if (allowNetwork()) await refreshWeather();
       return;
     }
     final place = await location.resolve();
@@ -177,6 +181,7 @@ class ContextCoordinator {
   bool fineEnough(PlaceReading r) => fixCanTellPlacesApart(r.source, r.accuracyMetres);
 
   Future<void> lookupKindFor(PlaceReading place) async {
+    if (!placesEnabled()) return;
     final id = _currentPlaceId;
     if (id == null) return;
     final result = await poi.lookup(

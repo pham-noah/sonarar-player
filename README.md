@@ -1,91 +1,145 @@
 # Sonarar
 
-A personal music player for Android. It plays your own files, works fully offline, and — if you ask it
-to — picks what to play from **where you are** and **what the weather is doing**.
+**A local-first music player for Android.** It plays files you already own, works without a network,
+and can shape what it plays around your location, the weather and the time of day.
 
-No account, no cloud, no upload. Not a streaming client.
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Android%207%2B%20%C2%B7%20arm64-3ddc84.svg)](#install)
+[![Release](https://img.shields.io/github/v/release/pham-noah/sonarar-player)](../../releases)
 
-Package `com.noah.sonarar` · version **0.2.0** · GPL-3.0-or-later
+No account. No cloud. No upload. No analytics, no tracking, no advertising.
 
 ---
 
+## Contents
+
+- [Overview](#overview)
+- [Install](#install)
+- [Features](#features)
+- [Context engine](#context-engine)
+- [Your library](#your-library)
+- [Build from source](#build-from-source)
+- [Tests](#tests)
+- [Permissions and privacy](#permissions-and-privacy)
+- [Project layout](#project-layout)
+- [Known limitations](#known-limitations)
+- [Licence](#licence)
+
+## Overview
+
+Sonarar is a music player for people who keep their own files. It reads an on-disk library, plays it
+through Android's media session, and stays usable in flight mode. The optional part is the context
+engine: with it enabled, the queue is built from saved places, a live forecast and the hour of the day.
+
+The context engine is opt-in and off by default. A fresh install behaves like a conventional local
+player: the queue is what you choose, and the theme stays where you set it.
+
 ## Install
 
-Download `Sonarar-0.2.0-arm64.apk` from [Releases](../../releases) and open it. arm64 phones, Android 7
-or newer. It is signed with its own key and installs directly — no store, no account.
+Download the latest APK from [Releases](../../releases) and open it on the device.
 
-**It opens empty, by design.** There is no folder picker yet: the app reads `Music/Sonarar` and a
-manifest beside it, and that manifest is built by the tools in this repository. Until you build one,
-there is nothing to play. See [Your music](#your-music).
+| | |
+|---|---|
+| Package | `com.noah.sonarar` |
+| Version | 0.2.0 (versionCode 2) |
+| Minimum Android | 7.0 (API 24) |
+| Architecture | arm64-v8a |
+| Signing | Signed with the project key; installs directly |
 
-## What it does
+The application is distributed as a signed APK, not through a store. A store build recipe is kept in
+[`store/fdroid/com.noah.sonarar.yml`](store/fdroid/com.noah.sonarar.yml).
 
-- **Your library, from your storage.** It reads an on-disk manifest and plays the files it points at.
-  Nothing is copied into an app-private cache and nothing is uploaded.
-- **Six skins** — Abyss, Amber, Crimson, Minimal, Mono, Bloom — each with its own palette, type and
+> **A fresh install has an empty library.** Sonarar reads `Music/Sonarar` and the manifest beside it,
+> and there is no in-app folder picker yet. See [Your library](#your-library).
+
+## Features
+
+**Playback**
+- Local files via `just_audio`, with a media session, lock-screen and notification controls.
+- Gapless playback, crossfade up to 12 seconds, sleep timer with fade.
+- Queue editing: reorder, remove, play next, shuffle, repeat.
+- Per-track bookmarks and loop points.
+
+**Library**
+- Playlists: create, rename, reorder, delete; merge two lists with Fusion.
+- Browsing by playlist, artist and song, with search and swipe actions.
+- Compendium: every track with how much of it has been heard and when.
+- History: listening statistics, by day and by time of day.
+- Lyrics with romaji readings for Japanese and Korean tracks.
+
+**Presentation**
+- Six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), each with its own palette, typography and
   layout.
-- **Lyrics**, with romaji readings for Japanese and Korean tracks.
-- **A media session**, so playback survives swiping the app away and shows on the lock screen.
-- **Playlists, queue and history** — create, reorder, queue next, see what you have actually listened to.
-- **Optional YouTube download.** Paste a playlist and yt-dlp fetches it into your library.
+- Animated visualiser driven by per-track spectrum data.
+- Three layout families: Persona, Solid, Glass.
 
-## Everything automatic is a switch, and every switch starts off
+**Network (optional)**
+- Weather from Open-Meteo; nearby places from Overpass.
+- YouTube playlist download through yt-dlp, into the same library format.
 
-Out of the box this is a plain local player. Each of these is its own setting; turn on only what you
-want the app deciding for you.
+## Context engine
 
-**Context**
-- **Time of day** — the hour picks the queue and repaints the theme.
-- **Weather** — a real forecast from Open-Meteo (no key, no account); rain changes what plays.
-- **Places** — home, uni, the gym; arriving changes the music, leaving changes it back.
-- **Dynamic mix** — the context builds the queue at all. Off, you play your own lists.
+Six behaviours are individually switchable. All of them default to **off**.
 
-**Refinements**
-- **Weather variants** — a track swaps to its rain or night version mid-queue.
-- **Auto theme** — the skin follows the hour and the weather.
-- **Learn from skips** — the queue remembers what you accept at that time of day.
+| Switch | Effect when enabled |
+|---|---|
+| **Time of day** | The hour selects the queue and repaints the theme. |
+| **Weather** | A live forecast changes what plays; rain has its own lists. |
+| **Places** | Saved locations trigger their own playlists on arrival. |
+| **Dynamic mix** | The context builds the queue at all; off, only your own lists play. |
+| **Weather variants** | A track swaps to its rain or night version mid-queue. |
+| **Auto theme** | The skin follows the hour and the weather. |
 
-**Records**
-- **Play history** — writes every listen. Off, History and the Compendium have nothing to show.
-- **Bonds** — the rank panel inside History.
+Two further opt-ins govern what the app records: **Learn from skips** (per-time-of-day acceptance) and
+**Play history** (the listening log that feeds History and the Compendium). **Bonds**, the rank panel
+inside History, is a separate switch.
 
-Switching **weather** or **places** on reads them immediately, not at the next timer tick. **Offline**
-remains a separate master switch: it cuts the network for everything, downloads included.
+Enabling **Weather** or **Places** fetches the reading immediately rather than waiting for the next
+refresh interval. **Offline** is a separate master switch that cuts the network for every feature,
+downloads included.
 
-## Your music
+## Your library
 
-The app reads `/storage/emulated/0/Music/Sonarar` and the `library_manifest.json` beside it. The tools
-here build that from a folder of rips — they clean up titles, write covers, measure loudness and
-generate the visualiser data.
+The app reads `/storage/emulated/0/Music/Sonarar` and the `library_manifest.json` in it. The manifest is
+produced on a computer by the tools in [`tools/`](tools):
 
 ```bash
 python3 tools/build_library.py     # scan and plan; writes only a report
-python3 tools/execute_library.py   # transcode, tag, covers, manifest, gain
+python3 tools/execute_library.py   # transcode, tag, write covers, manifest and gain
 ```
 
-Standard-library Python 3 plus `ffmpeg`/`ffprobe`. Safe to re-run: finished tracks are skipped. Paths
-resolve from `--source` / `--project` flags, then `PERSONAR_*` environment variables, then your user
-`Music` folder — nothing is hardcoded to one machine.
+Requires Python 3 (standard library only) plus `ffmpeg`/`ffprobe`. Re-running is safe: completed tracks
+are skipped. Paths resolve from `--source` / `--project` / `--adb` flags, then `PERSONAR_SOURCE_DIR` /
+`PERSONAR_PROJECT_DIR` / `PERSONAR_ADB`, then the user's `Music` folder.
 
-## Build it
+Output layout:
 
-Flutter **3.47.6** / Dart **3.13.5**. Older Flutter cannot build this.
+```
+Music/Sonarar/
+  library_manifest.json     track metadata, covers, gain, loudness
+  <Artist>/<Album>/*.opus   audio
+```
+
+## Build from source
+
+Requires Flutter **3.47.6** and Dart **3.13.5**. Earlier versions will not compile this project.
 
 ```bash
 cd app_src
 flutter pub get
 flutter build apk --release --target-platform=android-arm64
-# build/app/outputs/flutter-apk/app-release.apk
 ```
 
-The release APK is **unsigned unless a keystore is present**: `android/key.properties` (gitignored) with
-`storeFile`, `storePassword`, `keyAlias` and `keyPassword` makes Gradle sign the release. Without it the
-build produces an unsigned APK, which is what a store like F-Droid wants, because it signs its own.
+Output: `build/app/outputs/flutter-apk/app-release.apk`.
 
-`--target-platform=android-arm64` is not optional: the default build packs three ABIs and the two that
-cannot run cost more than the app itself.
+The release build is **unsigned unless a keystore is configured**. Place `android/key.properties`
+(gitignored) containing `storeFile`, `storePassword`, `keyAlias` and `keyPassword` to sign it; without
+that file Gradle produces an unsigned APK, which is what a store that signs its own builds expects.
 
-## Checks
+`--target-platform=android-arm64` is required in practice. The default build packages three ABIs, and
+the two that cannot run on a phone account for the majority of the APK.
+
+## Tests
 
 ```bash
 cd app_src
@@ -93,32 +147,63 @@ flutter analyze --fatal-infos
 flutter test
 ```
 
-Both are green: no analyzer findings, **1550 tests** passing.
+Current state: no analyzer findings, **1550 tests** passing across 127 test files.
 
-## Permissions
+## Permissions and privacy
 
-Nothing is asked for at launch. Location is requested the first time **Places** is switched on, and
-nothing else reads it — with Places off the app never touches GPS. Storage is requested when you open
-the Library, notifications on your first play. Deny any of them and the rest of the app still runs.
+No permission is requested at launch.
 
-## Network
+| Permission | Requested when |
+|---|---|
+| Location | **Places** is switched on |
+| Storage / media | The Library is opened |
+| Notifications | First playback |
 
-Four things reach the network, and none of them carry an account: Open-Meteo for weather, ipapi.co for
-a coarse position when GPS has none, Overpass for nearby places, and YouTube when you ask for a
-download. There is no analytics, no tracking and no ad code.
+Declining any of them leaves the rest of the app functional. With Places off, the app does not use the
+GPS at all.
 
-## What is honestly not built
+Network endpoints, none of which carry an account:
 
-- **No folder picker.** The library root is a hardcoded path and nothing in the UI can point the app
-  somewhere else. This is the next version's work, and the reason a fresh install is empty.
-- **Replay gain is measured but not applied.** Every track carries `gain_db` in the manifest and the
-  player never reads it, so a loud master and a quiet one play as mastered.
-- **Arrival is detected while the app is open only.** Screen-off geofencing is not in this build;
-  Places and weather still resolve normally.
-- **Location is a framework reading, not a background service.** If no fix is available the context
-  says "not detected" rather than presenting a guess as known.
+| Purpose | Endpoint |
+|---|---|
+| Weather | Open-Meteo (`api.open-meteo.com`) |
+| Coarse position fallback | ipapi.co |
+| Nearby places | Overpass API |
+| Downloads | YouTube, only on request |
+
+There is no analytics, tracking or advertising code in the build.
+
+## Project layout
+
+```
+app_src/                  Flutter application
+  lib/
+    core/                 app state, preferences, storage
+    library/              manifest, playlists, history, compendium
+    playback/             loop points, sleep timer
+    player/               audio engine, queue, variants
+    context/              location, places, weather, POI
+    rules/                context rules and selection
+    screens/              UI
+    theme/                skins, layouts, typography
+    widgets/, art/        shared components and artwork handling
+  test/                   unit, widget and golden tests
+  fastlane/               store metadata and changelogs
+tools/                    PC-side library builder and deployment scripts
+store/fdroid/             F-Droid build recipe
+```
+
+## Known limitations
+
+- **No in-app folder picker.** The library path is fixed, and the manifest must be built with the
+  tools. This is the main gap for a first-time user, and the next planned feature.
+- **Replay gain is measured but not applied.** Tracks carry `gain_db`; playback ignores it.
+- **Arrival detection is foreground only.** Screen-off geofencing is not part of this build.
+- **Location is a framework reading**, not a background service; the context reports "not detected"
+  rather than estimating.
 
 ## Licence
 
-GPL-3.0-or-later, because the app links `youtubedl-android`, which is GPL-3.0. Third-party notices are
-in [NOTICE.md](NOTICE.md); the full text is in [LICENSE](LICENSE).
+GPL-3.0-or-later. The application links `youtubedl-android`, which is GPL-3.0, and that is what makes the
+combined work GPL. Third-party notices are in [NOTICE.md](NOTICE.md); the licence text is in
+[LICENSE](LICENSE).

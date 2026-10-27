@@ -42,7 +42,7 @@ Download the latest APK from [Releases](../../releases) and open it on the devic
 | | |
 |---|---|
 | Package | `com.noah.sonarar` |
-| Version | 0.2.2 (versionCode 4) |
+| Version | 0.10.0 (versionCode 10) |
 | Minimum Android | 7.0 (API 24) |
 | Architecture | arm64-v8a |
 | Signing | Signed with the project key; installs directly |

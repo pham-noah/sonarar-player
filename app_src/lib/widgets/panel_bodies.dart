@@ -193,8 +193,14 @@ class TrackBody extends StatelessWidget {
 
 final Map<String, bool> _coverExists = <String, bool>{};
 
+/// Test seam: a `FileImage` never decodes inside the test zone's fake async.
+@visibleForTesting
+ImageProvider? Function(String path)? debugCoverProvider;
+
 ImageProvider? coverProviderFor(String? path) {
   if (path == null || path.isEmpty) return null;
+  final override = debugCoverProvider;
+  if (override != null) return override(path);
   final seen = _coverExists[path] ??= File(path).existsSync();
   if (!seen) return null;
   return FileImage(File(path));

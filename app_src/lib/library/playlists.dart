@@ -102,8 +102,7 @@ class Playlist {
   }
 }
 
-/// The lists this app used to ship as a seed. Kept only so an install that already has them
-/// can drop the ones that answer to nothing in its library; new installs start with no lists.
+/// Lists an earlier build seeded. Kept so an install can drop the ones that resolve to nothing.
 const Set<String> kSeedPlaylistIds = {
   'home',
   'gym',

@@ -129,7 +129,7 @@ Future<void> main() async {
     final tAudio = DateTime.now();
     _audioInit = () async {
       await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.noah.personar.audio',
+      androidNotificationChannelId: 'com.noah.sonarar.audio',
       androidNotificationChannelName: 'Sonarar playback',
 
       androidNotificationOngoing: false,
@@ -355,8 +355,7 @@ class _HomeShellState extends State<HomeShell>
     _stores.savePrefs(next);
     _applyPrefs();
 
-    // Switching one of these ON is a request for the reading now, not at the
-    // next timer tick half an hour away.
+    // Switching these on asks for the reading now, not at the next tick.
     if (weatherWasOff && next.contextWeather && next.allowNetwork) {
       unawaited(_ctx.refreshWeather());
     }

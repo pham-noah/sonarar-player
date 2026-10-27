@@ -27,9 +27,7 @@ class TabBarView2 extends StatelessWidget {
 
   final Presentation? presentation;
 
-  /// Home is a page assembled from what you have played. With nothing played,
-  /// nothing stored and no context running there is no page, so the tab is not
-  /// offered rather than opening onto an empty one.
+  /// Hidden while Home has no page: a tab onto nothing is worse than no tab.
   final bool showHome;
 
   @override

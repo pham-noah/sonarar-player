@@ -62,7 +62,7 @@ class AppSidebar extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'PERSONAR',
+                        'SONARAR',
                         style: TextStyle(
                           fontSize: 16,
                           letterSpacing: 3,

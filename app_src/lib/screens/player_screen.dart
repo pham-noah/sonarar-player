@@ -471,7 +471,7 @@ class PlayerScreen extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'PERSO',
+          'SONA',
           style: TextStyle(
             fontSize: 21,
             fontWeight: FontWeight.w900,
@@ -486,7 +486,7 @@ class PlayerScreen extends StatelessWidget {
             color: pal.textPrimary,
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Text(
-              'N',
+              'R',
               style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.w900,

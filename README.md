@@ -14,6 +14,7 @@ No account. No cloud. No upload. No analytics, no tracking, no advertising.
 ## Contents
 
 - [Overview](#overview)
+- [Screens](#screens)
 - [Install](#install)
 - [First run](#first-run)
 - [Features](#features)
@@ -34,6 +35,22 @@ engine: with it enabled, the queue is built from saved places, a live forecast a
 
 The context engine is opt-in and off by default. A fresh install behaves like a conventional local
 player: the queue is what you choose and the theme stays where you set it.
+
+## Screens
+
+<p align="center">
+  <img src="docs/shots/first-run.png" width="230" alt="First run: layout, colours and list style">
+  <img src="docs/shots/home.png" width="230" alt="Home: trending, all music, now playing">
+  <img src="docs/shots/library.png" width="230" alt="Library: songs with covers, artist and length">
+</p>
+<p align="center">
+  <img src="docs/shots/player.png" width="230" alt="Now playing: cover, transport, up next">
+  <img src="docs/shots/settings.png" width="230" alt="Settings: every automatic behaviour is a switch">
+  <img src="docs/shots/sidebar.png" width="230" alt="Sidebar: history, archive, customisation, settings">
+</p>
+
+Captured from the app running on a 1080×2400 device. The library in them is invented — twelve
+generated tracks — because the real one is your own music.
 
 ## Install
 

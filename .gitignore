@@ -34,3 +34,6 @@ tools/__pycache__/
 desktop.ini
 Thumbs.db
 tmp_*
+
+# Release artifacts staged for upload
+dist/

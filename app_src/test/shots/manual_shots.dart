@@ -94,19 +94,22 @@ Future<void> _pump(WidgetTester tester, Widget screen, Skin skin) async {
       home: Scaffold(body: screen),
     ),
   );
-  await tester.pump();
 
+  // The same order the golden suite uses: precache the images that are on
+  // screen, then settle. Pumping first can start a ticker, and a ticker turns
+  // runAsync into a deadlock.
   await tester.runAsync(() async {
     for (final element in find.byType(Image).evaluate()) {
-      await precacheImage((element.widget as Image).image, element);
+      final provider = (element.widget as Image).image;
+      if (provider is! MemoryImage) continue;
+      await precacheImage(provider, element);
     }
   });
-  await tester.pumpAndSettle();
-
-  // ignore: avoid_print
-  print('[shots] ${screen.runtimeType}: images='
-      '${find.byType(Image).evaluate().length} '
-      'cached=${PaintingBinding.instance.imageCache.currentSize}');
+  // These screens animate on arrival, so settling never returns: pump a
+  // fixed number of frames instead.
+  for (var i = 0; i < 24; i++) {
+    await tester.pump(const Duration(milliseconds: 40));
+  }
 }
 
 AppState _state(SkinId id) {
@@ -118,6 +121,44 @@ AppState _state(SkinId id) {
 void main() {
   setUpAll(_loadFonts);
 
+  testWidgets('library', (tester) async {
+    final s = _state(SkinId.crimson);
+    final screen = LibraryScreen(
+      tracks: _library,
+      coverPathFor: _coverPath,
+      skin: s.skin,
+      playlists: PlaylistList([
+        Playlist(id: 'pl_a', name: 'Night Bus', trackIds: const ['night-drive']),
+      ]),
+      libraryRoot: '/storage/emulated/0/Music/Sonarar',
+    );
+
+    await _pump(tester, screen, s.skin);
+    await expectLater(find.byType(LibraryScreen),
+        matchesGoldenFile('../../../docs/shots/library.png'));
+  });
+
+  testWidgets('player', (tester) async {
+    final s = _state(SkinId.abyss);
+    final screen = PlayerScreen(
+      state: s,
+      track: _library.first,
+      cover: MemoryImage(_cover('night-drive')),
+    );
+
+    await _pump(tester, screen, s.skin);
+    await expectLater(find.byType(PlayerScreen),
+        matchesGoldenFile('../../../docs/shots/player.png'));
+  });
+
+  testWidgets('settings', (tester) async {
+    final s = _state(SkinId.mono);
+    final screen = SettingsScreen(state: s);
+
+    await _pump(tester, screen, s.skin);
+    await expectLater(find.byType(SettingsScreen),
+        matchesGoldenFile('../../../docs/shots/settings.png'));
+  });
   testWidgets('home', (tester) async {
     final s = _state(SkinId.abyss);
     final plays = PlaylistList([
@@ -164,42 +205,4 @@ void main() {
         find.byType(HomeScreen), matchesGoldenFile('../../../docs/shots/home.png'));
   });
 
-  testWidgets('library', (tester) async {
-    final s = _state(SkinId.crimson);
-    final screen = LibraryScreen(
-      tracks: _library,
-      coverPathFor: _coverPath,
-      skin: s.skin,
-      playlists: PlaylistList([
-        Playlist(id: 'pl_a', name: 'Night Bus', trackIds: const ['night-drive']),
-      ]),
-      libraryRoot: '/storage/emulated/0/Music/Sonarar',
-    );
-
-    await _pump(tester, screen, s.skin);
-    await expectLater(find.byType(LibraryScreen),
-        matchesGoldenFile('../../../docs/shots/library.png'));
-  });
-
-  testWidgets('player', (tester) async {
-    final s = _state(SkinId.abyss);
-    final screen = PlayerScreen(
-      state: s,
-      track: _library.first,
-      cover: MemoryImage(_cover('night-drive')),
-    );
-
-    await _pump(tester, screen, s.skin);
-    await expectLater(find.byType(PlayerScreen),
-        matchesGoldenFile('../../../docs/shots/player.png'));
-  });
-
-  testWidgets('settings', (tester) async {
-    final s = _state(SkinId.mono);
-    final screen = SettingsScreen(state: s);
-
-    await _pump(tester, screen, s.skin);
-    await expectLater(find.byType(SettingsScreen),
-        matchesGoldenFile('../../../docs/shots/settings.png'));
-  });
 }

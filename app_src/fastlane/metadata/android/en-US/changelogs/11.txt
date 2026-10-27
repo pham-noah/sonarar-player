@@ -1,0 +1,12 @@
+0.1.0
+
+The first release, and the only one. Everything before it was staging.
+
+- Every automatic behaviour is a switch, and every switch ships off: weather,
+  time of day, places, the dynamic mix, weather variants, auto theme, learning
+  from skips, play history and Bonds.
+- No permission is requested at launch. Location is asked for when Places is
+  switched on, storage when the Library opens, notifications on first play.
+- No playlists are invented for you; a new install starts empty.
+- Home is only a tab when it has a page, and the app opens on the Library
+  until there is something to put there.

@@ -1328,7 +1328,7 @@ class _HomeShellState extends State<HomeShell>
     _boot(1.0, 'ready');
     setState(() => _loading = false);
 
-    if (_storageAccess == StorageAccess.denied) {
+    if (_askedStorage && _storageAccess == StorageAccess.denied) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _toast('Sonarar cannot read your music folder — '

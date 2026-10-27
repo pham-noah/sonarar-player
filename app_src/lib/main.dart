@@ -414,6 +414,8 @@ class _HomeShellState extends State<HomeShell>
   final ValueNotifier<Duration?> _sleepLeft = ValueNotifier(null);
   AppTab _tab = AppTab.home;
 
+  bool _tabSettled = false;
+
   List<String> _rediscoverIds = const [];
 
   bool _libraryListOpen = false;
@@ -1326,7 +1328,13 @@ class _HomeShellState extends State<HomeShell>
     }
 
     _boot(1.0, 'ready');
-    setState(() => _loading = false);
+    setState(() {
+      _loading = false;
+      if (!_tabSettled) {
+        _tabSettled = true;
+        if (_tab == AppTab.home && !_homeAvailable) _tab = AppTab.library;
+      }
+    });
 
     if (_askedStorage && _storageAccess == StorageAccess.denied) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1706,8 +1714,9 @@ class _HomeShellState extends State<HomeShell>
 
         if (mounted) {
           setState(() {
-            final next = (AppTab.values.indexOf(_tab) + 1) % AppTab.values.length;
-            _goToTab(AppTab.values[next]);
+            final visible = _visibleTabs;
+            final next = (visible.indexOf(_tab) + 1) % visible.length;
+            _goToTab(visible[next]);
           });
         }
     }
@@ -2940,9 +2949,23 @@ class _HomeShellState extends State<HomeShell>
 
   int _arrivalEpoch = 0;
 
+  List<AppTab> get _visibleTabs => [
+        if (_homeAvailable) AppTab.home,
+        AppTab.library,
+        AppTab.search,
+        AppTab.settings,
+      ];
+
+  bool get _homeAvailable =>
+      _repo.tracks.isNotEmpty ||
+      _libraryPlaylists.isNotEmpty ||
+      _likedTracks.isNotEmpty ||
+      widget.state.contextEnabled;
+
   void _goToTab(AppTab t) {
-    if (t != _tab) _arrivalEpoch++;
-    _tab = t;
+    final target = (t == AppTab.home && !_homeAvailable) ? AppTab.library : t;
+    if (target != _tab) _arrivalEpoch++;
+    _tab = target;
   }
 
   Widget _tabContentArrival(Skin skin) {
@@ -2985,6 +3008,7 @@ class _HomeShellState extends State<HomeShell>
           skin: skin,
           presentation: widget.state.presentation,
           current: _tab,
+          showHome: _homeAvailable,
 
           onSelect: _selectTab,
         ),

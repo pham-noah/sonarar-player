@@ -18,6 +18,7 @@ class TabBarView2 extends StatelessWidget {
     required this.current,
     required this.onSelect,
     this.presentation,
+    this.showHome = true,
   });
 
   final Skin skin;
@@ -25,6 +26,11 @@ class TabBarView2 extends StatelessWidget {
   final ValueChanged<AppTab> onSelect;
 
   final Presentation? presentation;
+
+  /// Home is a page assembled from what you have played. With nothing played,
+  /// nothing stored and no context running there is no page, so the tab is not
+  /// offered rather than opening onto an empty one.
+  final bool showHome;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +71,7 @@ class TabBarView2 extends StatelessWidget {
     return Row(
         children: [
 
-          _tab(AppTab.home, Icons.home_rounded, 'HOME'),
+          if (showHome) _tab(AppTab.home, Icons.home_rounded, 'HOME'),
           _tab(AppTab.library, Icons.library_music_rounded, 'LIBRARY'),
           _tab(AppTab.search, Icons.search_rounded, 'SEARCH'),
 

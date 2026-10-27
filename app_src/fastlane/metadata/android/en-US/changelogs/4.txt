@@ -1,0 +1,8 @@
+0.2.2
+
+Home is no longer a tab when there is nothing to put on it. With no history,
+no playlists and no context running, the bar shows Library and Search and the
+app opens on the Library.
+
+Home returns as soon as there is something to fill it: a library, a playlist,
+a favourite, or the context engine switched on.

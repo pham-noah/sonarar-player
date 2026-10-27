@@ -269,6 +269,7 @@ class _HomeShellState extends State<HomeShell>
   late final ContextCoordinator _ctx = ContextCoordinator(
     onChanged: _onContextMoved,
     allowNetwork: () => _prefs.allowNetwork,
+    weatherEnabled: () => _prefs.contextWeather,
   );
 
   Map<String, LoopPoints> _loopPoints = {};
@@ -377,8 +378,9 @@ class _HomeShellState extends State<HomeShell>
       defaultMode: _prefs.dynamicByDefault,
       refill: _prefs.refillWhenQueueEnds,
 
-      contextEnabled: _prefs.allowNetwork,
+      contextEnabled: _prefs.allowNetwork && _prefs.contextMix,
     );
+    widget.state.setClockEnabled(_prefs.contextClock);
     _applyLayoutPref();
   }
 
@@ -1053,8 +1055,9 @@ class _HomeShellState extends State<HomeShell>
       defaultMode: _prefs.dynamicByDefault,
       refill: _prefs.refillWhenQueueEnds,
 
-      contextEnabled: _prefs.allowNetwork,
+      contextEnabled: _prefs.allowNetwork && _prefs.contextMix,
     );
+    widget.state.setClockEnabled(_prefs.contextClock);
     _applyLayoutPref();
     widget.state.setPlaces(_ctx.placeBook);
 

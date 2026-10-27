@@ -18,11 +18,17 @@ import 'weather_cache.dart';
 import 'weather_service.dart';
 
 class ContextCoordinator {
-  ContextCoordinator({required this.onChanged, required this.allowNetwork});
+  ContextCoordinator({
+    required this.onChanged,
+    required this.allowNetwork,
+    required this.weatherEnabled,
+  });
 
   final void Function() onChanged;
 
   final bool Function() allowNetwork;
+
+  final bool Function() weatherEnabled;
 
   final WeatherService weather = WeatherService(timeout: kWeatherTimeout);
   final LocationService location = LocationService();
@@ -86,7 +92,7 @@ class ContextCoordinator {
   void startTimers({required Duration weatherRefresh}) {
     _weatherTimer?.cancel();
     _weatherTimer = Timer.periodic(weatherRefresh, (_) {
-      if (allowNetwork()) unawaited(refreshWeather());
+      if (allowNetwork() && weatherEnabled()) unawaited(refreshWeather());
     });
     _clock ??= Timer.periodic(const Duration(minutes: 1), (_) => onChanged());
   }
@@ -94,7 +100,7 @@ class ContextCoordinator {
   void restartWeatherTimer(Duration weatherRefresh) {
     _weatherTimer?.cancel();
     _weatherTimer = Timer.periodic(weatherRefresh, (_) {
-      if (allowNetwork()) unawaited(refreshWeather());
+      if (allowNetwork() && weatherEnabled()) unawaited(refreshWeather());
     });
   }
 
@@ -115,7 +121,7 @@ class ContextCoordinator {
     return PlayContext(
       band: _policy.bandFor(now.hour),
 
-      sky: skyFrom(_weather?.condition),
+      sky: weatherEnabled() ? skyFrom(_weather?.condition) : Sky.unknown,
       whereabouts: whereaboutsNow(),
       localHour: now.hour,
       placeId: _currentPlaceId,
@@ -186,7 +192,7 @@ class ContextCoordinator {
   }
 
   Future<void> refreshWeather() async {
-    if (!allowNetwork()) return;
+    if (!allowNetwork() || !weatherEnabled()) return;
     final at = weatherAt;
     final fetched = await weather.fetch(latitude: at.lat, longitude: at.lon);
     final resolved = resolveReading(

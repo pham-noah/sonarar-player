@@ -15,6 +15,9 @@ class AppPrefs {
     this.showFps = false,
     this.weatherRefreshMinutes = 30,
     this.allowNetwork = true,
+    this.contextWeather = false,
+    this.contextClock = false,
+    this.contextMix = false,
     this.cycleCharacterArt = true,
     this.showVisualiser = true,
     this.showRomaji = true,
@@ -57,6 +60,12 @@ class AppPrefs {
   final int weatherRefreshMinutes;
 
   final bool allowNetwork;
+
+  final bool contextWeather;
+
+  final bool contextClock;
+
+  final bool contextMix;
 
   final bool cycleCharacterArt;
 
@@ -125,6 +134,9 @@ class AppPrefs {
     bool? showFps,
     int? weatherRefreshMinutes,
     bool? allowNetwork,
+    bool? contextWeather,
+    bool? contextClock,
+    bool? contextMix,
     bool? cycleCharacterArt,
     bool? showVisualiser,
     bool? showRomaji,
@@ -164,6 +176,9 @@ class AppPrefs {
         weatherRefreshMinutes:
             (weatherRefreshMinutes ?? this.weatherRefreshMinutes).clamp(5, 180),
         allowNetwork: allowNetwork ?? this.allowNetwork,
+        contextWeather: contextWeather ?? this.contextWeather,
+        contextClock: contextClock ?? this.contextClock,
+        contextMix: contextMix ?? this.contextMix,
         cycleCharacterArt: cycleCharacterArt ?? this.cycleCharacterArt,
         showVisualiser: showVisualiser ?? this.showVisualiser,
         showRomaji: showRomaji ?? this.showRomaji,
@@ -209,6 +224,9 @@ class AppPrefs {
         'show_fps': showFps,
         'weather_refresh_minutes': weatherRefreshMinutes,
         'allow_network': allowNetwork,
+        'context_weather': contextWeather,
+        'context_clock': contextClock,
+        'context_mix': contextMix,
         'cycle_character_art': cycleCharacterArt,
         'show_visualiser': showVisualiser,
         'show_romaji': showRomaji,
@@ -254,6 +272,9 @@ class AppPrefs {
       weatherRefreshMinutes:
           _int(raw['weather_refresh_minutes']) ?? initial.weatherRefreshMinutes,
       allowNetwork: _bool(raw['allow_network']) ?? initial.allowNetwork,
+      contextWeather: _bool(raw['context_weather']) ?? initial.contextWeather,
+      contextClock: _bool(raw['context_clock']) ?? initial.contextClock,
+      contextMix: _bool(raw['context_mix']) ?? initial.contextMix,
 
       cycleCharacterArt:
           _bool(raw['cycle_character_art']) ?? initial.cycleCharacterArt,

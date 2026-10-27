@@ -336,6 +336,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.wifi_off_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(allowNetwork: v))),
 
+              _toggle(skin, 'TIME OF DAY', prefs!.contextClock,
+                  icon: Icons.schedule_rounded,
+                  (v) => onPrefsChanged!(prefs!.copyWith(contextClock: v))),
+              if (prefs!.allowNetwork)
+                _toggle(skin, 'WEATHER', prefs!.contextWeather,
+                    icon: Icons.wb_cloudy_rounded,
+                    (v) => onPrefsChanged!(prefs!.copyWith(contextWeather: v))),
+              _toggle(skin, 'DYNAMIC MIX', prefs!.contextMix,
+                  icon: Icons.shuffle_rounded,
+                  (v) => onPrefsChanged!(prefs!.copyWith(contextMix: v))),
+
               _toggle(skin, 'TAB ANIMATION', prefs!.tabAnimation,
                   icon: Icons.movie_filter_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(tabAnimation: v))),
@@ -410,9 +421,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.face_retouching_natural_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(cycleCharacterArt: v))),
 
-              _toggle(skin, 'DYNAMIC BY DEFAULT', prefs!.dynamicByDefault,
-                  icon: Icons.auto_awesome_motion_rounded,
-                  (v) => onPrefsChanged!(prefs!.copyWith(dynamicByDefault: v))),
+              if (prefs!.contextMix)
+                _toggle(skin, 'DYNAMIC BY DEFAULT', prefs!.dynamicByDefault,
+                    icon: Icons.auto_awesome_motion_rounded,
+                    (v) => onPrefsChanged!(prefs!.copyWith(dynamicByDefault: v))),
               _toggle(skin, 'KEEP PLAYING WHEN QUEUE ENDS', prefs!.refillWhenQueueEnds,
                   icon: Icons.autorenew_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(refillWhenQueueEnds: v))),

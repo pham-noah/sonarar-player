@@ -25,6 +25,8 @@ typedef MixInputs = ({
 
   bool contextEnabled,
 
+  bool honourClock,
+
   bool sleeping,
 });
 
@@ -53,7 +55,7 @@ class DynamicMixResolver {
       lead(_byRef(input.playlists, ctx.placeId!));
     }
 
-    if (input.contextEnabled) {
+    if (input.contextEnabled && input.honourClock) {
       final band = ctx.band;
       final name = input.bandListName;
       if (name != null &&

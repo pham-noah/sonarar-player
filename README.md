@@ -16,6 +16,9 @@ Package `com.noah.sonarar` · version 0.1.0 · GPL-3.0-or-later
 - **Places.** Home, uni, the gym — arriving changes the music, leaving changes it back.
 - **Weather.** A real forecast from Open-Meteo (no key, no account). Rain sounds different from a
   clear evening.
+- **They are switches, and they ship off.** Weather, time of day and the dynamic mix are three
+  separate settings. Off — the default — the app is a plain local player: no forecast, the hour does
+  not reshuffle the queue or repaint the theme, and the queue is whatever you put in it.
 - **Six skins** — Abyss, Amber, Crimson, Minimal, Mono, Bloom — each with its own palette, type and
   layout.
 - **Lyrics**, with romaji readings for Japanese and Korean tracks.

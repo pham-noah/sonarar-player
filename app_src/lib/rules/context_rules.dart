@@ -127,8 +127,9 @@ class ContextRules {
   bool get isEmpty => rules.isEmpty;
   int get length => rules.length;
 
-  ContextRule? firstMatch(PlaylistContext ctx) {
+  ContextRule? firstMatch(PlaylistContext ctx, {bool honourClock = true}) {
     for (final r in rules) {
+      if (!honourClock && r.band != null) continue;
       if (r.matches(ctx)) return r;
     }
     return null;

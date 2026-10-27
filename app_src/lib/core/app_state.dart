@@ -88,6 +88,7 @@ class AppState extends ChangeNotifier {
       bandListName: _currentSituation,
       rules: _contextRules,
       contextEnabled: _contextEnabled,
+      honourClock: _clockOn,
       sleeping: _sleeping,
     ));
   }
@@ -157,6 +158,16 @@ class AppState extends ChangeNotifier {
 
   bool _contextEnabled = true;
   bool get contextEnabled => _contextEnabled;
+
+  bool _clockOn = true;
+  bool get clockOn => _clockOn;
+
+  void setClockEnabled(bool value) {
+    if (_clockOn == value) return;
+    _clockOn = value;
+    _invalidateDynamic();
+    notifyListeners();
+  }
 
   List<Playlist> get visiblePlaylists => _contextEnabled
       ? allPlaylists
@@ -763,11 +774,15 @@ class AppState extends ChangeNotifier {
       placeId: ctx.placeId,
     );
     _playlistCtx = playlistCtx;
-    final rule = _contextRules.firstMatch(playlistCtx);
+    final rule = _contextRules.firstMatch(playlistCtx, honourClock: _clockOn);
 
     final nextId = _preset != null
         ? _preset!.skinId
-        : ((!_pref.isManual && rule?.theme != null) ? rule!.theme! : resolved);
+        : (!_clockOn
+            ? _skin.id
+            : ((!_pref.isManual && rule?.theme != null)
+                ? rule!.theme!
+                : resolved));
     final next = skinFor(nextId);
     if (next.id != _skin.id) {
       _skinValue = next;

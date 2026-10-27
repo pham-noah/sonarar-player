@@ -48,6 +48,7 @@ MixInputs inputs({
   String? bandListName,
   ContextRules? rules,
   bool contextEnabled = true,
+  bool honourClock = true,
   bool sleeping = false,
 }) =>
     (
@@ -58,6 +59,7 @@ MixInputs inputs({
       bandListName: bandListName,
       rules: rules ?? ContextRules(const []),
       contextEnabled: contextEnabled,
+      honourClock: honourClock,
       sleeping: sleeping,
     );
 

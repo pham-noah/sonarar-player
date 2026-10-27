@@ -302,6 +302,8 @@ class _HomeShellState extends State<HomeShell>
     openAppPage(
       context,
       title: 'REDISCOVER',
+      skin: widget.state.uiSkin,
+      presentation: widget.state.presentation,
       rebuildOn: _routeListenable,
 
       builder: (_) => LibraryScreen(
@@ -3416,16 +3418,16 @@ children: [
   }
 
   void _openPage(String title, Widget Function(BuildContext) builder) {
+    // The presentation belongs ABOVE the page: AppPage reads it for its own
+    // header, and a scope inside the child left the arrow on the fallback skin.
     // ignore: discarded_futures
     openAppPage(
       context,
       title: title,
-
+      skin: widget.state.uiSkin,
+      presentation: widget.state.presentation,
       rebuildOn: _routeListenable,
-      builder: (ctx) => PresentationScope(
-        presentation: widget.state.presentation,
-        child: builder(ctx),
-      ),
+      builder: builder,
     );
   }
 

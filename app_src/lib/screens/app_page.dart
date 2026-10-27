@@ -13,19 +13,25 @@ Future<void> openAppPage(
   required Widget Function(BuildContext) builder,
   Widget? mark,
   Presentation? presentation,
+  Skin? skin,
 }) {
+  final chosen = skin ?? kSkinCrimson;
   final resolved =
-      presentation ?? PresentationScope.of(context, fallback: kSkinCrimson);
+      presentation ?? PresentationScope.of(context, fallback: chosen);
   return Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute<void>(
       builder: (ctx) => PresentationScope(
         presentation: resolved,
         child: rebuildOn == null
-            ? AppPage(title: title, mark: mark, child: builder(ctx))
+            ? AppPage(title: title, mark: mark, skin: chosen, child: builder(ctx))
             : ListenableBuilder(
                 listenable: rebuildOn,
-                builder: (_, __) =>
-                    AppPage(title: title, mark: mark, child: builder(ctx)),
+                builder: (_, __) => AppPage(
+                  title: title,
+                  mark: mark,
+                  skin: chosen,
+                  child: builder(ctx),
+                ),
               ),
       ),
     ),
@@ -38,6 +44,7 @@ class AppPage extends StatelessWidget {
     required this.title,
     required this.child,
     this.mark,
+    this.skin = kSkinCrimson,
   });
 
   final String title;
@@ -45,28 +52,29 @@ class AppPage extends StatelessWidget {
 
   final Widget? mark;
 
+  final Skin skin;
+
   @override
   Widget build(BuildContext context) {
-    final skin = PresentationScope.uiSkin(context, kSkinCrimson);
+    final resolved = PresentationScope.uiSkin(context, skin);
     return Scaffold(
-      backgroundColor: skin.background,
+      backgroundColor: resolved.background,
       body: SafeArea(
           bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
               AppScreenHeader(
-                skin: skin,
+                skin: resolved,
                 title: title,
                 mark: mark,
                 leading: GestureDetector(
-
                   onTap: () => Navigator.of(context).maybePop(),
                   behavior: HitTestBehavior.opaque,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                    child: Icon(Icons.arrow_back_rounded, color: skin.accent, size: 28),
+                    child:
+                        Icon(Icons.arrow_back_rounded, color: resolved.accent, size: 28),
                   ),
                 ),
               ),

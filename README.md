@@ -29,17 +29,6 @@ Latest: **0.1.0** (versionCode 11). Android 7.0+ (API 24), arm64-v8a, package `c
 signed with the project key.
 An [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) exists for a store-signed build.
 
-## On first launch
-
-Nothing is invented for you and nothing is asked of you:
-
-- **No playlists**, no seeded folders. The list screen starts empty.
-- **No Home tab** until there is something to fill it — the app opens on Library and Home appears on
-  its own once you have played something, made a list, or switched on the context engine.
-- **No permission prompt.** Location is asked for when you switch on Places, storage when you open the
-  Library, notifications on your first play.
-- **No music**, because the library is built on a computer — see [Your library](#your-library).
-
 ## Features
 
 - **Playback** — local files through Android's media session, with lock-screen and notification

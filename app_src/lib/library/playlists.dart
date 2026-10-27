@@ -102,6 +102,33 @@ class Playlist {
   }
 }
 
+/// The lists this app used to ship as a seed. Kept only so an install that already has them
+/// can drop the ones that answer to nothing in its library; new installs start with no lists.
+const Set<String> kSeedPlaylistIds = {
+  'home',
+  'gym',
+  'uni',
+  'commuting',
+  'p3r',
+  'p4r',
+  'p5r',
+  'weathering',
+  'us_uk',
+  'vpop',
+  'kpop',
+  'jpop',
+  'v_acoustic',
+  'v_instrumental',
+  'v_rain',
+  'v_snow',
+  'v_arrange',
+  'v_long',
+  'v_short',
+  'v_morning',
+  'v_afternoon',
+  'v_evening',
+};
+
 const Set<String> kContextDrivenListIds = {
   'v_acoustic',
   'v_instrumental',
@@ -221,6 +248,12 @@ class PlaylistList implements PlaylistsView {
       removed += p.prune(libraryIds);
     }
     return removed;
+  }
+
+  int dropEmptySeeds() {
+    final before = _lists.length;
+    _lists.removeWhere((p) => kSeedPlaylistIds.contains(p.id) && p.trackIds.isEmpty);
+    return before - _lists.length;
   }
 }
 

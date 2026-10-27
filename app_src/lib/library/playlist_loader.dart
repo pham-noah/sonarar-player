@@ -66,6 +66,7 @@ class PlaylistLoader {
 
   void _pruneAndReport(PlaylistList lists, Set<String> libraryIds) {
     lists.prune(libraryIds);
+    lists.dropEmptySeeds();
   }
 
   Future<void> save(PlaylistsView lists) => store.save(lists);

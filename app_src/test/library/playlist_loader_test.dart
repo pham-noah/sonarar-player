@@ -58,11 +58,11 @@ void main() {
           reason: 'the seed must be copied out, or the next edit has nowhere to go');
     });
 
-    test('a seed whose tracks are all missing yields an empty playlist, not a crash',
-        () async {
+    test('a seed whose tracks are all missing leaves no playlist behind', () async {
       final lists = await loader(_seed(['gone'])).load(libraryIds: {});
-      expect(lists.length, 1);
-      expect(lists.byId('p3r')!.isEmpty, isTrue);
+      expect(lists.length, 0,
+          reason: 'the folder would answer to nothing in this library, so it is not '
+              'a folder worth showing — it used to stay as an empty shell');
     });
   });
 

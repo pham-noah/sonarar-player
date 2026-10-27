@@ -1,0 +1,8 @@
+0.2.1
+
+The app no longer creates folders of its own. A new install starts with no
+playlists at all — P3R, KPOP, Home and the rest were a seed copied in on first
+run, and are gone.
+
+An install that already has them keeps any list that still holds tracks and
+drops the ones that answer to nothing in your library.

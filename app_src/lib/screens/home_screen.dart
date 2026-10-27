@@ -229,9 +229,48 @@ class HomeScreen extends StatelessWidget {
         ..._recapSection(context),
 
         ..._trendingSection(context),
+
+        ..._nothingYetSection(context),
         ],
       ),
     );
+  }
+
+  bool get _nothingToShow =>
+      continueTrack == null &&
+      rediscover.isEmpty &&
+      jumpBackIn.isEmpty &&
+      mostPlayed.isEmpty &&
+      likedSongs.isEmpty &&
+      libraryPlaylists.isEmpty &&
+      recapTracks.isEmpty &&
+      (trending?.isEmpty ?? true);
+
+  List<Widget> _nothingYetSection(BuildContext context) {
+    if (!_nothingToShow) return const [];
+    final pal = PresentationScope.of(context, fallback: skin).palette;
+    if (allTracks.isEmpty) {
+      return [
+        _bandText('NOTHING HERE YET'),
+        Text(
+          'This screen fills up from what you have played. There is no music in the library yet — '
+          'open the Library to grant access, or build one with the tools in the repository.',
+          style: TextStyle(fontSize: 13, height: 1.5, color: pal.textPrimary),
+        ),
+        const SizedBox(height: 22),
+      ];
+    }
+    final picks = allTracks.take(12).toList(growable: false);
+    return [
+      _bandText('ALL MUSIC'),
+      Text(
+        'Nothing played yet, so this is the library in its own order.',
+        style: TextStyle(fontSize: 12, height: 1.5, color: pal.textPrimary),
+      ),
+      const SizedBox(height: 10),
+      _coverRail(context, picks),
+      const SizedBox(height: 22),
+    ];
   }
 
   List<Widget> _quickPickSection(BuildContext context) {

@@ -1,0 +1,9 @@
+0.2.0
+
+Every automatic behaviour is now a switch, and every switch starts off: weather,
+time of day, places, the dynamic mix, weather variants, auto theme, learning
+from skips, play history and Bonds.
+
+No permission is requested at launch any more. Location is asked for when
+Places is switched on, storage when you open the Library, notifications on the
+first play.

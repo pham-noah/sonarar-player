@@ -348,10 +348,21 @@ class _HomeShellState extends State<HomeShell>
 
   void _setPrefs(AppPrefs next) {
     final visualiserWasOff = !_prefs.showVisualiser;
+    final weatherWasOff = !_prefs.contextWeather;
+    final placesWasOff = !_prefs.placesEnabled;
     _shellChanged(() => _prefs = next);
     // ignore: discarded_futures
     _stores.savePrefs(next);
     _applyPrefs();
+
+    // Switching one of these ON is a request for the reading now, not at the
+    // next timer tick half an hour away.
+    if (weatherWasOff && next.contextWeather && next.allowNetwork) {
+      unawaited(_ctx.refreshWeather());
+    }
+    if (placesWasOff && next.placesEnabled && next.allowNetwork) {
+      unawaited(_ctx.resolvePlaceThenWeather());
+    }
 
     if (visualiserWasOff && next.showVisualiser) {
       unawaited(_loadSpectrum(widget.state.currentTrack?.id));

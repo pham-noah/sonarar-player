@@ -46,7 +46,6 @@ player: the queue is what you choose and the theme stays where you set it.
 <p align="center">
   <img src="docs/shots/player.png" width="230" alt="Now playing: cover, transport, up next">
   <img src="docs/shots/settings.png" width="230" alt="Settings: every automatic behaviour is a switch">
-  <img src="docs/shots/sidebar.png" width="230" alt="Sidebar: history, archive, customisation, settings">
 </p>
 
 Captured from the app running on a 1080×2400 device. The library in them is invented — twelve

@@ -1,0 +1,28 @@
+{
+  "playlists": [
+    {
+      "folder": "US UK",
+      "id": "PLfLwGYP80swY",
+      "label": "US UK",
+      "url": ""
+    },
+    {
+      "folder": "VPOP",
+      "id": "PLFRrFMxhkEIg",
+      "label": "VPOP",
+      "url": ""
+    },
+    {
+      "folder": "KPOP",
+      "id": "PLbQgdqIOqKyU",
+      "label": "KPOP",
+      "url": ""
+    },
+    {
+      "folder": "JPOP",
+      "id": "PLD-OCcgcqIwo",
+      "label": "JPOP",
+      "url": ""
+    }
+  ]
+}

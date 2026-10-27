@@ -1,0 +1,36 @@
+# Flutter / Dart
+app_src/build/
+app_src/.dart_tool/
+app_src/.flutter-plugins
+app_src/.flutter-plugins-dependencies
+app_src/.packages
+
+# Generated platform output
+app_src/windows/flutter/ephemeral/
+app_src/android/.gradle/
+app_src/android/local.properties
+app_src/android/app/debug/
+app_src/android/app/profile/
+app_src/android/app/release/
+app_src/**/*.iml
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Runtime state
+app_src/**/.state/
+.state/
+
+# Tool output
+reports/
+tools/__pycache__/
+**/__pycache__/
+*.pyc
+
+# OS noise
+.DS_Store
+desktop.ini
+Thumbs.db
+tmp_*

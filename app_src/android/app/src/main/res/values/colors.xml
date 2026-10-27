@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The app's own default-skin background (Skin.p3r). Declared as a colour rather than referenced from
+         Dart, because the splash is drawn by the PLATFORM before Flutter exists — this is the one place the
+         palette has to be duplicated, and it is duplicated from `lib/theme/skin.dart` deliberately. -->
+    <color name="splash_background">#04080F</color>
+    <!-- The adaptive icon's background layer: the DEFAULT SKIN'S BACKGROUND, not its accent.
+         It was `#3CE0D0` (the accent), which made the adaptive icon a bright teal tile — and since the
+         foreground was also teal at the time, an invisible letter. The mark is now the skin's teal-to-blue
+         letter on the skin's own near-black, so this must match `Skin.p3r.background` (#04080F) or the two
+         halves of the icon disagree. -->
+    <color name="ic_launcher_background">#04080F</color>
+</resources>

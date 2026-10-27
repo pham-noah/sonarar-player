@@ -1,0 +1,35 @@
+Categories:
+  - Multimedia
+License: GPL-3.0-or-later
+SourceCode: https://github.com/pham-noah/sonarar-player
+IssueTracker: https://github.com/pham-noah/sonarar-player/issues
+
+RepoType: git
+Repo: https://github.com/pham-noah/sonarar-player.git
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: v0.1.0
+    subdir: app_src
+    srclibs:
+      - flutter@stable
+    prebuild:
+      - git -C $$flutter$$ checkout -f 3.47.6
+      - flutter config --no-analytics
+      - flutter pub get --enforce-lockfile
+    build:
+      - $$flutter$$/bin/flutter build apk --release --target-platform=android-arm64
+    output: build/app/outputs/flutter-apk/app-release.apk
+    scanignore:
+      - app_src/.flutter/bin/cache
+      - lib/**/libpython.zip.so
+      - lib/**/libffmpeg.zip.so
+    scandelete:
+      - app_src/.flutter
+      - app_src/.pub-cache
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1

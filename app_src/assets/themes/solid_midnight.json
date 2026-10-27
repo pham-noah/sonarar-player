@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "id": "solid_midnight",
+  "displayName": "MIDNIGHT",
+  "description": "Solid � list-first, flat, restrained.",
+  "palette": {
+    "background": "#ff0b1020",
+    "surface": "#ff161e31",
+    "textPrimary": "#fff2f6ff",
+    "textSecondary": "#ffa9b6d0",
+    "accent": "#ff4c8dff",
+    "accentDeep": "#ff2f6bd6",
+    "onAccent": "#ff061024",
+    "border": "#ff263352",
+    "shadow": "#00000000"
+  },
+  "material": {
+    "slant": false,
+    "edge": "hairline",
+    "activeFillIsAccent": false,
+    "blur": 0.0,
+    "specularEdge": false,
+    "castShadow": false,
+    "transparentInactiveFill": false,
+    "radii": {
+      "panel": 24.0,
+      "card": 24.0,
+      "bar": 26.0,
+      "sheet": 32.0
+    }
+  },
+  "motion": {
+    "tabTransitionMs": 260,
+    "arrivalCurve": "easeOutCubic",
+    "arrivalAmplitude": 0.5,
+    "backdropFactor": 1.4,
+    "enabled": true
+  },
+  "arrangement": {
+    "libraryIsGrid": true,
+    "headerScrollsAway": true,
+    "contextPlateExists": false,
+    "tabBarIsFloating": true,
+    "tabBarInsetLeft": 12.0,
+    "tabBarInsetRight": 12.0,
+    "tabBarInsetBottom": 10.0,
+    "contentMaxWidth": 720.0
+  },
+  "chrome": {
+    "sectionBand": "mark",
+    "libraryHeader": "appHeader",
+    "titleForm": "beside",
+    "shellFrame": "floating",
+    "wordmark": false,
+    "hemisphereScrim": false,
+    "alfrescoCharacterArt": false,
+    "artByDefault": false,
+    "artReachBehindBars": -88.0,
+    "coverSize": 88.0,
+    "transportTilt": 0.0,
+    "scrubberBelowTransport": false,
+    "backdropClip": "none",
+    "backdropReach": -64.0,
+    "upNextStrip": true,
+    "panelSheetUsesSurface": true
+  },
+  "builtIn": true
+}

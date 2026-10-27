@@ -1,0 +1,41 @@
+name: sonarar
+description: "Sonarar — a personal music player that already knows what you want."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  path_provider: ^2.1.4
+  audio_session: ^0.1.21
+  just_audio: ^0.9.42
+  just_audio_background: ^0.0.1-beta.15
+
+  http: ^1.2.0
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  wakelock_plus: ^1.8.0
+
+  korean_romanization_converter: ^0.0.1
+  jp_transliterate: ^1.0.5
+  youtube_explode_dart: ^3.1.0
+  ytdlp_flutter: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/library/
+    - assets/spectrum/
+    - assets/config/
+    - assets/brand/
+    - assets/themes/

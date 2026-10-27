@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# THE SHEBANG IS LOAD-BEARING. Git runs a hook with `sh` when the file has no shebang, and on this
+# machine that is dash — where `[[` does not exist. The test below then reads
+#
+#     tools/hooks/pre-push: 9: [[: not found
+#     pre-push ok
+#
+# and exits 0, so a FAILING gate printed the failure, said everything was fine and let the push
+# through. Measured on this repo, and it is the worst possible shape for a guard: the failure is
+# visible one line above the green one, so the hole reads as diligence.
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)" || exit 0
+
+printf '\n== pre-push: analyze + full test suite ==\n'
+
+"$(dirname "$0")/../verify.sh" --full
+rc=$?
+
+if [[ $rc -ne 0 ]]; then
+  printf '\nPUSH BLOCKED: %s stage(s) failed.\n' "$rc"
+  printf 'Fix it, or push anyway with: git push --no-verify\n'
+  exit 1
+fi
+
+printf '\npre-push ok\n'

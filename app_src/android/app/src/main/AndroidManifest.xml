@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Screen-off / backgrounded playback. just_audio_background runs the
+         audio as a foreground service, which is what keeps it alive when the
+         app is swiped from Recents. The service needs these three; without
+         WAKE_LOCK the CPU sleeps mid-track, and without the mediaPlayback
+         type Android 14+ refuses to start the service at all. -->
+    <!-- Reading the library. WITHOUT THIS THE APP LISTS TRACKS AND PLAYS NOTHING.
+
+         The manifest carried NO storage permission at all, so on Android 15
+         (scoped storage) every path under /storage/emulated/0/Music/ is blocked:
+         the loader cannot open the writable manifest, quietly falls back to the
+         bundled copy, and shows 87 titles whose files are unreadable. It looks
+         like a working library that plays silence — the same failure the desktop
+         build has when it falls back, arriving by a different route.
+
+         READ_MEDIA_AUDIO is the Android 13+ permission for audio specifically; it
+         is narrower than READ_EXTERNAL_STORAGE, which is why the old permission
+         is capped at API 32 rather than left to cover everything. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <!-- Cover art. The library's covers are .jpg, and READ_MEDIA_AUDIO grants
+         AUDIO only — images are a separate grant on Android 13+. Without this the
+         songs play and every cover is a blank square, because the file exists and
+         the app is simply not allowed to open it. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+
+    <!-- ALL-FILES ACCESS, the real fix for "reads its own pushed library".
+         READ_MEDIA_AUDIO/IMAGES let the app open audio and covers (both media),
+         but NOT the library_manifest.json or the spectrum .bin that sit BESIDE
+         the audio — so on Android the app silently fell back to the manifest
+         bundled in the APK and never saw a freshly pushed library. That made
+         the app show exactly the tracks baked into the build.
+
+         MANAGE_EXTERNAL_STORAGE (Android 11+ "All files access", toggled in a
+         Settings screen, not a dialog) lets the app read EVERY file under
+         /storage/emulated/0/Music/Sonarar — manifest, spectrum, covers, audio —
+         so ONE build works for whoever pushes their own library. It is a strong
+         permission, correct for a personal sideloaded app, and not Play-Store
+         compliant (deliberate). requestLegacyExternalStorage covers Android 10,
+         where this permission does not exist. -->
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"/>
+
+    <!-- The media notification itself. On Android 13+ an app cannot show ANY
+         notification without this, and the media player control IS a
+         notification — so without it playback works and the player is invisible,
+         with no lock-screen controls and nothing in the shade. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- THE SPECTRUM PROBE. Declared so the probe can ASK; the app does not use it for playback and
+         nothing else in the app reads the microphone. If the probe says this cannot be held on the
+         target device, the probe screen, its channel and this line all come out together. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- Needed to attach a Visualizer to the OUTPUT MIX (session 0). Normal permission, granted at
+         install, no dialog — it is what the Visualizer checks before it will enable. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+
+    <!-- THE NETWORK. WITHOUT THIS A RELEASE BUILD CANNOT OPEN A SOCKET.
+
+         This is the single most consequential permission in the app and it was
+         MISSING. Flutter puts INTERNET in the debug and profile manifests (it
+         needs it for hot reload), so it is present in every build made for
+         development and absent from every RELEASE build — which is the exact
+         opposite of where it is needed. `flutter run` works, `flutter build`
+         ships a network-less app, and nothing says so.
+
+         What it silently broke, all three of which had been treated as working:
+           - the weather fetch, so the context has been reporting `unknown` and
+             the rain rule has never fired on a release build;
+           - the map tiles, which is how this was found — a map with no tiles is
+             a blank canvas with a position dot on it;
+           - the OpenStreetMap POI lookup.
+
+         The lesson is not "add a permission": it is that a capability verified
+         from the DEVELOPMENT machine proves the service, not the app. The
+         endpoint answered curl perfectly while the shipped app could not reach
+         it at all. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- WHERE YOU ARE. This is what decides "uni song / gym song / home song",
+         and those places are minutes apart — a city-level fix cannot tell them
+         apart, so the accuracy is the entire feature and GPS is the only thing
+         that provides it.
+
+         FINE, not COARSE: COARSE is deliberately fuzzed to ~1-3km, which is the
+         same resolution as the IP lookup it replaced and would answer "home"
+         for all three places. The user is asked at first use; a refusal or a
+         system-wide location-off is a normal state, not an error, and falls
+         back to the IP lookup rather than failing.
+
+         Deliberately NOT the background variants: this reads a position while
+         the app is in use and never tracks it. A music player has no business
+         holding a location permission it does not need. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- NOTE: youtubedl-android needs the bundled Python/ffmpeg EXTRACTED rather than mapped out of the
+         APK. That is set in build.gradle.kts as `useLegacyPackaging = true`, NOT here — AGP rejects the
+         manifest attribute outright with "Avoid setting android:extractNativeLibs=true explicitly". -->
+    <application
+        android:label="Sonarar"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
+
+        <!-- AudioServiceActivity, NOT MainActivity. just_audio_background
+             hijacks the activity to host its media session; with a plain
+             FlutterActivity the lock-screen controls and headphone buttons
+             never appear. It is a FlutterActivity subclass, so the rest of
+             the config is unchanged. -->
+        <!-- MY activity, NOT AudioServiceActivity directly.
+
+             THE BUG THIS FIXES, and it took a device to find: the manifest
+             launched com.ryanheise.audioservice.AudioServiceActivity directly, so
+             MainActivity — and the method channel registered in it — never ran.
+             The Dart side asked for storage access, got silence, and reported
+             status=unknown forever, because nothing was listening.
+
+             AudioServiceActivity is still the superclass: it subclasses the
+             Flutter activity to host the media session, and MainActivity extends
+             IT, so the lock-screen controls keep working while the permission
+             channel actually exists. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- The foreground service that owns the media session. -->
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
+        <!-- Hardware media buttons: headphone click, car controls, Bluetooth. -->
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- THE GEOFENCE RECEIVER. Android wakes this when a saved place is
+             entered or left, including with the screen off — which is the whole
+             reason the app hands the circles to the OS instead of polling. -->
+        <receiver
+            android:name=".GeofenceReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.noah.personar.GEOFENCE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

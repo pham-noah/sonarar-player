@@ -1,0 +1,28 @@
+{
+  "rules": [
+    {
+      "id": "battle",
+      "priority": 80,
+      "when": {
+        "mode": "battle"
+      },
+      "theme": "crimson"
+    },
+    {
+      "id": "dark-hour",
+      "priority": 78,
+      "when": {
+        "time_band": "dark_hour"
+      },
+      "theme": "abyss"
+    },
+    {
+      "id": "commuting",
+      "priority": 66,
+      "when": {
+        "place": "anywhere"
+      },
+      "playlist": "Commuting"
+    }
+  ]
+}

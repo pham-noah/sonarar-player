@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- THE SYSTEM SPLASH, THEMED WITH OUR OWN PICTURE — AND THIS IS HOW AN APP "REPLACES" IT.
+
+     From Android 12 (API 31) the platform draws a splash for every app: the launcher icon on a background
+     colour, shown during the window transition while the process is created. Until now this app did not opt in,
+     so the phone drew ITS OWN icon splash and then our `launch_background` drawable — TWO different pictures,
+     from two different systems, one after the other. That is the seam, and it cannot be removed by deleting
+     anything: the window transition happens before Dart exists.
+
+     WHAT CAN BE DONE, and is: give the platform OUR picture, so the screen it shows is the same screen our
+     boot screen draws. `windowSplashScreenAnimatedIcon` + `windowSplashScreenBackground` are the two that
+     matter. Attributes verified present in this machine's `android-35/android.jar` rather than written from
+     memory.
+
+     ONE CONSTRAINT SHAPES THE DESIGN: the platform MASKS this icon to a circle of roughly 160dp (the launcher
+     icon's outer 2/3), so a wide or tall picture is CROPPED, not scaled. That is why every app you have seen
+     does this with its icon alone — and it is the reason the splash asset is now the mark by itself, with the
+     artwork inside the safe circle. A wordmark would be cut in half.
+
+     AND `postSplashScreenTheme` IS DELIBERATELY ABSENT. It is not a platform attribute — checked, it is not in
+     `android.R$attr` on API 35 — it belongs to the AndroidX `core-splashscreen` library, which this project
+     does not use and does not need: without it the window simply keeps this theme until Flutter's first frame,
+     and Flutter switches to `NormalTheme` through the manifest's `NormalTheme` meta-data.
+
+     `android:windowBackground` is kept alongside the splash attributes. It is the PRE-31 path: on Android 11
+     and below there is no system splash, so the drawable IS the launch screen. Both routes now show the same
+     picture.
+
+     values-night IS THE SAME FILE. The app is dark on every device, so there is no light variant to disagree
+     with. -->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/splash_background</item>
+        <item name="android:navigationBarColor">@color/splash_background</item>
+
+        <!-- THE SYSTEM SPLASH (API 31+). Ours, not the launcher icon. -->
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <!-- No icon backdrop: our mark is the colour, and a plate behind it would show as a square in the
+             middle of the circle the platform masks to. -->
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <!-- 0, so the platform hands over to Flutter the moment the engine is ready. Any value here is an
+             artificial hold in front of the first frame, which is the opposite of what the boot screen is for. -->
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

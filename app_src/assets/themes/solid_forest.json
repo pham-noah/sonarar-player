@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "id": "solid_forest",
+  "displayName": "FOREST",
+  "description": "Solid � list-first, flat, restrained.",
+  "palette": {
+    "background": "#ff121212",
+    "surface": "#ff1e1e1e",
+    "textPrimary": "#ffffffff",
+    "textSecondary": "#ffa7a7a7",
+    "accent": "#ff1db954",
+    "accentDeep": "#ff14833b",
+    "onAccent": "#ff0b0b0b",
+    "border": "#ff2a2a2a",
+    "shadow": "#00000000"
+  },
+  "material": {
+    "slant": false,
+    "edge": "hairline",
+    "activeFillIsAccent": false,
+    "blur": 0.0,
+    "specularEdge": false,
+    "castShadow": false,
+    "transparentInactiveFill": false,
+    "radii": {
+      "panel": 24.0,
+      "card": 24.0,
+      "bar": 26.0,
+      "sheet": 32.0
+    }
+  },
+  "motion": {
+    "tabTransitionMs": 260,
+    "arrivalCurve": "easeOutCubic",
+    "arrivalAmplitude": 0.5,
+    "backdropFactor": 1.4,
+    "enabled": true
+  },
+  "arrangement": {
+    "libraryIsGrid": true,
+    "headerScrollsAway": true,
+    "contextPlateExists": false,
+    "tabBarIsFloating": true,
+    "tabBarInsetLeft": 12.0,
+    "tabBarInsetRight": 12.0,
+    "tabBarInsetBottom": 10.0,
+    "contentMaxWidth": 720.0
+  },
+  "chrome": {
+    "sectionBand": "mark",
+    "libraryHeader": "appHeader",
+    "titleForm": "beside",
+    "shellFrame": "floating",
+    "wordmark": false,
+    "hemisphereScrim": false,
+    "alfrescoCharacterArt": false,
+    "artByDefault": false,
+    "artReachBehindBars": -88.0,
+    "coverSize": 88.0,
+    "transportTilt": 0.0,
+    "scrubberBelowTransport": false,
+    "backdropClip": "none",
+    "backdropReach": -64.0,
+    "upNextStrip": true,
+    "panelSheetUsesSurface": true
+  },
+  "builtIn": true
+}

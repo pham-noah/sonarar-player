@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launch screen, drawn by Android before Flutter's engine has started.
+
+     THIS IS WHAT REMOVED THE BLACK FLASH AT BOOT. It used to be `@android:color/white`, so every cold start
+     showed a WHITE screen until Flutter's first frame — and since the app is a dark UI, that white flash was
+     both ugly and unavoidable: no Dart code runs before it.
+
+     Now it is the app's own background colour with the mark centred, so the native splash and the Flutter
+     boot screen are the SAME PICTURE. The handover from platform to engine is therefore invisible — which is
+     the whole point of a splash screen. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_background" />
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/splash_logo" />
+    </item>
+</layer-list>

@@ -1,0 +1,23 @@
+A personal music player for Android. It plays your own files, works completely offline, and picks what to play from where you are and what the weather is.
+
+Not a Spotify clone — a player that already knows what you want.
+
+WHAT IT DOES
+* Plays your library from your phone's storage. No account, no cloud, no upload.
+* Saved places: home, uni, the gym. Arriving changes the music; leaving changes it back.
+* Weather-aware: rain gets a different mood from a clear evening.
+* Six skins, each its own palette, type and layout.
+* Lyrics with romaji readings for Japanese and Korean tracks.
+* Optional: download a YouTube playlist into your library on the phone.
+* A media session, so playback survives swiping the app away and shows on the lock screen.
+
+HOW THE LIBRARY WORKS
+You keep your own music. The app reads a folder — Music/Sonarar — that you fill however you like: copy it over, or build it with the tools in the project's repository, which scan your music, fix the titles and write the covers and the visualiser data beside the audio.
+
+The app never modifies your music. It only reads it.
+
+PRIVACY
+No account, no analytics, no tracking, no ads. The app talks to a weather service and, only if you use the download feature, to YouTube. Location is read while the app is open — never in the background.
+
+LICENCE
+GPL-3.0, because it runs yt-dlp and FFmpeg on the phone to support downloading. Full third-party notices are in the repository's NOTICE.md.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- KEEP THE audio_service NOTIFICATION ICONS. THIS FILE IS LOAD-BEARING.
+
+     I deleted this once, reasoning that resource shrinking is not enabled in this
+     project so it could not be doing anything. That was wrong, and the evidence
+     says so directly:
+
+       WITH this file      notification posted, id=1124, isPlaying=true,
+                           artwork 600x600, verified from SystemUI's media panel
+       WITHOUT this file   java.lang.IllegalArgumentException: You must specify an
+                           icon resource id to build a CustomAction
+
+     So the icons ARE being stripped without it, whatever the gradle config
+     suggests — AAPT2 rewrites and prunes resources on its own. The failure is
+     silent: audio_service catches the throw, so the notification simply never
+     appears and nothing in the app's log says why.
+
+     Measured beats reasoned. Do not delete this file because the build config
+     looks like it makes it unnecessary. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+  tools:keep="@drawable/audio_service_*" />

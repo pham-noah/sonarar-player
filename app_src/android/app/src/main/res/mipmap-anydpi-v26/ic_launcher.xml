@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ADAPTIVE ICON. Two layers: the platform supplies the SHAPE (circle, squircle, rounded square — the
+     launcher decides), the background colour is the default skin's accent, and the foreground is the P
+     drawn by `tools/make_brand.py` inside its safe zone. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

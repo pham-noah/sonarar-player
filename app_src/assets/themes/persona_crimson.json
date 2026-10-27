@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "id": "persona_crimson",
+  "displayName": "Crimson",
+  "description": "A dark theme with a teal accent.",
+  "palette": {
+    "background": "#ff0a0a0c",
+    "surface": "#ff1c1c22",
+    "textPrimary": "#ffffffff",
+    "textSecondary": "#ffe8e8ee",
+    "accent": "#ffe60012",
+    "accentDeep": "#ffa3000d",
+    "onAccent": "#ffffffff",
+    "border": "#59e8e8ee",
+    "shadow": "#8c000000"
+  },
+  "material": {
+    "slant": true,
+    "edge": "heavy",
+    "activeFillIsAccent": true,
+    "blur": 0.0,
+    "specularEdge": false,
+    "castShadow": true,
+    "transparentInactiveFill": true,
+    "radii": {
+      "panel": 4.0,
+      "card": 4.0,
+      "bar": 4.0,
+      "sheet": 4.0
+    }
+  },
+  "motion": {
+    "tabTransitionMs": 420,
+    "arrivalCurve": "overshoot",
+    "arrivalAmplitude": 1.0,
+    "backdropFactor": 1.65,
+    "enabled": true
+  },
+  "arrangement": {
+    "libraryIsGrid": false,
+    "headerScrollsAway": false,
+    "contextPlateExists": true,
+    "tabBarIsFloating": false,
+    "tabBarInsetLeft": 0.0,
+    "tabBarInsetRight": 0.0,
+    "tabBarInsetBottom": 0.0
+  },
+  "chrome": {
+    "sectionBand": "banner",
+    "libraryHeader": "sectionBand",
+    "titleForm": "stacked",
+    "shellFrame": "docked",
+    "wordmark": true,
+    "hemisphereScrim": true,
+    "alfrescoCharacterArt": true,
+    "artByDefault": true,
+    "artReachBehindBars": 0.0,
+    "coverSize": 156.0,
+    "transportTilt": -0.038,
+    "scrubberBelowTransport": true,
+    "backdropClip": "hardEdge",
+    "backdropReach": 0.0,
+    "upNextStrip": false,
+    "panelSheetUsesSurface": false
+  },
+  "builtIn": true
+}

@@ -53,10 +53,18 @@ Future<bool> addToManifest({
   required DownloadedTrack track,
 }) async {
   try {
-    if (!await manifest.exists()) return false;
+    // A phone that has never held a library has no manifest yet. Refusing the
+    // write because of that is how a download lands on disk and never shows up.
+    Map<String, dynamic> raw;
+    if (await manifest.exists()) {
+      final decoded = jsonDecode(await manifest.readAsString());
+      if (decoded is! Map<String, dynamic>) return false;
+      raw = decoded;
+    } else {
+      await manifest.parent.create(recursive: true);
+      raw = <String, dynamic>{'tracks': <dynamic>[]};
+    }
 
-    final raw = jsonDecode(await manifest.readAsString());
-    if (raw is! Map<String, dynamic>) return false;
     final tracks = raw['tracks'];
     if (tracks is! List) return false;
 

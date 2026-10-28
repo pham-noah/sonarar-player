@@ -1,0 +1,14 @@
+1.0.3
+
+Downloads that failed said nothing. Now they say why.
+
+- Saving into the library folder needs "All files access"; reading it does not.
+  A download without that grant used to die inside yt-dlp with a Python
+  permission error that never reached the screen. It is checked before the
+  download starts, the message is plain, and SETTINGS opens the page.
+- Diagnostics now shows the storage grant at the top, so a screenshot is enough
+  to diagnose a failed write.
+- A keyboard shortcut no longer crashes on a focus change that lands on a
+  widget being torn down.
+- 32 MB of Japanese dictionary is gone: Japanese lyrics get kana romanisation,
+  kanji are shown as written. The APK is about 45 MB.

@@ -1176,6 +1176,7 @@ class _HomeShellState extends State<HomeShell>
     await _refreshDerivedPlaylists();
 
     widget.state.addListener(_onStateChanged);
+    _downloads.addListener(_onDownloadProblem);
 
     final savedVolume = resume?.volume;
     if (savedVolume != null) {
@@ -1477,6 +1478,7 @@ class _HomeShellState extends State<HomeShell>
   @override
   void dispose() {
     _disposed = true;
+    _downloads.removeListener(_onDownloadProblem);
     _tickerWanted.dispose();
 
     _shellTick.dispose();
@@ -2028,6 +2030,44 @@ class _HomeShellState extends State<HomeShell>
           label: 'UNDO',
           textColor: widget.state.uiSkin.accent,
           onPressed: undo,
+        ),
+      ));
+  }
+
+  String? _shownDownloadError;
+
+  /// A download that dies on a blocked folder otherwise only reaches the log,
+  /// which is the one place nobody looks. Say it, and offer the fix.
+  void _onDownloadProblem() {
+    final error = _downloads.lastError;
+    if (!mounted) return;
+    if (error == null) {
+      _shownDownloadError = null;
+      return;
+    }
+    if (error == _shownDownloadError) return;
+    _shownDownloadError = error;
+    _toastAction(error, 'SETTINGS', () {
+      unawaited(StoragePermission.request());
+      _downloads.clearError();
+      _shownDownloadError = null;
+    });
+  }
+
+  void _toastAction(String message, String label, VoidCallback action) {
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(
+        content: Text(message, maxLines: 2, overflow: TextOverflow.ellipsis),
+        duration: const Duration(seconds: 8),
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: label,
+          textColor: widget.state.uiSkin.accent,
+          onPressed: action,
         ),
       ));
   }

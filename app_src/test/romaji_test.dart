@@ -50,13 +50,36 @@ void main() {
     });
   });
 
-  group('Japanese degrades cleanly where the plugin does not exist', () {
-    test('it returns null instead of throwing', () async {
-      final out = await Romaji.japanese('君の声');
-      expect(out, anyOf(isNull, isNotEmpty));
+  group('Japanese romanises kana and leaves kanji alone', () {
+    test('hiragana becomes romaji', () async {
+      expect(await Romaji.japanese('さくら'), 'sakura');
+      expect(await Romaji.japanese('ありがとう'), 'arigatou');
     });
 
-    test('precompute never throws, and yields nothing for a latin sheet', () async {
+    test('digraphs, gemination and the long mark are respected', () async {
+      expect(await Romaji.japanese('きょう'), 'kyou');
+      expect(await Romaji.japanese('がっこう'), 'gakkou');
+      expect(await Romaji.japanese('まっちゃ'), 'matcha');
+      expect(await Romaji.japanese('ラーメン'), 'raamen');
+    });
+
+    test('katakana is read as kana, not left behind', () async {
+      expect(await Romaji.japanese('キミノコエ'), 'kiminokoe');
+    });
+
+    test('kanji survive untouched; a kanji-only line yields nothing', () async {
+      expect(await Romaji.japanese('君の声'), '君no声');
+      expect(await Romaji.japanese('東京'), isNull,
+          reason: 'nothing was romanised, so there is nothing to show');
+    });
+
+    test('a latin line needs no romaji', () async {
+      expect(await Romaji.japanese('Rivers In the Desert'), isNull);
+    });
+  });
+
+  group('precompute', () {
+    test('yields nothing for a latin sheet', () async {
       final out = await Romaji.precompute(const [
         'Rivers In the Desert',
         'It is now, or it is never',
@@ -64,7 +87,7 @@ void main() {
       expect(out, isEmpty, reason: 'an English sheet should produce no romaji at all');
     });
 
-    test('precompute indexes by LINE, not by text', () async {
+    test('indexes by LINE, not by text', () async {
       final out = await Romaji.precompute(const ['안녕하세요', '안녕하세요']);
       expect(out.keys.every((k) => k == 0 || k == 1), isTrue);
       if (out.isNotEmpty) {

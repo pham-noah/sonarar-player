@@ -1,9 +1,12 @@
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/diag_log.dart';
+import '../library/storage_permission.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
 import 'spectrum_probe_screen.dart';
@@ -29,12 +32,79 @@ class DiagnosticsPanel extends StatefulWidget {
 
 class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
   bool _problemsOnly = true;
+  StorageAccess? _access;
+  bool _asking = false;
 
   @override
   void initState() {
     super.initState();
 
     widget.log.addListener(_onLog);
+    unawaited(_readAccess());
+  }
+
+  Future<void> _readAccess() async {
+    final a = await StoragePermission.status();
+    if (mounted) setState(() => _access = a);
+  }
+
+  Future<void> _askAccess() async {
+    if (_asking) return;
+    setState(() => _asking = true);
+    await StoragePermission.request();
+    await _readAccess();
+    if (mounted) setState(() => _asking = false);
+  }
+
+  /// Every write failure in this app — a download, a cover, a playlist — comes
+  /// back as EPERM when this is off, and none of those messages say why. One
+  /// line here turns a screenshot into a diagnosis.
+  Widget _accessStrip(Skin skin) {
+    final a = _access;
+    final ok = a == StorageAccess.granted;
+    final label = switch (a) {
+      null => 'CHECKING STORAGE ACCESS…',
+      StorageAccess.granted => 'ALL FILES ACCESS GRANTED',
+      StorageAccess.denied =>
+        'NO ALL-FILES ACCESS — downloads and covers cannot be written',
+      StorageAccess.unknown => 'STORAGE ACCESS UNKNOWN',
+    };
+
+    return InkWell(
+      onTap: ok || a == null ? null : _askAccess,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(
+          children: [
+            Icon(
+              ok ? Icons.folder_open_rounded : Icons.lock_outline_rounded,
+              size: 15,
+              color: ok ? skin.accent : skin.textSecondary,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: ok ? skin.textSecondary : skin.accent,
+                  fontSize: 12,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+            if (!ok && a != null)
+              Text(
+                'GRANT',
+                style: TextStyle(
+                  color: skin.accent,
+                  fontSize: 12,
+                  letterSpacing: 1.2,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -139,7 +209,8 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          _accessStrip(skin),
+          const SizedBox(height: 2),
 
           if (lines.isEmpty)
             Expanded(

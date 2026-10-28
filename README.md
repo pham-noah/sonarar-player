@@ -26,7 +26,7 @@ The library pictured is twelve generated tracks — the real one is your own mus
 
 Take the latest APK from [Releases](../../releases) and open it on the device.
 
-**0.1.3** (versionCode 14) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+**1.0.3** (versionCode 15) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
 Every release here is signed with the same project key, so they install over each other. A 32-bit
 phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed
@@ -62,7 +62,8 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
   queue as a playlist, "play next" that does not disturb the current track.
 - **Library** — playlists you build, Fusion to merge two, browsing by playlist, artist and song, search
   and swipe actions, a compendium of everything with how much you have heard, listening history by day
-  and hour, and lyrics with romaji for Japanese and Korean tracks.
+  and hour, and lyrics with romaji readings: full for Korean, kana-only for Japanese (kanji are shown
+  as written, since reading them aloud would mean shipping a 32 MB dictionary).
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Persona,
   Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
   library folder. Tracks without a spectrum file simply show no bars.

@@ -8,6 +8,7 @@ import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 
 import '../library/downloaded_tracks.dart';
 import '../library/library_repository.dart';
+import '../library/storage_permission.dart';
 
 class DownloadJob {
   DownloadJob({
@@ -36,6 +37,17 @@ class DownloadJob {
       : (bytes > 0 ? '${(bytes / 1048576).toStringAsFixed(1)} MB' : '…');
 }
 
+/// Thrown when the library folder exists but cannot be written to, which on
+/// Android means the all-files grant is missing rather than the disk being full.
+class DownloadBlocked implements Exception {
+  const DownloadBlocked(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class DownloadManager extends ChangeNotifier {
   DownloadManager({
     required this.repo,
@@ -57,6 +69,17 @@ class DownloadManager extends ChangeNotifier {
     final d = _dirCache ??= downloadDirOf();
     if (d == null) throw StateError('the library root is not resolved yet');
     return d;
+  }
+
+  String? _lastError;
+
+  /// Set when a download fails, and cleared once the UI has shown it.
+  String? get lastError => _lastError;
+
+  void clearError() {
+    if (_lastError == null) return;
+    _lastError = null;
+    notifyListeners();
   }
 
   final List<DownloadJob> _queue = [];
@@ -117,6 +140,10 @@ class DownloadManager extends ChangeNotifier {
           await _runOne(_current!);
         } catch (e) {
           debugPrint('[Sonarar][DL] failed ${_current?.videoId}: $e');
+          _lastError = e is DownloadBlocked
+              ? e.message
+              : 'Download failed: ${_short(e)}';
+          notifyListeners();
         } finally {
           _poll?.cancel();
           _poll = null;
@@ -130,6 +157,17 @@ class DownloadManager extends ChangeNotifier {
   }
 
   Future<void> _runOne(DownloadJob job) async {
+    // Reading the library only needs the media grant; writing into it needs
+    // all-files access. Catch that here instead of letting yt-dlp surface it as
+    // a Python EPERM thirty seconds into the download.
+    if (Platform.isAndroid &&
+        await StoragePermission.status() != StorageAccess.granted) {
+      throw const DownloadBlocked(
+        'Sonarar needs "All files access" to save downloads into the library.',
+      );
+    }
+
+    await _ensureWritable();
     await Ytdlp.init();
     final path = await Ytdlp.downloadAudio(
       url: 'https://www.youtube.com/watch?v=${job.videoId}',
@@ -166,6 +204,29 @@ class DownloadManager extends ChangeNotifier {
       await addToManifest(manifest: manifest, track: track);
     }
     await onFiled?.call();
+  }
+
+  /// yt-dlp reports a missing grant as EPERM on the first write, which reads
+  /// like a bug in the app. Probe the folder first so the message can say what
+  /// to fix, and so an absent `Downloaded/` is created rather than failing.
+  Future<void> _ensureWritable() async {
+    final dir = _dir;
+    try {
+      await dir.create(recursive: true);
+      final probe = File('${dir.path}${Platform.pathSeparator}.sonarar-write');
+      await probe.writeAsString('', flush: true);
+      await probe.delete();
+    } on FileSystemException {
+      throw const DownloadBlocked(
+        'Sonarar cannot write to its music folder. Allow "All files access", '
+        'then try the download again.',
+      );
+    }
+  }
+
+  static String _short(Object e) {
+    final line = e.toString().split('\n').first;
+    return line.length <= 120 ? line : '${line.substring(0, 117)}…';
   }
 
   void _startPolling(DownloadJob job) {

@@ -149,6 +149,7 @@ class _ShortcutScopeState extends State<ShortcutScope> {
   }
 
   void _onFocusChanged() {
+    if (!mounted) return;
     final node = FocusManager.instance.primaryFocus;
 
     final isField = node != null && _nodeIsInTextField(node);
@@ -156,20 +157,28 @@ class _ShortcutScopeState extends State<ShortcutScope> {
     if (next != _fieldNode) setState(() => _fieldNode = next);
   }
 
+  /// A focus change can land on an element that was already unmounted — the
+  /// route is closing, a field is being disposed — and reading `.widget` off a
+  /// defunct element throws instead of returning null. Treat that as "not a
+  /// text field": the answer is only used to decide whether to claim the key.
   static bool _nodeIsInTextField(FocusNode node) {
     final ctx = node.context;
-    if (ctx == null) return false;
-    if (ctx.widget is EditableText) return true;
+    if (ctx == null || !ctx.mounted) return false;
+    try {
+      if (ctx.widget is EditableText) return true;
 
-    var inField = false;
-    ctx.visitAncestorElements((el) {
-      if (el.widget is EditableText) {
-        inField = true;
-        return false;
-      }
-      return true;
-    });
-    return inField;
+      var inField = false;
+      ctx.visitAncestorElements((el) {
+        if (el.widget is EditableText) {
+          inField = true;
+          return false;
+        }
+        return true;
+      });
+      return inField;
+    } catch (_) {
+      return false;
+    }
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {

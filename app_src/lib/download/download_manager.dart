@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 
+import '../core/diag_log.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/library_repository.dart';
 import '../library/storage_permission.dart';
@@ -54,7 +55,12 @@ class DownloadManager extends ChangeNotifier {
     required this.downloadDirOf,
     required this.manifestOf,
     this.onFiled,
+    this.log,
   });
+
+  /// Stage-by-stage trace. A native crash in yt-dlp leaves nothing behind but
+  /// the last line written here, which is the whole point of it.
+  final DiagLog? log;
 
   final LibraryRepository repo;
 
@@ -138,8 +144,8 @@ class DownloadManager extends ChangeNotifier {
         _startPolling(_current!);
         try {
           await _runOne(_current!);
-        } catch (e) {
-          debugPrint('[Sonarar][DL] failed ${_current?.videoId}: $e');
+        } catch (e, st) {
+          debugPrint('[Sonarar][DL] failed ${_current?.videoId}: $e\n$st');
           _lastError = e is DownloadBlocked
               ? e.message
               : 'Download failed: ${_short(e)}';
@@ -160,27 +166,37 @@ class DownloadManager extends ChangeNotifier {
     // Reading the library only needs the media grant; writing into it needs
     // all-files access. Catch that here instead of letting yt-dlp surface it as
     // a Python EPERM thirty seconds into the download.
-    if (Platform.isAndroid &&
-        await StoragePermission.status() != StorageAccess.granted) {
+    final access = Platform.isAndroid
+        ? await StoragePermission.status()
+        : StorageAccess.granted;
+    log?.add('DL ${job.videoId}: storage=$access');
+    if (access != StorageAccess.granted) {
       throw const DownloadBlocked(
         'Sonarar needs "All files access" to save downloads into the library.',
       );
     }
 
     await _ensureWritable();
+    log?.add('DL ${job.videoId}: dir ok (${_dir.path})');
+
     await Ytdlp.init();
+    log?.add('DL ${job.videoId}: engine ready');
     final path = await Ytdlp.downloadAudio(
       url: 'https://www.youtube.com/watch?v=${job.videoId}',
       outputDir: _dir.path,
       taskId: job.videoId,
 
-      audioFormat: 'm4a',
+      // No -x, no --audio-format: ask for the best audio stream and keep its
+      // own container. Transcoding was the only step that ran ffmpeg, and it
+      // bought nothing the player cannot decode.
+      format: 'bestaudio/best',
       onProgress: (p) {
         job.fraction = p.fraction;
         notifyListeners();
       },
     );
 
+    log?.add('DL ${job.videoId}: wrote ${path.split('/').last}');
     final file = File(path);
     if (await file.length() == 0) {
       try {
@@ -201,9 +217,11 @@ class DownloadManager extends ChangeNotifier {
     );
     final manifest = manifestOf();
     if (track != null && manifest != null) {
-      await addToManifest(manifest: manifest, track: track);
+      final filed = await addToManifest(manifest: manifest, track: track);
+      log?.add('DL ${job.videoId}: manifest ${filed ? 'written' : 'REFUSED'}');
     }
     await onFiled?.call();
+    log?.add('DL ${job.videoId}: done');
   }
 
   /// yt-dlp reports a missing grant as EPERM on the first write, which reads

@@ -261,6 +261,7 @@ class _HomeShellState extends State<HomeShell>
         ? null
         : File('${_repo.libraryRoot}${Platform.pathSeparator}$kManifestFileName'),
     onFiled: _reloadLibraryAfterDownload,
+    log: diagLog,
   );
 
   late final StateStores _stores;

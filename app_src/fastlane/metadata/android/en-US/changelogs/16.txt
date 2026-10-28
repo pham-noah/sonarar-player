@@ -1,0 +1,13 @@
+0.1.3 (build 16)
+
+The crash on download is fixed.
+
+- Minification had merged the zip classes youtubedl-android uses to unpack its
+  Python runtime. On a clean install that unpacking died with
+  "class g5 is not a concrete class" and took the app with it. Those classes are
+  now kept, and a clean install was tested: the engine initialises and starts
+  downloading instead of closing.
+- Downloads no longer transcode. The audio stream is saved as YouTube serves it
+  with no ffmpeg pass, which is faster and removes a native step.
+- Diagnostics records every download stage and any stack trace, so a failure
+  says where it stopped.

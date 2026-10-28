@@ -26,7 +26,7 @@ The library pictured is twelve generated tracks — the real one is your own mus
 
 Take the latest APK from [Releases](../../releases) and open it on the device.
 
-**0.1.3** (versionCode 15) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+**0.1.3** (versionCode 16) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
 Every release here is signed with the same project key, so they install over each other. A 32-bit
 phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed

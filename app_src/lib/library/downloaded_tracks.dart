@@ -136,7 +136,16 @@ Future<DownloadedTrack?> describeDownload({
 }
 
 String cleanYoutubeTitle(String raw) {
-  var t = raw;
+  // Japanese uploads bracket their tags with full-width punctuation, which the
+  // patterns below would miss: あぶく（OFFICIAL VIDEO） kept its tag.
+  var t = raw
+      .replaceAll('（', '(')
+      .replaceAll('）', ')')
+      .replaceAll('［', '[')
+      .replaceAll('］', ']')
+      .replaceAll('【', '(')
+      .replaceAll('】', ')')
+      .replaceAll('　', ' ');
 
   const noise = [
     r'\s*[\(\[]\s*official\s*(music\s*)?video\s*[\)\]]',

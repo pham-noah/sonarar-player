@@ -1,0 +1,12 @@
+0.1.3 (build 17)
+
+Downloads work end to end, proven on a clean install.
+
+- The crash was R8 merging the zip classes youtubedl-android unpacks its Python
+  runtime with. Kept, and verified: clean install, Python starts, download
+  finishes, the file lands in Music/Sonarar/Downloaded, the manifest takes it
+  and the Downloaded playlist shows it.
+- Tags in full-width brackets are stripped from titles: あぶく（OFFICIAL VIDEO）
+  now files as あぶく.
+- No transcode pass. The audio stream is saved as served — Opus in WebM, 48 kHz
+  stereo, 3:55 for a 3:55 track.

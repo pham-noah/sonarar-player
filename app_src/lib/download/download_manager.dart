@@ -49,6 +49,34 @@ class DownloadBlocked implements Exception {
   String toString() => message;
 }
 
+/// Both download routes — the queue and the playlist importer — must clear this
+/// before handing a folder to yt-dlp. Reading the library needs only the media
+/// grant; writing into it needs all-files access, and a missing folder fails the
+/// same way, so both are checked here instead of surfacing as a Python EPERM.
+Future<void> ensureDownloadReady(Directory dir, {DiagLog? log}) async {
+  final access = Platform.isAndroid
+      ? await StoragePermission.status()
+      : StorageAccess.granted;
+  log?.add('DL storage=$access');
+  if (access != StorageAccess.granted) {
+    throw const DownloadBlocked(
+      'Sonarar needs "All files access" to save downloads into the library.',
+    );
+  }
+
+  try {
+    await dir.create(recursive: true);
+    final probe = File('${dir.path}${Platform.pathSeparator}.sonarar-write');
+    await probe.writeAsString('', flush: true);
+    await probe.delete();
+  } on FileSystemException {
+    throw const DownloadBlocked(
+      'Sonarar cannot write to its music folder. Allow "All files access", '
+      'then try the download again.',
+    );
+  }
+}
+
 class DownloadManager extends ChangeNotifier {
   DownloadManager({
     required this.repo,
@@ -166,16 +194,6 @@ class DownloadManager extends ChangeNotifier {
     // Reading the library only needs the media grant; writing into it needs
     // all-files access. Catch that here instead of letting yt-dlp surface it as
     // a Python EPERM thirty seconds into the download.
-    final access = Platform.isAndroid
-        ? await StoragePermission.status()
-        : StorageAccess.granted;
-    log?.add('DL ${job.videoId}: storage=$access');
-    if (access != StorageAccess.granted) {
-      throw const DownloadBlocked(
-        'Sonarar needs "All files access" to save downloads into the library.',
-      );
-    }
-
     await _ensureWritable();
     log?.add('DL ${job.videoId}: dir ok (${_dir.path})');
 
@@ -227,20 +245,7 @@ class DownloadManager extends ChangeNotifier {
   /// yt-dlp reports a missing grant as EPERM on the first write, which reads
   /// like a bug in the app. Probe the folder first so the message can say what
   /// to fix, and so an absent `Downloaded/` is created rather than failing.
-  Future<void> _ensureWritable() async {
-    final dir = _dir;
-    try {
-      await dir.create(recursive: true);
-      final probe = File('${dir.path}${Platform.pathSeparator}.sonarar-write');
-      await probe.writeAsString('', flush: true);
-      await probe.delete();
-    } on FileSystemException {
-      throw const DownloadBlocked(
-        'Sonarar cannot write to its music folder. Allow "All files access", '
-        'then try the download again.',
-      );
-    }
-  }
+  Future<void> _ensureWritable() => ensureDownloadReady(_dir, log: log);
 
   static String _short(Object e) {
     final line = e.toString().split('\n').first;

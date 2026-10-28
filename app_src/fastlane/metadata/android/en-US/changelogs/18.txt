@@ -1,0 +1,10 @@
+0.1.3 (build 18)
+
+Playlist import takes the same road as a single download.
+
+- Importing a playlist used its own copy of the download code: it never checked
+  the all-files grant and it still transcoded to m4a. Both download routes now
+  share one readiness check — grant, folder, writable probe — and both save the
+  audio stream as served, with no ffmpeg pass.
+- A refused import now says it needs "All files access" instead of a raw
+  exception.

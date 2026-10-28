@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart' hide Playlist;
 
+import '../download/download_manager.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/playlist_read.dart';
 import '../library/playlists.dart';
@@ -246,6 +247,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           return bytes == null ? null : utf8.decode(bytes, allowMalformed: true);
         },
       );
+      await ensureDownloadReady(widget.downloadDir);
       await Ytdlp.init();
       final already = _alreadyHere();
       if (videos.isEmpty) {
@@ -343,6 +345,8 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
       if (mounted) {
         setState(() => _status[key] = 'added $added · skipped $skipped · failed $failed');
       }
+    } on DownloadBlocked catch (e) {
+      if (mounted) setState(() => _status[key] = e.message);
     } catch (e) {
       if (mounted) setState(() => _status[key] = 'Could not read it: $e');
     } finally {

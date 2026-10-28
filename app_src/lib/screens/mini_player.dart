@@ -270,7 +270,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
     return LayoutBuilder(
       builder: (context, box) => GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTapDown: (d) => _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
+        onTapDown: (d) =>
+            _seekTo(d.localPosition.dx, box.maxWidth, widget.duration,
+                remember: false),
         onHorizontalDragStart: (d) => _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
         onHorizontalDragUpdate: (d) => _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
         onHorizontalDragEnd: (_) => setState(() => _dragFrac = null),
@@ -312,10 +314,12 @@ class _MiniPlayerState extends State<MiniPlayer> {
     );
   }
 
-  void _seekTo(double dx, double width, Duration? dur) {
+  void _seekTo(double dx, double width, Duration? dur, {bool remember = true}) {
     if (dur == null || dur.inMilliseconds <= 0 || width <= 0) return;
     final f = (dx / width).clamp(0.0, 1.0);
-    setState(() => _dragFrac = f);
+    // A tap must not pin the thin bar: only a drag holds it under the finger,
+    // otherwise the line stays frozen where the tap landed.
+    if (remember) setState(() => _dragFrac = f);
     widget.onSeek?.call(Duration(milliseconds: (dur.inMilliseconds * f).round()));
   }
 

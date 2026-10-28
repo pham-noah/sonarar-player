@@ -1138,6 +1138,24 @@ class AppState extends ChangeNotifier {
     _rawLibrary = List<Track>.unmodifiable(tracks);
     _library = List<Track>.unmodifiable(_tags.applyAll(_rawLibrary));
 
+    // A library that arrives WITHOUT a snapshot — a download finished, storage
+    // was just granted — must not reset playback. Keep the queue and the track
+    // that is playing, fold the new tracks in, and leave the engine alone.
+    if (resume == null && _queue?.current != null) {
+      final playing = _queue!.current!;
+      final ctx = _playlistCtx;
+      final fresh = _mode == QueueMode.fixed
+          ? _queue!.order
+          : (ctx == null
+              ? _library
+              : _engine.playlist(_library, ctx, excluded: _excluded.ids));
+      final base =
+          fresh.isEmpty || fresh.any((t) => t.id == playing.id) ? fresh : [...fresh, playing];
+      _queue!.replaceSource(base.isEmpty ? [playing] : base, keepPlaying: true);
+      notifyListeners();
+      return;
+    }
+
     final List<Track> base;
     if (resume != null && resume.disbanded) {
       base = const <Track>[];

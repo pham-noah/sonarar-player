@@ -25,7 +25,7 @@ The library pictured is twelve generated tracks — the real one is your own mus
 ## Install
 
 Download the latest APK from [Releases](../../releases) and open it on the device.
-Latest: **0.1.0** (versionCode 11). Android 7.0+ (API 24), arm64-v8a, package `com.noah.sonarar`,
+Latest: **0.1.1** (versionCode 12). Android 7.0+ (API 24), arm64-v8a, package `com.noah.sonarar`,
 signed with the project key.
 An [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) exists for a store-signed build.
 

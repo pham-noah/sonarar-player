@@ -32,6 +32,30 @@ void main() {
     test('an UNTIMED line returns null, so it can be skipped', () {
       expect(LyricLine.parse('just some words'), isNull);
     });
+
+    test('an hh:mm:ss stamp is an HOUR, not a minute', () {
+      final l = LyricLine.parse('[01:02:03] late')!;
+      expect(l.at, const Duration(hours: 1, minutes: 2, seconds: 3));
+      expect(l.text, 'late');
+    });
+
+    test('a repeated chorus line expands to every stamp it carries', () {
+      final all = LyricLine.parseAll('[00:12.00][00:45.50][01:30.00]chorus');
+      expect(all.map((l) => l.at).toList(), const [
+        Duration(seconds: 12),
+        Duration(seconds: 45, milliseconds: 500),
+        Duration(minutes: 1, seconds: 30),
+      ]);
+      expect(all.every((l) => l.text == 'chorus'), isTrue);
+    });
+
+    test('a line with one bad stamp is rejected whole, not half-read', () {
+      expect(LyricLine.parseAll('[00:10.00][nope]x'), isEmpty);
+    });
+
+    test('a negative stamp is rejected', () {
+      expect(LyricLine.parseAll('[-00:10.00]x'), isEmpty);
+    });
   });
 
   group('normaliseQuery — the measured failures', () {

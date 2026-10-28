@@ -82,6 +82,7 @@ import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
 import 'player/boot_warm.dart';
 import 'player/queue_mode.dart';
+import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
 
 Future<void>? _audioInit;
@@ -543,6 +544,10 @@ class _HomeShellState extends State<HomeShell>
       if (mounted) setState(() {});
       // ignore: avoid_print
       print('[Sonarar] storage after request=$_storageAccess');
+      // The library was read BEFORE the grant, so it is still empty; picking the
+      // manifest up now is the difference between "grant and it appears" and
+      // "grant and nothing happens until the next launch".
+      if (_storageAccess == StorageAccess.granted) await _rereadLibrary();
     }
     if (!_askedNotifications) {
       _askedNotifications = true;
@@ -784,7 +789,13 @@ class _HomeShellState extends State<HomeShell>
       if (e == null) return;
       final st = widget.state;
 
-      _sleepLeft.value = _sleep.remaining(DateTime.now());
+      final now = DateTime.now();
+      if (_playing) {
+        _sleep.resume(now);
+      } else {
+        _sleep.pause(now);
+      }
+      _sleepLeft.value = _sleep.remaining(now);
 
       if (_playing) {
         st.position.value = e.position;
@@ -797,7 +808,7 @@ class _HomeShellState extends State<HomeShell>
 
         unawaited(e.tickLoop());
 
-        final sleep = _sleep.tick(DateTime.now());
+        final sleep = _sleep.tick(now);
         switch (sleep.action) {
           case SleepAction.fadeTo:
             unawaited(e.setVolume(_volume * sleep.volume));
@@ -1357,6 +1368,17 @@ class _HomeShellState extends State<HomeShell>
       return;
     }
 
+    if (widget.state.queueEnded) {
+      // The queue stopped at its last track; the engine is parked at the end of
+      // it, so a bare play() reads as a dead button. Start the track over.
+      final id = widget.state.currentTrack?.id;
+      if (id != null) widget.state.playTrackNow(id);
+      final started = await _loadCurrentTrack(startAt: Duration.zero);
+      if (mounted) _shellChanged(() => _playing = started);
+      _syncProgressTicker();
+      return;
+    }
+
     if (!engine.isPlaying && _loadedTrackId != widget.state.currentTrack?.id) {
       final started = await _loadCurrentTrack();
       if (mounted) _shellChanged(() => _playing = started);
@@ -1374,8 +1396,11 @@ class _HomeShellState extends State<HomeShell>
     if (engine == null || _skipPending) return;
 
     if (!engine.hasNext) {
-      if (widget.state.queue != null &&
-          widget.state.queue!.index + 1 < widget.state.queue!.length) {
+      if (canStepOutsideEngine(
+        widget.state.queue,
+        repeatAll: widget.state.repeatMode == playqueue.RepeatMode.all,
+        forward: true,
+      )) {
         _skipPending = true;
 
         try {
@@ -1399,7 +1424,11 @@ class _HomeShellState extends State<HomeShell>
     final engine = _audio;
     if (engine == null || _skipPending) return;
     if (!engine.hasPrevious) {
-      if (widget.state.queue != null && widget.state.queue!.index > 0) {
+      if (canStepOutsideEngine(
+        widget.state.queue,
+        repeatAll: widget.state.repeatMode == playqueue.RepeatMode.all,
+        forward: false,
+      )) {
         _skipPending = true;
 
         try {
@@ -1458,12 +1487,14 @@ class _HomeShellState extends State<HomeShell>
 
   void _toggleSleep(Duration? for_) {
     if (_sleep.isRunning || for_ == null) {
-      final restored = _sleep.cancel();
+      _sleep.cancel();
 
       _sleepLeft.value = null;
       widget.state.setSleeping(false);
       _syncProgressTicker();
-      unawaited(_audio?.setVolume(restored) ?? Future<void>.value());
+      // The fade lowered the player volume below the user's level; restore the
+      // level the slider shows, not 1.0, or cancelling mid-fade jumps to max.
+      unawaited(_audio?.setVolume(_volume) ?? Future<void>.value());
 
       if (mounted) _shellChanged(() {});
       return;
@@ -2112,12 +2143,17 @@ class _HomeShellState extends State<HomeShell>
     await _loadCurrentTrack(startAt: wasAt, autoPlay: wasPlaying);
   }
 
-  Future<void> _reloadLibraryAfterDownload() async {
-    final before = widget.state.library.length;
+  Future<void> _rereadLibrary() async {
     await _repo.load();
     if (!mounted) return;
     widget.state.attachLibrary(_repo.tracks);
     await _refreshDerivedPlaylists();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _reloadLibraryAfterDownload() async {
+    final before = widget.state.library.length;
+    await _rereadLibrary();
     if (!mounted) return;
     final after = widget.state.library.length;
     _toast(after == before

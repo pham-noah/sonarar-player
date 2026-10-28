@@ -12,26 +12,51 @@ class LyricLine {
   final String text;
 
   static LyricLine? parse(String raw) {
-    final line = raw.trim();
-    if (!line.startsWith('[')) return null;
-    final close = line.indexOf(']');
-    if (close <= 1) return null;
-    final stamp = line.substring(1, close);
-    final text = line.substring(close + 1).trim();
+    final all = parseAll(raw);
+    return all.isEmpty ? null : all.first;
+  }
 
+  /// One line can carry several stamps — `[00:12.00][00:45.50]chorus` — and
+  /// stamps are `mm:ss`, `mm:ss.cs` or `hh:mm:ss`.
+  static List<LyricLine> parseAll(String raw) {
+    var rest = raw.trim();
+    if (!rest.startsWith('[')) return const [];
+
+    final stamps = <Duration>[];
+    while (rest.startsWith('[')) {
+      final close = rest.indexOf(']');
+      if (close <= 1) return const [];
+      final at = _stamp(rest.substring(1, close));
+      // A bracket head that is not a stamp is a tag, not half a timed line.
+      if (at == null) return const [];
+      stamps.add(at);
+      rest = rest.substring(close + 1);
+    }
+    if (stamps.isEmpty) return const [];
+
+    final text = rest.trim();
+    return [for (final at in stamps) LyricLine(at, text)];
+  }
+
+  static Duration? _stamp(String stamp) {
     final parts = stamp.split(':');
-    if (parts.length < 2) return null;
-    final mm = int.tryParse(parts[0]);
-    if (mm == null) return null;
+    if (parts.length < 2 || parts.length > 3) return null;
 
-    final seconds = parts[1].replaceAll(',', '.');
-    final sec = double.tryParse(seconds);
-    if (sec == null) return null;
+    final nums = <double>[];
+    for (final part in parts) {
+      // "-00" parses to -0.0, which is not `< 0`; the sign has to be checked
+      // as text or a negative stamp sneaks through as a positive one.
+      if (part.trimLeft().startsWith('-')) return null;
+      final v = double.tryParse(part.replaceAll(',', '.'));
+      if (v == null) return null;
+      nums.add(v);
+    }
 
-    return LyricLine(
-      Duration(milliseconds: mm * 60000 + (sec * 1000).round()),
-      text,
-    );
+    final ms = nums.length == 2
+        ? nums[0] * 60000 + nums[1] * 1000
+        : nums[0] * 3600000 + nums[1] * 60000 + nums[2] * 1000;
+    if (ms.isNaN || ms < 0) return null;
+    return Duration(milliseconds: ms.round());
   }
 }
 
@@ -156,10 +181,13 @@ class LyricsService {
     if (synced != null && synced.isNotEmpty) {
       final lines = <LyricLine>[];
       for (final raw in synced.split('\n')) {
-        final line = LyricLine.parse(raw);
-
-        if (line != null && line.text.isNotEmpty) lines.add(line);
+        for (final line in LyricLine.parseAll(raw)) {
+          if (line.text.isNotEmpty) lines.add(line);
+        }
       }
+      // indexAt() walks in order; a file with repeated-stamp chorus lines that
+      // appear out of sequence would otherwise never highlight past them.
+      lines.sort((a, b) => a.at.compareTo(b.at));
       if (lines.isNotEmpty) {
         return Lyrics(lines: lines, source: 'lrclib (synced)');
       }

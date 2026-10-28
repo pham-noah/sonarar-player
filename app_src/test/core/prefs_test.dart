@@ -24,7 +24,6 @@ void main() {
 
       expect(p.resumeOnLaunch, isFalse);
       expect(p.crossfadeSeconds, 0);
-      expect(p.gaplessPlayback, isTrue);
       expect(p.sleepTimerMinutes, 30);
       expect(p.skipThresholdSeconds, 10);
       expect(p.weatherRefreshMinutes, 30);
@@ -51,7 +50,6 @@ void main() {
 
       expect(got.crossfadeSeconds, 4);
       expect(got.resumeOnLaunch, AppPrefs.initial.resumeOnLaunch);
-      expect(got.gaplessPlayback, AppPrefs.initial.gaplessPlayback);
       expect(got.allowNetwork, AppPrefs.initial.allowNetwork);
     });
 
@@ -73,19 +71,18 @@ void main() {
       for (final bad in ['[]', '"nope"', '42', 'null']) {
         file.writeAsStringSync(bad);
         final got = await PrefsStore(file).load();
-        expect(got.gaplessPlayback, AppPrefs.initial.gaplessPlayback,
+        expect(got.resumeOnLaunch, AppPrefs.initial.resumeOnLaunch,
             reason: 'accepted $bad');
       }
     });
 
     test('a WRONG TYPE falls back rather than throwing on a cast', () async {
       file.writeAsStringSync(
-        '{"crossfade_seconds":"loud","resume_on_launch":"yes","gapless_playback":1}',
+        '{"crossfade_seconds":"loud","resume_on_launch":"yes","official_only":1}',
       );
       final got = await PrefsStore(file).load();
       expect(got.crossfadeSeconds, AppPrefs.initial.crossfadeSeconds);
       expect(got.resumeOnLaunch, AppPrefs.initial.resumeOnLaunch);
-      expect(got.gaplessPlayback, AppPrefs.initial.gaplessPlayback);
     });
   });
 
@@ -116,7 +113,6 @@ void main() {
       const p = AppPrefs(
         resumeOnLaunch: true,
         crossfadeSeconds: 7,
-        gaplessPlayback: false,
         sleepTimerMinutes: 60,
         skipThresholdSeconds: 20,
         weatherRefreshMinutes: 90,
@@ -127,7 +123,6 @@ void main() {
 
       expect(got.resumeOnLaunch, isTrue);
       expect(got.crossfadeSeconds, 7);
-      expect(got.gaplessPlayback, isFalse);
       expect(got.sleepTimerMinutes, 60);
       expect(got.skipThresholdSeconds, 20);
       expect(got.weatherRefreshMinutes, 90);

@@ -204,5 +204,30 @@ void main() {
       final back = await LoopPointStore(f).load();
       expect(back.keys, ['good']);
     });
+
+    test('a zero fade comes back as NO fade, not as the 8s default', () async {
+      final f = File('${dir.path}/loops.json');
+      f.writeAsStringSync(jsonEncode([
+        {
+          'track_id': 'cut',
+          'loop_start_ms': 1000,
+          'loop_end_ms': 2000,
+          'loop_count': 2,
+          'fade_ms': 0,
+        },
+      ]));
+      final back = await LoopPointStore(f).load();
+      expect(back['cut']!.fade, Duration.zero);
+      expect(back['cut']!.hasLoop, isTrue);
+    });
+
+    test('a missing fade key still defaults to 8s', () async {
+      final f = File('${dir.path}/loops.json');
+      f.writeAsStringSync(jsonEncode([
+        {'track_id': 'old', 'loop_start_ms': 1000, 'loop_end_ms': 2000, 'loop_count': 1},
+      ]));
+      final back = await LoopPointStore(f).load();
+      expect(back['old']!.fade, const Duration(seconds: 8));
+    });
   });
 }

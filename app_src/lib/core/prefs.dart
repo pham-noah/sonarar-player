@@ -7,7 +7,6 @@ class AppPrefs {
   const AppPrefs({
     this.resumeOnLaunch = false,
     this.crossfadeSeconds = 0,
-    this.gaplessPlayback = true,
     this.sleepTimerMinutes = 30,
     this.skipThresholdSeconds = 10,
     this.officialOnly = false,
@@ -50,8 +49,6 @@ class AppPrefs {
   final bool resumeOnLaunch;
 
   final int crossfadeSeconds;
-
-  final bool gaplessPlayback;
 
   final int sleepTimerMinutes;
 
@@ -144,7 +141,6 @@ class AppPrefs {
 
     bool clearPreset = false,
     int? crossfadeSeconds,
-    bool? gaplessPlayback,
     int? sleepTimerMinutes,
     int? skipThresholdSeconds,
     bool? officialOnly,
@@ -189,7 +185,6 @@ class AppPrefs {
         resumeOnLaunch: resumeOnLaunch ?? this.resumeOnLaunch,
         crossfadeSeconds:
             (crossfadeSeconds ?? this.crossfadeSeconds).clamp(0, 12),
-        gaplessPlayback: gaplessPlayback ?? this.gaplessPlayback,
         sleepTimerMinutes:
             (sleepTimerMinutes ?? this.sleepTimerMinutes).clamp(5, 180),
         skipThresholdSeconds:
@@ -246,7 +241,6 @@ class AppPrefs {
   Map<String, Object?> toJson() => {
         'resume_on_launch': resumeOnLaunch,
         'crossfade_seconds': crossfadeSeconds,
-        'gapless_playback': gaplessPlayback,
         'sleep_timer_minutes': sleepTimerMinutes,
         'skip_threshold_seconds': skipThresholdSeconds,
         'official_only': officialOnly,
@@ -295,8 +289,6 @@ class AppPrefs {
       resumeOnLaunch: _bool(raw['resume_on_launch']) ?? initial.resumeOnLaunch,
       crossfadeSeconds:
           _int(raw['crossfade_seconds']) ?? initial.crossfadeSeconds,
-      gaplessPlayback:
-          _bool(raw['gapless_playback']) ?? initial.gaplessPlayback,
       sleepTimerMinutes:
           _int(raw['sleep_timer_minutes']) ?? initial.sleepTimerMinutes,
       skipThresholdSeconds:

@@ -263,9 +263,24 @@ class PlayQueue {
     if (policy != InsertPolicy.blind) {
       final wanted = {for (final t in tracks) t.id};
       if (policy == InsertPolicy.move) {
+        final playingId = current?.id;
+        final wasAt = _index;
+        // Promoting the track that is already playing would pull the index out
+        // from under playback; leave it where it is and move the others.
+        if (playingId != null && wanted.contains(playingId)) {
+          tracks = [for (final t in tracks) if (t.id != playingId) t];
+          wanted.remove(playingId);
+          if (tracks.isEmpty) return;
+        }
         _order.removeWhere((t) => wanted.contains(t.id));
-        if (_index >= _order.length) {
-          _index = _order.isEmpty ? 0 : _order.length - 1;
+        // Removing tracks ABOVE the current one shifts every index below it, so
+        // re-find the playing track instead of trusting the old number.
+        final playingAt =
+            playingId == null ? -1 : _order.indexWhere((t) => t.id == playingId);
+        if (playingAt >= 0) {
+          _index = playingAt;
+        } else {
+          _index = wasAt.clamp(0, _order.isEmpty ? 0 : _order.length - 1);
         }
       } else if (policy == InsertPolicy.refuse) {
         final fresh = [

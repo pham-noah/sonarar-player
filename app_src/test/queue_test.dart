@@ -415,4 +415,50 @@ void main() {
       expect(q.next(wrap: true), isNull);
     });
   });
+
+  group('a move must not move what is playing', () {
+    test('playNext on a track ABOVE the current one keeps the same track', () {
+      final q = PlayQueue(source: _many(5));
+      q.jumpTo('t3');
+
+      q.playNext(_t('t1'));
+
+      expect(q.current!.id, 't3');
+      expect(q.order.map((t) => t.id).toList(), ['t0', 't2', 't3', 't1', 't4']);
+      expect(q.index, 2,
+          reason: 'the index follows the track, not the position it used to hold');
+    });
+
+    test('promoteToNext spanning both sides keeps the same track', () {
+      final q = PlayQueue(source: _many(6));
+      q.jumpTo('t4');
+
+      q.promoteToNext([_t('t1'), _t('t9')]);
+
+      expect(q.current!.id, 't4');
+      expect(q.upcoming.take(2).map((t) => t.id), ['t1', 't9']);
+    });
+
+    test('promoting the playing track leaves it alone and moves the rest', () {
+      final q = PlayQueue(source: _many(4));
+      q.jumpTo('t2');
+
+      q.promoteToNext([_t('t2'), _t('t0')]);
+
+      expect(q.current!.id, 't2');
+      expect(q.upcoming.first.id, 't0');
+      expect(q.order.where((t) => t.id == 't2').length, 1);
+      expect(q.length, 4, reason: 'nothing was inserted, only reordered');
+    });
+
+    test('repeated moves never strand the index past the end', () {
+      final q = PlayQueue(source: _many(6));
+      q.jumpTo('t5');
+      for (final id in ['t0', 't1', 't2', 't3', 't4']) {
+        q.playNext(_t(id));
+        expect(q.index, lessThan(q.length));
+      }
+      expect(q.current!.id, 't5');
+    });
+  });
 }

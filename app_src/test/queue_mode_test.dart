@@ -3,6 +3,7 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/library/track.dart';
+import 'package:sonarar/player/queue.dart';
 import 'package:sonarar/player/queue_mode.dart';
 
 Track _t(String id) => Track(
@@ -82,6 +83,44 @@ void main() {
         advanceFor(mode: QueueMode.dynamic, repeatOne: false, repeatAll: false, hasNext: false),
         AutoAdvanceMode.stop,
       );
+    });
+  });
+
+  group('a manual step at the end of the ENGINE window', () {
+    PlayQueue queue(int n, {int at = 0}) {
+      final q = PlayQueue(source: [for (var i = 0; i < n; i++) _t('t$i')]);
+      q.jumpTo('t$at');
+      return q;
+    }
+
+    test('goes forward while the app queue still has tracks', () {
+      expect(canStepOutsideEngine(queue(5, at: 1), repeatAll: false, forward: true),
+          isTrue);
+    });
+
+    test('stops at the last track when repeat is off', () {
+      expect(canStepOutsideEngine(queue(5, at: 4), repeatAll: false, forward: true),
+          isFalse);
+    });
+
+    test('WRAPS at the last track under Repeat All', () {
+      expect(canStepOutsideEngine(queue(5, at: 4), repeatAll: true, forward: true),
+          isTrue);
+      expect(canStepOutsideEngine(queue(5, at: 0), repeatAll: true, forward: false),
+          isTrue);
+    });
+
+    test('previous stops at the first track when repeat is off', () {
+      expect(canStepOutsideEngine(queue(5, at: 0), repeatAll: false, forward: false),
+          isFalse);
+      expect(canStepOutsideEngine(queue(5, at: 3), repeatAll: false, forward: false),
+          isTrue);
+    });
+
+    test('no queue at all is never a step', () {
+      expect(canStepOutsideEngine(null, repeatAll: true, forward: true), isFalse);
+      final empty = PlayQueue(source: const <Track>[]);
+      expect(canStepOutsideEngine(empty, repeatAll: true, forward: false), isFalse);
     });
   });
 }

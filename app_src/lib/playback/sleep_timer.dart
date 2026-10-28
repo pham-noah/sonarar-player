@@ -26,22 +26,51 @@ class SleepTimer {
   Duration _total = Duration.zero;
   bool _stopped = false;
 
+  DateTime? _pausedAt;
+  Duration? _held;
+
   bool get isRunning => _startedAt != null && !_stopped;
+  bool get isPaused => _pausedAt != null;
 
   void start(DateTime now, Duration total) {
     _startedAt = now;
     _total = total;
     _stopped = false;
+    _pausedAt = null;
+    _held = null;
+  }
+
+  /// Playback stopped, so the countdown stops too: resuming an hour later must
+  /// not instantly end the session on the first playable second.
+  void pause(DateTime now) {
+    if (_startedAt == null || _stopped || _pausedAt != null) return;
+    // Read the clock BEFORE flagging the pause: remaining() reports the held
+    // value once _pausedAt is set, which would be null at this point.
+    final left = remaining(now);
+    _pausedAt = now;
+    _held = left ?? Duration.zero;
+  }
+
+  void resume(DateTime now) {
+    final held = _held;
+    if (_pausedAt == null || held == null) return;
+    _startedAt = now;
+    _total = held;
+    _pausedAt = null;
+    _held = null;
   }
 
   double cancel() {
     _startedAt = null;
     _stopped = false;
     _total = Duration.zero;
+    _pausedAt = null;
+    _held = null;
     return 1.0;
   }
 
   Duration? remaining(DateTime now) {
+    if (_pausedAt != null) return _held;
     final started = _startedAt;
     if (started == null || _stopped) return null;
     final left = _total - now.difference(started);

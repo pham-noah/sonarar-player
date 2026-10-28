@@ -24,7 +24,6 @@ void main() {
       final old = {
         'resume_on_launch': true,
         'crossfade_seconds': 3,
-        'gapless_playback': false,
         'allow_network': false,
       };
       final p = AppPrefs.fromJson(old);
@@ -32,7 +31,6 @@ void main() {
 
       expect(p.resumeOnLaunch, isTrue);
       expect(p.crossfadeSeconds, 3);
-      expect(p.gaplessPlayback, isFalse);
       expect(p.allowNetwork, isFalse);
     });
 

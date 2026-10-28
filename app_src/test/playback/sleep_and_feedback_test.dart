@@ -98,6 +98,44 @@ void main() {
       expect(t.tick(t0).action, SleepAction.none);
       expect(t.remaining(t0), isNull);
     });
+
+    test('pausing playback HOLDS the countdown instead of burning it', () {
+      final t = SleepTimer();
+      t.start(t0, const Duration(minutes: 30));
+
+      t.pause(t0.add(const Duration(minutes: 5)));
+      expect(t.remaining(t0.add(const Duration(minutes: 25))),
+          const Duration(minutes: 25),
+          reason: 'paused time must not be spent');
+      expect(t.isPaused, isTrue);
+
+      t.resume(t0.add(const Duration(minutes: 25)));
+      expect(t.remaining(t0.add(const Duration(minutes: 30))),
+          const Duration(minutes: 20));
+      expect(t.tick(t0.add(const Duration(minutes: 30))).action, SleepAction.fadeTo);
+    });
+
+    test('a paused timer does not fire on the first playable second', () {
+      final t = SleepTimer(fade: const Duration(seconds: 10));
+      t.start(t0, const Duration(minutes: 1));
+      t.pause(t0.add(const Duration(seconds: 10)));
+      t.resume(t0.add(const Duration(hours: 2)));
+
+      expect(t.tick(t0.add(const Duration(hours: 2))).action, SleepAction.fadeTo);
+      expect(t.tick(t0.add(const Duration(hours: 2))).volume, 1.0,
+          reason: 'fifty seconds are left, so there is nothing to fade yet');
+    });
+
+    test('cancel forgets the paused state too', () {
+      final t = SleepTimer();
+      t.start(t0, const Duration(minutes: 10));
+      t.pause(t0.add(const Duration(minutes: 1)));
+      t.cancel();
+
+      expect(t.remaining(t0), isNull);
+      expect(t.isPaused, isFalse);
+      expect(t.tick(t0).action, SleepAction.none);
+    });
   });
 
   group('learning is REWARD ONLY', () {

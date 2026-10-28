@@ -1,0 +1,16 @@
+0.1.1
+
+Fixes for the player, no new screens.
+
+- "Play next" no longer jumps the queue: promoting a track that sits above the
+  playing one used to advance what the app thought was current.
+- Next and Previous wrap at the end of the queue under Repeat All, and Play
+  restarts the track after the queue has ended instead of doing nothing.
+- Tapping the progress bar seeks and keeps following the track; before, the bar
+  froze where the tap landed.
+- Cancelling the sleep timer restores the volume on the slider instead of
+  jumping to full. The countdown now holds while playback is paused.
+- Granting storage access loads the library immediately instead of on the next
+  launch, and a library refresh no longer drags playback onto another track.
+- Loop points with a zero fade keep it as "no fade"; lyrics handle hh:mm:ss and
+  multi-stamp lines.

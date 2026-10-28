@@ -53,13 +53,21 @@ class LoopPoints {
       return d > Duration.zero ? d : null;
     }
 
+    // 0 means "cut, no fade", which is a real choice — read it separately from
+    // ms(), where zero means "not set".
+    Duration fadeOf(Object? raw) {
+      if (raw is! num) return const Duration(seconds: 8);
+      final ms = raw.toInt();
+      return Duration(milliseconds: ms < 0 ? 0 : ms);
+    }
+
     return LoopPoints(
       trackId: id,
       introEnd: ms('intro_end_ms'),
       loopStart: ms('loop_start_ms'),
       loopEnd: ms('loop_end_ms'),
       loopCount: (json['loop_count'] as num?)?.toInt() ?? 0,
-      fade: ms('fade_ms') ?? const Duration(seconds: 8),
+      fade: fadeOf(json['fade_ms']),
     );
   }
 }

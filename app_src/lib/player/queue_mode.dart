@@ -1,11 +1,25 @@
 library;
 
 import '../library/track.dart';
+import 'queue.dart';
 
 enum QueueMode {
   dynamic,
 
   fixed,
+}
+
+/// Whether a manual Next/Previous has somewhere to go once the ENGINE has run
+/// out of sources — its queue is only a window of the real one. Repeat All is
+/// the one case where the app queue wraps instead of stopping.
+bool canStepOutsideEngine(
+  PlayQueue? queue, {
+  required bool repeatAll,
+  required bool forward,
+}) {
+  final q = queue;
+  if (q == null || q.isEmpty) return false;
+  return forward ? (q.index + 1 < q.length || repeatAll) : (q.index > 0 || repeatAll);
 }
 
 List<Track> queueForPlayedTrack({

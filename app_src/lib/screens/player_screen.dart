@@ -1659,11 +1659,16 @@ class PlayerProgressBar extends StatefulWidget {
 class _PlayerProgressBarState extends State<PlayerProgressBar> {
   double? _dragFrac;
 
-  void _seekTo(double dx, double width, Duration? dur) {
+  void _seekTo(double dx, double width, Duration? dur, {bool remember = true}) {
     if (dur == null || dur.inMilliseconds <= 0 || width <= 0) return;
     final f = (dx / width).clamp(0.0, 1.0);
 
-    setState(() => _dragFrac = f);
+    // Only a drag pins the bar to the finger. A plain tap used to pin it too and
+    // nothing ever cleared it, so the fill froze at the tap while the track
+    // played on; the caller moves `position` itself, which redraws correctly.
+    if (remember) {
+      setState(() => _dragFrac = f);
+    }
     widget.onSeek?.call(
       Duration(milliseconds: (dur.inMilliseconds * f).round()),
     );
@@ -1693,7 +1698,8 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                 final frac = _dragFrac ?? _fraction(pos, dur);
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTapDown: (d) => _seekTo(d.localPosition.dx, box.maxWidth, dur),
+                  onTapDown: (d) => _seekTo(d.localPosition.dx, box.maxWidth, dur,
+                      remember: false),
                   onHorizontalDragStart: (d) =>
                       _seekTo(d.localPosition.dx, box.maxWidth, dur),
                   onHorizontalDragUpdate: (d) =>

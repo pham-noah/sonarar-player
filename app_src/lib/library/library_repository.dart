@@ -34,6 +34,7 @@ class LibraryRepository {
   Future<String> _resolveRoot() async => kAndroidLibraryRoot;
 
   Future<void> load() async {
+    _accessDenied = false;
     _libraryRoot = await _resolveRoot();
 
     final external = File(_underRoot(kManifestFileName));

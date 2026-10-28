@@ -98,15 +98,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- Woken by the OS when a saved place is entered or left, screen off
-             included — the reason the app hands circles over instead of polling. -->
-        <receiver
-            android:name=".GeofenceReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.noah.personar.GEOFENCE" />
-            </intent-filter>
-        </receiver>
 
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

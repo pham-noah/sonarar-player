@@ -28,8 +28,9 @@ Take the latest APK from [Releases](../../releases) and open it on the device.
 
 **0.1.2** (versionCode 13) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
-Every build is signed with the project key, so releases install over each other. A 32-bit phone
-cannot run it. An [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) exists for a store-signed build.
+Every release here is signed with the same project key, so they install over each other. A 32-bit
+phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed
+build — that signature is not this one, so it cannot upgrade over a GitHub build (uninstall first).
 
 If the file will not install, check its size before blaming the APK: a 97 MB download that stops
 halfway gives the same "could not parse the package" message as a bad build. The published assets are

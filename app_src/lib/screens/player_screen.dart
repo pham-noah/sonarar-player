@@ -1681,9 +1681,7 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
     if (dur == null || dur.inMilliseconds <= 0 || width <= 0) return;
     final f = (dx / width).clamp(0.0, 1.0);
 
-    // Only a drag pins the bar to the finger. A plain tap used to pin it too and
-    // nothing ever cleared it, so the fill froze at the tap while the track
-    // played on; the caller moves `position` itself, which redraws correctly.
+    // Only a drag pins the bar; a tap used to pin it and nothing cleared it.
     if (remember) {
       setState(() => _dragFrac = f);
     }

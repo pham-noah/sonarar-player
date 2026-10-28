@@ -24,19 +24,43 @@ The library pictured is twelve generated tracks — the real one is your own mus
 
 ## Install
 
-Download the latest APK from [Releases](../../releases) and open it on the device.
-Latest: **0.1.2** (versionCode 13). Android 7.0+ (API 24), arm64-v8a, package `com.noah.sonarar`,
-signed with the project key.
-An [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) exists for a store-signed build.
+Take the latest APK from [Releases](../../releases) and open it on the device.
+
+**0.1.2** (versionCode 13) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+
+Every build is signed with the project key, so releases install over each other. A 32-bit phone
+cannot run it. An [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) exists for a store-signed build.
+
+If the file will not install, check its size before blaming the APK: a 97 MB download that stops
+halfway gives the same "could not parse the package" message as a bad build. The published assets are
+hash-checked against the local build at release time.
+
+## Getting music onto the phone
+
+The app does not import from the device. The library is built on a PC and pushed in a fixed layout,
+which is what makes a large collection cheap to scan and keeps covers, gain and spectrum data beside
+the audio.
+
+```bash
+python3 tools/build_library.py           # dry run: inventory the PC folder into reports/
+python3 tools/execute_library.py --resume  # build audio, covers, gain and the manifest
+python3 tools/sync_library.py --check    # show what the phone is missing
+python3 tools/sync_library.py            # push only the changed files over adb
+```
+
+The app reads `library_manifest.json` from the folder its empty state names. `sync_library.py`
+compares sizes, never writes to the PC, and deletes from the phone only with `--prune`.
 
 ## Features
 
-- **Playback** — local files through Android's media session, with lock-screen and notification
-  controls, gapless playback, a fade-in of up to 12s on each new track, a fading sleep timer, queue editing, and per-track
-  bookmarks and loop points.
-- **Library** — playlists you build, merging two with Fusion, browsing by playlist, artist and song,
-  search and swipe actions, a compendium of everything with how much you have heard, listening history
-  by day and hour, and lyrics with romaji for Japanese and Korean tracks.
+- **Playback** — local files through Android's media session with lock-screen and notification
+  controls, gapless through one engine queue, a fade-in of up to 12s on each new track, a fading sleep
+  timer, stop-after-this-track, per-track bookmarks and loop points.
+- **Queue** — reorder by dragging, swipe to remove with an undo, clear everything upcoming, save the
+  queue as a playlist, "play next" that does not disturb the current track.
+- **Library** — playlists you build, Fusion to merge two, browsing by playlist, artist and song, search
+  and swipe actions, a compendium of everything with how much you have heard, listening history by day
+  and hour, and lyrics with romaji for Japanese and Korean tracks.
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Persona,
   Solid, Glass), and a visualiser driven by per-track spectrum data.
 - **Optional network** — weather from Open-Meteo, nearby places from Overpass, and YouTube playlist
@@ -77,8 +101,11 @@ default build packages two more ABIs that no phone runs and that make up most of
 
 ## Privacy
 
-No permission is requested at launch, and declining any of them leaves the app working. With Places
-off, the GPS is never touched.
+No permission is requested at launch, and declining any of them leaves the app working. Media access
+is asked for when the library opens, notifications on the first play. Location is asked for only when
+Places is switched on, and with Places off the GPS is never touched. The microphone permission exists
+for one thing: the spectrum probe attaches a system `Visualizer`, which Android gates behind it. It is
+asked for from that probe screen, never at launch, and playback does not use it.
 
 The build contains no analytics, tracking or advertising. Its only network calls are weather
 (`api.open-meteo.com`), a coarse position fallback (`ipapi.co`), nearby places (Overpass), and YouTube

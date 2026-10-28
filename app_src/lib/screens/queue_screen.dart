@@ -47,8 +47,7 @@ class QueuePanel extends StatelessWidget {
 
   final VoidCallback? onClearUpcoming;
 
-  /// Fired AFTER a successful removal, with the slot it came from, so the shell
-  /// can offer an undo.
+  /// Fired after a successful removal, with the slot it came from.
   final void Function(Track track, int index)? onRemoved;
 
   final void Function(int from, int to)? onReorder;

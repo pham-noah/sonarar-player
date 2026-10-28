@@ -16,8 +16,8 @@ class LyricLine {
     return all.isEmpty ? null : all.first;
   }
 
-  /// One line can carry several stamps — `[00:12.00][00:45.50]chorus` — and
-  /// stamps are `mm:ss`, `mm:ss.cs` or `hh:mm:ss`.
+  /// A line can carry several stamps: `[00:12][00:45]x`. Stamps: mm:ss,
+  /// mm:ss.cs or hh:mm:ss.
   static List<LyricLine> parseAll(String raw) {
     var rest = raw.trim();
     if (!rest.startsWith('[')) return const [];
@@ -44,8 +44,7 @@ class LyricLine {
 
     final nums = <double>[];
     for (final part in parts) {
-      // "-00" parses to -0.0, which is not `< 0`; the sign has to be checked
-      // as text or a negative stamp sneaks through as a positive one.
+      // "-00" parses to -0.0, which is not < 0: check the sign as text.
       if (part.trimLeft().startsWith('-')) return null;
       final v = double.tryParse(part.replaceAll(',', '.'));
       if (v == null) return null;
@@ -185,8 +184,7 @@ class LyricsService {
           if (line.text.isNotEmpty) lines.add(line);
         }
       }
-      // indexAt() walks in order; a file with repeated-stamp chorus lines that
-      // appear out of sequence would otherwise never highlight past them.
+      // Out-of-sequence repeated-stamp lines would never advance the highlight.
       lines.sort((a, b) => a.at.compareTo(b.at));
       if (lines.isNotEmpty) {
         return Lyrics(lines: lines, source: 'lrclib (synced)');

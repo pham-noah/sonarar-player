@@ -53,8 +53,7 @@ class LoopPoints {
       return d > Duration.zero ? d : null;
     }
 
-    // 0 means "cut, no fade", which is a real choice — read it separately from
-    // ms(), where zero means "not set".
+    // 0 is "cut, no fade", unlike ms() where 0 means unset.
     Duration fadeOf(Object? raw) {
       if (raw is! num) return const Duration(seconds: 8);
       final ms = raw.toInt();

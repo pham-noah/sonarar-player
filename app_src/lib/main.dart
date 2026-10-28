@@ -413,9 +413,7 @@ class _HomeShellState extends State<HomeShell>
 
   final SleepTimer _sleep = SleepTimer();
 
-  /// "Stop after this track": armed from the player, spent on the next
-  /// completion, and dropped by a manual skip — a skip means "next", not
-  /// "stop".
+  /// Armed from the player, spent on completion, dropped by a manual skip.
   bool _stopAfterTrack = false;
 
   final ValueNotifier<Duration?> _sleepLeft = ValueNotifier(null);
@@ -542,9 +540,7 @@ class _HomeShellState extends State<HomeShell>
   bool _askedStorage = false;
   bool _askedNotifications = false;
 
-  /// Storage is asked for when the Library opens — that is the first moment it
-  /// is needed. Notifications are NOT asked for here: the rule is "on first
-  /// play", and bundling them would put a media prompt on a browsing screen.
+  /// Storage is asked for when the Library opens; notifications wait for first play.
   Future<void> _ensurePlaybackPermissions() async {
     if (!_askedStorage && _storageAccess != StorageAccess.granted) {
       _askedStorage = true;
@@ -552,9 +548,7 @@ class _HomeShellState extends State<HomeShell>
       if (mounted) setState(() {});
       // ignore: avoid_print
       print('[Sonarar] storage after request=$_storageAccess');
-      // The library was read BEFORE the grant, so it is still empty; picking the
-      // manifest up now is the difference between "grant and it appears" and
-      // "grant and nothing happens until the next launch".
+      // The library was read before the grant, so re-read it now, not next launch.
       if (_storageAccess == StorageAccess.granted) await _rereadLibrary();
     }
   }
@@ -1395,8 +1389,7 @@ class _HomeShellState extends State<HomeShell>
     }
 
     if (widget.state.queueEnded) {
-      // The queue stopped at its last track; the engine is parked at the end of
-      // it, so a bare play() reads as a dead button. Start the track over.
+      // Parked at the queue's end: play() alone reads as a dead button.
       final id = widget.state.currentTrack?.id;
       if (id != null) widget.state.playTrackNow(id);
       final started = await _loadCurrentTrack(startAt: Duration.zero);
@@ -1521,8 +1514,7 @@ class _HomeShellState extends State<HomeShell>
       _sleepLeft.value = null;
       widget.state.setSleeping(false);
       _syncProgressTicker();
-      // The fade lowered the player volume below the user's level; restore the
-      // level the slider shows, not 1.0, or cancelling mid-fade jumps to max.
+      // Restore the slider level, not 1.0, or cancelling a fade jumps to max.
       unawaited(_audio?.setVolume(_volume) ?? Future<void>.value());
 
       if (mounted) _shellChanged(() {});
@@ -3166,8 +3158,7 @@ class _HomeShellState extends State<HomeShell>
     });
   }
 
-  /// The app is not usable until the library is read, but a flat colour for the
-  /// whole boot reads as a hang. This says what it is doing and how far along.
+  /// A flat colour for the whole boot reads as a hang; say what is loading.
   Widget _splash(Skin skin) => ColoredBox(
         color: skin.background,
         child: Center(

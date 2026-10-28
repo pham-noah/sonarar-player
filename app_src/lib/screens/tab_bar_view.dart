@@ -27,7 +27,7 @@ class TabBarView2 extends StatelessWidget {
 
   final Presentation? presentation;
 
-  /// Hidden while Home has no page: a tab onto nothing is worse than no tab.
+  /// A tab onto nothing is worse than no tab.
   final bool showHome;
 
   @override

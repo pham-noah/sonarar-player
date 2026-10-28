@@ -40,12 +40,10 @@ class SleepTimer {
     _held = null;
   }
 
-  /// Playback stopped, so the countdown stops too: resuming an hour later must
-  /// not instantly end the session on the first playable second.
+  /// Playback stopped, so the countdown does; resuming later must not end it.
   void pause(DateTime now) {
     if (_startedAt == null || _stopped || _pausedAt != null) return;
-    // Read the clock BEFORE flagging the pause: remaining() reports the held
-    // value once _pausedAt is set, which would be null at this point.
+    // Read the clock before flagging the pause: remaining() then reports _held.
     final left = remaining(now);
     _pausedAt = now;
     _held = left ?? Duration.zero;

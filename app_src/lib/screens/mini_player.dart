@@ -317,8 +317,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
   void _seekTo(double dx, double width, Duration? dur, {bool remember = true}) {
     if (dur == null || dur.inMilliseconds <= 0 || width <= 0) return;
     final f = (dx / width).clamp(0.0, 1.0);
-    // A tap must not pin the thin bar: only a drag holds it under the finger,
-    // otherwise the line stays frozen where the tap landed.
+    // A tap must not pin the bar; only a drag holds it under the finger.
     if (remember) setState(() => _dragFrac = f);
     widget.onSeek?.call(Duration(milliseconds: (dur.inMilliseconds * f).round()));
   }

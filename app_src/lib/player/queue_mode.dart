@@ -9,9 +9,7 @@ enum QueueMode {
   fixed,
 }
 
-/// Whether a manual Next/Previous has somewhere to go once the ENGINE has run
-/// out of sources — its queue is only a window of the real one. Repeat All is
-/// the one case where the app queue wraps instead of stopping.
+/// Whether Next/Previous can leave the engine's window. Repeat All wraps.
 bool canStepOutsideEngine(
   PlayQueue? queue, {
   required bool repeatAll,

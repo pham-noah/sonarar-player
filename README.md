@@ -25,14 +25,14 @@ The library pictured is twelve generated tracks — the real one is your own mus
 ## Install
 
 Download the latest APK from [Releases](../../releases) and open it on the device.
-Latest: **0.1.1** (versionCode 12). Android 7.0+ (API 24), arm64-v8a, package `com.noah.sonarar`,
+Latest: **0.1.2** (versionCode 13). Android 7.0+ (API 24), arm64-v8a, package `com.noah.sonarar`,
 signed with the project key.
 An [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) exists for a store-signed build.
 
 ## Features
 
 - **Playback** — local files through Android's media session, with lock-screen and notification
-  controls, gapless playback, crossfade up to 12s, a fading sleep timer, queue editing, and per-track
+  controls, gapless playback, a fade-in of up to 12s on each new track, a fading sleep timer, queue editing, and per-track
   bookmarks and loop points.
 - **Library** — playlists you build, merging two with Fusion, browsing by playlist, artist and song,
   search and swipe actions, a compendium of everything with how much you have heard, listening history

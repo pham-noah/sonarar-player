@@ -75,6 +75,34 @@ void main() {
           reason: 'a deleted playlist is gone, not hidden');
     });
 
+    test('a deleted playlist can be put back where it was', () {
+      final state = _state();
+      final first = state.createPlaylist('First');
+      final second = state.createPlaylist('Second');
+      final third = state.createPlaylist('Third');
+      state.addTrackToPlaylist(second, 't1');
+
+      final slot = state.playlistIndexOf(second.id);
+      expect(slot, 1);
+
+      state.deletePlaylist(second.id);
+      expect(state.playlists.length, 2);
+
+      expect(state.restorePlaylist(slot, second), isTrue);
+      expect(state.playlists.all.map((p) => p.id).toList(),
+          [first.id, second.id, third.id],
+          reason: 'the undo is positional, not "append to the end"');
+      expect(state.playlists.byId(second.id)!.trackIds, ['t1'],
+          reason: 'the tracks come back with it');
+    });
+
+    test('restoring a playlist that is still there is refused', () {
+      final state = _state();
+      final p = state.createPlaylist('Kept');
+      expect(state.restorePlaylist(0, p), isFalse);
+      expect(state.playlists.length, 1, reason: 'no twin');
+    });
+
     test('ensure returns the same list twice rather than making a twin', () {
       final state = _state();
       expect(state.ensurePlaylist('Rain').id, state.ensurePlaylist('Rain').id);

@@ -531,6 +531,16 @@ class AppState extends ChangeNotifier {
     return made;
   }
 
+  /// Where a playlist sits, so an undo can put it back in the same place.
+  int playlistIndexOf(String id) => _playlists.all.indexWhere((p) => p.id == id);
+
+  bool restorePlaylist(int at, Playlist playlist) {
+    if (_playlists.byId(playlist.id) != null) return false;
+    _playlists.insert(at, playlist);
+    notifyListeners();
+    return true;
+  }
+
   void deletePlaylist(String playlistId) {
     _playlists.delete(playlistId);
     notifyListeners();
@@ -1424,6 +1434,23 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     return wasCurrent;
+  }
+
+  /// The undo half of [removeFromQueue]: same track, same slot.
+  bool restoreToQueue(int at, Track track) {
+    final q = _queue;
+    if (q == null) return false;
+    if (!q.insertAt(at, track)) return false;
+    notifyListeners();
+    return true;
+  }
+
+  int clearUpcoming() {
+    final q = _queue;
+    if (q == null) return 0;
+    final dropped = q.clearUpcoming();
+    if (dropped > 0) notifyListeners();
+    return dropped;
   }
 
   @visibleForTesting

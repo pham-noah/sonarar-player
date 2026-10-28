@@ -413,6 +413,11 @@ class _HomeShellState extends State<HomeShell>
 
   final SleepTimer _sleep = SleepTimer();
 
+  /// "Stop after this track": armed from the player, spent on the next
+  /// completion, and dropped by a manual skip — a skip means "next", not
+  /// "stop".
+  bool _stopAfterTrack = false;
+
   final ValueNotifier<Duration?> _sleepLeft = ValueNotifier(null);
   AppTab _tab = AppTab.home;
 
@@ -1206,6 +1211,15 @@ class _HomeShellState extends State<HomeShell>
     _audio!.onCompleted = () {
       final finished = widget.state.currentTrack;
 
+      if (_stopAfterTrack) {
+        _stopAfterTrack = false;
+        if (finished != null) _closeOutPlay(finished);
+        widget.state.stopAtEnd();
+        if (mounted) setState(() => _playing = false);
+        _syncProgressTicker();
+        return;
+      }
+
       switch (widget.state.autoAdvanceAction()) {
         case AutoAdvance.next:
           widget.state.advance(automatic: true);
@@ -1406,6 +1420,8 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _skipNext() async {
     final engine = _audio;
     if (engine == null || _skipPending) return;
+    // A skip is a request to move on, not to stop where we land.
+    if (_stopAfterTrack) setState(() => _stopAfterTrack = false);
 
     if (!engine.hasNext) {
       if (canStepOutsideEngine(
@@ -1435,6 +1451,7 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _skipPrevious() async {
     final engine = _audio;
     if (engine == null || _skipPending) return;
+    if (_stopAfterTrack) setState(() => _stopAfterTrack = false);
     if (!engine.hasPrevious) {
       if (canStepOutsideEngine(
         widget.state.queue,
@@ -2005,6 +2022,24 @@ class _HomeShellState extends State<HomeShell>
     _toast(ok ? 'Added to queue — ${track.title}' : 'Already in the queue');
   }
 
+  void _toastUndo(String message, VoidCallback undo) {
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(
+        content: Text(message, maxLines: 1, overflow: TextOverflow.ellipsis),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'UNDO',
+          textColor: widget.state.uiSkin.accent,
+          onPressed: undo,
+        ),
+      ));
+  }
+
   void _toast(String message) {
     if (!mounted) return;
     final messenger = ScaffoldMessenger.maybeOf(context);
@@ -2486,6 +2521,20 @@ class _HomeShellState extends State<HomeShell>
         playing: _playing,
         onSaveAsPlaylist: _saveQueueAsPlaylist,
 
+        onClearUpcoming: () {
+          final dropped = widget.state.clearUpcoming();
+          if (dropped <= 0) return;
+          unawaited(_rebuildEngineQueueKeepingPosition());
+          _toast('Cleared $dropped from the queue');
+        },
+
+        onRemoved: (track, at) {
+          _toastUndo('Removed ${track.title}', () {
+            if (!widget.state.restoreToQueue(at, track)) return;
+            unawaited(_rebuildEngineQueueKeepingPosition());
+          });
+        },
+
         coverFor: (t) => coverProviderFor(_repo.coverPathFor(t)),
         onPlay: (t) {
           widget.state.playTrackNow(t.id);
@@ -2774,10 +2823,15 @@ class _HomeShellState extends State<HomeShell>
             _toast('Removed from ${p.name}');
           },
           onDeletePlaylist: (p) {
+            final slot = widget.state.playlistIndexOf(p.id);
             widget.state.deletePlaylist(p.id);
             // ignore: discarded_futures
             _persistPlaylists();
-            _toast('Deleted "${p.name}"');
+            _toastUndo('Deleted "${p.name}"', () {
+              if (!widget.state.restorePlaylist(slot, p)) return;
+              // ignore: discarded_futures
+              _persistPlaylists();
+            });
           },
 
           onQueue: (t) {
@@ -3461,6 +3515,13 @@ children: [
                     volume: _volume,
                     onVolume: _setVolume,
                     onSleep: _toggleSleep,
+                    stopAfterTrack: _stopAfterTrack,
+                    onStopAfterTrack: (v) {
+                      setState(() => _stopAfterTrack = v);
+                      _toast(v
+                          ? 'Stopping after this track'
+                          : 'Stop after this track — off');
+                    },
                     sleepRunning: _sleep.isRunning,
                     sleepTimer: _prefs.sleepTimer,
 

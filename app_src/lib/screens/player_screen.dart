@@ -74,6 +74,8 @@ class PlayerScreen extends StatelessWidget {
     this.hasTrackPanel = false,
     this.upNextCount = 0,
     this.onSleep,
+    this.stopAfterTrack = false,
+    this.onStopAfterTrack,
     this.onArtist,
     this.lyricsMode = false,
     this.onLyrics,
@@ -147,6 +149,10 @@ class PlayerScreen extends StatelessWidget {
   final int upNextCount;
 
   final ValueChanged<Duration?>? onSleep;
+
+  final bool stopAfterTrack;
+
+  final ValueChanged<bool>? onStopAfterTrack;
 
   final bool lyricsMode;
 
@@ -1070,6 +1076,18 @@ class PlayerScreen extends StatelessWidget {
                       ? PlayerPanel.none
                       : PlayerPanel.track),
                   active: panel == PlayerPanel.track,
+                ),
+              if (onStopAfterTrack != null)
+                _iconAction(
+                  skin,
+                  stopAfterTrack
+                      ? Icons.stop_circle_rounded
+                      : Icons.stop_circle_outlined,
+                  stopAfterTrack
+                      ? 'Stopping after this track — tap to cancel'
+                      : 'Stop after this track',
+                  () => onStopAfterTrack!(!stopAfterTrack),
+                  active: stopAfterTrack,
                 ),
               if (onSleep != null)
                 _iconAction(

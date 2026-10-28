@@ -352,4 +352,28 @@ class PlayQueue {
     _bumpOrder();
     return true;
   }
+
+  /// Puts a track back at a known position — the undo for [remove]. The source
+  /// forgets removed tracks, so the track is re-added there too.
+  bool insertAt(int at, Track track) {
+    if (_order.any((t) => t.id == track.id)) return false;
+    final playing = current;
+    final pos = at.clamp(0, _order.length);
+    _order.insert(pos, track);
+    if (!_source.any((t) => t.id == track.id)) _source.add(track);
+    final still = playing == null ? -1 : _order.indexWhere((t) => t.id == playing.id);
+    _index = still >= 0 ? still : _index.clamp(0, _order.length - 1);
+    _bumpOrder();
+    return true;
+  }
+
+  /// Drops everything after the playing track and keeps what is playing.
+  /// Returns how many were dropped, so the caller can say so.
+  int clearUpcoming() {
+    if (_index >= _order.length - 1) return 0;
+    final dropped = _order.length - _index - 1;
+    _order = _order.sublist(0, _index + 1);
+    _bumpOrder();
+    return dropped;
+  }
 }

@@ -80,6 +80,8 @@ class QueueBody extends StatelessWidget {
     required this.onTogglePlay,
     this.onReload,
     this.onSaveAsPlaylist,
+    this.onClearUpcoming,
+    this.onRemoved,
     this.onReorder,
     this.onReloadAfterRemove,
   });
@@ -95,6 +97,10 @@ class QueueBody extends StatelessWidget {
 
   final VoidCallback? onSaveAsPlaylist;
 
+  final VoidCallback? onClearUpcoming;
+
+  final void Function(Track track, int index)? onRemoved;
+
   final void Function(int from, int to)? onReorder;
 
   final VoidCallback? onReloadAfterRemove;
@@ -109,6 +115,8 @@ class QueueBody extends StatelessWidget {
         coverFor: coverFor,
         onReload: onReload,
         onSaveAsPlaylist: onSaveAsPlaylist,
+        onClearUpcoming: onClearUpcoming,
+        onRemoved: onRemoved,
         onReorder: onReorder,
         onReloadAfterRemove: onReloadAfterRemove,
       );

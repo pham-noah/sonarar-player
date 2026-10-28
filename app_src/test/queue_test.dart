@@ -461,4 +461,81 @@ void main() {
       expect(q.current!.id, 't5');
     });
   });
+
+  group('undoing a removal', () {
+    test('putting a track back restores the exact slot', () {
+      final q = PlayQueue(source: _many(5));
+      q.jumpTo('t1');
+      final back = q.order[3];
+
+      q.remove('t3');
+      expect(q.length, 4);
+
+      expect(q.insertAt(3, back), isTrue);
+      expect(q.order.map((t) => t.id).toList(), ['t0', 't1', 't2', 't3', 't4']);
+      expect(q.current!.id, 't1', reason: 'the undo is not a change of track');
+    });
+
+    test('a track removed BEFORE the playing one goes back without moving it', () {
+      final q = PlayQueue(source: _many(4));
+      q.jumpTo('t2');
+      final going = q.order[0];
+
+      q.remove('t0');
+      expect(q.index, 1);
+      q.insertAt(0, going);
+
+      expect(q.current!.id, 't2');
+      expect(q.index, 2);
+    });
+
+    test('undo into an emptied queue leaves it playable', () {
+      final q = PlayQueue(source: _many(1));
+      final only = q.current!;
+      q.remove(only.id);
+      expect(q.isEmpty, isTrue);
+
+      expect(q.insertAt(0, only), isTrue);
+      expect(q.current!.id, only.id);
+      expect(q.length, 1);
+    });
+
+    test('a track already back in the queue is not duplicated', () {
+      final q = PlayQueue(source: _many(3));
+      expect(q.insertAt(1, _t('t0')), isFalse);
+      expect(q.length, 3);
+    });
+
+    test('a slot past the end is clamped, not thrown', () {
+      final q = PlayQueue(source: _many(2));
+      expect(q.insertAt(99, _t('far')), isTrue);
+      expect(q.order.last.id, 'far');
+    });
+  });
+
+  group('clear upcoming', () {
+    test('drops what is after the playing track and keeps it', () {
+      final q = PlayQueue(source: _many(6));
+      q.jumpTo('t2');
+
+      expect(q.clearUpcoming(), 3);
+      expect(q.order.map((t) => t.id).toList(), ['t0', 't1', 't2']);
+      expect(q.current!.id, 't2');
+    });
+
+    test('is a no-op on the last track, and says so', () {
+      final q = PlayQueue(source: _many(3));
+      q.jumpTo('t2');
+      expect(q.clearUpcoming(), 0);
+      expect(q.length, 3);
+    });
+
+    test('clearing twice does not invent tracks', () {
+      final q = PlayQueue(source: _many(4));
+      q.jumpTo('t1');
+      q.clearUpcoming();
+      expect(q.clearUpcoming(), 0);
+      expect(q.length, 2);
+    });
+  });
 }

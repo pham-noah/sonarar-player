@@ -12,6 +12,8 @@ import '../widgets/swipeable_queue_row.dart';
 
 const Key queueSaveKey = Key('queue-save-as-playlist');
 
+const Key queueClearUpcomingKey = Key('queue-clear-upcoming');
+
 class QueuePanel extends StatelessWidget {
   const QueuePanel({
     super.key,
@@ -22,6 +24,8 @@ class QueuePanel extends StatelessWidget {
     this.onPlay,
     this.isPlaying = false,
     this.onSaveAsPlaylist,
+    this.onClearUpcoming,
+    this.onRemoved,
     this.onReorder,
     this.onReloadAfterRemove,
     this.padding = const EdgeInsets.fromLTRB(20, 4, 20, 24),
@@ -41,13 +45,19 @@ class QueuePanel extends StatelessWidget {
 
   final VoidCallback? onSaveAsPlaylist;
 
+  final VoidCallback? onClearUpcoming;
+
+  /// Fired AFTER a successful removal, with the slot it came from, so the shell
+  /// can offer an undo.
+  final void Function(Track track, int index)? onRemoved;
+
   final void Function(int from, int to)? onReorder;
 
   final VoidCallback? onReloadAfterRemove;
 
   final EdgeInsetsGeometry padding;
 
-  @override  @override
+  @override
   Widget build(BuildContext context) {
     final skin = state.uiSkin;
 
@@ -72,25 +82,53 @@ class QueuePanel extends StatelessWidget {
                     left: padding.resolve(TextDirection.ltr).left,
                     right: padding.resolve(TextDirection.ltr).right,
                   ),
-                  child: Pressable(
-                    key: queueSaveKey,
-                    onTap: onSaveAsPlaylist!,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.playlist_add_rounded, size: 18, color: skin.accent),
-                        const SizedBox(width: 8),
-                        Text(
-                          'SAVE AS PLAYLIST',
-                          style: TextStyle(
-                            fontSize: LayoutSpec.fontLabel,
-                            letterSpacing: 1.5,
-                            fontWeight: FontWeight.w800,
-                            color: skin.accent,
+                  child: Row(
+                    children: [
+                      Pressable(
+                        key: queueSaveKey,
+                        onTap: onSaveAsPlaylist!,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.playlist_add_rounded, size: 18, color: skin.accent),
+                            const SizedBox(width: 8),
+                            Text(
+                              'SAVE AS PLAYLIST',
+                              style: TextStyle(
+                                fontSize: LayoutSpec.fontLabel,
+                                letterSpacing: 1.5,
+                                fontWeight: FontWeight.w800,
+                                color: skin.accent,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (onClearUpcoming != null && order.length > currentAt + 1) ...[
+                        const SizedBox(width: 22),
+                        Pressable(
+                          key: queueClearUpcomingKey,
+                          onTap: onClearUpcoming!,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.playlist_remove_rounded,
+                                  size: 18, color: skin.textSecondary),
+                              const SizedBox(width: 8),
+                              Text(
+                                'CLEAR UPCOMING',
+                                style: TextStyle(
+                                  fontSize: LayoutSpec.fontLabel,
+                                  letterSpacing: 1.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: skin.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -161,7 +199,10 @@ class QueuePanel extends StatelessWidget {
                         }
                       },
                       onRemove: () {
+                        final slot = state.queueOrder.indexWhere((x) => x.id == t.id);
+                        if (slot < 0) return;
                         final currentChanged = state.removeFromQueue(t.id);
+                        onRemoved?.call(t, slot);
                         if (currentChanged) {
                           (onReloadAfterRemove ?? onReload)?.call();
                         }

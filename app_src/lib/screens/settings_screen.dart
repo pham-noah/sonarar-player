@@ -292,7 +292,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   (v) => onPrefsChanged!(prefs!.copyWith(resumeOnLaunch: v))),
               _stepper(
                 skin,
-                'CROSSFADE',
+                'FADE IN',
                 icon: Icons.multitrack_audio_rounded,
                 prefs!.crossfadeSeconds == 0 ? 'OFF' : '${prefs!.crossfadeSeconds}s',
                 onLess: prefs!.crossfadeSeconds <= 0

@@ -1,0 +1,14 @@
+0.1.2
+
+Queue and session control.
+
+- CLEAR UPCOMING in the queue: drops everything after the playing track and
+  keeps playing, with a count in the toast.
+- UNDO when you swipe a track off the queue. It goes back in the slot it left,
+  and the current track does not change.
+- Deleting a playlist now offers UNDO, and it returns to its old position with
+  its tracks intact.
+- Stop after this track: a stop button beside the sleep timer, spent on the
+  next track change and cancelled by skipping.
+- The "crossfade" setting is now called FADE IN. It always faded the incoming
+  track in; it never overlapped two tracks.

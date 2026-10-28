@@ -25,7 +25,6 @@ Future<void> _pump(
   List<Track> liked = const [],
   Playlist? recent,
   List<Track> recap = const [],
-  bool online = true,
   List<Playlist> genre = const [],
   List<({Playlist playlist, int plays})> library = const [],
   VoidCallback? onOpenRecap,
@@ -46,7 +45,6 @@ Future<void> _pump(
         libraryPlaylists: library,
         recapTracks: recap,
         recapLabel: 'THIS MONTH',
-        online: online,
         allTracks: [for (var i = 0; i < 40; i++) _t(i)],
         onPlay: (_) {},
         onOpenRecap: onOpenRecap ?? () {},
@@ -134,10 +132,30 @@ void main() {
     expect(opened, 1, reason: 'the RECAP card was pressed and nothing was called — the press goes nowhere');
   });
 
-  testWidgets('TRENDING says it is not connected rather than showing nothing', (tester) async {
-    await _pump(tester, online: true);
+  testWidgets('TRENDING is gone, not explained', (tester) async {
+    await _pump(tester);
 
-    expect(find.textContaining('not connected'), findsOneWidget,
-        reason: 'TRENDING is blank — an empty rail reads as "nothing is trending", which is untrue');
+    expect(find.text('TRENDING'), findsNothing,
+        reason: 'a section with no source is noise on a front page');
+    expect(find.textContaining('not connected'), findsNothing);
+  });
+
+  testWidgets('an empty library shows the rails, not a stand-in for them', (tester) async {
+    await _pump(tester);
+
+    expect(find.text('ALL MUSIC'), findsNothing,
+        reason: 'a library dump under a heading is not what a front page is for');
+    expect(find.text('NOTHING HERE YET'), findsNothing);
+  });
+
+  testWidgets('nothing on Home renders below the 16px floor', (tester) async {
+    await _pump(tester, mostPlayed: [for (var i = 0; i < 6; i++) _t(i)]);
+
+    final small = <String>[];
+    for (final text in tester.widgetList<Text>(find.byType(Text))) {
+      final size = text.style?.fontSize;
+      if (size != null && size < 16) small.add('${text.data} @ $size');
+    }
+    expect(small, isEmpty, reason: 'below the floor: $small');
   });
 }

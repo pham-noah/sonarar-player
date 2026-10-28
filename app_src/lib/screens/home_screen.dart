@@ -14,7 +14,7 @@ import '../library/track.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
 
-enum HomeTab { home, quickPick, fromLibrary, genre, recap, trending }
+enum HomeTab { home, quickPick, fromLibrary, genre, recap }
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -37,8 +37,6 @@ class HomeScreen extends StatelessWidget {
     this.genreLists = const [],
     this.recapTracks = const [],
     this.recapLabel = '',
-    this.trending,
-    this.online = true,
     this.allTracks = const [],
     this.onOpenRecap,
     this.onPlayPlaylist,
@@ -101,9 +99,7 @@ class HomeScreen extends StatelessWidget {
 
   final VoidCallback? onOpenRecap;
 
-  final List<Track>? trending;
 
-  final bool online;
 
   final List<Track> allTracks;
 
@@ -186,7 +182,7 @@ class HomeScreen extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: LayoutSpec.fontFloor,
                           letterSpacing: 1.4,
                           fontWeight: FontWeight.w900,
                           color: PresentationScope.of(context, fallback: skin).palette.onAccent,
@@ -228,49 +224,9 @@ class HomeScreen extends StatelessWidget {
 
         ..._recapSection(context),
 
-        ..._trendingSection(context),
-
-        ..._nothingYetSection(context),
         ],
       ),
     );
-  }
-
-  bool get _nothingToShow =>
-      continueTrack == null &&
-      rediscover.isEmpty &&
-      jumpBackIn.isEmpty &&
-      mostPlayed.isEmpty &&
-      likedSongs.isEmpty &&
-      libraryPlaylists.isEmpty &&
-      recapTracks.isEmpty &&
-      (trending?.isEmpty ?? true);
-
-  List<Widget> _nothingYetSection(BuildContext context) {
-    if (!_nothingToShow) return const [];
-    final pal = PresentationScope.of(context, fallback: skin).palette;
-    if (allTracks.isEmpty) {
-      return [
-        _bandText('NOTHING HERE YET'),
-        Text(
-          'This screen fills up from what you have played. There is no music in the library yet — '
-          'open the Library to grant access, or build one with the tools in the repository.',
-          style: TextStyle(fontSize: 13, height: 1.5, color: pal.textPrimary),
-        ),
-        const SizedBox(height: 22),
-      ];
-    }
-    final picks = allTracks.take(12).toList(growable: false);
-    return [
-      _bandText('ALL MUSIC'),
-      Text(
-        'Nothing played yet, so this is the library in its own order.',
-        style: TextStyle(fontSize: 12, height: 1.5, color: pal.textPrimary),
-      ),
-      const SizedBox(height: 10),
-      _coverRail(context, picks),
-      const SizedBox(height: 22),
-    ];
   }
 
   List<Widget> _quickPickSection(BuildContext context) {
@@ -306,7 +262,7 @@ class HomeScreen extends StatelessWidget {
   Widget _playlistRail(BuildContext context, List<PlaylistPlays> lists) {
     final pal = PresentationScope.of(context, fallback: skin).palette;
     return SizedBox(
-      height: 160,
+      height: 104 + 6 + 2 * 26 + 4,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: lists.length,
@@ -333,7 +289,7 @@ class HomeScreen extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: LayoutSpec.fontFloor,
                       fontWeight: FontWeight.w800,
                       color: pal.textPrimary,
                     ),
@@ -345,7 +301,7 @@ class HomeScreen extends StatelessWidget {
                         : '${p.length} ${p.length == 1 ? "song" : "songs"}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, color: pal.textSecondary),
+                    style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
                   ),
                 ],
               ),
@@ -387,7 +343,7 @@ class HomeScreen extends StatelessWidget {
           child: Text(
             p.name,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: LayoutSpec.fontFloor,
               fontWeight: FontWeight.w800,
               color: skin.textSecondary,
             ),
@@ -450,7 +406,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     '${recapTracks.length} '
                     '${recapTracks.length == 1 ? "song" : "songs"} you played',
-                    style: TextStyle(fontSize: 13, color: pal.textSecondary),
+                    style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
                   ),
                 ],
               ),
@@ -460,19 +416,6 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  List<Widget> _trendingSection(BuildContext context) {
-    return [
-      _bandText('TRENDING'),
-      Text(
-        online
-            ? 'Trending is not connected yet — it will pull from the network when it is.'
-            : 'Trending needs the network — you are offline.',
-        style: TextStyle(fontSize: 13, color: skin.textSecondary, height: 1.35),
-      ),
-      const SizedBox(height: 22),
-    ];
   }
 
   List<Track> tracksOf(Playlist p) {
@@ -488,7 +431,7 @@ class HomeScreen extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: LayoutSpec.fontFloor,
             letterSpacing: 2.2,
             fontWeight: FontWeight.w900,
             color: skin.accent,
@@ -531,7 +474,7 @@ class HomeScreen extends StatelessWidget {
                     t.artist,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 13, color: pal.textSecondary),
+                    style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
                   ),
                 ],
               ),
@@ -543,8 +486,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // 104px cover + 6px gap + two 16px lines. The floor raised the lines and a
+  // fixed 150 clipped them by 6px; the height now comes from what is in the tile.
   Widget _coverRail(BuildContext context, List<Track> tracks) => SizedBox(
-        height: 150,
+        height: 104 + 6 + 2 * 26 + 4,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: tracks.length,
@@ -570,7 +515,7 @@ class HomeScreen extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: LayoutSpec.fontFloor,
                 fontWeight: FontWeight.w700,
                 color: pal.textPrimary,
               ),
@@ -579,7 +524,7 @@ class HomeScreen extends StatelessWidget {
               t.artist,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: pal.textSecondary),
+              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
             ),
           ],
         ),
@@ -631,7 +576,7 @@ class HomeScreen extends StatelessWidget {
                 label,
                 maxLines: 1,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: LayoutSpec.fontFloor,
                   letterSpacing: 1,
                   fontWeight: FontWeight.w900,
                   color: dim ? pal.textSecondary : pal.textPrimary,
@@ -747,7 +692,7 @@ class _QuickPickRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: LayoutSpec.fontFloor,
                     fontWeight: FontWeight.w700,
                     color: pal.textPrimary,
                   ),
@@ -756,7 +701,7 @@ class _QuickPickRow extends StatelessWidget {
                   track.artist,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, color: pal.textSecondary),
+                  style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
                 ),
               ],
             ),

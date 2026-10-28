@@ -1,0 +1,13 @@
+0.1.3 (build 19)
+
+Home reads at the same size as the rest of the app.
+
+- Nothing on Home rendered below the 16px floor: the rails and the front page
+  carried 11-14px type, three points under the project's own rule. Everything is
+  at the floor now, and a test fails if any Text on Home drops under it.
+- TRENDING is gone. It had no source, so it printed a sentence about not being
+  connected; an empty section on a front page is noise.
+- The rails grew to fit the larger lines instead of clipping them.
+- The ALL MUSIC stand-in is gone too. Home is NOW, Continue Listening,
+  Rediscover, Jump Back In, Quick Pick, From Your Library and Recap — and when
+  there is nothing to show, it shows nothing rather than a library dump.

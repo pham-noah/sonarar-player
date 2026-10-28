@@ -2757,8 +2757,6 @@ class _HomeShellState extends State<HomeShell>
           recapTracks: _recapTracks,
           recapLabel: _recapLabel,
 
-          trending: null,
-          online: _prefs.allowNetwork,
           allTracks: _repo.tracks,
           onOpenRediscover: _openRediscover,
           coverPathFor: _repo.coverPathFor,

@@ -52,8 +52,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             // Signed only when a key.properties is present: a fresh clone and the
             // store build both stay unsigned, and a release run on this machine signs.
             if (keystorePropertiesFile.exists()) {

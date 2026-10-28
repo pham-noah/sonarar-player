@@ -1,10 +1,10 @@
 library;
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 
 import '../theme/skin.dart';
 
@@ -60,20 +60,15 @@ class SpectrumLibrary {
     if (_cache.containsKey(trackId)) return _cache[trackId];
 
     TrackSpectrum? result;
-    try {
-      final data = await rootBundle.load('assets/spectrum/$trackId.bin');
-      result = TrackSpectrum.parse(data.buffer.asUint8List());
-    } catch (_) {
-      final root = libraryRoot;
-      if (root != null) {
-        try {
-          final file = File('$root/spectrum/$trackId.bin');
-          if (file.existsSync()) {
-            result = TrackSpectrum.parse(await file.readAsBytes());
-          }
-        } on FileSystemException {
-          result = null;
+    final root = libraryRoot;
+    if (root != null) {
+      try {
+        final file = File('$root/spectrum/$trackId.bin');
+        if (file.existsSync()) {
+          result = TrackSpectrum.parse(await file.readAsBytes());
         }
+      } on FileSystemException {
+        result = null;
       }
     }
 

@@ -1,7 +1,7 @@
 name: sonarar
 description: "Sonarar — a personal music player that already knows what you want."
 publish_to: 'none'
-version: 0.1.2+13
+version: 0.1.3+14
 
 environment:
   sdk: ^3.13.0
@@ -35,7 +35,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/library/
-    - assets/spectrum/
     - assets/config/
     - assets/brand/
     - assets/themes/

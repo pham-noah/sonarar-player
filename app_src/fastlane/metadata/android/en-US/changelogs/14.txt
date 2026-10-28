@@ -1,0 +1,9 @@
+0.1.3
+
+A smaller download.
+
+- The per-track spectrum data no longer ships inside the app. It comes from the
+  library folder, where sync_library.py already puts it. The visualiser is
+  unchanged for a synced library and simply absent for tracks without a file.
+- Release builds are optimised and resource-shrunk, so the code in the APK is
+  the code that runs.

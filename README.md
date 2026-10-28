@@ -26,7 +26,7 @@ The library pictured is twelve generated tracks — the real one is your own mus
 
 Take the latest APK from [Releases](../../releases) and open it on the device.
 
-**0.1.2** (versionCode 13) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+**0.1.3** (versionCode 14) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
 Every release here is signed with the same project key, so they install over each other. A 32-bit
 phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed
@@ -50,7 +50,8 @@ python3 tools/sync_library.py            # push only the changed files over adb
 ```
 
 The app reads `library_manifest.json` from the folder its empty state names. `sync_library.py`
-compares sizes, never writes to the PC, and deletes from the phone only with `--prune`.
+compares sizes, never writes to the PC, and deletes from the phone only with `--prune`. It also carries
+`spectrum/<id>.bin`, which is what the visualiser draws.
 
 ## Features
 
@@ -63,7 +64,8 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
   and swipe actions, a compendium of everything with how much you have heard, listening history by day
   and hour, and lyrics with romaji for Japanese and Korean tracks.
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Persona,
-  Solid, Glass), and a visualiser driven by per-track spectrum data.
+  Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
+  library folder. Tracks without a spectrum file simply show no bars.
 - **Optional network** — weather from Open-Meteo, nearby places from Overpass, and YouTube playlist
   downloads through yt-dlp into the same library format.
 

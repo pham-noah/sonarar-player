@@ -537,6 +537,9 @@ class _HomeShellState extends State<HomeShell>
   bool _askedStorage = false;
   bool _askedNotifications = false;
 
+  /// Storage is asked for when the Library opens — that is the first moment it
+  /// is needed. Notifications are NOT asked for here: the rule is "on first
+  /// play", and bundling them would put a media prompt on a browsing screen.
   Future<void> _ensurePlaybackPermissions() async {
     if (!_askedStorage && _storageAccess != StorageAccess.granted) {
       _askedStorage = true;
@@ -549,11 +552,13 @@ class _HomeShellState extends State<HomeShell>
       // "grant and nothing happens until the next launch".
       if (_storageAccess == StorageAccess.granted) await _rereadLibrary();
     }
-    if (!_askedNotifications) {
-      _askedNotifications = true;
-      _notificationAccess = await StoragePermission.requestNotification();
-      if (mounted) setState(() {});
-    }
+  }
+
+  Future<void> _ensureNotificationPermission() async {
+    if (_askedNotifications) return;
+    _askedNotifications = true;
+    _notificationAccess = await StoragePermission.requestNotification();
+    if (mounted) setState(() {});
   }
 
   void _playNowMix() {
@@ -729,6 +734,9 @@ class _HomeShellState extends State<HomeShell>
     if (!ok) _toast('Could not open the output settings');
   }
   bool _loading = true;
+
+  double _bootProgress = 0.02;
+  String _bootLabel = 'starting';
 
   bool _needsSetup = false;
 
@@ -1038,6 +1046,9 @@ class _HomeShellState extends State<HomeShell>
     final since = _lastPhase == null ? null : now.difference(_lastPhase!).inMilliseconds;
     _lastPhase = now;
     if (since != null) _phaseCosts[label] = since;
+    _bootProgress = progress;
+    _bootLabel = label;
+    if (mounted) setState(() {});
     // ignore: avoid_print
     print('[Sonarar] boot ${(progress * 100).round()}% $label'
         '${since == null ? '' : ' (+${since}ms)'}');
@@ -1178,6 +1189,7 @@ class _HomeShellState extends State<HomeShell>
     _audio = AudioEngine()..listen();
 
     _audio!.onPlayingChanged = (playing) {
+      if (playing) unawaited(_ensureNotificationPermission());
       if (mounted && _playing != playing) {
         setState(() => _playing = playing);
 
@@ -2157,7 +2169,7 @@ class _HomeShellState extends State<HomeShell>
     if (!mounted) return;
     final after = widget.state.library.length;
     _toast(after == before
-        ? 'Downloaded — the app has not picked it up yet; a library push will'
+        ? 'Downloaded — it is not in the library manifest yet'
         : 'Added to the library');
   }
 
@@ -3100,11 +3112,54 @@ class _HomeShellState extends State<HomeShell>
     });
   }
 
+  /// The app is not usable until the library is read, but a flat colour for the
+  /// whole boot reads as a hang. This says what it is doing and how far along.
+  Widget _splash(Skin skin) => ColoredBox(
+        color: skin.background,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'SONARAR',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 6,
+                  color: skin.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: 172,
+                child: ClipRect(
+                  child: LinearProgressIndicator(
+                    value: _bootProgress.clamp(0.0, 1.0),
+                    minHeight: 2,
+                    backgroundColor: skin.panel,
+                    color: skin.accent,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                _bootLabel,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: skin.textSecondary,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
   Widget _shell(BuildContext context) {
     final skin = widget.state.uiSkin;
 
     if (_loading) {
-      return ColoredBox(color: skin.background);
+      return _splash(skin);
     }
 
     if (_needsSetup) {

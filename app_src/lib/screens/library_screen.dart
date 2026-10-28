@@ -1277,6 +1277,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 10),
+              Text(
+                'Copy music into that folder from a PC, or run\n'
+                'tools/sync_library.py to push it from there.',
+                style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),

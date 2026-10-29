@@ -8,6 +8,7 @@ import '../art/skin_art.dart';
 import '../core/app_state.dart';
 import '../library/compendium.dart';
 import '../library/track.dart';
+import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import '../theme/slab.dart';
 import 'compendium_screen.dart';
@@ -58,13 +59,15 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   Widget build(BuildContext context) {
     final skin = widget.state.uiSkin;
     final entries = widget.compendiumEntries;
-    final rows =
-        entries == null ? <CompendiumEntry>[] : orderCompendium(entries, _order);
-    final heard = entries == null ? 0 : entries.where((e) => !e.neverHeard).length;
+    final rows = entries == null
+        ? <CompendiumEntry>[]
+        : orderCompendium(entries, _order);
+    final heard = entries == null
+        ? 0
+        : entries.where((e) => !e.neverHeard).length;
 
     final body = CustomScrollView(
       slivers: [
-
         SliverToBoxAdapter(
           child: Padding(
             padding: widget.inline
@@ -76,7 +79,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                 if (!widget.inline) ...[
                   ScreenTitle(
                     skin: skin,
-                    text: widget.state.languageSkin.word(WordKey.libraryRoom, 'LIBRARY TOOLS'),
+                    text: widget.state.languageSkin.word(
+                      WordKey.libraryRoom,
+                      'LIBRARY TOOLS',
+                    ),
                   ),
                   const SizedBox(height: 14),
                 ],
@@ -84,7 +90,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                 if (entries != null) ...[
                   Text(
                     '$heard of ${entries.length} heard',
-                    style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textSecondary),
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontSmall,
+                      color: skin.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -132,7 +141,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
           child: ArchiveBackdrop(
             skin: skin,
             focus: widget.state.artFocus,
-            art: widget.state.art,
+            art: widget.state.artForSurface(SurfaceId.library),
           ),
         ),
         SafeArea(child: body),
@@ -168,6 +177,7 @@ class ArchiveBackdrop extends StatelessWidget {
     return FramedArt(
       burn: 1.0,
       assetPath: piece.assetPath,
+      spec: piece.spec,
       aspect: piece.aspect,
       focus: focus,
       opacity: opacity,

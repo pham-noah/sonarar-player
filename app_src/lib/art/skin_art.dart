@@ -1,6 +1,7 @@
 library;
 
-import '../art/art_focus.dart';
+import 'art_focus.dart';
+import 'art_spec.dart';
 import '../theme/skin.dart';
 
 class SkinArt {
@@ -10,6 +11,7 @@ class SkinArt {
     required this.aspect,
     this.focus = ArtFocus.centre,
     this.fullBleed = false,
+    this.spec = ArtSpec.none,
   });
 
   final String key;
@@ -21,6 +23,9 @@ class SkinArt {
   final ArtFocus focus;
 
   final bool fullBleed;
+
+  /// The picture's own framing, read from `spec.json` beside it.
+  final ArtSpec spec;
 }
 
 class SkinArtSet {

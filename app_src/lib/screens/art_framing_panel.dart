@@ -83,6 +83,7 @@ class ArtFramingPanel extends StatelessWidget {
                     // will look different once it is on the screen.
                     burn: 1.0,
                     assetPath: piece.assetPath,
+                    spec: piece.spec,
                     aspect: piece.aspect,
                     focus: focus,
                     cacheWidth: 600,
@@ -145,7 +146,10 @@ class ArtFramingPanel extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                Container(height: 3, color: skin.textSecondary.withValues(alpha: 0.3)),
+                Container(
+                  height: 3,
+                  color: skin.textSecondary.withValues(alpha: 0.3),
+                ),
                 FractionallySizedBox(
                   widthFactor: amount.clamp(0.0, 1.0),
                   child: Container(height: 3, color: skin.accent),

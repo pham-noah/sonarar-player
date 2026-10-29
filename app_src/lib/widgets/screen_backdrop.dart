@@ -35,6 +35,7 @@ class ScreenBackdrop extends StatelessWidget {
       child: FramedArt(
         burn: 1.0,
         assetPath: piece.assetPath,
+        spec: piece.spec,
         aspect: piece.aspect,
         focus: focus ?? piece.focus,
         opacity: opacity,

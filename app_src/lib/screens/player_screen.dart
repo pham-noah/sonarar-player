@@ -2,6 +2,7 @@ library;
 
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart' hide RepeatMode;
+
 import '../widgets/cover_button.dart';
 import '../widgets/pressable.dart';
 import '../widgets/framed_art.dart';
@@ -11,6 +12,7 @@ import '../widgets/transport_motion.dart';
 import '../context/context_icons.dart';
 import '../context/place_icons.dart';
 import '../context/weather_codes.dart';
+
 import 'dart:io' show Directory;
 
 import '../core/app_state.dart';
@@ -24,6 +26,7 @@ import '../theme/layout.dart';
 import '../theme/layout_kit.dart';
 import '../theme/motion.dart';
 import '../theme/backdrop_layer.dart';
+import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import '../theme/skin_policy.dart';
 import '../theme/surface.dart';
@@ -32,19 +35,7 @@ import '../library/lyrics.dart';
 import '../widgets/spectrum.dart';
 import '../widgets/track_actions.dart';
 
-enum PlayerPanel {
-  none,
-
-  why,
-
-  queue,
-
-  track,
-
-  audio,
-
-  loop,
-}
+enum PlayerPanel { none, why, queue, track, audio, loop }
 
 const double kLyricsArtOpacity = 1.0;
 
@@ -202,7 +193,7 @@ class PlayerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final skin = state.uiSkin;
-    final art = state.art;
+    final art = state.artForSurface(SurfaceId.player);
     final skew = skin.skewDegrees * (3.14159265 / 180);
 
     return GestureDetector(
@@ -233,9 +224,10 @@ class PlayerScreen extends StatelessWidget {
 
   Widget _body(BuildContext context, Skin skin, SkinArt? art, double skew) {
     final pal = PresentationScope.of(context, fallback: skin).palette;
-       final showFigure = art != null &&
-           (state.presentation.kit.chrome.artByDefault ||
-               state.artSkinOverride != null);
+    final showFigure =
+        art != null &&
+        (state.presentation.kit.chrome.artByDefault ||
+            state.artSkinOverride != null);
     final chrome = state.presentation.kit.chrome;
     return Stack(
       fit: StackFit.expand,
@@ -264,11 +256,11 @@ class PlayerScreen extends StatelessWidget {
 
         if (art != null && art.fullBleed && showFigure)
           Positioned.fill(
-            child:
-              CrossFadeSlot(
+            child: CrossFadeSlot(
               keyValue: art.key,
               child: FramedArt(
                 assetPath: art.assetPath,
+                spec: art.spec,
                 aspect: art.aspect,
                 focus: state.artFocus,
                 cacheWidth: 900,
@@ -283,46 +275,46 @@ class PlayerScreen extends StatelessWidget {
             left: 0,
             right: 0,
             top: 0,
-             bottom: chrome.artReachBehindBars,
+            bottom: chrome.artReachBehindBars,
             child: Builder(
-                builder: (context) {
-                  final framed = CrossFadeSlot(
-                    keyValue: art.key,
-                    child: FramedArt(
-                      assetPath: art.assetPath,
-                      aspect: art.aspect,
-                      focus: state.artFocus,
-                      cacheWidth: 900,
-                      enterFrom: -220,
-                      burn: 1.0,
-                      opacity: lyricsMode ? kLyricsArtOpacity : 1.0,
+              builder: (context) {
+                final framed = CrossFadeSlot(
+                  keyValue: art.key,
+                  child: FramedArt(
+                    assetPath: art.assetPath,
+                    spec: art.spec,
+                    aspect: art.aspect,
+                    focus: state.artFocus,
+                    cacheWidth: 900,
+                    enterFrom: -220,
+                    burn: 1.0,
+                    opacity: lyricsMode ? kLyricsArtOpacity : 1.0,
+                  ),
+                );
+
+                final placed = framed;
+                if (lyricsMode) return placed;
+                return ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (rect) => RadialGradient(
+                    center: Alignment(
+                      (state.artFocus.dx * 0.8).clamp(-1.0, 1.0) + 0.15,
+                      (-state.artFocus.dy * 0.8).clamp(-1.0, 1.0) - 0.10,
                     ),
-                  );
+                    radius: 1.05,
 
-                  final placed = framed;
-                  if (lyricsMode) return placed;
-                  return ShaderMask(
-                    blendMode: BlendMode.dstIn,
-                    shaderCallback: (rect) => RadialGradient(
-
-                      center: Alignment(
-                        (state.artFocus.dx * 0.8).clamp(-1.0, 1.0) + 0.15,
-                        (-state.artFocus.dy * 0.8).clamp(-1.0, 1.0) - 0.10,
-                      ),
-                      radius: 1.05,
-
-                      colors: [
-                        Colors.white,
-                        Colors.white.withValues(alpha: 0.72),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.40, 0.66, 0.93],
-                    ).createShader(rect),
-                    child: placed,
-                  );
-                },
-              ),
+                    colors: [
+                      Colors.white,
+                      Colors.white.withValues(alpha: 0.72),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.40, 0.66, 0.93],
+                  ).createShader(rect),
+                  child: placed,
+                );
+              },
             ),
+          ),
 
         if (lyricsMode && lyricsContent != null) lyricsContent!,
 
@@ -347,130 +339,129 @@ class PlayerScreen extends StatelessWidget {
 
         if (!lyricsMode)
           Positioned(
-          left: -58,
-          top: 0,
-          bottom: 0,
-          child: Align(
-            alignment: const Alignment(-0.02, 0.0),
-            child: Transform(
-              transform: Matrix4.skewX(-skew),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                skin.nowPlayingWordmark.replaceAll(' ', '\n'),
-                style: TextStyle(
-                  fontSize: 118,
-                  height: 0.82,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -3,
-                  color: pal.textPrimary.withValues(alpha: 0.075),
+            left: -58,
+            top: 0,
+            bottom: 0,
+            child: Align(
+              alignment: const Alignment(-0.02, 0.0),
+              child: Transform(
+                transform: Matrix4.skewX(-skew),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  skin.nowPlayingWordmark.replaceAll(' ', '\n'),
+                  style: TextStyle(
+                    fontSize: 118,
+                    height: 0.82,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -3,
+                    color: pal.textPrimary.withValues(alpha: 0.075),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
 
         if (!lyricsMode && chrome.hemisphereScrim)
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  pal.background.withValues(alpha: 0.88),
-                  pal.background.withValues(alpha: 0.52),
-                  pal.background.withValues(alpha: 0.05),
-                  Colors.transparent,
-                ],
-                stops: const [0.0, 0.42, 0.80, 1.0],
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    pal.background.withValues(alpha: 0.88),
+                    pal.background.withValues(alpha: 0.52),
+                    pal.background.withValues(alpha: 0.05),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.42, 0.80, 1.0],
+                ),
               ),
             ),
           ),
-        ),
 
         if (!lyricsMode)
-        SafeArea(
-          child: Padding(
-            padding: LayoutSpec.screenPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (chrome.wordmark) ...[
-                  _wordmark(skin, skew, pal),
-                  const SizedBox(height: 4),
-                  Text(
-                    'NOW PLAYING',
-                    style: TextStyle(
-                      fontSize: 12,
-                      letterSpacing: 5,
-                      fontWeight: FontWeight.w700,
-                      color: pal.accent,
-                    ),
-                  ),
-                ],
-                if (state.arrangement.contextPlateExists) ...[
-                  const SizedBox(height: 13),
-                  _contextBadge(skin, skew, pal),
-                  const SizedBox(height: 9),
-                ] else
-                  const SizedBox(height: 9),
-                   if (chrome.titleForm == TitleForm.stacked)
-                        _meta(
-                          context,
-                          skin,
-                          skew,
-                          center: false,
-                          titleBeside: false,
-                          chrome: chrome,
-                        ),
-                   if (chrome.titleForm == TitleForm.beside) ...[
-                     _upNext(skin, skew, showSourceLine: true),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: LayoutSpec.tabBarHeight +
-                            state.arrangement.tabBarInsets.bottom +
-                            (lyricsMode ? LayoutSpec.miniPlayerClearance : 0),
+          SafeArea(
+            child: Padding(
+              padding: LayoutSpec.screenPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (chrome.wordmark) ...[
+                    _wordmark(skin, skew, pal),
+                    const SizedBox(height: 4),
+                    Text(
+                      'NOW PLAYING',
+                      style: TextStyle(
+                        fontSize: 12,
+                        letterSpacing: 5,
+                        fontWeight: FontWeight.w700,
+                        color: pal.accent,
                       ),
-                      child: Align(
-                      alignment: Alignment.bottomCenter,
+                    ),
+                  ],
+                  if (state.arrangement.contextPlateExists) ...[
+                    const SizedBox(height: 13),
+                    _contextBadge(skin, skew, pal),
+                    const SizedBox(height: 9),
+                  ] else
+                    const SizedBox(height: 9),
+                  if (chrome.titleForm == TitleForm.stacked)
+                    _meta(
+                      context,
+                      skin,
+                      skew,
+                      center: false,
+                      titleBeside: false,
+                      chrome: chrome,
+                    ),
+                  if (chrome.titleForm == TitleForm.beside) ...[
+                    _upNext(skin, skew, showSourceLine: true),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          bottom:
+                              LayoutSpec.tabBarHeight +
+                              state.arrangement.tabBarInsets.bottom +
+                              (lyricsMode ? LayoutSpec.miniPlayerClearance : 0),
+                        ),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (lyrics != null && onLyrics != null)
+                                  _liveLyricLine(context, skin),
+                                _meta(
+                                  context,
+                                  skin,
+                                  skew,
+                                  center: false,
+                                  titleBeside:
+                                      chrome.titleForm == TitleForm.beside,
+                                  chrome: chrome,
+                                ),
+                                const SizedBox(height: 12),
+                                _controls(
+                                  context,
+                                  skin,
+                                  skew,
+                                  scrubberFirst: !chrome.scrubberBelowTransport,
+                                  chrome: chrome,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ] else
+                    Expanded(
                       child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (lyrics != null && onLyrics != null)
-                              _liveLyricLine(context, skin),
-                              _meta(
-                                context,
-                                skin,
-                                skew,
-                                center: false,
-                                titleBeside:
-                                    chrome.titleForm == TitleForm.beside,
-                                chrome: chrome,
-                              ),
-                              const SizedBox(height: 12),
-                              _controls(
-                                context,
-                                skin,
-                                skew,
-                                scrubberFirst:
-                                    !chrome.scrubberBelowTransport,
-                                chrome: chrome,
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  ),
-                ] else
-                  Expanded(
-                    child: SingleChildScrollView(
-
-                      child: Align(
-                        alignment: Alignment.topCenter,
+                        child: Align(
+                          alignment: Alignment.topCenter,
                           child: _controls(
                             context,
                             skin,
@@ -478,13 +469,13 @@ class PlayerScreen extends StatelessWidget {
                             scrubberFirst: !chrome.scrubberBelowTransport,
                             chrome: chrome,
                           ),
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
 
         if (panel != PlayerPanel.none) _panelOverlay(context, skin),
       ],
@@ -549,8 +540,11 @@ class PlayerScreen extends StatelessWidget {
           color: skin.textPrimary,
           border: Border(left: BorderSide(color: skin.accentDeep, width: 5)),
           boxShadow: [
-
-            BoxShadow(color: skin.slabShadow, blurRadius: 22, offset: const Offset(0, 6)),
+            BoxShadow(
+              color: skin.slabShadow,
+              blurRadius: 22,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
 
@@ -594,40 +588,39 @@ class PlayerScreen extends StatelessWidget {
 
                 onTap: state.contextEnabled ? state.toggleMode : null,
                 child: Row(
-
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Tooltip(
-                    message: state.contextEnabled
-                        ? (state.mode == QueueMode.dynamic
-                            ? 'Dynamic — the queue fills itself from the context. Tap for Fixed.'
-                            : 'Fixed — only what you queued. Tap for Dynamic.')
-                        : (state.mode == QueueMode.dynamic
-                            ? 'Dynamic — the queue fills itself from the context.'
-                            : 'Fixed — only what you queued.'),
-                    child: _factChip(
-                      skin,
-                      skew,
-                      state.mode == QueueMode.dynamic
-                          ? Icons.auto_awesome_motion_rounded
-                          : Icons.playlist_play_rounded,
-                      dark: true,
-                    ),
-                  ),
-
-                  if (state.mode == QueueMode.dynamic) ...[
-                    const SizedBox(width: 5),
-                    for (final fact in _contextFacts(skin))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 5),
-                        child: Tooltip(
-                          message: fact.label,
-                          child: _factChip(skin, skew, fact.icon),
-                        ),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Tooltip(
+                      message: state.contextEnabled
+                          ? (state.mode == QueueMode.dynamic
+                                ? 'Dynamic — the queue fills itself from the context. Tap for Fixed.'
+                                : 'Fixed — only what you queued. Tap for Dynamic.')
+                          : (state.mode == QueueMode.dynamic
+                                ? 'Dynamic — the queue fills itself from the context.'
+                                : 'Fixed — only what you queued.'),
+                      child: _factChip(
+                        skin,
+                        skew,
+                        state.mode == QueueMode.dynamic
+                            ? Icons.auto_awesome_motion_rounded
+                            : Icons.playlist_play_rounded,
+                        dark: true,
                       ),
+                    ),
+
+                    if (state.mode == QueueMode.dynamic) ...[
+                      const SizedBox(width: 5),
+                      for (final fact in _contextFacts(skin))
+                        Padding(
+                          padding: const EdgeInsets.only(right: 5),
+                          child: Tooltip(
+                            message: fact.label,
+                            child: _factChip(skin, skew, fact.icon),
+                          ),
+                        ),
+                    ],
                   ],
-                ],
-              ),
+                ),
               ),
             ],
           ),
@@ -638,7 +631,6 @@ class PlayerScreen extends StatelessWidget {
 
   Widget _factChip(Skin skin, double skew, IconData icon, {bool dark = false}) {
     return Transform(
-
       transform: Matrix4.skewX(-skew * 2),
       alignment: Alignment.center,
       child: Container(
@@ -652,11 +644,7 @@ class PlayerScreen extends StatelessWidget {
             ),
           ),
         ),
-        child: Icon(
-          icon,
-          size: 14,
-          color: skin.textPrimary,
-        ),
+        child: Icon(icon, size: 14, color: skin.textPrimary),
       ),
     );
   }
@@ -685,7 +673,11 @@ class PlayerScreen extends StatelessWidget {
     };
   }
 
-  Future<void> _pickVariant(BuildContext context, Skin skin, Track current) async {
+  Future<void> _pickVariant(
+    BuildContext context,
+    Skin skin,
+    Track current,
+  ) async {
     final pick = await showModalBottomSheet<Track>(
       context: context,
       showDragHandle: true,
@@ -711,7 +703,10 @@ class PlayerScreen extends StatelessWidget {
               InkWell(
                 onTap: () => Navigator.of(ctx).pop(v),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -730,7 +725,6 @@ class PlayerScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 3),
                             Text(
-
                               v.variantTag == null
                                   ? 'ALBUM VERSION'
                                   : variantLabel(v.variantTag!),
@@ -769,144 +763,152 @@ class PlayerScreen extends StatelessWidget {
   }) {
     final t = track;
     return Column(
-      crossAxisAlignment:
-          center ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: center
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-          if (!titleBeside) ...[
+        if (!titleBeside) ...[
+          SwapSlide(
+            keyValue: t?.id ?? '',
+            child: Transform(
+              transform: Matrix4.skewX(-skew * 0.6),
+              alignment: Alignment.centerLeft,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      t?.title ?? 'Nothing loaded',
 
-        SwapSlide(
-          keyValue: t?.id ?? '',
-          child: Transform(
-            transform: Matrix4.skewX(-skew * 0.6),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    t?.title ?? 'Nothing loaded',
-
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
-                      height: 1.05,
-                      letterSpacing: -0.5,
-                      color: skin.textPrimary,
-                      shadows: const [
-                        Shadow(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        height: 1.05,
+                        letterSpacing: -0.5,
+                        color: skin.textPrimary,
+                        shadows: const [
+                          Shadow(
                             color: Color(0xE6000000),
                             blurRadius: 16,
-                            offset: Offset(0, 3)),
-                      ],
-                    ),
-                  ),
-                ),
-
-                if (t != null && isKnownVariantTag(t.variantTag)) ...[
-                  const SizedBox(width: 10),
-
-                  Pressable(
-                    child: InkWell(
-                      onTap: (variants.isEmpty || onSwapVariant == null)
-                          ? null
-                          : () => _pickVariant(context, skin, t),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: skin.accent,
-                          border: Border.all(color: skin.accentDeep, width: 2),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              variantLabel(t.variantTag!),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.6,
-                                color: skin.onAccent,
-                              ),
-                            ),
-
-                            if (variants.isNotEmpty && onSwapVariant != null) ...[
-                              const SizedBox(width: 3),
-                              Icon(Icons.expand_more_rounded,
-                                  size: 14, color: skin.onAccent),
-                            ],
-                          ],
-                        ),
+                            offset: Offset(0, 3),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+
+                  if (t != null && isKnownVariantTag(t.variantTag)) ...[
+                    const SizedBox(width: 10),
+
+                    Pressable(
+                      child: InkWell(
+                        onTap: (variants.isEmpty || onSwapVariant == null)
+                            ? null
+                            : () => _pickVariant(context, skin, t),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: skin.accent,
+                            border: Border.all(
+                              color: skin.accentDeep,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                variantLabel(t.variantTag!),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.6,
+                                  color: skin.onAccent,
+                                ),
+                              ),
+
+                              if (variants.isNotEmpty &&
+                                  onSwapVariant != null) ...[
+                                const SizedBox(width: 3),
+                                Icon(
+                                  Icons.expand_more_rounded,
+                                  size: 14,
+                                  color: skin.onAccent,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 7),
+          SwapSlide(
+            keyValue: t?.id ?? '',
+            stagger: const Duration(milliseconds: 60),
+            child: Row(
+              children: [
+                Flexible(
+                  child: GestureDetector(
+                    onTap: (onArtist == null || (t?.artist ?? '').isEmpty)
+                        ? null
+                        : () => onArtist!(t!.artist),
+                    child: Text(
+                      t?.artist ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontSmall,
+                        fontWeight: FontWeight.w600,
+                        color: skin.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 9),
+                Transform(
+                  transform: Matrix4.skewX(-skew * 0.6),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(7, 1, 7, 2),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: skin.accentDeep.withValues(alpha: 0.6),
+                      ),
+                      color: skin.accentDeep.withValues(alpha: 0.12),
+                    ),
+                    child: Text(
+                      '0',
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontLabel,
+                        fontWeight: FontWeight.w900,
+                        color: skin.accentDeep,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 7),
-        SwapSlide(
-          keyValue: t?.id ?? '',
-          stagger: const Duration(milliseconds: 60),
-          child: Row(
-          children: [
-            Flexible(
-
-              child: GestureDetector(
-                onTap: (onArtist == null || (t?.artist ?? '').isEmpty)
-                    ? null
-                    : () => onArtist!(t!.artist),
-                child: Text(
-                t?.artist ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontSmall,
-                  fontWeight: FontWeight.w600,
-                  color: skin.textSecondary,
-                ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 9),
-            Transform(
-              transform: Matrix4.skewX(-skew * 0.6),
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(7, 1, 7, 2),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: skin.accentDeep.withValues(alpha: 0.6),
-                  ),
-                  color: skin.accentDeep.withValues(alpha: 0.12),
-                ),
-                child: Text(
-                  '0',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontLabel,
-                    fontWeight: FontWeight.w900,
-                    color: skin.accentDeep,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        ),
         ],
         if (cover != null || onPlayPause != null) ...[
           const SizedBox(height: 14),
           SwapSlide(
             keyValue: t?.id ?? '',
             child: Row(
-
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-
                 if (t == null)
                   CoverButton(
                     skin: skin,
@@ -926,10 +928,10 @@ class PlayerScreen extends StatelessWidget {
                       size: chrome.coverSize,
                     ),
                   ),
-                   if (titleBeside) ...[
-                     const SizedBox(width: 14),
-                     Flexible(child: _titleBeside(skin, t)),
-                   ],
+                if (titleBeside) ...[
+                  const SizedBox(width: 14),
+                  Flexible(child: _titleBeside(skin, t)),
+                ],
               ],
             ),
           ),
@@ -939,87 +941,113 @@ class PlayerScreen extends StatelessWidget {
   }
 
   Widget _titleBeside(Skin skin, Track? t) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            t?.title ?? 'Nothing loaded',
-            maxLines: 2,
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        t?.title ?? 'Nothing loaded',
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.w900,
+          height: 1.05,
+          letterSpacing: -0.5,
+          color: skin.textPrimary,
+          shadows: const [
+            Shadow(
+              color: Color(0xE6000000),
+              blurRadius: 16,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+      ),
+      if (t != null && t.artist.trim().isNotEmpty) ...[
+        const SizedBox(height: 4),
+        GestureDetector(
+          onTap: (onArtist == null || (t.artist).isEmpty)
+              ? null
+              : () => onArtist!(t.artist),
+          behavior: HitTestBehavior.opaque,
+          child: Text(
+            t.artist,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w900,
-              height: 1.05,
-              letterSpacing: -0.5,
+              fontSize: LayoutSpec.fontSmall,
+              fontWeight: FontWeight.w600,
+
               color: skin.textPrimary,
               shadows: const [
-                Shadow(color: Color(0xE6000000), blurRadius: 16, offset: Offset(0, 3)),
+                Shadow(
+                  color: Color(0xCC000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 2),
+                ),
               ],
             ),
           ),
-          if (t != null && t.artist.trim().isNotEmpty) ...[
-            const SizedBox(height: 4),
-            GestureDetector(
-              onTap: (onArtist == null || (t.artist).isEmpty)
-                  ? null
-                  : () => onArtist!(t.artist),
-              behavior: HitTestBehavior.opaque,
-              child: Text(
-                t.artist,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontSmall,
-                  fontWeight: FontWeight.w600,
-
-                  color: skin.textPrimary,
-                  shadows: const [
-                    Shadow(color: Color(0xCC000000), blurRadius: 12, offset: Offset(0, 2)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      );
+        ),
+      ],
+    ],
+  );
 
   Widget _transportRow(Skin skin, double skew) => StaggerIn(
-        index: 0,
-        style: StaggerStyle.rise,
+    index: 0,
+    style: StaggerStyle.rise,
 
-        child: FittedBox(
-          key: transportKey,
-          fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _transportButton(skin, skew, Icons.shuffle_rounded,
-                  onTap: onShuffle, active: shuffled, compact: true),
-              const SizedBox(width: 7),
-              NudgingButton(
-                direction: -1,
-                onTap: onPrevious,
-                child: _transportButton(skin, skew, Icons.skip_previous_rounded,
-                    onTap: onPrevious),
-              ),
-              const SizedBox(width: 8),
-              _playButton(skin, skew, playing: playing),
-              const SizedBox(width: 8),
-              NudgingButton(
-                direction: 1,
-                onTap: onNext,
-                child: _transportButton(skin, skew, Icons.skip_next_rounded,
-                    onTap: onNext),
-              ),
-              const SizedBox(width: 10),
-              _transportButton(skin, skew, _repeatIcon(repeatMode),
-                  onTap: onCycleRepeat,
-                  active: repeatMode != RepeatMode.off,
-                  compact: true),
-            ],
+    child: FittedBox(
+      key: transportKey,
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _transportButton(
+            skin,
+            skew,
+            Icons.shuffle_rounded,
+            onTap: onShuffle,
+            active: shuffled,
+            compact: true,
           ),
-        ),
-      );
+          const SizedBox(width: 7),
+          NudgingButton(
+            direction: -1,
+            onTap: onPrevious,
+            child: _transportButton(
+              skin,
+              skew,
+              Icons.skip_previous_rounded,
+              onTap: onPrevious,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _playButton(skin, skew, playing: playing),
+          const SizedBox(width: 8),
+          NudgingButton(
+            direction: 1,
+            onTap: onNext,
+            child: _transportButton(
+              skin,
+              skew,
+              Icons.skip_next_rounded,
+              onTap: onNext,
+            ),
+          ),
+          const SizedBox(width: 10),
+          _transportButton(
+            skin,
+            skew,
+            _repeatIcon(repeatMode),
+            onTap: onCycleRepeat,
+            active: repeatMode != RepeatMode.off,
+            compact: true,
+          ),
+        ],
+      ),
+    ),
+  );
 
   Widget _controls(
     BuildContext context,
@@ -1029,38 +1057,39 @@ class PlayerScreen extends StatelessWidget {
     required ChromeKit chrome,
   }) {
     final block = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-             if (scrubberFirst) ...[
-               _progressBar(skin, skew),
-               const SizedBox(height: 6),
-               _times(skin, skew),
-               const SizedBox(height: 14),
-          ],
-          if (chrome.wordmark) ...[
-            _progressBar(skin, skew),
-            const SizedBox(height: 10),
-            _times(skin, skew),
-            const SizedBox(height: 14),
-          ],
-          _transportRow(skin, skew),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (scrubberFirst) ...[
+          _progressBar(skin, skew),
+          const SizedBox(height: 6),
+          _times(skin, skew),
+          const SizedBox(height: 14),
+        ],
+        if (chrome.wordmark) ...[
+          _progressBar(skin, skew),
+          const SizedBox(height: 10),
+          _times(skin, skew),
+          const SizedBox(height: 14),
+        ],
+        _transportRow(skin, skew),
 
-          const SizedBox(height: 12),
-          StaggerIn(
-            index: 2,
-            style: StaggerStyle.rise,
+        const SizedBox(height: 12),
+        StaggerIn(
+          index: 2,
+          style: StaggerStyle.rise,
 
-            overrideDx: -210,
-            overrideDy: 26,
-            child:
-          TrackActions(
+          overrideDx: -210,
+          overrideDy: 26,
+          child: TrackActions(
             skin: skin,
             audioOpen: panel == PlayerPanel.audio,
             onAudio: audioContent == null
                 ? null
-                : () => onPanel?.call(panel == PlayerPanel.audio
-                    ? PlayerPanel.none
-                    : PlayerPanel.audio),
+                : () => onPanel?.call(
+                    panel == PlayerPanel.audio
+                        ? PlayerPanel.none
+                        : PlayerPanel.audio,
+                  ),
 
             actions: [
               if (hasWhy)
@@ -1068,9 +1097,11 @@ class PlayerScreen extends StatelessWidget {
                   skin,
                   Icons.help_outline_rounded,
                   'Why this song',
-                  () => onPanel?.call(panel == PlayerPanel.why
-                      ? PlayerPanel.none
-                      : PlayerPanel.why),
+                  () => onPanel?.call(
+                    panel == PlayerPanel.why
+                        ? PlayerPanel.none
+                        : PlayerPanel.why,
+                  ),
                   active: panel == PlayerPanel.why,
                 ),
               if (hasQueue)
@@ -1078,9 +1109,11 @@ class PlayerScreen extends StatelessWidget {
                   skin,
                   Icons.queue_music_rounded,
                   upNextCount == 0 ? 'Queue' : 'Queue ($upNextCount)',
-                  () => onPanel?.call(panel == PlayerPanel.queue
-                      ? PlayerPanel.none
-                      : PlayerPanel.queue),
+                  () => onPanel?.call(
+                    panel == PlayerPanel.queue
+                        ? PlayerPanel.none
+                        : PlayerPanel.queue,
+                  ),
                   active: panel == PlayerPanel.queue,
                   badge: upNextCount > 0 ? '$upNextCount' : null,
                 ),
@@ -1090,9 +1123,11 @@ class PlayerScreen extends StatelessWidget {
                   skin,
                   Icons.tune_rounded,
                   'This track — bookmark, tags, loop points',
-                  () => onPanel?.call(panel == PlayerPanel.track
-                      ? PlayerPanel.none
-                      : PlayerPanel.track),
+                  () => onPanel?.call(
+                    panel == PlayerPanel.track
+                        ? PlayerPanel.none
+                        : PlayerPanel.track,
+                  ),
                   active: panel == PlayerPanel.track,
                 ),
               if (onStopAfterTrack != null)
@@ -1111,84 +1146,85 @@ class PlayerScreen extends StatelessWidget {
                 _iconAction(
                   skin,
                   sleepRunning ? Icons.bedtime_rounded : Icons.bedtime_outlined,
-                  sleepRunning ? 'Sleep timer on — tap to turn off' : 'Sleep timer',
+                  sleepRunning
+                      ? 'Sleep timer on — tap to turn off'
+                      : 'Sleep timer',
                   () => onSleep!(sleepRunning ? null : sleepTimer),
                   active: sleepRunning,
                 ),
             ],
           ),
+        ),
+
+        if (sleepLeft != null)
+          ValueListenableBuilder<Duration?>(
+            valueListenable: sleepLeft!,
+            builder: (context, left, _) {
+              if (left == null) return const SizedBox.shrink();
+              final total = left.inSeconds;
+              final h = total ~/ 3600;
+              final m = (total % 3600) ~/ 60;
+              final sec = total % 60;
+              final text = h > 0
+                  ? '$h:${m.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}'
+                  : '${m.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.bedtime_rounded, size: 14, color: skin.accent),
+                    const SizedBox(width: 6),
+                    Text(
+                      'SLEEP IN $text',
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontLabel,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.w800,
+                        color: skin.accent,
+
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
 
-          if (sleepLeft != null)
-            ValueListenableBuilder<Duration?>(
-              valueListenable: sleepLeft!,
-              builder: (context, left, _) {
-                if (left == null) return const SizedBox.shrink();
-                final total = left.inSeconds;
-                final h = total ~/ 3600;
-                final m = (total % 3600) ~/ 60;
-                final sec = total % 60;
-                final text = h > 0
-                    ? '$h:${m.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}'
-                    : '${m.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.bedtime_rounded,
-                          size: 14, color: skin.accent),
-                      const SizedBox(width: 6),
-                      Text(
-                        'SLEEP IN $text',
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontLabel,
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w800,
-                          color: skin.accent,
-
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-
-          const SizedBox(height: 14),
-             if (chrome.titleForm == TitleForm.stacked)
-             Row(
+        const SizedBox(height: 14),
+        if (chrome.titleForm == TitleForm.stacked)
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (onLyrics != null) ...[
                 _lyricsButton(skin),
                 const SizedBox(width: 12),
               ],
-                Expanded(
-                  child: _upNext(skin, skew,
-                      showSourceLine: chrome.upNextStrip)),
+              Expanded(
+                child: _upNext(skin, skew, showSourceLine: chrome.upNextStrip),
+              ),
             ],
           ),
 
-          if (fileMissing)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                'Track file not found on this device',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontSmall,
-                  fontWeight: FontWeight.w700,
-                  color: skin.accent,
-                ),
+        if (fileMissing)
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              'Track file not found on this device',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: LayoutSpec.fontSmall,
+                fontWeight: FontWeight.w700,
+                color: skin.accent,
               ),
             ),
-        ],
+          ),
+      ],
     );
-      return chrome.transportTilt == 0
-          ? block
-          : Transform.rotate(angle: chrome.transportTilt, child: block);
+    return chrome.transportTilt == 0
+        ? block
+        : Transform.rotate(angle: chrome.transportTilt, child: block);
   }
 
   Widget _liveLyricLine(BuildContext context, Skin skin) {
@@ -1199,10 +1235,11 @@ class PlayerScreen extends StatelessWidget {
         final l = lyrics;
         if (l == null) return const SizedBox.shrink();
         final i = l.indexAt(at);
-        final text = (i >= 0 && i < l.lines.length) ? (romaji[i] ?? l.lines[i].text) : null;
+        final text = (i >= 0 && i < l.lines.length)
+            ? (romaji[i] ?? l.lines[i].text)
+            : null;
         final has = text != null && text.trim().isNotEmpty;
         return GestureDetector(
-
           onTap: has ? onLyrics : null,
           behavior: HitTestBehavior.opaque,
           child: Container(
@@ -1217,9 +1254,15 @@ class PlayerScreen extends StatelessWidget {
                 fontSize: LayoutSpec.fontSmall,
                 fontWeight: FontWeight.w600,
 
-                color: has ? pal.textPrimary : pal.textSecondary.withValues(alpha: 0.5),
+                color: has
+                    ? pal.textPrimary
+                    : pal.textSecondary.withValues(alpha: 0.5),
                 shadows: const [
-                  Shadow(color: Color(0xCC000000), blurRadius: 12, offset: Offset(0, 2)),
+                  Shadow(
+                    color: Color(0xCC000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 2),
+                  ),
                 ],
               ),
             ),
@@ -1262,7 +1305,6 @@ class PlayerScreen extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: GestureDetector(
-
               onVerticalDragEnd: (d) {
                 final v = d.primaryVelocity ?? 0;
                 final dy = dragDy;
@@ -1278,68 +1320,78 @@ class PlayerScreen extends StatelessWidget {
                 }
               },
               onVerticalDragUpdate: (d) => dragDy += d.primaryDelta ?? 0,
-              child: Builder(builder: (context) {
-                final layout = PresentationScope.of(context, fallback: skin);
-                final sheet = SizedBox(
-
-                  height: panelMaximised
-                      ? MediaQuery.of(context).size.height
-                      : MediaQuery.of(context).size.height * 0.64,
-                  child: Column(
-                  children: [
-                    Row(
+              child: Builder(
+                builder: (context) {
+                  final layout = PresentationScope.of(context, fallback: skin);
+                  final sheet = SizedBox(
+                    height: panelMaximised
+                        ? MediaQuery.of(context).size.height
+                        : MediaQuery.of(context).size.height * 0.64,
+                    child: Column(
                       children: [
-                        const SizedBox(width: 14),
-                        Icon(Icons.drag_handle_rounded, color: skin.textSecondary),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: LayoutSpec.fontLabel,
-                              letterSpacing: 4,
-                              fontWeight: FontWeight.w800,
-                              color: skin.accent,
+                        Row(
+                          children: [
+                            const SizedBox(width: 14),
+                            Icon(
+                              Icons.drag_handle_rounded,
+                              color: skin.textSecondary,
                             ),
-                          ),
+                            Expanded(
+                              child: Text(
+                                title,
+                                style: TextStyle(
+                                  fontSize: LayoutSpec.fontLabel,
+                                  letterSpacing: 4,
+                                  fontWeight: FontWeight.w800,
+                                  color: skin.accent,
+                                ),
+                              ),
+                            ),
+                            if (panelMaximised)
+                              IconButton(
+                                onPressed: () => onPanelMaximised?.call(false),
+                                icon: Icon(
+                                  Icons.fullscreen_exit_rounded,
+                                  color: skin.textPrimary,
+                                  size: 26,
+                                ),
+                                tooltip: 'Shrink',
+                              ),
+                            IconButton(
+                              onPressed: () => onPanel?.call(PlayerPanel.none),
+                              icon: Icon(
+                                Icons.close_rounded,
+                                color: skin.textPrimary,
+                                size: 28,
+                              ),
+                              tooltip: 'Close',
+                            ),
+                          ],
                         ),
-                        if (panelMaximised)
-                          IconButton(
-                            onPressed: () => onPanelMaximised?.call(false),
-                            icon: Icon(Icons.fullscreen_exit_rounded,
-                                color: skin.textPrimary, size: 26),
-                            tooltip: 'Shrink',
-                          ),
-                        IconButton(
-                          onPressed: () => onPanel?.call(PlayerPanel.none),
-                          icon: Icon(Icons.close_rounded,
-                              color: skin.textPrimary, size: 28),
-                          tooltip: 'Close',
-                        ),
+                        Expanded(child: content),
                       ],
                     ),
-                    Expanded(child: content),
-                  ],
-                ),
-                );
+                  );
                   if (!chrome.panelSheetUsesSurface) {
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: skin.background,
-                      border: Border(
-                        top: BorderSide(color: skin.accent, width: 2),
+                    return DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: skin.background,
+                        border: Border(
+                          top: BorderSide(color: skin.accent, width: 2),
+                        ),
                       ),
-                    ),
+                      child: sheet,
+                    );
+                  }
+                  return Surface(
+                    presentation: layout,
+                    role: SurfaceRole.panel,
+                    radius: 20,
+                    accentEdge: false,
                     child: sheet,
                   );
-                }
-                return Surface(
-                  presentation: layout,
-                  role: SurfaceRole.panel,
-                  radius: 20,
-                  accentEdge: false,
-                  child: sheet,
-                );
-              }),
+                },
+              ),
             ),
           ),
         ],
@@ -1386,7 +1438,10 @@ class PlayerScreen extends StatelessWidget {
                   right: -4,
                   top: -4,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 1,
+                    ),
                     decoration: BoxDecoration(
                       color: skin.accent,
                       borderRadius: BorderRadius.circular(9),
@@ -1419,13 +1474,14 @@ class PlayerScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: active ? skin.accent : Colors.transparent,
             border: Border.all(
-              color: active ? skin.accent : skin.textSecondary.withValues(alpha: 0.5),
+              color: active
+                  ? skin.accent
+                  : skin.textSecondary.withValues(alpha: 0.5),
             ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-
               Icon(
                 Icons.lyrics_outlined,
                 size: 16,
@@ -1458,7 +1514,7 @@ class PlayerScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-           if (showSourceLine && state.playingFrom != null) ...[
+        if (showSourceLine && state.playingFrom != null) ...[
           Text(
             'Playing from ${state.playingFrom}',
             maxLines: 1,
@@ -1470,7 +1526,11 @@ class PlayerScreen extends StatelessWidget {
               color: skin.textSecondary,
 
               shadows: const [
-                Shadow(color: Color(0xCC000000), blurRadius: 12, offset: Offset(0, 2)),
+                Shadow(
+                  color: Color(0xCC000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 2),
+                ),
               ],
             ),
           ),
@@ -1501,7 +1561,11 @@ class PlayerScreen extends StatelessWidget {
             fontWeight: FontWeight.w700,
             color: skin.textPrimary,
             shadows: const [
-              Shadow(color: Color(0xE6000000), blurRadius: 14, offset: Offset(0, 2)),
+              Shadow(
+                color: Color(0xE6000000),
+                blurRadius: 14,
+                offset: Offset(0, 2),
+              ),
             ],
           ),
         ),
@@ -1517,7 +1581,11 @@ class PlayerScreen extends StatelessWidget {
 
               color: skin.textPrimary,
               shadows: const [
-                Shadow(color: Color(0xCC000000), blurRadius: 12, offset: Offset(0, 2)),
+                Shadow(
+                  color: Color(0xCC000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 2),
+                ),
               ],
             ),
           ),
@@ -1525,13 +1593,14 @@ class PlayerScreen extends StatelessWidget {
       ],
     );
   }
+
   Widget _progressBar(Skin skin, double skew) => PlayerProgressBar(
-        skin: skin,
-        skew: skew,
-        position: state.position,
-        duration: state.duration,
-        onSeek: onSeek,
-      );
+    skin: skin,
+    skew: skew,
+    position: state.position,
+    duration: state.duration,
+    onSeek: onSeek,
+  );
 
   Widget _times(Skin skin, double skew) {
     return Transform(
@@ -1573,11 +1642,11 @@ class PlayerScreen extends StatelessWidget {
   }
 
   TextStyle _timeStyle(Skin skin) => TextStyle(
-        fontSize: LayoutSpec.fontSmall,
-        fontWeight: FontWeight.w700,
-        color: skin.textSecondary,
-        fontFeatures: const [FontFeature.tabularFigures()],
-      );
+    fontSize: LayoutSpec.fontSmall,
+    fontWeight: FontWeight.w700,
+    color: skin.textSecondary,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
 
   Widget _transportButton(
     Skin skin,
@@ -1590,83 +1659,84 @@ class PlayerScreen extends StatelessWidget {
     final w = compact ? 44.0 : LayoutSpec.transportButtonWidth;
     return Pressable(
       child: Transform(
-      transform: Matrix4.skewX(-skew),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: w,
-          height: LayoutSpec.transportButtonHeight,
-          decoration: BoxDecoration(
-            color: active ? skin.accent : skin.panel,
-            border: Border.all(
-              color: active ? skin.accent : skin.accent.withValues(alpha: 0.55),
-              width: 1.5,
-            ),
-          ),
-          child: Transform(
-            transform: Matrix4.skewX(skew),
-            child: Icon(
-              icon,
-              size: compact ? 18 : 21,
-              color: active ? skin.onAccent : skin.textPrimary,
-            ),
-          ),
-        ),
-      ),
-      ),
-    );
-  }
-
-  IconData _repeatIcon(RepeatMode mode) => switch (mode) {
-        RepeatMode.off => Icons.repeat_rounded,
-        RepeatMode.all => Icons.repeat_rounded,
-        RepeatMode.one => Icons.repeat_one_rounded,
-      };
-
-  Widget _playButton(Skin skin, double skew, {required bool playing}) {
-    return Pressable(
-      child: Transform(
-      transform: Matrix4.skewX(-skew),
-      child: InkWell(
-        onTap: onPlayPause,
-        child: PopOnChange(
-
-          keyValue: playing,
+        transform: Matrix4.skewX(-skew),
+        child: InkWell(
+          onTap: onTap,
           child: Container(
-            width: LayoutSpec.playButtonWidth,
-            height: LayoutSpec.playButtonHeight,
+            width: w,
+            height: LayoutSpec.transportButtonHeight,
             decoration: BoxDecoration(
-              color: skin.textPrimary,
-              boxShadow: [
-                BoxShadow(
-                  color: skin.accent.withValues(alpha: 0.42),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+              color: active ? skin.accent : skin.panel,
+              border: Border.all(
+                color: active
+                    ? skin.accent
+                    : skin.accent.withValues(alpha: 0.55),
+                width: 1.5,
+              ),
             ),
             child: Transform(
               transform: Matrix4.skewX(skew),
-              child: AnimatedSwitcher(
-                duration: Motion.morph,
-                switchInCurve: MotionCurve.morph,
-                switchOutCurve: MotionCurve.morph,
-
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(scale: animation, child: child),
-                ),
-                child: Icon(
-                  playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  key: ValueKey<bool>(playing),
-                  size: 30,
-                  color: skin.background,
-                ),
+              child: Icon(
+                icon,
+                size: compact ? 18 : 21,
+                color: active ? skin.onAccent : skin.textPrimary,
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  IconData _repeatIcon(RepeatMode mode) => switch (mode) {
+    RepeatMode.off => Icons.repeat_rounded,
+    RepeatMode.all => Icons.repeat_rounded,
+    RepeatMode.one => Icons.repeat_one_rounded,
+  };
+
+  Widget _playButton(Skin skin, double skew, {required bool playing}) {
+    return Pressable(
+      child: Transform(
+        transform: Matrix4.skewX(-skew),
+        child: InkWell(
+          onTap: onPlayPause,
+          child: PopOnChange(
+            keyValue: playing,
+            child: Container(
+              width: LayoutSpec.playButtonWidth,
+              height: LayoutSpec.playButtonHeight,
+              decoration: BoxDecoration(
+                color: skin.textPrimary,
+                boxShadow: [
+                  BoxShadow(
+                    color: skin.accent.withValues(alpha: 0.42),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Transform(
+                transform: Matrix4.skewX(skew),
+                child: AnimatedSwitcher(
+                  duration: Motion.morph,
+                  switchInCurve: MotionCurve.morph,
+                  switchOutCurve: MotionCurve.morph,
+
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(scale: animation, child: child),
+                  ),
+                  child: Icon(
+                    playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    key: ValueKey<bool>(playing),
+                    size: 30,
+                    color: skin.background,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1732,15 +1802,20 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                 final frac = _dragFrac ?? _fraction(pos, dur);
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTapDown: (d) => _seekTo(d.localPosition.dx, box.maxWidth, dur,
-                      remember: false),
+                  onTapDown: (d) => _seekTo(
+                    d.localPosition.dx,
+                    box.maxWidth,
+                    dur,
+                    remember: false,
+                  ),
                   onHorizontalDragStart: (d) =>
                       _seekTo(d.localPosition.dx, box.maxWidth, dur),
                   onHorizontalDragUpdate: (d) =>
                       _seekTo(d.localPosition.dx, box.maxWidth, dur),
 
                   onHorizontalDragEnd: (_) => setState(() => _dragFrac = null),
-                  onHorizontalDragCancel: () => setState(() => _dragFrac = null),
+                  onHorizontalDragCancel: () =>
+                      setState(() => _dragFrac = null),
                   child: Stack(
                     alignment: Alignment.centerLeft,
                     children: [
@@ -1749,7 +1824,10 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                           alignment: Alignment.center,
                           child: ColoredBox(
                             color: skin.textSecondary.withValues(alpha: 0.26),
-                            child: const SizedBox(height: 7, width: double.infinity),
+                            child: const SizedBox(
+                              height: 7,
+                              width: double.infinity,
+                            ),
                           ),
                         ),
                       ),
@@ -1775,7 +1853,10 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                       ),
 
                       Positioned(
-                        left: (box.maxWidth * frac - 7).clamp(0.0, box.maxWidth - 14),
+                        left: (box.maxWidth * frac - 7).clamp(
+                          0.0,
+                          box.maxWidth - 14,
+                        ),
                         child: Transform(
                           transform: Matrix4.skewX(skew),
                           child: AnimatedContainer(
@@ -1787,7 +1868,9 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                               color: skin.accent,
                               boxShadow: [
                                 BoxShadow(
-                                  color: skin.accent.withValues(alpha: 0.35 + 0.35 * frac),
+                                  color: skin.accent.withValues(
+                                    alpha: 0.35 + 0.35 * frac,
+                                  ),
                                   blurRadius: 10,
                                 ),
                               ],

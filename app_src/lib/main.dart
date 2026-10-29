@@ -3561,12 +3561,13 @@ class _HomeShellState extends State<HomeShell>
     if (!chrome.artByDefault && widget.state.artSkinOverride == null) {
       return null;
     }
-    final art = widget.state.art;
+    final art = widget.state.artForSurface(_surfaceForTab);
     if (art == null) return null;
 
     return FramedArt(
       assetPath: art.assetPath,
       aspect: art.aspect,
+      spec: art.spec,
       focus: widget.state.artFocus.copyWith(dy: -0.25, zoom: 1.15),
       cacheWidth: 1080,
       opacity: opacity,

@@ -3,6 +3,7 @@ library;
 import 'dart:io';
 
 import '../theme/skin.dart';
+import 'art_spec.dart';
 import 'skin_art.dart';
 
 /// A folder of pictures is one art set.
@@ -43,21 +44,21 @@ List<ArtBundle> scanArtBundles(String? libraryRoot) {
     files.sort((a, b) => a.path.compareTo(b.path));
 
     final name = entry.path.split(Platform.pathSeparator).last;
-    bundles.add(ArtBundle(
-      name: name,
-      set: SkinArtSet(
-        SkinId.abyss,
-        [
+    bundles.add(
+      ArtBundle(
+        name: name,
+        set: SkinArtSet(SkinId.abyss, [
           for (final f in files)
             SkinArt(
               key: '$name/${f.uri.pathSegments.last}',
               // `file:` marks a picture on disk rather than a shipped asset.
               assetPath: 'file:${f.path}',
               aspect: 1,
+              spec: ArtSpec.read(entry),
             ),
-        ],
+        ]),
       ),
-    ));
+    );
   }
   bundles.sort((a, b) => a.name.compareTo(b.name));
   return bundles;
@@ -67,7 +68,8 @@ List<ArtBundle> scanArtBundles(String? libraryRoot) {
 /// has a folder of art to drop in.
 Directory createBundleFrom(String libraryRoot, File picture) {
   final stamp = DateTime.now().millisecondsSinceEpoch;
-  final dir = Directory('$libraryRoot/art/bundle-$stamp')..createSync(recursive: true);
+  final dir = Directory('$libraryRoot/art/bundle-$stamp')
+    ..createSync(recursive: true);
   final name = picture.path.split(Platform.pathSeparator).last;
   picture.copySync('${dir.path}/$name');
   return dir;

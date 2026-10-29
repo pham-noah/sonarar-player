@@ -133,14 +133,17 @@ class AppState extends ChangeNotifier {
             q.replaceSource([playing], keepPlaying: true);
           }
         case QueueMode.dynamic:
-
           final resolved = _contextMixTracks();
           final keep = currentTrack;
           if (keep == null) break;
           if (resolved.isNotEmpty) {
             live = true;
             q.replaceSource(
-              queueForPlayedTrack(track: keep, mode: QueueMode.dynamic, contextMix: resolved),
+              queueForPlayedTrack(
+                track: keep,
+                mode: QueueMode.dynamic,
+                contextMix: resolved,
+              ),
               keepPlaying: true,
             );
           } else {
@@ -227,12 +230,11 @@ class AppState extends ChangeNotifier {
   Track? _variantSwappedFrom;
 
   String? get _currentSituation => situationVariantTag(
-
-        sky: _playlistCtx?.sky ?? Sky.unknown,
-        whereabouts: _playlistCtx?.whereabouts ?? Whereabouts.unknown,
-        sleeping: _sleeping,
-        band: _playlistCtx?.band,
-      );
+    sky: _playlistCtx?.sky ?? Sky.unknown,
+    whereabouts: _playlistCtx?.whereabouts ?? Whereabouts.unknown,
+    sleeping: _sleeping,
+    band: _playlistCtx?.band,
+  );
 
   List<String> get _situationIds {
     final tag = _currentSituation;
@@ -261,16 +263,14 @@ class AppState extends ChangeNotifier {
     final ctx = _playlistCtx;
     if (ctx == null) return false;
 
-    final base = _engine.playlist(
-      _library,
-      ctx,
-      excluded: _excluded.ids,
-    );
+    final base = _engine.playlist(_library, ctx, excluded: _excluded.ids);
     if (base.isEmpty) return false;
 
     // ignore: avoid_print
-    print('[Sonarar][QUEUE] context switch admitted ${base.length} '
-        'of ${_library.length} (excluded=${_excluded.ids.length})');
+    print(
+      '[Sonarar][QUEUE] context switch admitted ${base.length} '
+      'of ${_library.length} (excluded=${_excluded.ids.length})',
+    );
 
     _probeQueue('contextSwitch', base.length);
     _queue = PlayQueue(source: base, shuffle: _queue?.isShuffled ?? false);
@@ -420,8 +420,10 @@ class AppState extends ChangeNotifier {
     final tracks = _library.where((t) => ids.contains(t.id)).toList();
     if (tracks.isEmpty) {
       // ignore: avoid_print
-      print('[Sonarar][PLAYPRESS] "${playlist.name}" has ${ids.length} ids, '
-          'NONE of them in the ${_library.length}-track library');
+      print(
+        '[Sonarar][PLAYPRESS] "${playlist.name}" has ${ids.length} ids, '
+        'NONE of them in the ${_library.length}-track library',
+      );
       return false;
     }
 
@@ -497,7 +499,8 @@ class AppState extends ChangeNotifier {
   }
 
   int pruneToLibrary(Set<String> liveLibraryIds) {
-    final gone = _excluded.prune(liveLibraryIds) +
+    final gone =
+        _excluded.prune(liveLibraryIds) +
         _bookmarks.prune(liveLibraryIds) +
         _favorites.prune(liveLibraryIds);
     if (gone > 0) notifyListeners();
@@ -534,7 +537,8 @@ class AppState extends ChangeNotifier {
   }
 
   /// Where a playlist sits, so an undo can put it back in the same place.
-  int playlistIndexOf(String id) => _playlists.all.indexWhere((p) => p.id == id);
+  int playlistIndexOf(String id) =>
+      _playlists.all.indexWhere((p) => p.id == id);
 
   bool restorePlaylist(int at, Playlist playlist) {
     if (_playlists.byId(playlist.id) != null) return false;
@@ -582,11 +586,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null || ctx == null) return;
 
-    final base = _engine.playlist(
-      _library,
-      ctx,
-      excluded: _excluded.ids,
-    );
+    final base = _engine.playlist(_library, ctx, excluded: _excluded.ids);
 
     if (base.isEmpty) return;
 
@@ -729,9 +729,11 @@ class AppState extends ChangeNotifier {
 
   Presentation? _presentationCache;
 
-  Presentation get presentation =>
-      _presentationCache ??= presentationFor(_layoutId, _accented(_skin),
-          paletteIndex: _paletteIndex);
+  Presentation get presentation => _presentationCache ??= presentationFor(
+    _layoutId,
+    _accented(_skin),
+    paletteIndex: _paletteIndex,
+  );
 
   LayoutPalette get palette => presentation.palette;
 
@@ -758,7 +760,9 @@ class AppState extends ChangeNotifier {
 
   void applyPreset(ThemePreset preset) {
     _preset = preset;
-    if (preset.personalization != null) _personalization = preset.personalization!;
+    if (preset.personalization != null) {
+      _personalization = preset.personalization!;
+    }
     _skinValue = skinFor(preset.skinId);
     _languageSkin = preset.languageSkinId == null
         ? null
@@ -829,8 +833,11 @@ class AppState extends ChangeNotifier {
             whereabouts: incoming.whereabouts,
           );
 
-    final resolved =
-        _policy.resolve(ctx: ctx, pref: _pref, previousCtx: _lastContext);
+    final resolved = _policy.resolve(
+      ctx: ctx,
+      pref: _pref,
+      previousCtx: _lastContext,
+    );
 
     final bandChanged = _lastContext != null && _lastContext!.band != ctx.band;
     if (bandChanged && _preset == null) _pref = const SkinPreference();
@@ -853,10 +860,10 @@ class AppState extends ChangeNotifier {
     final nextId = _preset != null
         ? _preset!.skinId
         : ((!_clockOn || !_autoSkin)
-            ? _skin.id
-            : ((!_pref.isManual && rule?.theme != null)
-                ? rule!.theme!
-                : resolved));
+              ? _skin.id
+              : ((!_pref.isManual && rule?.theme != null)
+                    ? rule!.theme!
+                    : resolved));
     final next = skinFor(nextId);
     if (next.id != _skin.id) {
       _skinValue = next;
@@ -901,8 +908,7 @@ class AppState extends ChangeNotifier {
     final keep = currentTrack?.id;
     final ordered = _source == QueueSource.live
         ? _contextMixTracks()
-        : _engine.playlist(_library, ctx,
-            excluded: _excluded.ids);
+        : _engine.playlist(_library, ctx, excluded: _excluded.ids);
     if (ordered.isEmpty) {
       if (_source == QueueSource.live) {
         final keep = currentTrack;
@@ -933,7 +939,6 @@ class AppState extends ChangeNotifier {
     if (_source != QueueSource.live) return;
     if (!_weatherVariants) return;
     final situationNow = situationVariantTag(
-
       sky: _playlistCtx?.sky ?? Sky.unknown,
       whereabouts: _playlistCtx?.whereabouts ?? Whereabouts.unknown,
       sleeping: _sleeping,
@@ -985,7 +990,10 @@ class AppState extends ChangeNotifier {
     final already = {for (final t in q.order) t.id};
     _sleepAdded
       ..clear()
-      ..addAll([for (final t in want) if (!already.contains(t.id)) t.id]);
+      ..addAll([
+        for (final t in want)
+          if (!already.contains(t.id)) t.id,
+      ]);
 
     q.promoteToNext(want);
   }
@@ -1034,8 +1042,10 @@ class AppState extends ChangeNotifier {
     if (keep != null) q.jumpTo(keep);
     if (lead.length != ordered.length) {
       // ignore: avoid_print
-      print('[Sonarar][QUEUEPROBE] makeQueue: rule list had ${ordered.length}, '
-          'built ${lead.length} (library=${_library.length})');
+      print(
+        '[Sonarar][QUEUEPROBE] makeQueue: rule list had ${ordered.length}, '
+        'built ${lead.length} (library=${_library.length})',
+      );
     } else {
       _probeQueue('makeQueue', lead.length);
     }
@@ -1144,6 +1154,19 @@ class AppState extends ChangeNotifier {
 
   SkinArt? get art => artSet.atOrNull(_artIndex);
 
+  /// The picture this place wears: its own, or the one set everywhere.
+  SkinArt? artForSurface(SurfaceId surface) {
+    final chosen = _personalization.surfaces[surface]?.art;
+    if (chosen != null) {
+      for (final bundle in _bundles) {
+        for (final piece in bundle.set.pieces) {
+          if (piece.key == chosen) return piece;
+        }
+      }
+    }
+    return art;
+  }
+
   bool get hasArt => artSet.hasArt;
 
   void nextArt() {
@@ -1170,8 +1193,7 @@ class AppState extends ChangeNotifier {
     return _artFocus[piece.key] ?? piece.focus;
   }
 
-  ArtFocus focusForPiece(SkinArt piece) =>
-      _artFocus[piece.key] ?? piece.focus;
+  ArtFocus focusForPiece(SkinArt piece) => _artFocus[piece.key] ?? piece.focus;
 
   bool hasCustomFocus(SkinArt piece) => _artFocus.containsKey(piece.key);
 
@@ -1222,10 +1244,11 @@ class AppState extends ChangeNotifier {
       final fresh = _mode == QueueMode.fixed
           ? _queue!.order
           : (ctx == null
-              ? _library
-              : _engine.playlist(_library, ctx, excluded: _excluded.ids));
-      final base =
-          fresh.isEmpty || fresh.any((t) => t.id == playing.id) ? fresh : [...fresh, playing];
+                ? _library
+                : _engine.playlist(_library, ctx, excluded: _excluded.ids));
+      final base = fresh.isEmpty || fresh.any((t) => t.id == playing.id)
+          ? fresh
+          : [...fresh, playing];
       _queue!.replaceSource(base.isEmpty ? [playing] : base, keepPlaying: true);
       notifyListeners();
       return;
@@ -1238,7 +1261,10 @@ class AppState extends ChangeNotifier {
       final wanted = resume?.trackId;
       final one = wanted == null
           ? const <Track>[]
-          : _library.where((t) => t.id == wanted).take(1).toList(growable: false);
+          : _library
+                .where((t) => t.id == wanted)
+                .take(1)
+                .toList(growable: false);
       base = one;
     } else {
       final fromContext = _playlistCtx == null
@@ -1247,10 +1273,7 @@ class AppState extends ChangeNotifier {
       base = fromContext.isEmpty ? _library : fromContext;
     }
 
-    final q = PlayQueue(
-      source: base,
-      shuffle: resume?.shuffle ?? false,
-    );
+    final q = PlayQueue(source: base, shuffle: resume?.shuffle ?? false);
     _queue = q;
 
     if (resume != null && !resume.isStale) {
@@ -1283,8 +1306,10 @@ class AppState extends ChangeNotifier {
   void _probeQueue(String site, int len) {
     if (len < 3) {
       // ignore: avoid_print
-      print('[Sonarar][QUEUEPROBE] $site built a queue of $len '
-          '(library=${_library.length})');
+      print(
+        '[Sonarar][QUEUEPROBE] $site built a queue of $len '
+        '(library=${_library.length})',
+      );
     }
   }
 
@@ -1336,7 +1361,8 @@ class AppState extends ChangeNotifier {
       PlaybackSnapshot(
         trackId: currentTrack?.id ?? '',
         positionMs: positionMs,
-        queueIds: _queue?.order.map((t) => t.id).toList(growable: false) ?? const [],
+        queueIds:
+            _queue?.order.map((t) => t.id).toList(growable: false) ?? const [],
         queueIndex: _queue?.index ?? 0,
         shuffle: _queue?.isShuffled ?? false,
         queueMode: _mode == QueueMode.fixed ? 'fixed' : 'dynamic',

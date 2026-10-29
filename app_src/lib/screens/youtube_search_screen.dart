@@ -10,10 +10,10 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart' hide Playlist;
 import '../download/download_manager.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/playlists.dart';
-import '../art/skin_art.dart';
 import '../theme/layout.dart';
 import '../library/track.dart';
 import '../library/library_repository.dart';
+import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import 'app_header.dart';
 import '../widgets/screen_backdrop.dart';
@@ -375,7 +375,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     final chrome = PresentationScope.of(context, fallback: skin).kit.chrome;
 
     final dynamic st = widget.state;
-    final art = st.art as SkinArt?;
+    final art = st.artForSurface(SurfaceId.search);
     return Stack(
 
       clipBehavior: chrome.backdropClip,

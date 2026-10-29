@@ -9,6 +9,8 @@ import '../core/prefs.dart';
 import '../theme/layout.dart';
 import '../theme/theme_preset.dart';
 import '../art/art_bundle.dart';
+import '../art/art_spec.dart';
+import '../screens/art_editor_screen.dart';
 import '../theme/backdrop_import.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
@@ -96,13 +98,15 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   onPressed: () => Navigator.of(context).maybePop(),
                   icon: Icon(Icons.arrow_back_rounded, color: skin.textPrimary),
                 ),
-                Text('PERSONALIZE',
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontBase,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.6,
-                      color: skin.textPrimary,
-                    )),
+                Text(
+                  'PERSONALIZE',
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontBase,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.6,
+                    color: skin.textPrimary,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -132,11 +136,19 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                _chip(skin, 'GRID', widget.prefs?.libraryIsGrid == true,
-                    () => _setGrid(true)),
+                _chip(
+                  skin,
+                  'GRID',
+                  widget.prefs?.libraryIsGrid == true,
+                  () => _setGrid(true),
+                ),
                 const SizedBox(width: 8),
-                _chip(skin, 'LIST', widget.prefs?.libraryIsGrid != true,
-                    () => _setGrid(false)),
+                _chip(
+                  skin,
+                  'LIST',
+                  widget.prefs?.libraryIsGrid != true,
+                  () => _setGrid(false),
+                ),
               ],
             ),
             const SizedBox(height: 18),
@@ -146,8 +158,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _chip(skin, 'EVERYWHERE', _surface == null,
-                    () => setState(() => _surface = null)),
+                _chip(
+                  skin,
+                  'EVERYWHERE',
+                  _surface == null,
+                  () => setState(() => _surface = null),
+                ),
                 for (final surface in SurfaceId.values)
                   _chip(
                     skin,
@@ -196,18 +212,50 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             if (_b.isSet && _surface == null) ...[
               const SizedBox(height: 14),
               _focusGrid(skin),
-              _slider(skin, 'BLUR', _b.blur, 0, 24,
-                  (v) => _setBackdrop(_b.copyWith(blur: v))),
-              _slider(skin, 'DIM', _b.dim, 0, 1,
-                  (v) => _setBackdrop(_b.copyWith(dim: v))),
-              _slider(skin, 'ZOOM', _b.scale, 1, 3,
-                  (v) => _setBackdrop(_b.copyWith(scale: v))),
-              _slider(skin, 'ROTATION', _b.rotationDeg, -45, 45,
-                  (v) => _setBackdrop(_b.copyWith(rotationDeg: v))),
-              _toggle(skin, 'TINT WITH ACCENT', _b.tint,
-                  (v) => _setBackdrop(_b.copyWith(tint: v))),
-              _toggle(skin, 'PLAYER USES THE COVER', _b.coverOnPlayer,
-                  (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v))),
+              _slider(
+                skin,
+                'BLUR',
+                _b.blur,
+                0,
+                24,
+                (v) => _setBackdrop(_b.copyWith(blur: v)),
+              ),
+              _slider(
+                skin,
+                'DIM',
+                _b.dim,
+                0,
+                1,
+                (v) => _setBackdrop(_b.copyWith(dim: v)),
+              ),
+              _slider(
+                skin,
+                'ZOOM',
+                _b.scale,
+                1,
+                3,
+                (v) => _setBackdrop(_b.copyWith(scale: v)),
+              ),
+              _slider(
+                skin,
+                'ROTATION',
+                _b.rotationDeg,
+                -45,
+                45,
+                (v) => _setBackdrop(_b.copyWith(rotationDeg: v)),
+              ),
+              _toggle(
+                skin,
+                'TINT WITH ACCENT',
+                _b.tint,
+                (v) => _setBackdrop(_b.copyWith(tint: v)),
+              ),
+              _toggle(
+                skin,
+                'PLAYER USES THE COVER',
+                _b.coverOnPlayer,
+                (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v)),
+              ),
             ],
             const SizedBox(height: 18),
 
@@ -216,11 +264,23 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _chip(skin, 'BUILT IN', _p.bundle == null,
-                    () => _apply(_p.copyWith(clearBundle: true))),
+                _chip(
+                  skin,
+                  'BUILT IN',
+                  _wornBundle == null && _surfaceArt == null,
+                  () => _setArt(null),
+                ),
                 for (final bundle in widget.state.bundles)
-                  _chip(skin, bundle.name.toUpperCase(), _p.bundle == bundle.name,
-                      () => _apply(_p.copyWith(bundle: bundle.name))),
+                  _chip(
+                    skin,
+                    bundle.name.toUpperCase(),
+                    _surface == null
+                        ? _p.bundle == bundle.name
+                        : _surfaceArt == bundle.set.pieces.first.key,
+                    () => _setArt(bundle.name),
+                    marked:
+                        _surface != null && _p.surfaces[_surface!]?.art != null,
+                  ),
               ],
             ),
             const SizedBox(height: 10),
@@ -229,6 +289,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 Expanded(
                   child: _button(skin, 'NEW BUNDLE FROM A PICTURE', _newBundle),
                 ),
+                const SizedBox(width: 8),
+                if (_wornBundle != null)
+                  Expanded(child: _button(skin, 'ADJUST', _adjustArt)),
               ],
             ),
             const SizedBox(height: 8),
@@ -257,15 +320,25 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       AccentSource.manual => 'PICK',
                     },
                     _p.accent.source == source,
-                    () => _apply(_p.copyWith(
-                      accent: AccentSpec(source: source, value: _p.accent.value),
-                    )),
+                    () => _apply(
+                      _p.copyWith(
+                        accent: AccentSpec(
+                          source: source,
+                          value: _p.accent.value,
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),
             const SizedBox(height: 10),
             if (_p.accent.source == AccentSource.image)
-              _button(skin, 'TAKE THE COLOUR FROM THE PHOTO', _accentFromPhoto, quiet: true),
+              _button(
+                skin,
+                'TAKE THE COLOUR FROM THE PHOTO',
+                _accentFromPhoto,
+                quiet: true,
+              ),
             if (_p.accent.source == AccentSource.manual) ...[
               const SizedBox(height: 10),
               Wrap(
@@ -274,9 +347,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 children: [
                   for (final colour in _swatches)
                     GestureDetector(
-                      onTap: () => _apply(_p.copyWith(
-                        accent: AccentSpec(source: AccentSource.manual, value: colour.toARGB32()),
-                      )),
+                      onTap: () => _apply(
+                        _p.copyWith(
+                          accent: AccentSpec(
+                            source: AccentSource.manual,
+                            value: colour.toARGB32(),
+                          ),
+                        ),
+                      ),
                       child: Container(
                         width: 38,
                         height: 38,
@@ -297,10 +375,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             const SizedBox(height: 18),
 
             SectionBand(skin: skin, label: 'HOME'),
-            Text('NOW stays at the top — it is the page header, not a section.',
-                style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
+            Text(
+              'NOW stays at the top — it is the page header, not a section.',
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor,
+                color: skin.textSecondary,
+              ),
+            ),
             const SizedBox(height: 10),
-            for (final section in _orderedSections()) _sectionRow(skin, section),
+            for (final section in _orderedSections())
+              _sectionRow(skin, section),
             const SizedBox(height: 18),
 
             SectionBand(skin: skin, label: 'THEMES'),
@@ -334,12 +418,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.greeting ?? 'SONARAR',
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontTitle,
-                      fontWeight: FontWeight.w900,
-                      color: skin.textPrimary,
-                    )),
+                Text(
+                  widget.greeting ?? 'SONARAR',
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontTitle,
+                    fontWeight: FontWeight.w900,
+                    color: skin.textPrimary,
+                  ),
+                ),
                 Row(
                   children: [
                     Container(width: 44, height: 44, color: skin.accent),
@@ -348,10 +434,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Accent on the panel',
-                              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary)),
-                          Text('secondary line',
-                              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
+                          Text(
+                            'Accent on the panel',
+                            style: TextStyle(
+                              fontSize: LayoutSpec.fontFloor,
+                              color: skin.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            'secondary line',
+                            style: TextStyle(
+                              fontSize: LayoutSpec.fontFloor,
+                              color: skin.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -367,6 +463,68 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   // ---- backdrop ------------------------------------------------------------
 
+  /// The bundle this place wears, if it wears one.
+  ArtBundle? get _wornBundle {
+    final name = _surface == null ? _p.bundle : null;
+    for (final bundle in widget.state.bundles) {
+      if (bundle.name == name) return bundle;
+      if (_surface != null && bundle.set.pieces.first.key == _surfaceArt) {
+        return bundle;
+      }
+    }
+    return null;
+  }
+
+  String? get _surfaceArt =>
+      _surface == null ? null : _p.surfaces[_surface!]?.art;
+
+  /// Picking art is picking it for the place you are looking at, when a place is
+  /// selected. There is one art bundle in the app; places choose pictures from
+  /// it rather than each carrying a private copy.
+  void _setArt(String? bundleName) {
+    if (_surface == null) {
+      _apply(
+        bundleName == null
+            ? _p.copyWith(clearBundle: true)
+            : _p.copyWith(bundle: bundleName),
+      );
+      return;
+    }
+    String? key;
+    for (final bundle in widget.state.bundles) {
+      if (bundle.name == bundleName) key = bundle.set.pieces.first.key;
+    }
+    final look = (_p.surfaces[_surface!] ?? const SurfaceLook()).copyWith(
+      art: key,
+      clearArt: key == null,
+    );
+    _apply(_p.withSurface(_surface!, look));
+  }
+
+  Future<void> _adjustArt() async {
+    final bundle = _wornBundle;
+    final root = _root;
+    if (bundle == null || root == null) return;
+    final piece = bundle.set.pieces.first;
+
+    final dir = Directory('${root.path}/art/${bundle.name}');
+    final saved = await Navigator.of(context).push<ArtSpec>(
+      MaterialPageRoute(
+        builder: (_) => ArtEditorScreen(
+          skin: _skin,
+          bundle: dir,
+          assetPath: piece.assetPath,
+          aspect: piece.aspect,
+          focus: piece.focus,
+          initial: ArtSpec.read(dir),
+        ),
+      ),
+    );
+    if (saved == null || !mounted) return;
+    widget.state.setArtBundles(scanArtBundles(root.path));
+    setState(() {});
+  }
+
   /// Starts a bundle around one picture the user already has. The folder can
   /// take more frames afterwards; this is only the first one.
   Future<void> _newBundle() async {
@@ -375,9 +533,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final images = candidateImages();
     if (!mounted) return;
     if (images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No pictures found in Pictures, DCIM or Download.'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No pictures found in Pictures, DCIM or Download.'),
+        ),
+      );
       return;
     }
     final picked = await showModalBottomSheet<File>(
@@ -394,8 +554,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           itemCount: images.length,
           itemBuilder: (_, i) => GestureDetector(
             onTap: () => Navigator.of(ctx).pop(images[i]),
-            child: Image.file(images[i], fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background)),
+            child: Image.file(
+              images[i],
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background),
+            ),
           ),
         ),
       ),
@@ -411,9 +574,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final images = candidateImages();
     if (!mounted) return;
     if (images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No pictures found in Pictures, DCIM or Download.'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No pictures found in Pictures, DCIM or Download.'),
+        ),
+      );
       return;
     }
     final picked = await showModalBottomSheet<File>(
@@ -430,8 +595,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           itemCount: images.length,
           itemBuilder: (_, i) => GestureDetector(
             onTap: () => Navigator.of(ctx).pop(images[i]),
-            child: Image.file(images[i], fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background)),
+            child: Image.file(
+              images[i],
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background),
+            ),
           ),
         ),
       ),
@@ -457,8 +625,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               fit: StackFit.expand,
               children: [
                 if (file != null)
-                  Image.file(file, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => ColoredBox(color: skin.panel)),
+                  Image.file(
+                    file,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => ColoredBox(color: skin.panel),
+                  ),
                 GridView.count(
                   crossAxisCount: 3,
                   physics: const NeverScrollableScrollPhysics(),
@@ -466,15 +637,19 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     for (var row = 0; row < 3; row++)
                       for (var col = 0; col < 3; col++)
                         GestureDetector(
-                          onTap: () => _setBackdrop(_b.copyWith(
-                            focusX: (col + 0.5) / 3,
-                            focusY: (row + 0.5) / 3,
-                          )),
+                          onTap: () => _setBackdrop(
+                            _b.copyWith(
+                              focusX: (col + 0.5) / 3,
+                              focusY: (row + 0.5) / 3,
+                            ),
+                          ),
                           child: Container(
                             margin: const EdgeInsets.all(1),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: ((_b.focusX * 3).floor() == col && (_b.focusY * 3).floor() == row)
+                                color:
+                                    ((_b.focusX * 3).floor() == col &&
+                                        (_b.focusY * 3).floor() == row)
                                     ? skin.accent
                                     : Colors.white24,
                                 width: 2,
@@ -492,7 +667,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             child: Text(
               'Tap the part of the picture that matters. It stays centred whatever '
               'shape the screen is.',
-              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary),
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor,
+                color: skin.textSecondary,
+              ),
             ),
           ),
         ],
@@ -519,37 +697,50 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final file = backdropFile(root, _b);
     if (file == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Choose a backdrop first — that is the photo.')),
+        const SnackBar(
+          content: Text('Choose a backdrop first — that is the photo.'),
+        ),
       );
       return;
     }
     final colour = await accentFromImage(file);
     if (!mounted) return;
     if (colour == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('That picture has no colour strong enough to be an accent.'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'That picture has no colour strong enough to be an accent.',
+          ),
+        ),
+      );
       return;
     }
-    _apply(_p.copyWith(
-      accent: AccentSpec(source: AccentSource.image, value: colour.toARGB32()),
-    ));
+    _apply(
+      _p.copyWith(
+        accent: AccentSpec(
+          source: AccentSource.image,
+          value: colour.toARGB32(),
+        ),
+      ),
+    );
   }
 
   // ---- home ----------------------------------------------------------------
 
-  List<HomeSection> _orderedSections() =>
-      [for (final s in _p.home.all) if (s != HomeSection.now) s];
+  List<HomeSection> _orderedSections() => [
+    for (final s in _p.home.all)
+      if (s != HomeSection.now) s,
+  ];
 
   String _sectionName(HomeSection s) => switch (s) {
-        HomeSection.now => 'NOW',
-        HomeSection.continueListening => 'CONTINUE LISTENING',
-        HomeSection.rediscover => 'REDISCOVER',
-        HomeSection.jumpBackIn => 'JUMP BACK IN',
-        HomeSection.quickPick => 'QUICK PICK',
-        HomeSection.fromLibrary => 'FROM YOUR LIBRARY',
-        HomeSection.recap => 'RECAP',
-      };
+    HomeSection.now => 'NOW',
+    HomeSection.continueListening => 'CONTINUE LISTENING',
+    HomeSection.rediscover => 'REDISCOVER',
+    HomeSection.jumpBackIn => 'JUMP BACK IN',
+    HomeSection.quickPick => 'QUICK PICK',
+    HomeSection.fromLibrary => 'FROM YOUR LIBRARY',
+    HomeSection.recap => 'RECAP',
+  };
 
   Widget _sectionRow(Skin skin, HomeSection section) {
     final order = _orderedSections();
@@ -560,27 +751,42 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       child: Row(
         children: [
           Expanded(
-            child: Text(_sectionName(section),
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w800,
-                  color: skin.textPrimary,
-                )),
+            child: Text(
+              _sectionName(section),
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor,
+                fontWeight: FontWeight.w800,
+                color: skin.textPrimary,
+              ),
+            ),
           ),
           IconButton(
-            onPressed: index <= 0 ? null : () => _apply(_p.copyWith(home: _p.home.move(section, index - 1))),
-            icon: Icon(Icons.keyboard_arrow_up_rounded, color: skin.textPrimary),
+            onPressed: index <= 0
+                ? null
+                : () => _apply(
+                    _p.copyWith(home: _p.home.move(section, index - 1)),
+                  ),
+            icon: Icon(
+              Icons.keyboard_arrow_up_rounded,
+              color: skin.textPrimary,
+            ),
           ),
           IconButton(
             onPressed: index < 0 || index >= order.length - 1
                 ? null
-                : () => _apply(_p.copyWith(home: _p.home.move(section, index + 1))),
-            icon: Icon(Icons.keyboard_arrow_down_rounded, color: skin.textPrimary),
+                : () => _apply(
+                    _p.copyWith(home: _p.home.move(section, index + 1)),
+                  ),
+            icon: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: skin.textPrimary,
+            ),
           ),
           Switch(
             value: !_p.home.hidden.contains(section),
             activeThumbColor: skin.accent,
-            onChanged: (_) => _apply(_p.copyWith(home: _p.home.toggle(section))),
+            onChanged: (_) =>
+                _apply(_p.copyWith(home: _p.home.toggle(section))),
           ),
         ],
       ),
@@ -595,7 +801,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
-        title: Text('Name this look', style: TextStyle(color: _skin.textPrimary)),
+        title: Text(
+          'Name this look',
+          style: TextStyle(color: _skin.textPrimary),
+        ),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -603,7 +812,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           decoration: const InputDecoration(hintText: 'Midnight harbour'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('CANCEL')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('CANCEL'),
+          ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
             child: const Text('SAVE'),
@@ -698,17 +910,24 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               ),
             ),
             if (preset.builtIn)
-              Text('BUILT IN',
-                  style: TextStyle(
-                      fontSize: LayoutSpec.fontFloor,
-                      color: skin.textSecondary))
+              Text(
+                'BUILT IN',
+                style: TextStyle(
+                  fontSize: LayoutSpec.fontFloor,
+                  color: skin.textSecondary,
+                ),
+              )
             else
               IconButton(
                 onPressed: () {
                   widget.onDeleteTheme?.call(preset);
                   setState(() {});
                 },
-                icon: Icon(Icons.close_rounded, size: 18, color: skin.textSecondary),
+                icon: Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: skin.textSecondary,
+                ),
               ),
           ],
         ),
@@ -716,83 +935,112 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
   }
 
-  Widget _button(Skin skin, String label, VoidCallback onTap, {bool quiet = false}) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-            color: quiet ? skin.panel : skin.accent,
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.2,
-                color: quiet ? skin.textPrimary : skin.onAccent,
-              ),
-            ),
+  Widget _button(
+    Skin skin,
+    String label,
+    VoidCallback onTap, {
+    bool quiet = false,
+  }) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+        color: quiet ? skin.panel : skin.accent,
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: LayoutSpec.fontFloor,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
+            color: quiet ? skin.textPrimary : skin.onAccent,
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   /// [marked] shows a place that has its own picture even while you are
   /// looking at another one, so the selector answers "where is custom?".
-  Widget _chip(Skin skin, String label, bool active, VoidCallback onTap,
-          {bool marked = false}) =>
-      GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: active ? skin.accent : skin.panel,
-            border: Border.all(
-              color: active ? skin.accent : skin.textSecondary.withValues(alpha: 0.4),
-              width: marked && !active ? 2 : 1,
-            ),
-          ),
-          child: Text(
-            marked && !active ? '• $label' : label,
-            style: TextStyle(
-              fontSize: LayoutSpec.fontFloor,
-              fontWeight: FontWeight.w900,
-              color: active ? skin.onAccent : skin.textPrimary,
-            ),
+  Widget _chip(
+    Skin skin,
+    String label,
+    bool active,
+    VoidCallback onTap, {
+    bool marked = false,
+  }) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: active ? skin.accent : skin.panel,
+        border: Border.all(
+          color: active
+              ? skin.accent
+              : skin.textSecondary.withValues(alpha: 0.4),
+          width: marked && !active ? 2 : 1,
+        ),
+      ),
+      child: Text(
+        marked && !active ? '• $label' : label,
+        style: TextStyle(
+          fontSize: LayoutSpec.fontFloor,
+          fontWeight: FontWeight.w900,
+          color: active ? skin.onAccent : skin.textPrimary,
+        ),
+      ),
+    ),
+  );
+
+  Widget _slider(
+    Skin skin,
+    String label,
+    double value,
+    double min,
+    double max,
+    ValueChanged<double> onChanged,
+  ) => Padding(
+    padding: const EdgeInsets.only(top: 6),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$label  ${value.toStringAsFixed(value <= 1 ? 2 : 0)}',
+          style: TextStyle(
+            fontSize: LayoutSpec.fontFloor,
+            fontWeight: FontWeight.w800,
+            color: skin.textSecondary,
           ),
         ),
-      );
-
-  Widget _slider(Skin skin, String label, double value, double min, double max,
-          ValueChanged<double> onChanged) =>
-      Padding(
-        padding: const EdgeInsets.only(top: 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('$label  ${value.toStringAsFixed(value <= 1 ? 2 : 0)}',
-                style: TextStyle(
-                    fontSize: LayoutSpec.fontFloor,
-                    fontWeight: FontWeight.w800,
-                    color: skin.textSecondary)),
-            Slider(
-              value: value.clamp(min, max),
-              min: min,
-              max: max,
-              activeColor: skin.accent,
-              onChanged: onChanged,
-            ),
-          ],
+        Slider(
+          value: value.clamp(min, max),
+          min: min,
+          max: max,
+          activeColor: skin.accent,
+          onChanged: onChanged,
         ),
-      );
+      ],
+    ),
+  );
 
-  Widget _toggle(Skin skin, String label, bool value, ValueChanged<bool> onChanged) => Row(
-        children: [
-          Expanded(
-            child: Text(label,
-                style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary)),
+  Widget _toggle(
+    Skin skin,
+    String label,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) => Row(
+    children: [
+      Expanded(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: LayoutSpec.fontFloor,
+            color: skin.textPrimary,
           ),
-          Switch(value: value, activeThumbColor: skin.accent, onChanged: onChanged),
-        ],
-      );
+        ),
+      ),
+      Switch(value: value, activeThumbColor: skin.accent, onChanged: onChanged),
+    ],
+  );
 }

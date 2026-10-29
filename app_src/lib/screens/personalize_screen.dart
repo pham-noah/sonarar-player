@@ -8,6 +8,7 @@ import '../core/app_state.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
 import '../theme/theme_preset.dart';
+import '../widgets/kit.dart';
 import '../widgets/spectrum.dart';
 import '../art/art_bundle.dart';
 import '../art/art_spec.dart';
@@ -1433,61 +1434,19 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   /// The parts of the look, as tabs. One page at a time, so the screen has a
   /// bottom and you can see what you have already set.
-  Widget _tabs(Skin skin) {
-    const labels = {
+  Widget _tabs(Skin skin) => KitTabs<PersonalizeTab>(
+    skin: skin,
+    labels: const {
       PersonalizeTab.themes: 'THEMES',
       PersonalizeTab.look: 'LOOK',
       PersonalizeTab.pictures: 'PICTURES',
       PersonalizeTab.art: 'ART',
       PersonalizeTab.home: 'HOME',
-    };
-    // Five tabs share the width; nothing scrolls, nothing is cut off.
-    return SizedBox(
-      height: 34,
-      child: Row(
-        children: [
-          for (final entry in labels.entries)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: GestureDetector(
-                key: Key('personalize-tab-${entry.key.name}'),
-                onTap: () => setState(() => _tab = entry.key),
-                child: Container(
-                  padding: EdgeInsets.zero,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: _tab == entry.key ? skin.accent : Colors.transparent,
-                    border: Border.all(
-                      color: _tab == entry.key
-                          ? skin.accent
-                          : skin.textSecondary.withValues(alpha: 0.35),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text(
-                    entry.value,
-                    maxLines: 1,
-                    overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      color: _tab == entry.key
-                          ? skin.onAccent
-                          : skin.textSecondary,
-                      fontSize: LayoutSpec.fontFloor - 5,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.8,
-                    ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            ),
-        ],
-      ),
-    );
-  }
+    },
+    selected: _tab,
+    onSelected: (t) => setState(() => _tab = t),
+    keyBuilder: (t) => Key('personalize-tab-${t.name}'),
+  );
 
   Widget _toggleRow(
     Skin skin,
@@ -1495,41 +1454,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     String note,
     bool value,
     ValueChanged<bool> onChanged,
-  ) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: skin.textPrimary,
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.1,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                note,
-                style: TextStyle(
-                  color: skin.textSecondary,
-                  fontSize: LayoutSpec.fontFloor - 4,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Switch(
-          value: value,
-          activeThumbColor: skin.accent,
-          onChanged: onChanged,
-        ),
-      ],
-    ),
+  ) => KitToggle(
+    skin: skin,
+    label: label,
+    note: note,
+    value: value,
+    onChanged: onChanged,
   );
 
   Widget _button(
@@ -1699,28 +1629,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     double min,
     double max,
     ValueChanged<double> onChanged,
-  ) => Padding(
-    padding: const EdgeInsets.only(top: 6),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label  ${value.toStringAsFixed(value <= 1 ? 2 : 0)}',
-          style: TextStyle(
-            fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w800,
-            color: skin.textSecondary,
-          ),
-        ),
-        Slider(
-          value: value.clamp(min, max),
-          min: min,
-          max: max,
-          activeColor: skin.accent,
-          onChanged: onChanged,
-        ),
-      ],
-    ),
+  ) => KitSlider(
+    skin: skin,
+    label: label,
+    value: value,
+    min: min,
+    max: max,
+    onChanged: onChanged,
+    shown: value.toStringAsFixed(value <= 1 ? 2 : 0),
   );
 
   Widget _toggle(
@@ -1728,19 +1644,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     String label,
     bool value,
     ValueChanged<bool> onChanged,
-  ) => Row(
-    children: [
-      Expanded(
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontFloor,
-            color: skin.textPrimary,
-          ),
-        ),
-      ),
-      Switch(value: value, activeThumbColor: skin.accent, onChanged: onChanged),
-    ],
+  ) => KitToggle(
+    skin: skin,
+    label: label,
+    value: value,
+    onChanged: onChanged,
+    dense: true,
   );
 }
 

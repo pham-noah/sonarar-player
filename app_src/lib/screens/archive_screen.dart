@@ -13,6 +13,7 @@ import '../theme/skin.dart';
 import '../theme/slab.dart';
 import 'compendium_screen.dart';
 import '../widgets/framed_art.dart';
+import '../widgets/kit.dart';
 
 class ArchiveScreen extends StatefulWidget {
   const ArchiveScreen({
@@ -96,24 +97,11 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      for (final (i, label) in const [
-                        (0, 'MOST HEARD'),
-                        (1, 'RECENT'),
-                        (2, 'A-Z'),
-                      ]) ...[
-                        if (i > 0) const SizedBox(width: 8),
-                        Expanded(
-                          child: SkinChip(
-                            skin: skin,
-                            label: label,
-                            selected: _order == i,
-                            onTap: () => setState(() => _order = i),
-                          ),
-                        ),
-                      ],
-                    ],
+                  KitSegment<int>(
+                    skin: skin,
+                    options: const {0: 'MOST HEARD', 1: 'RECENT', 2: 'A-Z'},
+                    selected: _order,
+                    onSelected: (i) => setState(() => _order = i),
                   ),
                 ],
               ],

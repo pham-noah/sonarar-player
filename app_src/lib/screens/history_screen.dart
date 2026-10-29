@@ -8,6 +8,7 @@ import '../library/track.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
 import '../theme/slab.dart';
+import '../widgets/kit.dart';
 import '../widgets/pressable.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -138,37 +139,48 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _monthBar(Skin skin, HistoryShape h) => Row(
-        children: [
-          GestureDetector(
-            onTap: () => setState(() {
-              _month = previousMonth(_month);
-              _selected = null;
+  Widget _monthBar(Skin skin, HistoryShape h) => KitRow(
+        skin: skin,
+        label: 'MONTH',
+        icon: Icons.calendar_month_rounded,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _chevron(skin, Icons.chevron_left_rounded, () {
+              setState(() {
+                _month = previousMonth(_month);
+                _selected = null;
+              });
             }),
-            child: Icon(Icons.chevron_left_rounded,
-                color: skin.textPrimary, size: 30),
-          ),
-          Expanded(
-            child: Text(
-              '${_monthName(_month.month)} ${h.month.year}',
-              textAlign: TextAlign.center,
+            const SizedBox(width: 4),
+            Text(
+              '${_monthName(_month.month)} ${h.month.year}'.toUpperCase(),
               style: TextStyle(
-                fontSize: LayoutSpec.fontBase,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2,
-                color: skin.textPrimary,
+                fontSize: LayoutSpec.fontFloor - 1,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.8,
+                color: skin.accent,
               ),
             ),
-          ),
-          GestureDetector(
-            onTap: () => setState(() {
-              _month = nextMonth(_month);
-              _selected = null;
+            const SizedBox(width: 4),
+            _chevron(skin, Icons.chevron_right_rounded, () {
+              setState(() {
+                _month = nextMonth(_month);
+                _selected = null;
+              });
             }),
-            child: Icon(Icons.chevron_right_rounded,
-                color: skin.textPrimary, size: 30),
-          ),
-        ],
+          ],
+        ),
+      );
+
+  Widget _chevron(Skin skin, IconData icon, VoidCallback onTap) => GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(icon, color: skin.textPrimary, size: 26),
+        ),
       );
 
   Widget _heatGrid(Skin skin, MonthShape month) {

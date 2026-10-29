@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/pressable.dart';
 import '../widgets/devices.dart';
+import '../widgets/kit.dart';
 
 import '../context/weather_codes.dart';
 import '../core/app_state.dart';
@@ -78,7 +79,13 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
+/// Pages of Settings. The strip on screen is the same one Personalize wears,
+/// so the two screens read as one place with different rooms.
+enum SettingsTab { look, playback, library, system }
+
 class _SettingsScreenState extends State<SettingsScreen> {
+  SettingsTab _tab = SettingsTab.playback;
+
   AppState get state => widget.state;
   Skin get skin => state.uiSkin;
   WeatherCondition get weather => widget.weather;
@@ -105,10 +112,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ScreenTitle(skin: skin, text: 'SETTINGS'),
               const SizedBox(height: LayoutSpec.gapM),
             ],
+            KitTabs<SettingsTab>(
+              skin: skin,
+              labels: const {
+                SettingsTab.look: 'LOOK',
+                SettingsTab.playback: 'PLAYBACK',
+                SettingsTab.library: 'LIBRARY',
+                SettingsTab.system: 'SYSTEM',
+              },
+              selected: _tab,
+              onSelected: (t) => setState(() => _tab = t),
+              keyBuilder: (t) => Key('settings-tab-${t.name}'),
+            ),
+            const SizedBox(height: 14),
 
             
             
-            if (widget._showCustomization && widget.onOpenPersonalize != null) ...[
+            if (_tab == SettingsTab.look &&
+                widget._showCustomization &&
+                widget.onOpenPersonalize != null) ...[
               SectionBand(skin: skin, label: 'LOOK'),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -148,7 +170,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
             
             if (widget._showBehaviour && prefs != null && onPrefsChanged != null) ...[
-              const SizedBox(height: 26),
+              if (_tab == SettingsTab.playback) ...[
+              const SizedBox(height: 2),
               StaggerIn(
                 index: 3,
                 style: StaggerStyle.stamp,
@@ -235,7 +258,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.diversity_1_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(personaLayer: v))),
 
-              if (widget.onOpenMusicFolder != null) ...[
+              ],
+              if (_tab == SettingsTab.library &&
+                  widget.onOpenMusicFolder != null) ...[
                 SectionBand(skin: skin, label: 'LIBRARY'),
                 _row(
                   skin,
@@ -266,6 +291,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ],
+              if (_tab == SettingsTab.system) ...[
               SectionBand(skin: skin, label: 'INTERFACE'),
               _toggle(skin, 'FPS COUNTER', prefs!.showFps,
                   icon: Icons.speed_rounded,
@@ -286,8 +312,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _toggle(skin, 'KEEP PLAYING WHEN QUEUE ENDS', prefs!.refillWhenQueueEnds,
                   icon: Icons.autorenew_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(refillWhenQueueEnds: v))),
+              ],
             ],
-            if (widget._showBehaviour && onOpenDiagnostics != null) ...[
+            if (_tab == SettingsTab.system &&
+                widget._showBehaviour &&
+                onOpenDiagnostics != null) ...[
               StaggerIn(
                 index: 4,
                 style: StaggerStyle.stamp,
@@ -486,52 +515,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Skin skin, {
     required String label,
     required Widget trailing,
-
     IconData? icon,
     VoidCallback? onTap,
-  }) =>
-      Padding(
+  }) => KitRow(
+    skin: skin,
+    label: label,
+    icon: icon,
+    trailing: trailing,
+    onTap: onTap,
+  );
 
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Pressable(
-          child: InkWell(
-            onTap: onTap,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
-              decoration: BoxDecoration(
-                color: skin.panel,
-                border: Border(
-
-                  left: BorderSide(color: skin.accent.withValues(alpha: 0.7), width: 3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 17, color: skin.accent),
-                    const SizedBox(width: 10),
-                  ],
-                  Expanded(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
-                        color: skin.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  trailing,
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
   // ignore: unused_element
   Widget _pickTile(String label, IconData icon, VoidCallback onTap, {bool? selected}) {
     final active = selected ?? false;

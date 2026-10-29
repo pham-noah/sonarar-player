@@ -13,14 +13,13 @@ import 'package:sonarar/screens/settings_screen.dart';
 import 'package:sonarar/theme/layout.dart';
 import 'package:sonarar/theme/skin_policy.dart';
 
-const _wanted = <String>[
-  'LOOK',
-  'PLAYBACK',
-  'CONTEXT',
-  'LISTENING MEMORY',
-  'INTERFACE',
-  'IF SOMETHING IS WRONG',
-];
+/// Tabs run in this order, and each tab's sections run in this order.
+const _wanted = <String, List<String>>{
+  'LOOK': ['LOOK'],
+  'PLAYBACK': ['PLAYBACK', 'CONTEXT', 'LISTENING MEMORY'],
+  'LIBRARY': ['LIBRARY'],
+  'SYSTEM': ['INTERFACE', 'IF SOMETHING IS WRONG'],
+};
 
 Track _t(String id) => Track(
       id: id,
@@ -56,23 +55,49 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    final found = <String, double>{};
-    for (final label in _wanted) {
-      final finder = find.text(label);
-      if (finder.evaluate().isEmpty) continue;
-      found[label] = tester.getTopLeft(finder.first).dy;
+    // The tabs run left to right in the order a person reads them.
+    // Tabs are addressed by key: PLAYBACK is both a tab and a section band, so
+    // matching on the word alone finds two widgets.
+    final keys = {
+      'LOOK': 'settings-tab-look',
+      'PLAYBACK': 'settings-tab-playback',
+      'LIBRARY': 'settings-tab-library',
+      'SYSTEM': 'settings-tab-system',
+    };
+    for (final tab in _wanted.keys) {
+      expect(find.byKey(Key(keys[tab]!)), findsOneWidget,
+          reason: 'the $tab tab is missing from Settings');
+    }
+    final order = _wanted.keys.toList();
+    for (var i = 1; i < order.length; i++) {
+      expect(
+        tester.getTopLeft(find.byKey(Key(keys[order[i]]!))).dx,
+        greaterThan(
+            tester.getTopLeft(find.byKey(Key(keys[order[i - 1]]!))).dx),
+        reason: 'the settings tabs are out of order',
+      );
     }
 
-    final order = found.keys.toList()
-      ..sort((a, b) => found[a]!.compareTo(found[b]!));
-    // ignore: avoid_print
-    print('settings section order: $order');
+    // Inside a tab, its sections run down the page in order.
+    for (final entry in _wanted.entries) {
+      await tester.tap(find.byKey(Key(keys[entry.key]!)));
+      await tester.pumpAndSettle();
 
-    expect(found.keys.toSet(), _wanted.toSet(),
-        reason: 'a settings section is missing from the screen entirely');
+      final found = <String, double>{};
+      for (final label in entry.value) {
+        final finder = find.text(label);
+        if (finder.evaluate().isEmpty) continue;
+        found[label] = tester.getTopLeft(finder.first).dy;
+      }
 
-    expect(order, _wanted,
-        reason: 'the settings sections are out of order — if that was deliberate, update `_wanted`');
+      expect(found.keys.toSet(), entry.value.toSet(),
+          reason: 'a section is missing from the ${entry.key} tab');
+
+      final seen = found.keys.toList()
+        ..sort((a, b) => found[a]!.compareTo(found[b]!));
+      expect(seen, entry.value,
+          reason: 'the ${entry.key} sections are out of order');
+    }
   });
 
   testWidgets('the settings screen PAINTS in the layout\'s colours, not the skin\'s',

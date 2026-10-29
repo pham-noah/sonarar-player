@@ -30,7 +30,11 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    expect(find.text('LIBRARY'), findsOneWidget);
+    // The folder lives on the LIBRARY page.
+    await tester.tap(find.text('LIBRARY'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('LIBRARY'), findsWidgets);
     expect(find.text('MUSIC FOLDER'), findsOneWidget);
     expect(find.text('/storage/emulated/0/Music/Sonarar'), findsOneWidget);
 

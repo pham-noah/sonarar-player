@@ -3263,6 +3263,26 @@ class _HomeShellState extends State<HomeShell>
       mainAxisSize: MainAxisSize.min,
       children: [
 
+        // A download in flight belongs with the bar you are already looking at,
+        // not in a corner of the top bar you never watch.
+        if (_downloads.isBusy && _tab != AppTab.search)
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: EdgeInsets.only(
+                right: widget.state.presentation.arrangement.tabBarInsets.right + 4,
+                bottom: 6,
+              ),
+              child: DownloadRing(
+                manager: _downloads,
+                skin: skin,
+                coverOf: (j) {
+                  final path = _downloads.coverPathForJob(j);
+                  return path == null ? null : FileImage(File(path));
+                },
+              ),
+            ),
+          ),
         _miniPlayer(skin),
         TabBarView2(
           skin: skin,
@@ -3440,24 +3460,6 @@ class _HomeShellState extends State<HomeShell>
                   child: Padding(
                     padding: const EdgeInsets.only(top: 4, left: 8),
                     child: FpsOverlay(skin: skin),
-                  ),
-                ),
-              ),
-            if (_downloads.isBusy && _tab != AppTab.search)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 4, right: 8),
-                    child: DownloadRing(
-                      manager: _downloads,
-                      skin: skin,
-                      coverOf: (j) {
-                        final path = _downloads.coverPathForJob(j);
-                        return path == null ? null : FileImage(File(path));
-                      },
-                    ),
                   ),
                 ),
               ),

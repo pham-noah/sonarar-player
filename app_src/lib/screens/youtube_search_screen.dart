@@ -144,9 +144,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   bool _searching = false;
   String? _error;
 
-  final Map<String, double?> _progress = {};
 
-  final Set<String> _done = {};
 
   List<SearchHit> _local = const [];
 
@@ -225,31 +223,29 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     return ids;
   }
 
-  int _lastJobs = 0;
-
+  /// Every notification, not just the ones that shrink the queue: a finished
+  /// download changes no count, it changes a *row* — and a row that only
+  /// repaints when you switch tabs reads as a download that never landed.
   void _onDownloadsChanged() {
-    final jobs = widget.downloads.all.length;
-    if (jobs >= _lastJobs) {
-      _lastJobs = jobs;
-      return;
-    }
-    _lastJobs = jobs;
     if (!mounted) return;
-
     setState(() => _libraryIds = _inLibrary());
   }
 
   @override
   void initState() {
     super.initState();
-    _lastJobs = widget.downloads.all.length;
     widget.downloads.addListener(_onDownloadsChanged);
+    // The manifest write and the library reload land after the download
+    // manager has already gone quiet, so the row also has to follow the
+    // library itself — that is the state the row is drawn from.
+    widget.state.addListener(_onDownloadsChanged);
   }
 
   @override
   void dispose() {
     _typing?.cancel();
     widget.downloads.removeListener(_onDownloadsChanged);
+    widget.state.removeListener(_onDownloadsChanged);
     _ctl.dispose();
     _yt.close();
     super.dispose();
@@ -568,9 +564,11 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     if (hit.localCoverPath != null || _local.any((l) => l.id == hit.id && l.thumbnailUrl == null)) {
       return _localRow(skin, hit);
     }
-    final p = _progress[hit.id];
-    final done = _done.contains(hit.id) || _libraryIds.contains(hit.id);
-    final downloading = widget.downloads.contains(hit.id);
+    // Read the live job, never a snapshot of it.
+    final job = widget.downloads.jobFor(hit.id);
+    final p = job?.fraction;
+    final downloading = job != null;
+    final done = _libraryIds.contains(hit.id);
     return Container(
       // The row IS the progress. A separate queue above the list made the same
       // download appear twice and never where the user was looking.
@@ -647,7 +645,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     ),
                   ],
                 ),
-                if (p != null || _progress.containsKey(hit.id)) ...[
+                if (downloading) ...[
                   const SizedBox(height: 6),
                   LinearProgressIndicator(
                     value: p,

@@ -131,8 +131,19 @@ class DownloadManager extends ChangeNotifier {
 
   List<DownloadJob> get all => [if (_current != null) _current!, ..._queue];
 
-  bool contains(String videoId) =>
-      _current?.videoId == videoId || _queue.any((j) => j.videoId == videoId);
+  bool contains(String videoId) => jobFor(videoId) != null;
+
+  /// The job drawing progress for this video, if any. A row needs the job
+  /// itself, not a copy of its numbers: copies go stale the moment the poller
+  /// ticks, which is exactly how a download appears frozen.
+  DownloadJob? jobFor(String videoId) {
+    final current = _current;
+    if (current != null && current.videoId == videoId) return current;
+    for (final job in _queue) {
+      if (job.videoId == videoId) return job;
+    }
+    return null;
+  }
 
   String? coverPathForJob(DownloadJob job) {
     final dir = _dirCache ?? downloadDirOf();

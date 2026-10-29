@@ -25,7 +25,7 @@ Builds:
       - flutter config --no-analytics
       - flutter pub get --enforce-lockfile
     build:
-      - $$flutter$$/bin/flutter build apk --release --target-platform=android-arm64
+      - $$flutter$$/bin/flutter build apk --release --target-platform=android-arm64 --dart-define=SONARAR_SELF_UPDATE=false
     output: build/app/outputs/flutter-apk/app-release.apk
     scanignore:
       - app_src/.flutter/bin/cache

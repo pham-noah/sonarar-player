@@ -67,13 +67,17 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Sonar,
   Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
   library folder. Tracks without a spectrum file simply show no bars.
-- **Personalize** — THEMES first, then LOOK (layout, song list shape, accent), PICTURES (per-place
-  pictures and framing), ART (folders on disk) and HOME (section order). Your accent reaches every
-  surface, including the sidebar.
+- **Personalize** — THEMES first, then LOOK (layout, song list shape, accent, motion: tab
+  animation and the visualiser with its smoothness, scale and shape), PICTURES (per-place pictures
+  and framing, or a solid or gradient fill when there is no picture), ART (folders on disk) and
+  HOME (section order). Your accent reaches every surface, including the sidebar.
 - **Themes own the whole look** — skin, layout, accent, backdrop, Home order, every per-place
   picture, the art bundle and its framing. Editing anything edits the theme you are wearing, so
   switching away and back returns your version; the theme file is written once the hand stops
   moving, not on every tick.
+- **Updates** — checked once per launch after the first frame, so they never delay startup. The
+  APK is held to the `sha256` published in the release notes and deleted on a mismatch; the
+  F-Droid build compiles the updater out with `--dart-define=SONARAR_SELF_UPDATE=false`.
 - **Recently added** — downloaded music lands on Home in RECENTLY ADDED, newest first. It used to
   live only in Library, because every other Home rail needs play history or a playlist.
 - **Art folders** — drop a folder of pictures into `Music/Sonarar/art/` and it becomes a bundle: each

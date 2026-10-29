@@ -67,7 +67,7 @@ void main() {
     });
 
     test('Persona ignores the index — its palettes are its six skins', () {
-      final p = presentationFor(LayoutKind.persona, kSkinCrimson, paletteIndex: 2);
+      final p = presentationFor(LayoutKind.sonar, kSkinCrimson, paletteIndex: 2);
       expect(p.palette.accent, kSkinCrimson.accent);
     });
 

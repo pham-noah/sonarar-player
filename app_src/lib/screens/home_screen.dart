@@ -12,6 +12,7 @@ import '../library/home_rails.dart';
 import '../library/playlists.dart';
 import '../library/track.dart';
 import '../theme/layout.dart';
+import '../theme/personalization.dart';
 import '../theme/skin.dart';
 
 enum HomeTab { home, quickPick, fromLibrary, genre, recap }
@@ -36,6 +37,8 @@ class HomeScreen extends StatelessWidget {
     this.libraryPlaylists = const [],
     this.genreLists = const [],
     this.recapTracks = const [],
+    this.home = HomeLayout.defaults,
+    this.onOpenPersonalize,
     this.recapLabel = '',
     this.allTracks = const [],
     this.onOpenRecap,
@@ -93,6 +96,15 @@ class HomeScreen extends StatelessWidget {
 
   final List<Track> recapTracks;
 
+  /// Which sections this page draws, and in what order. NOW is pinned at the
+  /// top — it is the header's own context row, not a section that can be moved
+  /// under the lists.
+  final HomeLayout home;
+
+  /// A visible door. The drawer hides Settings well enough that a feature
+  /// living only behind it is a feature nobody finds.
+  final VoidCallback? onOpenPersonalize;
+
   final String recapLabel;
 
   final void Function(Playlist)? onPlayPlaylist;
@@ -124,7 +136,19 @@ class HomeScreen extends StatelessWidget {
         ),
         children: [
           if (greeting != null)
-            AppScreenHeader(skin: skin, title: greeting!, mark: headerMark),
+            AppScreenHeader(
+              skin: skin,
+              title: greeting!,
+              mark: headerMark,
+              trailing: onOpenPersonalize == null
+                  ? null
+                  : IconButton(
+                      key: const Key('open-personalize'),
+                      onPressed: onOpenPersonalize,
+                      icon: Icon(Icons.tune_rounded, color: skin.textPrimary),
+                      tooltip: 'Personalize',
+                    ),
+            ),
 
         if (contextEnabled) ...[
           _bandText('NOW'),
@@ -166,12 +190,12 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
                 decoration: BoxDecoration(
-                  color: PresentationScope.of(context, fallback: skin).palette.accent,
+                  color: skin.accent,
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.play_arrow_rounded,
-                        color: PresentationScope.of(context, fallback: skin).palette.onAccent,
+                        color: skin.onAccent,
                         size: 24),
                     const SizedBox(width: 10),
                     Expanded(
@@ -185,7 +209,7 @@ class HomeScreen extends StatelessWidget {
                           fontSize: LayoutSpec.fontFloor,
                           letterSpacing: 1.4,
                           fontWeight: FontWeight.w900,
-                          color: PresentationScope.of(context, fallback: skin).palette.onAccent,
+                          color: skin.onAccent,
                         ),
                       ),
                     ),
@@ -197,36 +221,49 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 26),
         ],
 
-        if (continueTrack != null) ...[
-          _bandText('CONTINUE LISTENING'),
-          _continueRow(context, continueTrack!),
-          const SizedBox(height: 22),
-        ],
-
-        if (rediscover.isNotEmpty) ...[
-          GestureDetector(
-            onTap: onOpenRediscover,
-            child: _bandText('REDISCOVER'),
-          ),
-          _coverRail(context, rediscover),
-          const SizedBox(height: 22),
-        ],
-
-        if (jumpBackIn.isNotEmpty) ...[
-          _bandText('JUMP BACK IN'),
-          _coverRail(context, jumpBackIn),
-          const SizedBox(height: 22),
-        ],
-
-        ..._quickPickSection(context),
-
-        ..._fromLibrarySection(context),
-
-        ..._recapSection(context),
+        for (final section in home.visible) ...switch (section) {
+          HomeSection.now => const <Widget>[],
+          HomeSection.continueListening => _continueSection(context),
+          HomeSection.rediscover => _rediscoverSection(context),
+          HomeSection.jumpBackIn => _jumpBackInSection(context),
+          HomeSection.quickPick => _quickPickSection(context),
+          HomeSection.fromLibrary => _fromLibrarySection(context),
+          HomeSection.recap => _recapSection(context),
+        },
 
         ],
       ),
     );
+  }
+
+  List<Widget> _continueSection(BuildContext context) {
+    if (continueTrack == null) return const [];
+    return [
+      _bandText('CONTINUE LISTENING'),
+      _continueRow(context, continueTrack!),
+      const SizedBox(height: 22),
+    ];
+  }
+
+  List<Widget> _rediscoverSection(BuildContext context) {
+    if (rediscover.isEmpty) return const [];
+    return [
+      GestureDetector(
+        onTap: onOpenRediscover,
+        child: _bandText('REDISCOVER'),
+      ),
+      _coverRail(context, rediscover),
+      const SizedBox(height: 22),
+    ];
+  }
+
+  List<Widget> _jumpBackInSection(BuildContext context) {
+    if (jumpBackIn.isEmpty) return const [];
+    return [
+      _bandText('JUMP BACK IN'),
+      _coverRail(context, jumpBackIn),
+      const SizedBox(height: 22),
+    ];
   }
 
   List<Widget> _quickPickSection(BuildContext context) {

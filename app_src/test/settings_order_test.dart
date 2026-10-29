@@ -14,11 +14,7 @@ import 'package:sonarar/theme/layout.dart';
 import 'package:sonarar/theme/skin_policy.dart';
 
 const _wanted = <String>[
-  'LAYOUT',
-  'SONG LIST',
-  'THEME',
-
-  'ART',
+  'LOOK',
   'BEHAVIOUR',
   'IF SOMETHING IS WRONG',
 ];
@@ -47,6 +43,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       home: Material(
         child: SettingsScreen(
+          onOpenPersonalize: () {},
           state: state,
           prefs: AppPrefs.initial,
           onPrefsChanged: (_) {},
@@ -112,7 +109,7 @@ void main() {
       return image!;
     }
 
-    final persona = await pageColourFor(LayoutKind.persona);
+    final persona = await pageColourFor(LayoutKind.sonar);
     final solid = await pageColourFor(LayoutKind.solid);
     // ignore: avoid_print
     print('settings page colour: persona=$persona solid=$solid');

@@ -15,7 +15,7 @@ SkinId? skinFromPrefs(String? raw) {
 LayoutKind layoutFromPrefs(String raw) => switch (raw) {
       'solid' => LayoutKind.solid,
       'glass' => LayoutKind.glass,
-      _ => LayoutKind.persona,
+      _ => LayoutKind.sonar,
     };
 
 String? bandNameOf(ContextBand? band) => switch (band) {

@@ -3,6 +3,7 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import '../theme/personalization.dart';
 import '../theme/skin.dart';
 
 class ThemePreset {
@@ -13,6 +14,7 @@ class ThemePreset {
     this.artSkinId,
     this.languageSkinId,
     this.layoutId,
+    this.personalization,
     this.builtIn = false,
   });
 
@@ -20,6 +22,10 @@ class ThemePreset {
   final String name;
 
   final String? layoutId;
+
+  /// The theme's personalization: backdrop, accent source, Home order. Null on
+  /// presets written before 0.2.0, which simply means "whatever the app has".
+  final Personalization? personalization;
 
   final SkinId skinId;
 
@@ -63,6 +69,7 @@ class ThemePreset {
         if (languageSkinId != null) 'language': languageSkinId!.name,
 
         if (layoutId != null) 'layout': layoutId,
+        if (personalization != null) 'personalize': personalization!.toJson(),
       };
 
   static ThemePreset? fromJson(Object? raw) {
@@ -86,6 +93,9 @@ class ThemePreset {
       layoutId: (raw['layout'] is String &&
               (raw['layout'] as String).trim().isNotEmpty)
           ? (raw['layout'] as String).trim()
+          : null,
+      personalization: raw['personalize'] is Map
+          ? Personalization.decode(jsonEncode(raw['personalize']))
           : null,
     );
   }

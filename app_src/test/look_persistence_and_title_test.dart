@@ -44,7 +44,7 @@ Future<void> _pump(WidgetTester tester, LayoutKind layout) async {
 }
 
 void main() {
-  for (final layout in [LayoutKind.persona, LayoutKind.solid, LayoutKind.glass]) {
+  for (final layout in [LayoutKind.sonar, LayoutKind.solid, LayoutKind.glass]) {
     testWidgets('${layout.name}: the title and the artist are each drawn ONCE',
         (tester) async {
       await _pump(tester, layout);

@@ -27,13 +27,13 @@ Track _t(String id) => Track(
     );
 
 int _paletteCount(LayoutKind k) => switch (k) {
-      LayoutKind.persona => 1,
+      LayoutKind.sonar => 1,
       LayoutKind.solid => kSolidPalettes.length,
       LayoutKind.glass => kGlassPalettes.length,
     };
 
 String _paletteName(LayoutKind k, int i) => switch (k) {
-      LayoutKind.persona => 'default',
+      LayoutKind.sonar => 'default',
       LayoutKind.solid => kSolidPalettes[i].name.toLowerCase(),
       LayoutKind.glass => kGlassPalettes[i].name.toLowerCase(),
     };

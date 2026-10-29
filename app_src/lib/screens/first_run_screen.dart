@@ -70,7 +70,7 @@ class FirstRunScreen extends StatelessWidget {
 
                     label: option.kit.displayName,
                     icon: switch (option) {
-                      LayoutKind.persona => Icons.auto_awesome_rounded,
+                      LayoutKind.sonar => Icons.auto_awesome_rounded,
                       LayoutKind.solid => Icons.crop_square_rounded,
                       LayoutKind.glass => Icons.blur_on_rounded,
                     },
@@ -111,7 +111,7 @@ class FirstRunScreen extends StatelessWidget {
                   label: 'GRID',
                   icon: Icons.grid_view_rounded,
 
-                  selected: prefs.libraryIsGrid ?? (layoutId != LayoutKind.persona),
+                  selected: prefs.libraryIsGrid ?? (layoutId != LayoutKind.sonar),
                   onTap: () => onPrefs(prefs.copyWith(libraryIsGrid: true)),
                 ),
                 SkinChip(
@@ -119,7 +119,7 @@ class FirstRunScreen extends StatelessWidget {
                   label: 'LIST',
                   icon: Icons.view_list_rounded,
                   selected: !(prefs.libraryIsGrid ??
-                      (layoutId != LayoutKind.persona)),
+                      (layoutId != LayoutKind.sonar)),
                   onTap: () => onPrefs(prefs.copyWith(libraryIsGrid: false)),
                 ),
               ],
@@ -163,7 +163,7 @@ class FirstRunScreen extends StatelessWidget {
   }
 
   List<({String name})> _palettes() {
-    if (layoutId == LayoutKind.persona) {
+    if (layoutId == LayoutKind.sonar) {
       return [for (final s in kAllSkins) (name: s.displayName)];
     }
     final named =

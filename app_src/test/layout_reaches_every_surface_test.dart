@@ -30,7 +30,7 @@ void main() {
 
     test('uiSkin is the palette ITSELF for Persona, so nothing Persona draws can move', () {
       final chosen = skinFor(SkinId.crimson);
-      final persona = presentationFor(LayoutKind.persona, chosen);
+      final persona = presentationFor(LayoutKind.sonar, chosen);
       expect(identical(persona.asSkin(chosen), chosen), isTrue,
           reason: 'Persona must hand back the identical skin object');
     });

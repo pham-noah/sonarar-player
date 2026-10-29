@@ -512,22 +512,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       style: TextStyle(fontSize: 16, color: skin.accent),
                     ),
                   ),
-                AnimatedBuilder(
-                  animation: widget.downloads,
-                  builder: (context, _) {
-                    final jobs = widget.downloads.all;
-                    if (jobs.isEmpty) return const SizedBox.shrink();
-                    return Column(
-                      key: const Key('download-queue'),
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (final j in jobs)
-                          _queueRow(skin, j, isCurrent: j == widget.downloads.current),
-                        const SizedBox(height: 4),
-                      ],
-                    );
-                  },
-                ),
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.only(
@@ -586,8 +570,12 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     }
     final p = _progress[hit.id];
     final done = _done.contains(hit.id) || _libraryIds.contains(hit.id);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+    final downloading = widget.downloads.contains(hit.id);
+    return Container(
+      // The row IS the progress. A separate queue above the list made the same
+      // download appear twice and never where the user was looking.
+      color: downloading ? skin.accent.withValues(alpha: 0.12) : null,
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
       child: Row(
         children: [
 
@@ -680,8 +668,18 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     tooltip: 'Play this',
                   )
                 : Icon(Icons.check_circle_rounded, color: skin.accent)
-          else if (widget.downloads.contains(hit.id))
-            Icon(Icons.schedule_rounded, color: skin.textSecondary)
+          else if (downloading)
+            SizedBox(
+              key: const Key('row-downloading'),
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(
+                value: p,
+                strokeWidth: 2.5,
+                color: skin.accent,
+                backgroundColor: skin.panel,
+              ),
+            )
           else if (widget.officialOnly && !hit.isOfficialGiven(_vouched))
             Tooltip(
               message: 'Not an official release',
@@ -740,38 +738,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             Icon(Icons.play_circle_fill_rounded, color: skin.accent),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _queueRow(Skin skin, DownloadJob job, {required bool isCurrent}) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 6),
-      child: Row(
-        children: [
-
-          if (isCurrent)
-            SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2, color: skin.accent),
-            )
-          else
-            Icon(Icons.schedule_rounded, size: 18, color: skin.textSecondary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(job.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 16, color: skin.textPrimary)),
-          ),
-          const SizedBox(width: 8),
-          if (isCurrent)
-            Text(job.progressText,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: skin.accent))
-          else
-            Text('waiting', style: TextStyle(fontSize: 14, color: skin.textSecondary)),
-        ],
       ),
     );
   }

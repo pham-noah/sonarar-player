@@ -16,7 +16,7 @@ const _narrow = Size(1080, 2340);
 Future<AppPrefs> _pump(
   WidgetTester tester, {
   AppPrefs prefs = AppPrefs.initial,
-  LayoutKind layout = LayoutKind.persona,
+  LayoutKind layout = LayoutKind.sonar,
   Size size = _phone,
 }) async {
   tester.view.physicalSize = size;
@@ -56,7 +56,7 @@ void main() {
     await _pump(tester, size: _narrow);
     expect(tester.takeException(), isNull,
         reason: 'the page overflowed at the narrowest phone width');
-    for (final label in const ['PERSONA', 'SOLID', 'GLASS']) {
+    for (final label in const ['SONAR', 'SOLID', 'GLASS']) {
       expect(find.text(label), findsOneWidget,
           reason: 'the $label chip is missing at 360px — a choice nobody can reach');
     }
@@ -75,7 +75,7 @@ void main() {
         child: FirstRunScreen(
           skin: skinFor(SkinId.crimson),
           prefs: AppPrefs.initial,
-          layoutId: LayoutKind.persona,
+          layoutId: LayoutKind.sonar,
           onPrefs: (next) => seen = next,
           onDone: () {},
         ),
@@ -110,7 +110,7 @@ void main() {
         child: FirstRunScreen(
           skin: skinFor(SkinId.crimson),
           prefs: AppPrefs.initial,
-          layoutId: LayoutKind.persona,
+          layoutId: LayoutKind.sonar,
           onPrefs: (next) => seen = next,
           onDone: () {},
         ),
@@ -135,7 +135,7 @@ void main() {
       home: FirstRunScreen(
         skin: skinFor(SkinId.values.first),
         prefs: AppPrefs.initial,
-        layoutId: LayoutKind.persona,
+        layoutId: LayoutKind.sonar,
         onPrefs: (_) {},
         onDone: () {},
       ),
@@ -148,7 +148,7 @@ void main() {
         reason: 'the page does not bring its own frame, so the shell has to supply one');
     expect(find.text(kAppName), findsOneWidget);
 
-    for (final label in const ['PERSONA', 'SOLID', 'GLASS']) {
+    for (final label in const ['SONAR', 'SOLID', 'GLASS']) {
       expect(find.text(label), findsOneWidget);
     }
   });

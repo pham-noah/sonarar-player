@@ -47,6 +47,7 @@ void main() {
       state: state,
       section: section,
       showTitle: showTitle,
+      onOpenPersonalize: () {},
 
       prefs: const AppPrefs(),
       onPrefsChanged: (_) {},
@@ -57,10 +58,7 @@ void main() {
     }
 
     final labels = <String>[
-      'LAYOUT',
-      'SONG LIST',
-      'THEME',
-      'ART',
+      'LOOK',
       'BEHAVIOUR',
       'IF SOMETHING IS WRONG',
     ];
@@ -86,10 +84,10 @@ void main() {
               'A section spacer left outside its gate shows up here');
     });
 
-    testWidgets('C U S T O M I Z A T I O N', (tester) async {
+    testWidgets('P E R S O N A L I Z E', (tester) async {
       final top = await firstSectionTop(tester, SettingsSection.customization);
       expect(top, lessThanOrEqualTo(_maxFirstSectionTop),
-          reason: 'the customization page opens with ${top.toStringAsFixed(1)}px '
+          reason: 'the personalize page opens with ${top.toStringAsFixed(1)}px '
               'of empty space above the first section');
     });
 

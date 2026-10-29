@@ -14,9 +14,9 @@ void main() {
       expect(layoutFromPrefs('glass'), LayoutKind.glass);
     });
 
-    test('an unknown or junk name is PERSONA, never a throw', () {
-      for (final junk in ['', 'PERSONA', 'ultra', '  solid', 'solid\n', '{"layout":"glass"}']) {
-        expect(layoutFromPrefs(junk), LayoutKind.persona,
+    test('an unknown or junk name is SONAR, never a throw', () {
+      for (final junk in ['', 'SONAR', 'ultra', '  solid', 'solid\n', '{"layout":"glass"}']) {
+        expect(layoutFromPrefs(junk), LayoutKind.sonar,
             reason: 'the name "$junk" should degrade to Persona');
       }
     });

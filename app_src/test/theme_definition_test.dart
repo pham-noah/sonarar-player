@@ -49,7 +49,7 @@ void main() {
       test('persona_${skin.id.name} round-trips exactly', () async {
         final themes = await bundled();
         final theme = themes['persona_${skin.id.name}']!;
-        final kit = LayoutKind.persona.kit;
+        final kit = LayoutKind.sonar.kit;
 
         expect(theme.palette.accent, skin.accent);
         expect(theme.palette.accentDeep, skin.accentDeep);

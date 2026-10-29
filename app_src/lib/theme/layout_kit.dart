@@ -297,9 +297,9 @@ class LayoutKit {
     this.palettes = const [],
   });
 
-  static const LayoutKit persona = LayoutKit(
+  static const LayoutKit sonar = LayoutKit(
     id: 'persona',
-    displayName: 'PERSONA',
+    displayName: 'SONAR',
     material: MaterialKit.persona,
     motion: MotionSpec.persona,
     arrangement: ScreenLayout.persona,

@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import 'layout.dart';
+import 'personalization.dart';
 
 enum SkinId {
   abyss,
@@ -31,7 +32,14 @@ class Skin {
     required this.contextLabel,
     required this.nowPlayingWordmark,
     this.names = const {},
+    this.accentPinned = false,
   });
+
+  /// True when the accent was chosen by the user rather than inherited.
+  ///
+  /// A presentation (Glass, Solid) recolours the accent from its own palette.
+  /// That is right for a palette's look and wrong for a choice someone made, so
+  /// a pinned accent survives that resolution instead of being replaced by it.
 
   final SkinId id;
 
@@ -63,7 +71,32 @@ class Skin {
 
   final Map<String, String> names;
 
+  final bool accentPinned;
+
   String word(String key, String fallback) => names[key] ?? fallback;
+
+  /// The same skin wearing a different accent.
+  ///
+  /// A skin's accent is not one colour: `accentDeep` and `onAccent` are derived
+  /// from it, and copying them across would put white glyphs on a pale accent.
+  /// Only the three accent slots move — background, panel, text, skew and the
+  /// wordmark stay the skin's, which is what keeps it recognisable.
+  Skin withAccent(Color accent) => Skin(
+        id: id,
+        displayName: displayName,
+        background: background,
+        accent: accent,
+        accentDeep: accentDeepFor(accent),
+        textPrimary: textPrimary,
+        textSecondary: textSecondary,
+        panel: panel,
+        onAccent: onAccentFor(accent),
+        accentPinned: true,
+        skewDegrees: skewDegrees,
+        contextLabel: contextLabel,
+        nowPlayingWordmark: nowPlayingWordmark,
+        names: names,
+      );
 }
 
 abstract final class WordKey {
@@ -262,25 +295,30 @@ abstract final class LayoutSpec {
 }
 
   ThemeData themeFor(Skin skin, {Presentation? layout}) {
-    if (layout != null && layout.kit.palette != null) {
-      return _themeFromPalette(layout.palette);
+    final palette = layout?.kit.palette;
+    if (palette != null) {
+      // The palette owns the room; a pinned accent owns the highlights.
+      return _themeFromPalette(palette, accentFrom: skin.accentPinned ? skin : null);
     }
     return _themeFromSkin(skin);
   }
 
-ThemeData _themeFromPalette(LayoutPalette pal) {
+ThemeData _themeFromPalette(LayoutPalette pal, {Skin? accentFrom}) {
   final light = pal.background.computeLuminance() > 0.5;
+  final accent = accentFrom?.accent ?? pal.accent;
+  final accentDeep = accentFrom?.accentDeep ?? pal.accentDeep;
+  final onAccent = accentFrom?.onAccent ?? pal.onAccent;
   return ThemeData(
     useMaterial3: true,
     brightness: light ? Brightness.light : Brightness.dark,
     scaffoldBackgroundColor: pal.background,
     colorScheme: light
         ? ColorScheme.light(
-            primary: pal.accent,
-            secondary: pal.accentDeep,
+            primary: accent,
+            secondary: accentDeep,
             surface: pal.background,
             onSurface: pal.textPrimary,
-            onPrimary: pal.onAccent,
+            onPrimary: onAccent,
           )
         : ColorScheme.dark(
             primary: pal.accent,

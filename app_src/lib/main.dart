@@ -51,6 +51,7 @@ import 'screens/never_in_shuffle_screen.dart';
 import 'screens/library_management_panel.dart';
 import 'screens/library_browser.dart';
 import 'screens/library_screen.dart';
+import 'screens/personalize_screen.dart';
 import 'screens/player_screen.dart';
 import 'screens/playlist_import_sheet.dart';
 import 'screens/youtube_search_screen.dart';
@@ -64,6 +65,7 @@ import 'screens/archive_screen.dart';
 import 'widgets/inline_panel.dart';
 import 'screens/diagnostics_screen.dart';
 import 'theme/ambient_backdrop.dart';
+import 'theme/backdrop_layer.dart';
 import 'theme/layout.dart';
 import 'theme/layout_kit.dart';
 import 'theme/skin.dart';
@@ -168,6 +170,7 @@ class _SonararAppState extends State<SonararApp> {
   final AppState _state = AppState();
 
   ThemeData? _theme;
+  int? _themeAccent;
 
   LayoutKind? _themeLayoutId;
   SkinId? _themeSkinId;
@@ -196,9 +199,13 @@ class _SonararAppState extends State<SonararApp> {
       builder: (context, _) {
         final skin = _state.skin;
         final layoutId = _state.layoutId;
-        if (_themeSkinId != skin.id || _themeLayoutId != layoutId || _theme == null) {
+        if (_themeSkinId != skin.id ||
+            _themeLayoutId != layoutId ||
+            _themeAccent != skin.accent.toARGB32() ||
+            _theme == null) {
           _themeSkinId = skin.id;
           _themeLayoutId = layoutId;
+          _themeAccent = skin.accent.toARGB32();
           _theme = themeFor(skin, layout: _state.presentation);
         }
 
@@ -1084,6 +1091,7 @@ class _HomeShellState extends State<HomeShell>
 
     _boot(0.60, 'opening your saved state');
     _stores = await StateStores.open(libraryRoot: _repo.libraryRoot);
+    widget.state.libraryRoot = _repo.libraryRoot;
 
     unawaited(_refreshHomeRails());
     _stateDir = _stores.directory;
@@ -1105,6 +1113,9 @@ class _HomeShellState extends State<HomeShell>
     _needsSetup = !File('${_stores.directory}/prefs.json').existsSync();
 
     _prefs = await _stores.prefs.load();
+
+    widget.state.setPersonalization(await _stores.personalization.load());
+    widget.state.onPersonalizationChanged = _stores.personalization.save;
 
     widget.state.applyQueuePrefs(
       defaultMode: _prefs.dynamicByDefault,
@@ -2364,6 +2375,7 @@ class _HomeShellState extends State<HomeShell>
 
         showTitle: false,
         onOpenDiagnostics: _openDiagnosticsPage,
+        onOpenPersonalize: _openPersonalizePage,
         onDeletePreset: (p) {
           widget.state.setUserPresets([
             for (final x in widget.state.userPresets)
@@ -2379,22 +2391,58 @@ class _HomeShellState extends State<HomeShell>
     );
   }
 
-  void _openCustomizationPage() {
-    _openPage(
-      'CUSTOMIZATION',
-      (_) => SettingsScreen(
-        state: widget.state,
-        section: SettingsSection.customization,
-        showTitle: false,
-        prefs: _prefs,
-        onPrefsChanged: _setPrefs,
-        onContextsChanged: () {
-          _syncPresetToPrefs();
-
-          _shellChanged(() {});
-        },
+  void _openPersonalizePage() {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => PresentationScope(
+        presentation: widget.state.presentation,
+        child: PersonalizeScreen(
+          state: widget.state,
+          greeting: _homeGreeting,
+          prefs: _prefs,
+          onPrefsChanged: _setPrefs,
+          onApplyTheme: (preset) {
+            widget.state.applyPreset(preset);
+            final layout = preset.layoutId;
+            if (layout != null) {
+              _setPrefs(_prefs.copyWith(layoutId: layout));
+            }
+          },
+          onDeleteTheme: (preset) {
+            widget.state.setUserPresets([
+              for (final x in widget.state.userPresets)
+                if (x.id != preset.id) x,
+            ]);
+            // ignore: discarded_futures
+            _persistPresets();
+          },
+          onSaveTheme: (name) {
+            Navigator.of(context).pop();
+            _saveThemeByName(name);
+          },
+        ),
       ),
+    ));
+  }
+
+  /// Same shape as the preset the Settings tile writes, so a look saved from
+  /// PERSONALIZE and one saved from THEME are the same kind of object.
+  void _saveThemeByName(String name) {
+    final made = ThemePreset(
+      id: freshPresetId({for (final p in widget.state.allPresets) p.id}),
+      name: name,
+      skinId: widget.state.skin.id,
+      artSkinId: widget.state.artSkinOverride,
+      languageSkinId: widget.state.languageSkin.id == widget.state.skin.id
+          ? null
+          : widget.state.languageSkin.id,
+      layoutId: widget.state.layoutId.name,
+      personalization: widget.state.personalization,
     );
+    widget.state.setUserPresets([...widget.state.userPresets, made]);
+    widget.state.applyPreset(made);
+    // ignore: discarded_futures
+    _persistPresets();
+    _shellChanged(() {});
   }
 
   void _openDiagnosticsPage() {
@@ -2732,6 +2780,8 @@ class _HomeShellState extends State<HomeShell>
   Widget _tabContent(AppTab tab, Skin skin) => switch (tab) {
         AppTab.home => HomeScreen(
           skin: skin,
+          home: widget.state.personalization.home,
+          onOpenPersonalize: _openPersonalizePage,
           headerMark: _brandMark(),
           band: decode.bandNameOf(_ctxForHome?.band),
           continueTrack: _continueTrack,
@@ -2944,6 +2994,7 @@ class _HomeShellState extends State<HomeShell>
                       ? null
                       : widget.state.languageSkin.id,
               layoutId: widget.state.layoutId.name,
+              personalization: widget.state.personalization,
             );
             widget.state.setUserPresets([
               ...widget.state.userPresets,
@@ -3050,11 +3101,25 @@ class _HomeShellState extends State<HomeShell>
       onDragToQueue: _queueFromDrag,
     );
 
-  Widget _tabBackdrop(Skin skin) => Stack(
+  Widget _tabBackdrop(Skin skin) {
+    final personalization = widget.state.personalization;
+    final root = _repo.libraryRoot;
+    return Stack(
         children: [
+          // The photo sits under everything the skin paints, so the palette
+          // still reads as the skin and the image is scenery, not wallpaper.
+          if (personalization.backdrop.isSet)
+            Positioned.fill(
+              child: PersonalBackdrop(
+                root: root == null ? null : Directory(root),
+                spec: personalization.backdrop,
+                skin: skin,
+              ),
+            ),
           Positioned.fill(
             child: AmbientBackdrop(
               presentation: widget.state.presentation,
+              transparent: personalization.backdrop.isSet,
             ),
           ),
           Positioned.fill(
@@ -3078,6 +3143,7 @@ class _HomeShellState extends State<HomeShell>
           ),
         ],
       );
+  }
 
   final Map<AppTab, Widget> _builtTabs = {};
 
@@ -3314,10 +3380,9 @@ class _HomeShellState extends State<HomeShell>
             onTap: _openArchive,
           ),
           SidebarEntry(
-            label: 'CUSTOMIZATION',
-            icon: Icons.palette_rounded,
-
-            onTap: _openCustomizationPage,
+            label: 'PERSONALIZE',
+            icon: Icons.tune_rounded,
+            onTap: _openPersonalizePage,
           ),
           SidebarEntry(
             label: 'SETTINGS',

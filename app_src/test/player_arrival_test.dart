@@ -95,7 +95,7 @@ void main() {
   });
 
   testWidgets('the bar survives the whole flight and comes back', (tester) async {
-    await pumpShellOn(tester, LayoutKind.persona);
+    await pumpShellOn(tester, LayoutKind.sonar);
 
     HomeShellStateProbe.shellCall(tester, 'debugOpenPlayer');
 

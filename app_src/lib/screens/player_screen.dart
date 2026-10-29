@@ -11,6 +11,8 @@ import '../widgets/transport_motion.dart';
 import '../context/context_icons.dart';
 import '../context/place_icons.dart';
 import '../context/weather_codes.dart';
+import 'dart:io' show Directory;
+
 import '../core/app_state.dart';
 import '../core/constants.dart';
 import '../library/variants.dart';
@@ -21,6 +23,7 @@ import '../player/queue.dart';
 import '../theme/layout.dart';
 import '../theme/layout_kit.dart';
 import '../theme/motion.dart';
+import '../theme/backdrop_layer.dart';
 import '../theme/skin.dart';
 import '../theme/skin_policy.dart';
 import '../theme/surface.dart';
@@ -244,6 +247,20 @@ class PlayerScreen extends StatelessWidget {
           curve: MotionCurve.art,
           color: pal.background,
         ),
+
+        // The photo under the player's own art. When the backdrop asks for the
+        // cover instead, this stays out of the way and the art does the work.
+        if (state.personalization.backdrop.isSet &&
+            !state.personalization.backdrop.coverOnPlayer)
+          Positioned.fill(
+            child: PersonalBackdrop(
+              root: state.libraryRoot == null
+                  ? null
+                  : Directory(state.libraryRoot!),
+              spec: state.personalization.backdrop,
+              skin: skin,
+            ),
+          ),
 
         if (art != null && art.fullBleed && showFigure)
           Positioned.fill(

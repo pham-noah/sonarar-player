@@ -11,6 +11,7 @@ import '../library/exclusions.dart' show JsonMapStore;
 import '../library/play_log.dart';
 import '../library/playlist_loader.dart';
 import '../library/playlists.dart';
+import '../theme/personalization_store.dart';
 import '../theme/theme_preset.dart';
 import '../library/tag_overrides.dart';
 import '../playback/loop_points.dart';
@@ -38,6 +39,7 @@ class StateStores {
           decode: (v) => v is bool ? v : null,
         ),
         prefs = PrefsStore(File('$directory/prefs.json')),
+        personalization = PersonalizationStore(File('$directory/personalize.json')),
         places = PlaceStore(File('$directory/places.json')),
         tags = TagOverrideStore(File('$directory/tag_overrides.json')),
         bonds = BondStore(File('$directory/bonds.json')),
@@ -62,6 +64,7 @@ class StateStores {
   final JsonMapStore<Duration> bookmarks;
   final JsonMapStore<bool> favorites;
   final PrefsStore prefs;
+  final PersonalizationStore personalization;
   final PlaceStore places;
   final TagOverrideStore tags;
   final BondStore bonds;

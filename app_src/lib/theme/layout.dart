@@ -7,14 +7,14 @@ import 'motion.dart';
 import 'skin.dart';
 
 enum LayoutKind {
-  persona,
+  sonar,
 
   solid,
 
   glass;
 
   LayoutKit get kit => switch (this) {
-        LayoutKind.persona => LayoutKit.persona,
+        LayoutKind.sonar => LayoutKit.sonar,
         LayoutKind.solid => kSolidKit,
         LayoutKind.glass => kGlassKit,
       };
@@ -220,12 +220,12 @@ class Presentation {
   });
 
   factory Presentation.forSkin(Skin skin) => Presentation(
-        layout: LayoutKind.persona,
+        layout: LayoutKind.sonar,
         palette: LayoutPalette.fromSkin(skin),
         material: MaterialStyle.flat,
         motion: MotionSpec.persona,
         arrangement: ScreenLayout.persona,
-        kit: LayoutKit.persona,
+        kit: LayoutKit.sonar,
         skewDegrees: skin.skewDegrees,
       );
 
@@ -239,7 +239,7 @@ class Presentation {
 
   final double skewDegrees;
 
-  bool get isPersona => layout == LayoutKind.persona;
+  bool get isPersona => layout == LayoutKind.sonar;
   bool get isGlass => material == MaterialStyle.glass;
 
   Skin asSkin(Skin base) {
@@ -248,12 +248,13 @@ class Presentation {
       id: base.id,
       displayName: base.displayName,
       background: palette.background,
-      accent: palette.accent,
-      accentDeep: palette.accentDeep,
+      accent: base.accentPinned ? base.accent : palette.accent,
+      accentDeep: base.accentPinned ? base.accentDeep : palette.accentDeep,
       textPrimary: palette.textPrimary,
       textSecondary: palette.textSecondary,
       panel: palette.surface,
-      onAccent: palette.onAccent,
+      onAccent: base.accentPinned ? base.onAccent : palette.onAccent,
+      accentPinned: base.accentPinned,
       skewDegrees: skewDegrees,
       contextLabel: base.contextLabel,
       nowPlayingWordmark: base.nowPlayingWordmark,
@@ -288,7 +289,7 @@ class PresentationScope extends InheritedWidget {
 Presentation presentationFor(LayoutKind layout, Skin skin,
     {int paletteIndex = 0}) {
   final kit = layout.kit;
-  if (layout == LayoutKind.persona) {
+  if (layout == LayoutKind.sonar) {
     return Presentation(
       layout: layout,
       palette: LayoutPalette.fromSkin(skin),

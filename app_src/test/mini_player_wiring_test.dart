@@ -93,7 +93,7 @@ void main() {
     expect(byLayout.length, LayoutKind.values.length,
         reason: 'a layout built no mini player, so nothing could be compared');
 
-    final reference = byLayout[LayoutKind.persona.name]!;
+    final reference = byLayout[LayoutKind.sonar.name]!;
     for (final kind in LayoutKind.values) {
       expect(byLayout[kind.name], reference,
           reason: '${kind.name} does not wire the same callbacks as persona');

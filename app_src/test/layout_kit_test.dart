@@ -11,7 +11,7 @@ import 'package:sonarar/theme/surface.dart' show SurfaceRole;
 void main() {
   group('every layout has exactly one kit, and it is reachable from the enum', () {
     test('all three resolve, with distinct ids', () {
-      expect(LayoutKind.persona.kit.id, 'persona');
+      expect(LayoutKind.sonar.kit.id, 'persona');
       expect(LayoutKind.solid.kit.id, 'solid');
       expect(LayoutKind.glass.kit.id, 'glass');
       expect(
@@ -33,23 +33,23 @@ void main() {
 
   group('the shell frame — the structural difference, in one field', () {
     test('persona docks its bars, the plain layouts float them', () {
-      expect(LayoutKind.persona.kit.chrome.shellFrame, ShellFrame.docked);
+      expect(LayoutKind.sonar.kit.chrome.shellFrame, ShellFrame.docked);
       expect(LayoutKind.solid.kit.chrome.shellFrame, ShellFrame.floating);
       expect(LayoutKind.glass.kit.chrome.shellFrame, ShellFrame.floating);
     });
 
     test('docking is what makes clearance necessary — a docked bar takes real height', () {
-      expect(LayoutKind.persona.kit.arrangement.tabBarInsets, EdgeInsets.zero);
+      expect(LayoutKind.sonar.kit.arrangement.tabBarInsets, EdgeInsets.zero);
 
       expect(LayoutKind.solid.kit.arrangement.tabBarInsets.bottom, greaterThan(0));
       expect(LayoutKind.solid.kit.arrangement.bottomClearance,
-          greaterThan(LayoutKind.persona.kit.arrangement.bottomClearance));
+          greaterThan(LayoutKind.sonar.kit.arrangement.bottomClearance));
     });
   });
 
   group('the material — what Surface used to decide with seven isPersona branches', () {
     test('persona slants its surfaces and carries the heavy accent edge', () {
-      final m = LayoutKind.persona.kit.material;
+      final m = LayoutKind.sonar.kit.material;
       expect(m.slant, isTrue);
       expect(m.edge, SurfaceEdge.heavy);
       expect(m.activeFillIsAccent, isTrue);
@@ -58,7 +58,7 @@ void main() {
     });
 
     test('persona keeps one small radius whatever the role', () {
-      final radii = LayoutKind.persona.kit.material.radii;
+      final radii = LayoutKind.sonar.kit.material.radii;
       for (final role in SurfaceRole.values) {
         expect(radii[role], 4.0, reason: '$role moved off Persona\'s stamp radius');
       }
@@ -94,7 +94,7 @@ void main() {
     });
 
     test('only persona fills an inactive slab with nothing', () {
-      expect(LayoutKind.persona.kit.material.transparentInactiveFill, isTrue);
+      expect(LayoutKind.sonar.kit.material.transparentInactiveFill, isTrue);
       expect(LayoutKind.solid.kit.material.transparentInactiveFill, isFalse);
       expect(LayoutKind.glass.kit.material.transparentInactiveFill, isFalse);
     });
@@ -102,13 +102,13 @@ void main() {
 
   group('the chrome — which devices are drawn, and in what form', () {
     test('persona draws its banner heading; the plain layouts draw the mark', () {
-      expect(LayoutKind.persona.kit.chrome.sectionBand, SectionBandForm.banner);
+      expect(LayoutKind.sonar.kit.chrome.sectionBand, SectionBandForm.banner);
       expect(LayoutKind.solid.kit.chrome.sectionBand, SectionBandForm.mark);
       expect(LayoutKind.glass.kit.chrome.sectionBand, SectionBandForm.mark);
     });
 
     test('persona draws the personality layer the plain layouts do not', () {
-      final p = LayoutKind.persona.kit.chrome;
+      final p = LayoutKind.sonar.kit.chrome;
       expect(p.wordmark, isTrue);
       expect(p.hemisphereScrim, isTrue);
       expect(p.transportTilt, isNot(0));
@@ -122,37 +122,37 @@ void main() {
     });
 
     test('persona shows art on its own; the plain layouts wait to be asked', () {
-      expect(LayoutKind.persona.kit.chrome.artByDefault, isTrue);
+      expect(LayoutKind.sonar.kit.chrome.artByDefault, isTrue);
       expect(LayoutKind.solid.kit.chrome.artByDefault, isFalse,
           reason: 'a P5R figure behind a green page reads as a Persona layout '
               'wearing green');
     });
 
     test('the plain layouts reach their art behind the floating bars; persona does not', () {
-      expect(LayoutKind.persona.kit.chrome.artReachBehindBars, 0);
+      expect(LayoutKind.sonar.kit.chrome.artReachBehindBars, 0);
       expect(LayoutKind.solid.kit.chrome.artReachBehindBars, lessThan(0));
-      expect(LayoutKind.persona.kit.chrome.backdropReach, 0);
+      expect(LayoutKind.sonar.kit.chrome.backdropReach, 0);
       expect(LayoutKind.solid.kit.chrome.backdropReach, lessThan(0));
     });
 
     test('the player\'s cover is the subject on persona and a caption on the plain layouts', () {
-      expect(LayoutKind.persona.kit.chrome.coverSize, 156);
+      expect(LayoutKind.sonar.kit.chrome.coverSize, 156);
       expect(LayoutKind.solid.kit.chrome.coverSize, 88);
     });
 
     test('the scrubber side is a real difference, not an accident', () {
-      expect(LayoutKind.persona.kit.chrome.scrubberBelowTransport, isTrue);
+      expect(LayoutKind.sonar.kit.chrome.scrubberBelowTransport, isTrue);
       expect(LayoutKind.solid.kit.chrome.scrubberBelowTransport, isFalse);
     });
   });
 
   group('the palette — persona derives it, the plain layouts bring their own', () {
     test('persona\'s kit has no palette of its own, and that is the point', () {
-      expect(LayoutKind.persona.kit.palette, isNull);
+      expect(LayoutKind.sonar.kit.palette, isNull);
     });
 
     test('a persona presentation\'s palette IS the skin\'s', () {
-      final p = presentationFor(LayoutKind.persona, kSkinCrimson);
+      final p = presentationFor(LayoutKind.sonar, kSkinCrimson);
       expect(p.palette.accent, kSkinCrimson.accent);
       expect(p.palette.background, kSkinCrimson.background);
     });
@@ -160,7 +160,7 @@ void main() {
     test('the plain layouts carry their named palettes on the kit', () {
       expect(LayoutKind.solid.kit.palettes, isNotEmpty);
       expect(LayoutKind.glass.kit.palettes, isNotEmpty);
-      expect(LayoutKind.persona.kit.palettes, isEmpty,
+      expect(LayoutKind.sonar.kit.palettes, isEmpty,
           reason: 'Persona\'s palettes ARE its skins — a second list would be two pickers for one choice');
     });
 
@@ -188,7 +188,7 @@ void main() {
   group('what the kit MUST NOT do', () {
     test('persona resolves identically through forSkin and through presentationFor', () {
       final viaForSkin = Presentation.forSkin(kSkinAbyss);
-      final viaFor = presentationFor(LayoutKind.persona, kSkinAbyss);
+      final viaFor = presentationFor(LayoutKind.sonar, kSkinAbyss);
       expect(viaFor.palette.accent, viaForSkin.palette.accent);
       expect(viaFor.skewDegrees, viaForSkin.skewDegrees);
       expect(viaFor.motion.tabTransition, viaForSkin.motion.tabTransition);
@@ -197,7 +197,7 @@ void main() {
 
     test('motion restraint is a difference between layouts, not a shared value', () {
       expect(LayoutKind.solid.kit.motion.tabTransition.inMilliseconds,
-          lessThan(LayoutKind.persona.kit.motion.tabTransition.inMilliseconds));
+          lessThan(LayoutKind.sonar.kit.motion.tabTransition.inMilliseconds));
     });
   });
 }

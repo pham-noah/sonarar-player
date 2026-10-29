@@ -80,7 +80,7 @@ void main() {
   }
 
   testWidgets('Persona keeps its accent band, which is its own device', (tester) async {
-    await _pumpLibrary(tester, LayoutKind.persona);
+    await _pumpLibrary(tester, LayoutKind.sonar);
     expect(find.text('LIBRARY'), findsOneWidget,
         reason: 'Persona still has a Library heading');
     expect(find.byType(ScreenTitle), findsNothing,

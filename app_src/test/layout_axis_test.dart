@@ -21,7 +21,7 @@ void main() {
   group('a layout brings its own pattern', () {
     test('Persona is the skin, unchanged', () {
       final skin = skinFor(SkinId.crimson);
-      final p = presentationFor(LayoutKind.persona, skin);
+      final p = presentationFor(LayoutKind.sonar, skin);
 
       expect(p.isPersona, isTrue);
 
@@ -41,7 +41,7 @@ void main() {
         expect(fromP3R.palette.accent, fromP5R.palette.accent,
             reason: '${kind.name} took its accent from the skin');
 
-        final persona = presentationFor(LayoutKind.persona, skinFor(SkinId.abyss));
+        final persona = presentationFor(LayoutKind.sonar, skinFor(SkinId.abyss));
         expect(fromP3R.palette.background, isNot(persona.palette.background));
       }
     });
@@ -59,7 +59,7 @@ void main() {
 
   group('motion: Persona is the loud one', () {
     test('Solid and Glass are restrained, and it is the duration', () {
-      final persona = presentationFor(LayoutKind.persona, skinFor(SkinId.crimson));
+      final persona = presentationFor(LayoutKind.sonar, skinFor(SkinId.crimson));
       for (final kind in [LayoutKind.solid, LayoutKind.glass]) {
         final p = presentationFor(kind, skinFor(SkinId.crimson));
         expect(p.motion.tabTransition, lessThan(persona.motion.tabTransition),
@@ -70,7 +70,7 @@ void main() {
     });
 
     test("Persona's own number is exactly what the app had", () {
-      final m = presentationFor(LayoutKind.persona, skinFor(SkinId.abyss)).motion;
+      final m = presentationFor(LayoutKind.sonar, skinFor(SkinId.abyss)).motion;
       expect(m.tabTransition, const Duration(milliseconds: 420));
       expect(m.enabled, isTrue);
     });
@@ -78,7 +78,7 @@ void main() {
 
   group('arrangement: the bar floats or it docks', () {
     test('Persona docks its bar; Solid and Glass float it inset', () {
-      final persona = presentationFor(LayoutKind.persona, skinFor(SkinId.crimson));
+      final persona = presentationFor(LayoutKind.sonar, skinFor(SkinId.crimson));
       expect(persona.arrangement.tabBarIsFloating, isFalse);
       expect(persona.arrangement.contextPlateExists, isTrue);
 
@@ -133,7 +133,7 @@ void main() {
         return n;
       }
 
-      expect(await shadowCount(LayoutKind.persona), greaterThan(0),
+      expect(await shadowCount(LayoutKind.sonar), greaterThan(0),
           reason: "Persona's panel should still lift");
       expect(await shadowCount(LayoutKind.solid), 0,
           reason: 'a flat surface must not cast — the hairline does that work');
@@ -141,7 +141,7 @@ void main() {
 
     test('Persona slants and Solid does not', () {
       final skin = skinFor(SkinId.crimson);
-      expect(presentationFor(LayoutKind.persona, skin).skewDegrees, greaterThan(0),
+      expect(presentationFor(LayoutKind.sonar, skin).skewDegrees, greaterThan(0),
           reason: 'Persona stopped slanting, so its stamps are no longer stamps');
       for (final kind in [LayoutKind.solid, LayoutKind.glass]) {
         expect(presentationFor(kind, skin).skewDegrees, 0,
@@ -271,7 +271,7 @@ void main() {
     });
 
     testWidgets("Persona's shell is unchanged: it slants and casts", (tester) async {
-      await pumpShell(tester, LayoutKind.persona);
+      await pumpShell(tester, LayoutKind.sonar);
       expect(tester.widgetList(find.byType(BackdropFilter)).length, 0,
           reason: 'Persona blurred — the material leaked from another layout');
     });

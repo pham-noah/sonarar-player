@@ -9,11 +9,16 @@ class AmbientBackdrop extends StatelessWidget {
     super.key,
     required this.presentation,
     this.strength = 1.0,
+    this.transparent = false,
   });
 
   final Presentation presentation;
 
   final double strength;
+
+  /// Skip the flat base colour, so a photo underneath is what shows through.
+  /// The accent spots still paint, which is what keeps the skin present.
+  final bool transparent;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,7 @@ class AmbientBackdrop extends StatelessWidget {
         base: presentation.palette.background,
         accents: presentation.palette.ambient,
         strength: strength,
+        transparent: transparent,
       ),
     );
   }
@@ -32,6 +38,7 @@ class _AmbientPainter extends CustomPainter {
     required this.base,
     required this.accents,
     required this.strength,
+    required this.transparent,
   });
 
   final Color base;
@@ -40,9 +47,11 @@ class _AmbientPainter extends CustomPainter {
 
   final double strength;
 
+  final bool transparent;
+
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = base);
+    if (!transparent) canvas.drawRect(Offset.zero & size, Paint()..color = base);
     if (accents.isEmpty || strength <= 0) return;
 
     const spots = <({double x, double y, double rx, double ry})>[

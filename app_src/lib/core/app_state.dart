@@ -22,6 +22,7 @@ import '../rules/place_rules.dart';
 import '../player/queue_mode.dart';
 import '../rules/rules_engine.dart';
 import '../theme/layout.dart';
+import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import '../theme/theme_preset.dart';
 import '../theme/skin_policy.dart';
@@ -658,19 +659,52 @@ class AppState extends ChangeNotifier {
 
   Skin _skin = kSkinAbyss;
 
-  Skin get skin => _skin;
+  /// Where the library lives, so a screen can resolve a backdrop or cover
+  /// without being handed the repository. Set once at boot.
+  String? libraryRoot;
 
-  Skin get uiSkin => presentation.asSkin(_skin);
+  Personalization _personalization = Personalization.defaults;
+
+  /// What the user asked PERSONALIZE for: the photo, the accent's source, and
+  /// the Home order. One record, so no screen has to know where its colour came
+  /// from — it reads a skin that already carries the answer.
+  Personalization get personalization => _personalization;
+
+  /// Set by the shell so a change survives the next launch without every
+  /// caller having to remember to write the file.
+  Future<void> Function(Personalization)? onPersonalizationChanged;
+
+  void setPersonalization(Personalization next) {
+    if (next.encode() == _personalization.encode()) return;
+    _personalization = next;
+    // Anything listening to the skin as a value has to see the new accent too.
+    skinListenable.value = _accented(_skin);
+    // ignore: discarded_futures
+    onPersonalizationChanged?.call(next);
+    notifyListeners();
+  }
+
+  /// The skin wearing the accent the personalization asks for. When the source
+  /// is the skin this is the skin itself, untouched.
+  Skin _accented(Skin base) {
+    final accent = _personalization.accent;
+    if (accent.source == AccentSource.skin || accent.value == null) return base;
+    return base.withAccent(accentFor(base.accent, accent));
+  }
+
+  Skin get skin => _accented(_skin);
+
+  Skin get uiSkin => _accented(presentation.asSkin(_skin));
 
   final ValueNotifier<Skin> skinListenable = ValueNotifier<Skin>(kSkinAbyss);
 
   set _skinValue(Skin next) {
     _skin = next;
-    skinListenable.value = next;
+    skinListenable.value = _accented(next);
     _presentationCache = null;
   }
 
-  LayoutKind _layoutId = LayoutKind.persona;
+  LayoutKind _layoutId = LayoutKind.sonar;
   LayoutKind get layoutId => _layoutId;
 
   int _paletteIndex = 0;
@@ -715,6 +749,7 @@ class AppState extends ChangeNotifier {
 
   void applyPreset(ThemePreset preset) {
     _preset = preset;
+    if (preset.personalization != null) _personalization = preset.personalization!;
     _skinValue = skinFor(preset.skinId);
     _languageSkin = preset.languageSkinId == null
         ? null
@@ -737,7 +772,8 @@ class AppState extends ChangeNotifier {
     for (final k in LayoutKind.values) {
       if (k.name == raw) return k;
     }
-    return null;
+    // Presets written before the rename say 'persona'; they mean Sonar.
+    return raw == 'persona' ? LayoutKind.sonar : null;
   }
 
   void clearPreset() {

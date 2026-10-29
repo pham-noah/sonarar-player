@@ -1287,7 +1287,13 @@ class PlayerScreen extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: GestureDetector(
+            child: Padding(
+              // Clear the gesture pill / nav bar: the sheet is anchored to the
+              // very bottom of the screen and its last row would sit under it.
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.viewPaddingOf(context).bottom,
+              ),
+              child: GestureDetector(
               onVerticalDragEnd: (d) {
                 final v = d.primaryVelocity ?? 0;
                 final dy = dragDy;
@@ -1393,6 +1399,7 @@ class PlayerScreen extends StatelessWidget {
                 },
                 ),
               ),
+            ),
             ),
           ),
         ],

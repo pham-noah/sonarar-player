@@ -13,7 +13,6 @@ import '../theme/skin.dart';
 import '../theme/theme_preset.dart';
 import '../widgets/stagger_in.dart';
 
-import '../widgets/spectrum.dart' show SpectrumShape;
 import '../theme/slab.dart';
 
 
@@ -268,73 +267,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
               SectionBand(skin: skin, label: 'INTERFACE'),
-              _toggle(skin, 'TAB ANIMATION', prefs!.tabAnimation,
-                  icon: Icons.movie_filter_rounded,
-                  (v) => onPrefsChanged!(prefs!.copyWith(tabAnimation: v))),
-
               _toggle(skin, 'FPS COUNTER', prefs!.showFps,
                   icon: Icons.speed_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(showFps: v))),
-              _toggle(skin, 'SPECTRUM', prefs!.showVisualiser,
-                  (v) => onPrefsChanged?.call(prefs!.copyWith(showVisualiser: v)),
-                  icon: Icons.graphic_eq_rounded),
-              if (prefs!.showVisualiser)
-                _slider(
-                  skin,
-                  'SMOOTHNESS',
-                  icon: Icons.waves_rounded,
-                  value: (prefs!.spectrumSmoothness ??
-                          AppPrefs.defaultSmoothnessPercent)
-                      .toDouble(),
-                  min: 0,
-                  max: 100,
-
-                  shown: _smoothnessLabel(
-                      prefs!.spectrumSmoothness ??
-                          AppPrefs.defaultSmoothnessPercent),
-                  onChanged: (v) => onPrefsChanged!(
-                      prefs!.copyWith(spectrumSmoothness: v.round())),
-                ),
-              if (prefs!.showVisualiser)
-                _slider(
-                  skin,
-                  'SCALE',
-                  icon: Icons.height_rounded,
-                  value: prefs!.spectrumScalePercent.toDouble(),
-
-                  min: 40,
-                  max: 220,
-                  shown: '${prefs!.spectrumScalePercent}%',
-                  onChanged: (v) =>
-                      onPrefsChanged!(prefs!.copyWith(spectrumScale: v.round())),
-                ),
-
-              if (prefs!.showVisualiser) ...[
-                const SizedBox(height: 2),
-                _row(
-                  skin,
-                  label: 'SHAPE',
-                  icon: Icons.category_rounded,
-                  trailing: const SizedBox.shrink(),
-                ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final option in SpectrumShape.values)
-                      SizedBox(
-                        width: 96,
-                        child: _pickTile(
-                          option.label,
-                          Icons.square_rounded,
-                          () => onPrefsChanged!(
-                              prefs!.copyWith(spectrumShape: option.name)),
-                          selected: prefs!.spectrumShapeName == option.name,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
+              Text(
+                'TAB ANIMATION and SPECTRUM live in Personalize now — they '
+                'change how the app looks, so they sit with the look.',
+                style: TextStyle(fontSize: 11, color: skin.textSecondary),
+              ),
               _toggle(skin, 'ROMAJI', prefs!.showRomaji,
                   icon: Icons.translate_rounded,
                   (v) => onPrefsChanged?.call(prefs!.copyWith(showRomaji: v))),
@@ -399,6 +339,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onTap: () => onChanged(!value),
       );
 
+  // ignore: unused_element
   Widget _slider(
     Skin skin,
     String label, {
@@ -591,6 +532,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       );
+  // ignore: unused_element
   Widget _pickTile(String label, IconData icon, VoidCallback onTap, {bool? selected}) {
     final active = selected ?? false;
     return Pressable(
@@ -629,7 +571,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
-  }  static String _smoothnessLabel(int percent) {
+  }
+
+  // ignore: unused_element
+  static String _smoothnessLabel(int percent) {
     if (percent <= 10) return 'GLIDE';
     if (percent <= 30) return 'SMOOTH';
     if (percent <= 55) return 'BALANCED';

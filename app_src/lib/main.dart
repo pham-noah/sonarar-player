@@ -1811,6 +1811,8 @@ class _HomeShellState extends State<HomeShell>
       title: track.title,
       artist: track.artist,
       instrumental: _isInstrumental(track),
+      // Length is the tie-breaker between the studio take and a live version.
+      duration: track.duration,
     );
 
     if (!mounted || !_lyricsLoad.isLatest(track.id)) return;

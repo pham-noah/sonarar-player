@@ -122,6 +122,28 @@ String normaliseQuery(String title) {
     ' ',
   );
 
+  // "Song (feat. X)" is the same song; the guest does not change the lyric.
+  t = t.replaceAll(
+    RegExp(r'[\\(\[]?\s*\b(feat\.?|ft\.?|featuring)\s+[^)\]\n]*[)\]]?',
+        caseSensitive: false),
+    ' ',
+  );
+  // "Song - Remastered 2011", "Song (Remaster)", "Song - Single Version".
+  t = t.replaceAll(
+    RegExp(
+      r'[-–—\(\[]\s*(\d{4}\s*)?(digital(ly)?\s*)?(re)?master(ed)?(\s*\d{4})?\s*[)\)\]]?',
+      caseSensitive: false,
+    ),
+    ' ',
+  );
+  t = t.replaceAll(
+    RegExp(
+      r'[-–—\(\[]\s*(single|album|bonus track|radio edit|explicit)\s*(version|edit)?\s*[)\)\]]?',
+      caseSensitive: false,
+    ),
+    ' ',
+  );
+
   t = t.replaceAll(RegExp(r'\bcover\b.*$', caseSensitive: false), ' ');
 
   t = t.replaceAll(RegExp(r'[\(\[]\s*(feat|ft|with)\b.*?[\)\]]', caseSensitive: false), ' ');
@@ -177,6 +199,7 @@ class LyricsService {
     required String title,
     required String artist,
     bool instrumental = false,
+    Duration? duration,
   }) async {
     if (instrumental) {
       return const Lyrics(lines: [], instrumental: true, source: 'variant tag');
@@ -192,7 +215,11 @@ class LyricsService {
 
     Lyrics? fetched;
     try {
-      fetched = await _fetch(title: title, artist: artist);
+      fetched = await _fetch(
+        title: title,
+        artist: artist,
+        duration: duration,
+      );
     } on SocketException {
       fetched = null;
     } on http.ClientException {
@@ -208,15 +235,23 @@ class LyricsService {
     return fetched;
   }
 
-  Future<Lyrics?> _fetch({required String title, required String artist}) async {
+  Future<Lyrics?> _fetch({
+    required String title,
+    required String artist,
+    Duration? duration,
+  }) async {
     final wanted = normaliseQuery(title);
     final who = cleanArtist(artist);
 
     // Pass one: both fields, cleaned. This is the precise query.
     var hit = _bestOf(
-      await _search({'track_name': wanted, 'artist_name': who}),
+      await _search({
+        'track_name': wanted,
+        if (who.isNotEmpty) 'artist_name': who,
+      }),
       title: wanted,
       artist: who,
+      duration: duration,
     );
 
     // Pass two: title alone. Uploads often carry a channel name as the artist
@@ -226,10 +261,18 @@ class LyricsService {
       await _search({'track_name': wanted}),
       title: wanted,
       artist: who,
+      duration: duration,
     );
 
     if (hit == null) {
       return Lyrics(lines: const [], instrumental: false, source: 'not found');
+    }
+
+    // LRCLIB tags instrumentals; saying "no lyrics" for one is a wrong answer.
+    if (hit['instrumental'] == true &&
+        ((hit['syncedLyrics'] as String?)?.isEmpty ?? true) &&
+        ((hit['plainLyrics'] as String?)?.isEmpty ?? true)) {
+      return const Lyrics(lines: [], instrumental: true, source: 'lrclib');
     }
 
     final synced = hit['syncedLyrics'] as String?;
@@ -291,6 +334,7 @@ class LyricsService {
     List<dynamic> rows, {
     required String title,
     required String artist,
+    Duration? duration,
   }) {
     Map<String, dynamic>? synced;
     Map<String, dynamic>? plain;
@@ -308,6 +352,13 @@ class LyricsService {
           by.toLowerCase().contains(artist.toLowerCase()) ||
           artist.toLowerCase().contains(by.toLowerCase());
       if (!artistOk) continue;
+      // Two versions of one song can share a title and an artist — the live
+      // take, the remaster, the sped-up edit. The length tells them apart.
+      final seconds = map['duration'];
+      if (duration != null && seconds is num && seconds > 0) {
+        final gap = (seconds - duration.inSeconds).abs();
+        if (gap > 12) continue;
+      }
       final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;
       if (hasSynced) {
         synced ??= map;

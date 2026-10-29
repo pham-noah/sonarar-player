@@ -8,6 +8,7 @@ import '../core/app_state.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
 import '../theme/theme_preset.dart';
+import '../widgets/spectrum.dart';
 import '../art/art_bundle.dart';
 import '../art/art_spec.dart';
 import '../art/skin_art.dart';
@@ -165,6 +166,57 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 18),
+
+            SectionBand(skin: skin, label: 'MOTION'),
+            _toggleRow(
+              skin,
+              'TAB ANIMATION',
+              'The screens travel into place when you change tab.',
+              widget.prefs?.tabAnimation ?? true,
+              (v) => _prefs((p) => p.copyWith(tabAnimation: v)),
+            ),
+            _toggleRow(
+              skin,
+              'SPECTRUM',
+              'Bars under the player, following the music.',
+              widget.prefs?.showVisualiser ?? false,
+              (v) => _prefs((p) => p.copyWith(showVisualiser: v)),
+            ),
+            if (widget.prefs?.showVisualiser ?? false) ...[
+              _slider(
+                skin,
+                'SMOOTHNESS',
+                (widget.prefs?.spectrumSmoothness ?? 60).toDouble(),
+                0,
+                100,
+                (v) => _prefs((p) => p.copyWith(spectrumSmoothness: v.round())),
+              ),
+              _slider(
+                skin,
+                'SCALE',
+                widget.prefs?.spectrumScalePercent.toDouble() ?? 100,
+                40,
+                220,
+                (v) => _prefs((p) => p.copyWith(spectrumScale: v.round())),
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final shape in SpectrumShape.values)
+                    _chip(
+                      skin,
+                      shape.label,
+                      widget.prefs?.spectrumShapeName == shape.name,
+                      () => _prefs(
+                        (p) => p.copyWith(spectrumShape: shape.name),
+                      ),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 18),
 
             SectionBand(skin: skin, label: 'ACCENT'),
@@ -1265,6 +1317,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   }
 
   // ---- bits ----------------------------------------------------------------
+
+  void _prefs(AppPrefs Function(AppPrefs) edit) {
+    final prefs = widget.prefs;
+    if (prefs == null) return;
+    widget.onPrefsChanged?.call(edit(prefs));
+    setState(() {});
+  }
 
   void _setGrid(bool grid) {
     final prefs = widget.prefs;

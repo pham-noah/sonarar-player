@@ -3,6 +3,7 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
 /// A release the user could move to.
@@ -13,6 +14,7 @@ class AppUpdate {
     required this.apkUrl,
     required this.notesUrl,
     required this.sizeBytes,
+    this.sha256,
   });
 
   final String version;
@@ -23,6 +25,10 @@ class AppUpdate {
   final String apkUrl;
   final String notesUrl;
   final int sizeBytes;
+
+  /// Digest published in the release notes as `sha256: <hex>`. Null when the
+  /// release did not publish one; the download is then accepted on size alone.
+  final String? sha256;
 
   String get label => 'v$version';
 }
@@ -77,6 +83,7 @@ Future<AppUpdate?> checkForUpdate(
       apkUrl: asset.$1,
       sizeBytes: asset.$2,
       notesUrl: body['html_url'] is String ? body['html_url'] as String : '',
+      sha256: _digestIn(body['body']),
     );
   } catch (_) {
     return null;
@@ -100,6 +107,16 @@ Future<AppUpdate?> checkForUpdate(
   if (url is! String) return null;
   final size = chosen['size'];
   return (url, size is int ? size : 0);
+}
+
+/// The digest a release publishes for its APK, if it publishes one.
+String? _digestIn(Object? body) {
+  if (body is! String) return null;
+  final match = RegExp(
+    r'sha-?256[:\s=]+([a-fA-F0-9]{64})',
+    caseSensitive: false,
+  ).firstMatch(body);
+  return match?.group(1)?.toLowerCase();
 }
 
 /// True when [tag] names a version above [current].
@@ -159,6 +176,17 @@ Future<File?> downloadUpdate(
     if (total > 0 && written < total) {
       if (target.existsSync()) target.deleteSync();
       return null;
+    }
+    // Size alone cannot tell a wrong build from a right one. When the release
+    // publishes a digest, hold the file to it — and say nothing came through
+    // rather than hand the installer a file that will fail there instead.
+    final expected = update.sha256;
+    if (expected != null && expected.isNotEmpty) {
+      final actual = sha256.convert(await target.readAsBytes()).toString();
+      if (actual != expected) {
+        if (target.existsSync()) target.deleteSync();
+        return null;
+      }
     }
     return target;
   } catch (_) {

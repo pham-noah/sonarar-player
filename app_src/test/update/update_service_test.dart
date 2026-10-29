@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -165,5 +166,82 @@ void main() {
     expect(kSelfUpdate, isTrue,
         reason: 'this build is allowed to look; if it is not, the bar is dead '
             'code and the flag reached the wrong place');
+  });
+
+  group('the APK is held to the digest the release publishes', () {
+    Future<Directory> tmp() =>
+        Directory.systemTemp.createTemp('sonarar-update-test');
+
+    test('a digest in the notes is read off the release', () async {
+      final client = MockClient((r) async => http.Response(
+            jsonEncode({
+              'tag_name': 'v0.2.1',
+              'name': '0.2.1+21',
+              'html_url': 'x',
+              'body': 'Notes.\nsha256: '
+                  '${'a' * 64}',
+              'assets': [
+                {
+                  'name': 'Sonarar-0.2.1-arm64.apk',
+                  'browser_download_url': 'https://example.com/a.apk',
+                  'size': 10,
+                }
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          ));
+      final update = await checkForUpdate(20, client: client);
+      expect(update!.sha256, 'a' * 64);
+    });
+
+    test('a file that does not match is DELETED, not handed to the installer',
+        () async {
+      final dir = await tmp();
+      addTearDown(() => dir.delete(recursive: true));
+      final client = MockClient((r) async => http.Response.bytes(
+            utf8.encode('not the real apk'),
+            200,
+            headers: {'content-length': '16'},
+          ));
+      final update = AppUpdate(
+        version: '0.2.1',
+        build: 21,
+        apkUrl: 'https://example.com/a.apk',
+        notesUrl: '',
+        sizeBytes: 16,
+        sha256: 'f' * 64,
+      );
+      final file = await downloadUpdate(update, dir, client: client);
+      expect(file, isNull);
+      expect(
+        dir.listSync().whereType<File>().length,
+        0,
+        reason: 'a rejected download must not sit in Downloads',
+      );
+    });
+
+    test('a file that does match is kept', () async {
+      final dir = await tmp();
+      addTearDown(() => dir.delete(recursive: true));
+      const body = 'a real apk';
+      final digest = sha256.convert(utf8.encode(body)).toString();
+      final client = MockClient((r) async => http.Response.bytes(
+            utf8.encode(body),
+            200,
+            headers: {'content-length': '${body.length}'},
+          ));
+      final update = AppUpdate(
+        version: '0.2.1',
+        build: 21,
+        apkUrl: 'https://example.com/a.apk',
+        notesUrl: '',
+        sizeBytes: body.length,
+        sha256: digest,
+      );
+      final file = await downloadUpdate(update, dir, client: client);
+      expect(file, isNotNull);
+      expect(file!.existsSync(), isTrue);
+    });
   });
 }

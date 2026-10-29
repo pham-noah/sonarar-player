@@ -180,14 +180,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       AccentSource.manual => 'PICK',
                     },
                     _p.accent.source == source,
-                    () => _apply(
-                      _p.copyWith(
-                        accent: AccentSpec(
-                          source: source,
-                          value: _p.accent.value,
-                        ),
-                      ),
-                    ),
+                    () => _setAccentSource(source),
                   ),
               ],
             ),
@@ -361,8 +354,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             if (_b.isSet && _surface != null) ...[
               const SizedBox(height: 10),
               Text(
-                'Framing follows EVERYWHERE. Pick a place to give it its own '
-                'picture; the sliders below stay with the default.',
+                'Framing follows EVERYWHERE: these sliders move this picture '
+                'wherever it is used, not just here.',
                 style: TextStyle(
                   color: skin.textSecondary,
                   fontSize: LayoutSpec.fontFloor - 4,
@@ -370,7 +363,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 ),
               ),
             ],
-            if (_b.isSet && _surface == null) ...[
+            if (_b.isSet) ...[
               const SizedBox(height: 14),
               _focusGrid(skin),
               _slider(
@@ -417,6 +410,94 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 _b.coverOnPlayer,
                 (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v)),
               ),
+              if (_surface != null)
+                Text(
+                  'Framing belongs to the picture, so these sliders move it '
+                  'everywhere that picture is used.',
+                  style: TextStyle(
+                    color: skin.textSecondary,
+                    fontSize: LayoutSpec.fontFloor - 4,
+                    height: 1.4,
+                  ),
+                ),
+            ],
+            if (!_b.isSet) ...[
+              Row(
+                children: [
+                  _chip(
+                    skin,
+                    'SOLID',
+                    _p.fill.isSet && !_p.fill.isGradient,
+                    () => _setFill(
+                      _p.fill.isSet
+                          ? _p.fill.copyWith(clearEnd: true)
+                          : const BackdropFill(start: 0xFF16121C),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _chip(
+                    skin,
+                    'GRADIENT',
+                    _p.fill.isGradient,
+                    () => _setFill(
+                      BackdropFill(
+                        start: _p.fill.start ?? 0xFF16121C,
+                        end: _p.fill.end ?? 0xFF3A2140,
+                        angle: _p.fill.angle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _chip(
+                    skin,
+                    'SKIN',
+                    !_p.fill.isSet,
+                    () => _setFill(BackdropFill.none),
+                  ),
+                ],
+              ),
+              if (_p.fill.isSet) ...[
+                const SizedBox(height: 12),
+                Text(
+                  _p.fill.isGradient ? 'FROM' : 'COLOUR',
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontFloor,
+                    fontWeight: FontWeight.w800,
+                    color: skin.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                _fillSwatches(
+                  skin,
+                  _p.fill.start ?? 0xFF16121C,
+                  (c) => _setFill(_p.fill.copyWith(start: c)),
+                ),
+                if (_p.fill.isGradient) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    'TO',
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontFloor,
+                      fontWeight: FontWeight.w800,
+                      color: skin.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _fillSwatches(
+                    skin,
+                    _p.fill.end ?? 0xFF3A2140,
+                    (c) => _setFill(_p.fill.copyWith(end: c)),
+                  ),
+                  _slider(
+                    skin,
+                    'DIRECTION',
+                    _p.fill.angle,
+                    0,
+                    360,
+                    (v) => _setFill(_p.fill.copyWith(angle: v)),
+                  ),
+                ],
+              ],
             ],
             const SizedBox(height: 18),
 
@@ -480,7 +561,47 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               const SizedBox(height: 6),
             ],
             if (widget.onSaveTheme != null)
-              _button(skin, 'SAVE THIS LOOK AS A THEME', _saveTheme),
+              Row(
+                children: [
+                  Expanded(
+                    child: _button(skin, 'NEW THEME', _saveTheme),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _button(
+                      skin,
+                      'OVERRIDE THIS THEME',
+                      _overrideTheme,
+                      quiet: true,
+                    ),
+                  ),
+                ],
+              ),
+            if (widget.state.preset != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'OVERRIDE writes this look into "${widget.state.preset!.name}", '
+                'the theme you are wearing. NEW THEME keeps this one and starts '
+                'another from it.',
+                style: TextStyle(
+                  color: skin.textSecondary,
+                  fontSize: LayoutSpec.fontFloor - 4,
+                  height: 1.4,
+                ),
+              ),
+            ],
+            if (widget.state.preset == null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Nothing is worn right now, so there is no theme to override — '
+                'pick one above first, or make a new one.',
+                style: TextStyle(
+                  color: skin.textSecondary,
+                  fontSize: LayoutSpec.fontFloor - 4,
+                  height: 1.4,
+                ),
+              ),
+            ],
             ],
           ],
         ),
@@ -936,15 +1057,32 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     Color(0xFFE8E2D6),
   ];
 
+  /// Choosing FROM PHOTO takes the colour straight away. It used to only
+  /// declare the source and then wait for a second button, which reads as a
+  /// chip that does nothing.
+  Future<void> _setAccentSource(AccentSource source) async {
+    _apply(
+      _p.copyWith(
+        accent: AccentSpec(source: source, value: _p.accent.value),
+      ),
+    );
+    if (source == AccentSource.image) await _accentFromPhoto();
+  }
+
   Future<void> _accentFromPhoto() async {
     final root = _root;
     if (root == null) return;
-    final file = backdropFile(root, _b);
+    var file = backdropFile(root, _b);
+    if (file == null) {
+      // No photo yet: take one. The accent is the photo, so ask for it here
+      // instead of pointing at a button on another band.
+      await _chooseImage();
+      if (!mounted) return;
+      file = backdropFile(root, _b);
+    }
     if (file == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Choose a backdrop first — that is the photo.'),
-        ),
+        const SnackBar(content: Text('No photo chosen, so no colour taken.')),
       );
       return;
     }
@@ -960,11 +1098,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       );
       return;
     }
+    final argb = colour.toARGB32();
     _apply(
       _p.copyWith(
-        accent: AccentSpec(
-          source: AccentSource.image,
-          value: colour.toARGB32(),
+        accent: AccentSpec(source: AccentSource.image, value: argb),
+      ),
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Accent taken from the photo: '
+          '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
         ),
       ),
     );
@@ -1048,7 +1193,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
         title: Text(
-          'Name this look',
+          'Name the new theme',
           style: TextStyle(color: _skin.textPrimary),
         ),
         content: TextField(
@@ -1064,13 +1209,59 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
-            child: const Text('SAVE'),
+            child: const Text('CREATE'),
           ),
         ],
       ),
     );
     if (name == null || name.isEmpty) return;
     widget.onSaveTheme?.call(name);
+  }
+
+  void _overrideTheme() {
+    final name = widget.state.preset?.name;
+    final done = widget.state.overrideActiveTheme();
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          done
+              ? 'Saved into "$name".'
+              : 'No theme is worn, so there was nothing to override.',
+        ),
+      ),
+    );
+  }
+
+  void _setFill(BackdropFill fill) => _apply(_p.copyWith(fill: fill));
+
+  Widget _fillSwatches(Skin skin, int selected, ValueChanged<int> onPick) {
+    const colours = [
+      0xFF0B0B10, 0xFF16121C, 0xFF1D2A33, 0xFF2A1B2E,
+      0xFF3A2140, 0xFF12303A, 0xFF4A1F1F, 0xFF2B3A1E,
+      0xFF3B2E18, 0xFFE3B84E, 0xFFD97655, 0xFFB8C4CE,
+    ];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final c in colours)
+          GestureDetector(
+            onTap: () => onPick(c),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Color(c),
+                border: Border.all(
+                  color: c == selected ? skin.accent : skin.textSecondary.withValues(alpha: 0.3),
+                  width: c == selected ? 3 : 1,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 
   // ---- bits ----------------------------------------------------------------
@@ -1291,7 +1482,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     padding: const EdgeInsets.symmetric(vertical: 4),
     child: GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
         color: quiet ? skin.panel : skin.accent,
         child: Text(
@@ -1414,7 +1608,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     bool marked = false,
   }) => GestureDetector(
     onTap: onTap,
+    behavior: HitTestBehavior.opaque,
     child: Container(
+      constraints: const BoxConstraints(minHeight: 44),
+      alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: active ? skin.accent : skin.panel,

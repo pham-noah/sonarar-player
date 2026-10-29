@@ -569,6 +569,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     final p = job?.fraction;
     final downloading = job != null;
     final done = _libraryIds.contains(hit.id);
+    // A download that died used to vanish without a word: the ring simply
+    // stopped. The reason is kept per video so the row can say it.
+    final failure = done || downloading ? null : widget.downloads.errorFor(hit.id);
     return Container(
       // The row IS the progress. A separate queue above the list made the same
       // download appear twice and never where the user was looking.
@@ -651,6 +654,24 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     value: p,
                     color: skin.accent,
                     backgroundColor: skin.panel,
+                  ),
+                ],
+                if (failure != null) ...[
+                  const SizedBox(height: 4),
+                  GestureDetector(
+                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(failure)),
+                    ),
+                    child: Text(
+                      'FAILED — ${failure.replaceFirst('Download failed: ', '')}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: skin.textPrimary,
+                      ),
+                    ),
                   ),
                 ],
               ],

@@ -706,6 +706,16 @@ class AppState extends ChangeNotifier {
     onPresetsChanged?.call(_userPresets);
   }
 
+  /// Commits the look you are wearing into the theme you are wearing, on
+  /// demand. Edits already fold themselves in; this is the explicit version for
+  /// when you want to see that it landed.
+  bool overrideActiveTheme() {
+    if (_preset == null) return false;
+    _stashActiveTheme();
+    notifyListeners();
+    return true;
+  }
+
   void setPersonalization(Personalization next) {
     if (next.encode() == _personalization.encode()) return;
     _personalization = next;

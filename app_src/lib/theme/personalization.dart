@@ -49,9 +49,58 @@ class SurfaceLook {
   }
 }
 
+/// What the background paints when there is no photo: one colour, or two in a
+/// gradient. Null means "let the skin decide", which is the default look.
+class BackdropFill {
+  const BackdropFill({this.start, this.end, this.angle = 135});
+
+  static const none = BackdropFill();
+
+  final int? start;
+  final int? end;
+  final double angle;
+
+  bool get isSet => start != null || end != null;
+  bool get isGradient => start != null && end != null;
+
+  BackdropFill copyWith({int? start, int? end, double? angle, bool clearStart = false, bool clearEnd = false}) =>
+      BackdropFill(
+        start: clearStart ? null : (start ?? this.start),
+        end: clearEnd ? null : (end ?? this.end),
+        angle: angle ?? this.angle,
+      );
+
+  Map<String, Object?> toJson() => {
+        if (start != null) 'start': start,
+        if (end != null) 'end': end,
+        'angle': angle,
+      };
+
+  factory BackdropFill.fromJson(Object? raw) {
+    if (raw is! Map) return none;
+    int? read(Object? v) => v is int ? v : (v is num ? v.toInt() : null);
+    return BackdropFill(
+      start: read(raw['start']),
+      end: read(raw['end']),
+      angle: (raw['angle'] is num) ? (raw['angle'] as num).toDouble() : 135,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is BackdropFill &&
+      other.start == start &&
+      other.end == end &&
+      other.angle == angle;
+
+  @override
+  int get hashCode => Object.hash(start, end, angle);
+}
+
 class Personalization {
   const Personalization({
     this.backdrop = BackdropSpec.none,
+    this.fill = BackdropFill.none,
     this.accent = const AccentSpec(),
     this.home = HomeLayout.defaults,
     this.surfaces = const {},
@@ -60,6 +109,10 @@ class Personalization {
   });
 
   final BackdropSpec backdrop;
+
+  /// Used only when [backdrop] has no photo: a solid or gradient background.
+  final BackdropFill fill;
+
   final AccentSpec accent;
   final HomeLayout home;
 
@@ -104,6 +157,7 @@ class Personalization {
 
   bool get isDefault =>
       !backdrop.isSet &&
+      !fill.isSet &&
       accent.source == AccentSource.skin &&
       home.order == HomeLayout.defaults.order &&
       home.hidden.isEmpty &&
@@ -113,6 +167,7 @@ class Personalization {
 
   Personalization copyWith({
     BackdropSpec? backdrop,
+    BackdropFill? fill,
     AccentSpec? accent,
     HomeLayout? home,
     Map<SurfaceId, SurfaceLook>? surfaces,
@@ -122,6 +177,7 @@ class Personalization {
   }) =>
       Personalization(
         backdrop: backdrop ?? this.backdrop,
+        fill: fill ?? this.fill,
         accent: accent ?? this.accent,
         home: home ?? this.home,
         surfaces: surfaces ?? this.surfaces,
@@ -143,6 +199,7 @@ class Personalization {
   Map<String, Object?> toJson() => {
         'v': 1,
         'backdrop': backdrop.toJson(),
+        if (fill.isSet) 'fill': fill.toJson(),
         'accent': accent.toJson(),
         'home': home.toJson(),
         if (bundle != null) 'bundle': bundle,
@@ -168,6 +225,7 @@ class Personalization {
       if (decoded is! Map) return defaults;
       return Personalization(
         backdrop: BackdropSpec.fromJson(decoded['backdrop']),
+        fill: BackdropFill.fromJson(decoded['fill']),
         accent: AccentSpec.fromJson(decoded['accent']),
         home: HomeLayout.fromJson(decoded['home']),
         surfaces: _surfacesFrom(decoded['surfaces']),
@@ -480,7 +538,11 @@ double contrastRatio(Color a, Color b) {
 /// almost black nor almost white, chosen by hue bucket so one bright object
 /// does not win, and averaged inside its bucket so the result is a colour
 /// rather than a stray pixel.
-Color? pickAccentFromPixels(Uint8List rgba, {int stride = 4}) {
+Color? pickAccentFromPixels(
+  Uint8List rgba, {
+  int stride = 4,
+  double minSat = 0.18,
+}) {
   if (rgba.length < 4) return null;
   final weight = List<double>.filled(12, 0);
   final sumR = List<double>.filled(12, 0);
@@ -495,7 +557,7 @@ Color? pickAccentFromPixels(Uint8List rgba, {int stride = 4}) {
     final lo = math.min(r, math.min(g, b));
     if (hi < 0.12 || lo > 0.93) continue;
     final sat = hi <= 0 ? 0.0 : (hi - lo) / hi;
-    if (sat < 0.18) continue;
+    if (sat < minSat) continue;
     final hue = _hue(r, g, b, hi, lo);
     final bucket = (hue / 30).floor().clamp(0, 11);
     final w = sat * hi;

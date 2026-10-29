@@ -3,6 +3,7 @@ library;
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart' hide RepeatMode;
 
+import '../theme/ambient_backdrop.dart';
 import '../widgets/art_scrim.dart';
 import '../widgets/cover_button.dart';
 import '../widgets/pressable.dart';
@@ -57,6 +58,7 @@ class PlayerScreen extends StatelessWidget {
     this.fileMissing = false,
     this.panel = PlayerPanel.none,
     this.onPanel,
+    this.onMinimise,
     this.panelMaximised = false,
     this.onPanelMaximised,
     this.whyContent,
@@ -123,6 +125,10 @@ class PlayerScreen extends StatelessWidget {
 
   final PlayerPanel panel;
   final ValueChanged<PlayerPanel>? onPanel;
+
+  /// Leaving the player without the chevron: a downward swipe with no sheet
+  /// open goes back to the tabs.
+  final VoidCallback? onMinimise;
 
   final bool panelMaximised;
   final ValueChanged<bool>? onPanelMaximised;
@@ -218,7 +224,13 @@ class PlayerScreen extends StatelessWidget {
     if (v < -220) {
       onPanel?.call(PlayerPanel.queue);
     } else if (v > 220) {
-      onPanel?.call(PlayerPanel.none);
+      // Down means "put away": the sheet first, then the player itself. A
+      // swipe that does nothing at all reads as a broken gesture.
+      if (panel != PlayerPanel.none) {
+        onPanel?.call(PlayerPanel.none);
+      } else {
+        onMinimise?.call();
+      }
     }
   }
 
@@ -253,6 +265,12 @@ class PlayerScreen extends StatelessWidget {
               spec: state.personalization.backdropFor(SurfaceId.player),
               skin: skin,
             ),
+          ),
+
+        if (!state.personalization.backdropFor(SurfaceId.player).isSet &&
+            state.personalization.fill.isSet)
+          Positioned.fill(
+            child: FillBackdrop(fill: state.personalization.fill),
           ),
 
         if (art != null && art.fullBleed && showFigure)
@@ -334,30 +352,6 @@ class PlayerScreen extends StatelessWidget {
                 playing: playing,
                 ease: spectrumEase,
                 shape: spectrumShape,
-              ),
-            ),
-          ),
-
-        if (!lyricsMode)
-          Positioned(
-            left: -58,
-            top: 0,
-            bottom: 0,
-            child: Align(
-              alignment: const Alignment(-0.02, 0.0),
-              child: Transform(
-                transform: Matrix4.skewX(-skew),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  skin.nowPlayingWordmark.replaceAll(' ', '\n'),
-                  style: TextStyle(
-                    fontSize: 118,
-                    height: 0.82,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -3,
-                    color: pal.textPrimary.withValues(alpha: 0.075),
-                  ),
-                ),
               ),
             ),
           ),
@@ -1279,6 +1273,10 @@ class PlayerScreen extends StatelessWidget {
     };
 
     var dragDy = 0.0;
+    // A list at its top has no more room to scroll, so a downward flick there
+    // arrives as overscroll. Without this, the sheet can only be dragged by
+    // its header and swiping down over the queue looks broken.
+    var pull = 0.0;
 
     return Positioned.fill(
       child: Stack(
@@ -1305,7 +1303,24 @@ class PlayerScreen extends StatelessWidget {
                 }
               },
               onVerticalDragUpdate: (d) => dragDy += d.primaryDelta ?? 0,
-              child: Builder(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (n) {
+                  if (n is OverscrollNotification && n.overscroll < 0) {
+                    pull += -n.overscroll;
+                  } else if (n is ScrollEndNotification) {
+                    final pulled = pull;
+                    pull = 0;
+                    if (pulled > 90) {
+                      if (panelMaximised) {
+                        onPanelMaximised?.call(false);
+                      } else {
+                        onPanel?.call(PlayerPanel.none);
+                      }
+                    }
+                  }
+                  return false;
+                },
+                child: Builder(
                 builder: (context) {
                   final layout = PresentationScope.of(context, fallback: skin);
                   final sheet = SizedBox(
@@ -1376,6 +1391,7 @@ class PlayerScreen extends StatelessWidget {
                     child: sheet,
                   );
                 },
+                ),
               ),
             ),
           ),

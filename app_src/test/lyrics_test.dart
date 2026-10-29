@@ -1,7 +1,10 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 import 'package:sonarar/library/lyrics.dart';
 
@@ -131,6 +134,79 @@ void main() {
       expect(result!.instrumental, isTrue,
           reason: 'an instrumental should be a FACT, not a failed lookup');
       expect(result.isEmpty, isTrue);
+    });
+  });
+
+  group('the query YouTube actually gives us', () {
+    test('a channel name is not an artist', () {
+      expect(cleanArtist('ヨルシカ / n-buna Official'), 'ヨルシカ');
+      expect(cleanArtist('Sable Court - Topic'), 'Sable Court');
+      expect(cleanArtist('Some Band VEVO'), 'Some Band');
+    });
+
+    test('the artist prefix and the full-width decorations are stripped', () {
+      expect(normaliseQuery('ヨルシカ - あぶく（OFFICIAL VIDEO）'), 'あぶく');
+      expect(normaliseQuery('ヨルシカ - 雲を抜け風下へ私だけ'),
+          '雲を抜け風下へ私だけ');
+      expect(normaliseQuery('Song Name [MV]'), 'Song Name');
+      expect(normaliseQuery('Song Name (Lyric Video)'), 'Song Name');
+    });
+
+    test('a title that is only a song is left alone', () {
+      expect(normaliseQuery('Night Drive'), 'Night Drive');
+    });
+  });
+
+  group('a busy server is not "no lyrics"', () {
+    test('503 then 200 still returns the lyrics', () async {
+      var calls = 0;
+      final client = MockClient((request) async {
+        calls++;
+        if (calls == 1) return http.Response('busy', 503);
+        return http.Response(
+          jsonEncode([
+            {
+              'trackName': 'あぶく',
+              'artistName': 'ヨルシカ',
+              'syncedLyrics': '[00:01.00] first line',
+              'plainLyrics': 'first line',
+            }
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+      final service = LyricsService(cacheDirectory: null, client: client);
+      final lyrics = await service.forTrack(
+        trackId: 'x',
+        title: 'ヨルシカ - あぶく（OFFICIAL VIDEO）',
+        artist: 'ヨルシカ / n-buna Official',
+      );
+      expect(lyrics, isNotNull);
+      expect(lyrics!.lines, isNotEmpty);
+      expect(calls, greaterThan(1), reason: 'the 503 must be retried');
+    });
+
+    test('a title-only match for a DIFFERENT song is refused', () async {
+      final client = MockClient((request) async => http.Response(
+            jsonEncode([
+              {
+                'trackName': 'A Completely Different Song',
+                'artistName': 'ヨルシカ',
+                'syncedLyrics': '[00:01.00] wrong words',
+              }
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          ));
+      final service = LyricsService(cacheDirectory: null, client: client);
+      final lyrics = await service.forTrack(
+        trackId: 'y',
+        title: 'あぶく',
+        artist: 'ヨルシカ',
+      );
+      expect(lyrics == null || lyrics.isEmpty, isTrue,
+          reason: 'wrong lyrics are worse than none');
     });
   });
 }

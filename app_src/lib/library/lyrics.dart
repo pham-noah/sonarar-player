@@ -1,5 +1,6 @@
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -90,8 +91,36 @@ class Lyrics {
   }
 }
 
+/// YouTube titles arrive dressed: "Artist - Song（OFFICIAL VIDEO）", "Song [MV]",
+/// "Song (Lyric Video)". None of that is in LRCLIB's index, so it is stripped
+/// before asking — and a leading "Artist - " is dropped too, because the artist
+/// is already sent as its own field.
 String normaliseQuery(String title) {
   var t = title;
+
+  // Full-width punctuation is what Japanese uploads use; the ASCII rules below
+  // never fired on it.
+  t = t.replaceAll('（', '(').replaceAll('）', ')');
+  t = t.replaceAll('【', '[').replaceAll('】', ']');
+  t = t.replaceAll('　', ' ');
+
+  t = t.replaceAll(
+    RegExp(
+      r'[\(\[]\s*(official\s*)?(music\s*)?(video|audio|mv|m/v|lyric\s*video|'
+      r'lyrics?|visuali[sz]er|live|full\s*ver\.?|short\s*ver\.?)'
+      r'\s*[\)\]]',
+      caseSensitive: false,
+    ),
+    ' ',
+  );
+  t = t.replaceAll(
+    RegExp(
+      r'\b(official\s*)?(music\s*)?video\b.*$|\bofficial\s*audio\b.*$|'
+      r'\b(mv|m/v)\b.*$|\blyric\s*video\b.*$',
+      caseSensitive: false,
+    ),
+    ' ',
+  );
 
   t = t.replaceAll(RegExp(r'\bcover\b.*$', caseSensitive: false), ' ');
 
@@ -103,11 +132,35 @@ String normaliseQuery(String title) {
     t = segments.reduce((a, b) => a.length >= b.length ? a : b);
   }
 
+  final dashed = RegExp(r'^(.{2,40}?)\s+[-–—]\s+(.+)$').firstMatch(t);
+  if (dashed != null && dashed.group(2)!.trim().length >= 2) {
+    t = dashed.group(2)!;
+  }
+
   t = t.replaceAll(RegExp(r'[\-–—/|]+\s*$'), ' ');
 
   t = t.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   return t.isEmpty ? title.trim() : t;
+}
+
+/// "ヨルシカ / n-buna Official" is a channel, not an artist. LRCLIB indexes the
+/// artist, so the channel decorations are cut before the query.
+String cleanArtist(String artist) {
+  var a = artist;
+  for (final sep in const [' / ', '/', ' & ', '&', ' x ', ' × ', ',', ' - ']) {
+    final at = a.indexOf(sep);
+    if (at > 0) a = a.substring(0, at);
+  }
+  a = a.replaceAll(
+    RegExp(
+      r'\b(official\s*channel|official|vevo|topic|music|channel|records)\b',
+      caseSensitive: false,
+    ),
+    ' ',
+  );
+  a = a.replaceAll(RegExp(r'\s+'), ' ').trim();
+  return a.isEmpty ? artist.trim() : a;
 }
 
 class LyricsService {
@@ -148,35 +201,38 @@ class LyricsService {
       fetched = null;
     }
 
-    if (fetched != null && !fetched.isEmpty) await _writeCache(trackId, fetched);
-    _memory[trackId] = fetched;
+    if (fetched != null && !fetched.isEmpty) {
+      await _writeCache(trackId, fetched);
+      _memory[trackId] = fetched;
+    }
     return fetched;
   }
 
   Future<Lyrics?> _fetch({required String title, required String artist}) async {
-    final query = {
-      'track_name': normaliseQuery(title),
-      'artist_name': artist,
-    };
-    final uri = Uri.https('lrclib.net', '/api/search', query);
-    final response = await _client.get(uri).timeout(const Duration(seconds: 12));
-    if (response.statusCode != 200) return null;
+    final wanted = normaliseQuery(title);
+    final who = cleanArtist(artist);
 
-    final decoded = jsonDecode(response.body);
-    if (decoded is! List || decoded.isEmpty) return null;
+    // Pass one: both fields, cleaned. This is the precise query.
+    var hit = _bestOf(
+      await _search({'track_name': wanted, 'artist_name': who}),
+      title: wanted,
+      artist: who,
+    );
 
-    Map<String, dynamic>? best;
-    for (final item in decoded) {
-      if (item is! Map) continue;
-      if ((item['syncedLyrics'] as String?)?.isNotEmpty ?? false) {
-        best = item.cast<String, dynamic>();
-        break;
-      }
-      best ??= item.cast<String, dynamic>();
+    // Pass two: title alone. Uploads often carry a channel name as the artist
+    // ("ヨルシカ / n-buna Official") that LRCLIB has never heard of, and the
+    // strict query then returns nothing at all.
+    hit ??= _bestOf(
+      await _search({'track_name': wanted}),
+      title: wanted,
+      artist: who,
+    );
+
+    if (hit == null) {
+      return Lyrics(lines: const [], instrumental: false, source: 'not found');
     }
-    if (best == null) return null;
 
-    final synced = best['syncedLyrics'] as String?;
+    final synced = hit['syncedLyrics'] as String?;
     if (synced != null && synced.isNotEmpty) {
       final lines = <LyricLine>[];
       for (final raw in synced.split('\n')) {
@@ -191,12 +247,88 @@ class LyricsService {
       }
     }
 
-    final plain = best['plainLyrics'] as String?;
+    final plain = hit['plainLyrics'] as String?;
     if (plain != null && plain.isNotEmpty) {
       return Lyrics(lines: const [], plain: plain, source: 'lrclib (plain)');
     }
 
     return Lyrics(lines: const [], instrumental: false, source: 'not found');
+  }
+
+  /// LRCLIB answers 429/503 when it is busy. Treating that as "this song has no
+  /// lyrics" is why some tracks came up empty and stayed empty for the session.
+  Future<List<dynamic>> _search(Map<String, String> query) async {
+    final uri = Uri.https('lrclib.net', '/api/search', query);
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        final response =
+            await _client.get(uri).timeout(const Duration(seconds: 12));
+        if (response.statusCode == 200) {
+          final decoded = jsonDecode(response.body);
+          return decoded is List ? decoded : const [];
+        }
+        if (response.statusCode != 429 && response.statusCode < 500) {
+          return const [];
+        }
+      } on SocketException {
+        // Retried below.
+      } on http.ClientException {
+        // Retried below.
+      } on TimeoutException {
+        // Retried below.
+      } on FormatException {
+        return const [];
+      }
+      await Future<void>.delayed(Duration(milliseconds: 600 * (attempt + 1)));
+    }
+    return const [];
+  }
+
+  /// The best row for this song, and only when it really is this song: a
+  /// title-only search happily returns a different song by the same artist,
+  /// and wrong lyrics are worse than none.
+  Map<String, dynamic>? _bestOf(
+    List<dynamic> rows, {
+    required String title,
+    required String artist,
+  }) {
+    Map<String, dynamic>? synced;
+    Map<String, dynamic>? plain;
+    for (final row in rows) {
+      if (row is! Map) continue;
+      final map = row.cast<String, dynamic>();
+      final name = normaliseQuery('${map['trackName'] ?? ''}');
+      // Always: a row whose title is a different song is not this song, no
+      // matter how well the artist field matches.
+      if (!_sameTitle(name, title)) continue;
+      final by = cleanArtist('${map['artistName'] ?? ''}');
+      final artistOk = artist.isEmpty ||
+          by.isEmpty ||
+          _sameTitle(by, artist) ||
+          by.toLowerCase().contains(artist.toLowerCase()) ||
+          artist.toLowerCase().contains(by.toLowerCase());
+      if (!artistOk) continue;
+      final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;
+      if (hasSynced) {
+        synced ??= map;
+      } else if ((map['plainLyrics'] as String?)?.isNotEmpty ?? false) {
+        plain ??= map;
+      }
+    }
+    return synced ?? plain;
+  }
+
+  /// Same song title across the punctuation and spacing the two sides disagree
+  /// about: "あぶく（OFFICIAL VIDEO）" against "あぶく".
+  bool _sameTitle(String a, String b) {
+    String squeeze(String v) => v
+        .toLowerCase()
+        .replaceAll(RegExp(r'[\s\u3000]+'), '')
+        .replaceAll(RegExp(r'[\p{P}\p{S}]', unicode: true), '');
+    final x = squeeze(a);
+    final y = squeeze(b);
+    if (x.isEmpty || y.isEmpty) return false;
+    return x == y || x.contains(y) || y.contains(x);
   }
 
   String? _cachePath(String trackId) {

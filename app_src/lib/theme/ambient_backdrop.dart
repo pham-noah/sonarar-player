@@ -3,6 +3,52 @@ library;
 import 'package:flutter/material.dart';
 
 import 'layout.dart';
+import 'personalization.dart';
+
+/// The background when there is no photo: one colour, or two in a gradient.
+/// It sits where the skin's flat base would, so a themed app without a picture
+/// still has a deliberate surface instead of a default one.
+class FillBackdrop extends StatelessWidget {
+  const FillBackdrop({super.key, required this.fill});
+
+  final BackdropFill fill;
+
+  static Alignment _dir(double degrees) {
+    final rad = degrees * 3.141592653589793 / 180;
+    // A zero-length vector is what BoxDecoration rejects; nudge it.
+    final dx = _cos(rad);
+    final dy = _sin(rad);
+    return Alignment(dx.abs() < 0.0001 ? 0.0001 : dx, dy.abs() < 0.0001 ? 0.0001 : dy);
+  }
+
+  static double _cos(double v) => _sin(v + 3.141592653589793 / 2);
+  static double _sin(double v) {
+    // Small, exact-enough sin to avoid a dart:math import in this file's hot path.
+    var x = v % (2 * 3.141592653589793);
+    if (x > 3.141592653589793) x -= 2 * 3.141592653589793;
+    final x2 = x * x;
+    return x * (1 - x2 / 6 + x2 * x2 / 120 - x2 * x2 * x2 / 5040);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!fill.isSet) return const SizedBox.shrink();
+    final start = Color(fill.start ?? 0xFF0E0E12);
+    final end = Color(fill.end ?? fill.start ?? 0xFF0E0E12);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: fill.isGradient ? null : start,
+        gradient: fill.isGradient
+            ? LinearGradient(
+                begin: _dir(fill.angle),
+                end: _dir(fill.angle + 180),
+                colors: [start, end],
+              )
+            : null,
+      ),
+    );
+  }
+}
 
 class AmbientBackdrop extends StatelessWidget {
   const AmbientBackdrop({

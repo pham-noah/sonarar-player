@@ -3176,10 +3176,12 @@ class _HomeShellState extends State<HomeShell>
                 skin: skin,
               ),
             ),
+          if (!photo.isSet && personalization.fill.isSet)
+            Positioned.fill(child: FillBackdrop(fill: personalization.fill)),
           Positioned.fill(
             child: AmbientBackdrop(
               presentation: widget.state.presentation,
-              transparent: photo.isSet,
+              transparent: photo.isSet || personalization.fill.isSet,
             ),
           ),
           Positioned.fill(
@@ -3259,6 +3261,9 @@ class _HomeShellState extends State<HomeShell>
 
   Widget _shellFrame(Skin skin) {
     final chrome = widget.state.presentation.kit.chrome;
+    // Edge-to-edge is the default on modern Android: without this the tab row
+    // sits under the gesture pill on phones that use gestures.
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
     final bars = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -3305,7 +3310,10 @@ class _HomeShellState extends State<HomeShell>
                 children: [_tabBackdrop(skin), _tabContentArrival(skin)],
               ),
             ),
-            bars,
+            Padding(
+              padding: EdgeInsets.only(bottom: bottomInset),
+              child: bars,
+            ),
           ],
         ),
       ShellFrame.floating => Stack(
@@ -3319,7 +3327,10 @@ class _HomeShellState extends State<HomeShell>
               left: 0,
               right: 0,
               bottom: 0,
-              child: bars,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: bottomInset),
+                child: bars,
+              ),
             ),
           ],
         ),
@@ -3500,6 +3511,7 @@ class _HomeShellState extends State<HomeShell>
 children: [
   PlayerScreen(
                     state: widget.state,
+                    onMinimise: _closePlayer,
                     onArtist: _openArtist,
                     lyricsMode: _lyricsMode,
                     onLyrics: () => _shellChanged(() => _lyricsMode = !_lyricsMode),

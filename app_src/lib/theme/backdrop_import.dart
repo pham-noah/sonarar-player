@@ -81,7 +81,14 @@ Future<Color?> accentFromImage(File file) async {
     frame.image.dispose();
     codec.dispose();
     if (data == null) return null;
-    return pickAccentFromPixels(Uint8List.sublistView(data));
+    final pixels = Uint8List.sublistView(data);
+    // A washed-out photo still has a colour in it; only give up when nothing
+    // survives even a very low saturation floor.
+    for (final floor in const [0.18, 0.10, 0.04]) {
+      final colour = pickAccentFromPixels(pixels, minSat: floor);
+      if (colour != null) return colour;
+    }
+    return null;
   } catch (_) {
     return null;
   }

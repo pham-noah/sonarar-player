@@ -191,4 +191,33 @@ void main() {
       expect(skinned.word('nowPlaying', 'x'), kSkinCrimson.word('nowPlaying', 'x'));
     });
   });
+
+  group('a background with no photo', () {
+    test('a solid colour survives the round trip', () {
+      final p = Personalization.defaults.copyWith(
+        fill: const BackdropFill(start: 0xFF123456),
+      );
+      final back = Personalization.decode(p.encode());
+      expect(back.fill.start, 0xFF123456);
+      expect(back.fill.end, isNull);
+      expect(back.fill.isGradient, isFalse);
+    });
+
+    test('a gradient keeps both ends and the direction', () {
+      final p = Personalization.defaults.copyWith(
+        fill: const BackdropFill(start: 0xFF101010, end: 0xFF202020, angle: 45),
+      );
+      final back = Personalization.decode(p.encode());
+      expect(back.fill.isGradient, isTrue);
+      expect(back.fill.angle, 45);
+      expect(back.fill, p.fill);
+    });
+
+    test('no fill is not written to the file at all', () {
+      final p = Personalization.defaults.copyWith(
+        backdrop: const BackdropSpec(file: 'x.jpg'),
+      );
+      expect(p.encode().contains('"fill"'), isFalse);
+    });
+  });
 }

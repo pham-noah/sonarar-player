@@ -133,6 +133,14 @@ class DownloadManager extends ChangeNotifier {
 
   bool contains(String videoId) => jobFor(videoId) != null;
 
+  /// Why this video's last download failed, if it did. A row can only say so
+  /// if the reason is kept per video instead of in one global banner.
+  final Map<String, String> _errors = {};
+
+  String? errorFor(String videoId) => _errors[videoId];
+
+  void clearErrorFor(String videoId) => _errors.remove(videoId);
+
   /// The job drawing progress for this video, if any. A row needs the job
   /// itself, not a copy of its numbers: copies go stale the moment the poller
   /// ticks, which is exactly how a download appears frozen.
@@ -154,6 +162,7 @@ class DownloadManager extends ChangeNotifier {
 
   void enqueue(DownloadJob job) {
     if (contains(job.videoId)) return;
+    _errors.remove(job.videoId);
     _queue.add(job);
     notifyListeners();
     // ignore: discarded_futures
@@ -185,9 +194,12 @@ class DownloadManager extends ChangeNotifier {
           await _runOne(_current!);
         } catch (e, st) {
           debugPrint('[Sonarar][DL] failed ${_current?.videoId}: $e\n$st');
-          _lastError = e is DownloadBlocked
+          final reason = e is DownloadBlocked
               ? e.message
               : 'Download failed: ${_short(e)}';
+          _lastError = reason;
+          final id = _current?.videoId;
+          if (id != null) _errors[id] = reason;
           notifyListeners();
         } finally {
           _poll?.cancel();

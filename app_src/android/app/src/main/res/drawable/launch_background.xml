@@ -5,14 +5,8 @@
      showed a WHITE screen until Flutter's first frame — and since the app is a dark UI, that white flash was
      both ugly and unavoidable: no Dart code runs before it.
 
-     Now it is the app's own background colour with the mark centred, so the native splash and the Flutter
-     boot screen are the SAME PICTURE. The handover from platform to engine is therefore invisible — which is
-     the whole point of a splash screen. -->
+     Now it is the app's own background colour and nothing else: no mark, no wordmark, no logo held in front of
+     the shell. Noah's rule — the app opens, it does not introduce itself. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/splash_background" />
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/splash_logo" />
-    </item>
 </layer-list>

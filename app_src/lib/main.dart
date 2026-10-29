@@ -3392,38 +3392,10 @@ class _HomeShellState extends State<HomeShell>
   /// Nothing to look at on purpose. The app opens on the skin's own colour and
   /// then the shell; a wordmark and a progress bar on every launch is an intro
   /// nobody asked for, and it only exists because art used to be decoded first.
-  // A bare coloured box is indistinguishable from a stalled app: for the second
-  // it takes to read the library, nothing says the app is alive. The mark and a
-  // line of text cost nothing and make the first frame an answer.
-  Widget _splash(Skin skin) => ColoredBox(
-    color: skin.background,
-    child: Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(width: 44, height: 44, child: _brandMark()),
-          const SizedBox(height: 16),
-          Text(
-            'SONARAR',
-            style: TextStyle(
-              fontSize: LayoutSpec.fontFloor + 1,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 4.5,
-              color: skin.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'reading your library',
-            style: TextStyle(
-              fontSize: LayoutSpec.fontFloor,
-              color: skin.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+  // No boot splash: Noah's rule, and it is right — a logo held up in front of
+  // the shell is an intro, not a loading state. The app paints its own shell
+  // and fills sections in as they arrive.
+  Widget _splash(Skin skin) => ColoredBox(color: skin.background);
 
   /// Decoding art takes long enough to be seen. It happens once the shell is on
   /// screen, so opening the app is never gated on warm pictures.

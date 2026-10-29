@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Present, and deliberately empty. From Android 12 the platform draws a splash window for every app and
+     falls back to the LAUNCHER ICON when no icon attribute is set — so leaving the attribute out still shows
+     a picture. A transparent shape is the only way to say "the colour and nothing else". -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <size android:width="1dp" android:height="1dp" />
+</shape>

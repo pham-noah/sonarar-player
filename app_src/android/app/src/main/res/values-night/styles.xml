@@ -34,16 +34,11 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@color/splash_background</item>
         <item name="android:navigationBarColor">@color/splash_background</item>
-
-        <!-- THE SYSTEM SPLASH (API 31+). Ours, not the launcher icon. -->
+        <!-- NO SPLASH ICON. The platform still draws a splash window for every app from Android 12; what
+             this removes is the picture in it, so the launch is the app's own colour and nothing else.
+             A launch screen is not a title card. -->
         <item name="android:windowSplashScreenBackground">@color/splash_background</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
-        <!-- No icon backdrop: our mark is the colour, and a plate behind it would show as a square in the
-             middle of the circle the platform masks to. -->
-        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
-        <!-- 0, so the platform hands over to Flutter the moment the engine is ready. Any value here is an
-             artificial hold in front of the first frame, which is the opposite of what the boot screen is for. -->
-        <item name="android:windowSplashScreenAnimationDuration">0</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
     </style>
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@color/splash_background</item>

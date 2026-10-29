@@ -89,12 +89,32 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                   dy: _spec.dy + details.delta.dy / 120,
                 ),
               ),
-              child: FramedArt(
-                assetPath: widget.assetPath,
-                aspect: widget.aspect,
-                focus: widget.focus,
-                spec: _spec,
-                burn: _spec.fade,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: FramedArt(
+                      assetPath: widget.assetPath,
+                      aspect: widget.aspect,
+                      focus: widget.focus,
+                      spec: _spec,
+                      burn: _spec.fade,
+                    ),
+                  ),
+                  // The edge of what the player will show. Without it, a zoomed
+                  // picture looks identical to a fitted one.
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: widget.skin.accent.withValues(alpha: 0.45),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -111,6 +131,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                   ArtSpec.minZoom,
                   ArtSpec.maxZoom,
                   (v) => _update(_spec.copyWith(zoom: v)),
+                  (v) => '${v.toStringAsFixed(1)}x',
                 ),
                 _slider(
                   skin,
@@ -119,6 +140,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                   -ArtSpec.maxRotation,
                   ArtSpec.maxRotation,
                   (v) => _update(_spec.copyWith(rotationDeg: v)),
+                  (v) => '${v.round()}°',
                 ),
                 _slider(
                   skin,
@@ -127,6 +149,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                   0,
                   1,
                   (v) => _update(_spec.copyWith(fade: v)),
+                  (v) => '${(v * 100).round()}%',
                 ),
                 Row(
                   children: [
@@ -160,6 +183,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
     double min,
     double max,
     ValueChanged<double> onChanged,
+    String Function(double) format,
   ) => Row(
     children: [
       SizedBox(

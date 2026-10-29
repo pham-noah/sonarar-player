@@ -1243,6 +1243,7 @@ class _HomeShellState extends State<HomeShell>
     _boot(0.74, 'restoring your place');
     final resume = await _stores.snapshot.load();
     widget.state.attachLibrary(_repo.tracks, resume: resume);
+    await _refreshArtBundles();
     if (resume != null) {
       widget.state.restoreMode(
         resume.queueMode == 'fixed' ? QueueMode.fixed : QueueMode.dynamic,
@@ -2332,7 +2333,12 @@ class _HomeShellState extends State<HomeShell>
   }
 
   Future<void> _refreshArtBundles() async {
-    widget.state.setArtBundles(scanArtBundles(_repo.libraryRoot));
+    final found = scanArtBundles(_repo.libraryRoot);
+    // One line, so "no art folders" can be told apart from "art folders the app
+    // cannot see" without a debugger on the phone.
+    debugPrint('[Sonarar][ART] bundles=${found.length} '
+        '(${found.map((b) => b.name).join(",")}) root=${_repo.libraryRoot}');
+    widget.state.setArtBundles(found);
   }
 
   Future<void> _rereadLibrary() async {

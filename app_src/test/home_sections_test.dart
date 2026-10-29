@@ -28,6 +28,7 @@ Future<void> _pump(
   List<Playlist> genre = const [],
   List<({Playlist playlist, int plays})> library = const [],
   VoidCallback? onOpenRecap,
+  List<Track> recentTracks = const [],
 }) async {
   tester.view.physicalSize = const Size(400, 900) * 3;
   tester.view.devicePixelRatio = 3.0;
@@ -49,6 +50,7 @@ Future<void> _pump(
         onPlay: (_) {},
         onOpenRecap: onOpenRecap ?? () {},
         onOpenRecentPlaylist: () {},
+        recent: recentTracks,
       ),
     ),
   ));
@@ -77,6 +79,14 @@ void main() {
 
     expect(find.byKey(const Key('home-art')), findsOneWidget,
         reason: 'the HOME place chip wrote art that nothing rendered');
+  });
+
+  testWidgets('downloaded music gets a rail, newest first', (tester) async {
+    await _pump(tester, recentTracks: [_t(9), _t(8), _t(7)]);
+
+    expect(find.text('RECENTLY ADDED'), findsOneWidget,
+        reason: 'a track with no plays and no playlist had nowhere to show up');
+    expect(find.text('Title 9'), findsOneWidget);
   });
 
   testWidgets('there is no tab strip — Home is one page', (tester) async {

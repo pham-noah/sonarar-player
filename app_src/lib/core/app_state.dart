@@ -676,14 +676,40 @@ class AppState extends ChangeNotifier {
   /// caller having to remember to write the file.
   Future<void> Function(Personalization)? onPersonalizationChanged;
 
+  /// Called when an edit is folded into the active theme, so the theme file
+  /// keeps the change across a restart.
+  void Function(List<ThemePreset>)? onPresetsChanged;
+
+  /// An edit belongs to the theme you are wearing. The theme is the look, not a
+  /// starting point, so this writes the live state back into it — switch away
+  /// and back and your version is what returns.
+  void _stashActiveTheme() {
+    final active = _preset;
+    if (active == null) return;
+    final edited = ThemePreset(
+      id: active.id,
+      name: active.name,
+      skinId: _skin.id,
+      artSkinId: _artSkinOverride,
+      languageSkinId: _languageSkin == null || _languageSkin!.id == _skin.id
+          ? null
+          : _languageSkin!.id,
+      layoutId: _layoutId.name,
+      personalization: _personalization,
+    );
+    _preset = edited;
+    _userPresets = List.unmodifiable([
+      for (final p in _userPresets)
+        if (p.id != edited.id) p,
+      edited,
+    ]);
+    onPresetsChanged?.call(_userPresets);
+  }
+
   void setPersonalization(Personalization next) {
     if (next.encode() == _personalization.encode()) return;
-    // A theme is a starting point, not a standing order. Once the user changes
-    // anything it has said, the look is theirs: keeping the preset attached
-    // meant the next launch re-applied the theme over their choice.
-    final applied = _preset?.personalization;
-    if (applied != null && next.encode() != applied.encode()) _preset = null;
     _personalization = next;
+    _stashActiveTheme();
     // The palette carries the accent, and it is cached: without this the drawer
     // and every Sheet kept painting the old colour until the layout changed.
     _presentationCache = null;
@@ -725,6 +751,7 @@ class AppState extends ChangeNotifier {
     _layoutId = id;
     _paletteIndex = paletteIndex;
     _presentationCache = null;
+    _stashActiveTheme();
     notifyListeners();
   }
 
@@ -752,7 +779,15 @@ class AppState extends ChangeNotifier {
   List<ThemePreset> _userPresets = const [];
   List<ThemePreset> get userPresets => _userPresets;
 
-  List<ThemePreset> get allPresets => [...kBuiltInPresets, ..._userPresets];
+  /// One row per theme. An edited built-in keeps its id, so the edit replaces
+  /// the shipped row instead of sitting beside it as a near-duplicate.
+  List<ThemePreset> get allPresets {
+    final byId = {for (final p in kBuiltInPresets) p.id: p};
+    for (final p in _userPresets) {
+      byId[p.id] = p;
+    }
+    return byId.values.toList();
+  }
 
   void setUserPresets(List<ThemePreset> presets) {
     _userPresets = List.unmodifiable(presets);

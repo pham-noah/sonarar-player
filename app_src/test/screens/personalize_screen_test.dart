@@ -29,7 +29,12 @@ void main() {
           reason: 'the $tab tab is missing');
     }
 
-    // LOOK is where you land: the layout and the shape of a song list.
+    // THEMES is where you land: the theme is the container the rest edit.
+    expect(find.text('LAYOUT'), findsNothing,
+        reason: 'the theme tab is the first thing you see, not the look tab');
+
+    await tester.tap(find.byKey(const Key('personalize-tab-look')));
+    await tester.pumpAndSettle();
     expect(find.text('LAYOUT'), findsOneWidget);
     expect(find.text('SONG LIST'), findsOneWidget);
     expect(find.text('EVERYWHERE'), findsNothing,
@@ -106,6 +111,9 @@ void main() {
   testWidgets('picking an accent writes it and keeps the source', (tester) async {
     await pump(tester);
 
+    // The screen lands on THEMES now; the accent lives under LOOK.
+    await tester.tap(find.byKey(const Key('personalize-tab-look')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('PICK'));
     await tester.pump();
 

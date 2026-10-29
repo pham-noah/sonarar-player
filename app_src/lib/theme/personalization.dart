@@ -343,7 +343,16 @@ class AccentSpec {
 }
 
 /// Home's sections, in the order the app declares them.
-enum HomeSection { now, continueListening, rediscover, jumpBackIn, quickPick, fromLibrary, recap }
+enum HomeSection {
+  now,
+  continueListening,
+  recentlyAdded,
+  rediscover,
+  jumpBackIn,
+  quickPick,
+  fromLibrary,
+  recap,
+}
 
 class HomeLayout {
   const HomeLayout({required this.order, this.hidden = const {}});
@@ -351,6 +360,7 @@ class HomeLayout {
   static const List<HomeSection> defaultOrder = [
     HomeSection.now,
     HomeSection.continueListening,
+    HomeSection.recentlyAdded,
     HomeSection.rediscover,
     HomeSection.jumpBackIn,
     HomeSection.quickPick,

@@ -54,6 +54,7 @@ class HomeScreen extends StatelessWidget {
     this.hasFix = false,
     this.contextEnabled = true,
     this.headerArt,
+    this.recent = const [],
   });
 
   final Skin skin;
@@ -61,6 +62,11 @@ class HomeScreen extends StatelessWidget {
   /// The picture this place wears, if it wears one. Home was the one place with
   /// no art at all, so choosing a picture for HOME did nothing.
   final Widget? headerArt;
+
+  /// What arrived in the library last, newest first. Without this, downloaded
+  /// music only ever appeared in Library — Home had no rail that could show a
+  /// track with no play history and no playlist.
+  final List<Track> recent;
 
   final String? band;
 
@@ -230,6 +236,7 @@ class HomeScreen extends StatelessWidget {
         for (final section in home.visible) ...switch (section) {
           HomeSection.now => const <Widget>[],
           HomeSection.continueListening => _continueSection(context),
+          HomeSection.recentlyAdded => _recentSection(context),
           HomeSection.rediscover => _rediscoverSection(context),
           HomeSection.jumpBackIn => _jumpBackInSection(context),
           HomeSection.quickPick => _quickPickSection(context),
@@ -419,6 +426,78 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 18),
       ],
       const SizedBox(height: 4),
+    ];
+  }
+
+  List<Widget> _recentSection(BuildContext context) {
+    if (recent.isEmpty) return const [];
+    return [
+      _bandText('RECENTLY ADDED'),
+      SizedBox(
+        height: 104 + 6 + 2 * 20 + 10,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: recent.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 10),
+          itemBuilder: (_, i) {
+            final t = recent[i];
+            final cover = coverPathFor?.call(t);
+            final play = onPlay;
+            return GestureDetector(
+              onTap: play == null ? null : () => play(t),
+              child: SizedBox(
+                width: 104,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: Container(
+                        color: skin.panel,
+                        child: cover == null
+                            ? Icon(Icons.music_note_rounded,
+                                size: 26,
+                                color: skin.textSecondary.withValues(alpha: 0.6))
+                            : Image.file(
+                                File(cover),
+                                fit: BoxFit.cover,
+                                cacheWidth: 320,
+                                errorBuilder: (_, __, ___) => Icon(
+                                    Icons.music_note_rounded,
+                                    size: 26,
+                                    color: skin.textSecondary),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      t.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor,
+                        fontWeight: FontWeight.w700,
+                        color: skin.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      t.artist,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor,
+                        color: skin.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 22),
     ];
   }
 

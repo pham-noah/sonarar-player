@@ -28,7 +28,7 @@ import '../widgets/framed_art.dart';
 /// place to look instead of two that half-overlap.
 /// The parts of the look, one at a time. Seven sections in a single scroll is
 /// a scavenger hunt; five tabs is a page you can finish.
-enum PersonalizeTab { look, pictures, art, home, themes }
+enum PersonalizeTab { themes, look, pictures, art, home }
 
 class PersonalizeScreen extends StatefulWidget {
   const PersonalizeScreen({
@@ -61,7 +61,7 @@ class PersonalizeScreen extends StatefulWidget {
 }
 
 class _PersonalizeScreenState extends State<PersonalizeScreen> {
-  PersonalizeTab _tab = PersonalizeTab.look;
+  PersonalizeTab _tab = PersonalizeTab.themes;
   late Personalization _p = widget.state.personalization;
 
   Skin get _skin => widget.state.uiSkin;
@@ -924,6 +924,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   String _sectionName(HomeSection s) => switch (s) {
     HomeSection.now => 'NOW',
     HomeSection.continueListening => 'CONTINUE LISTENING',
+    HomeSection.recentlyAdded => 'RECENTLY ADDED',
     HomeSection.rediscover => 'REDISCOVER',
     HomeSection.jumpBackIn => 'JUMP BACK IN',
     HomeSection.quickPick => 'QUICK PICK',
@@ -1128,11 +1129,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// bottom and you can see what you have already set.
   Widget _tabs(Skin skin) {
     const labels = {
+      PersonalizeTab.themes: 'THEMES',
       PersonalizeTab.look: 'LOOK',
       PersonalizeTab.pictures: 'PICTURES',
       PersonalizeTab.art: 'ART',
       PersonalizeTab.home: 'HOME',
-      PersonalizeTab.themes: 'THEMES',
     };
     // Five tabs share the width; nothing scrolls, nothing is cut off.
     return SizedBox(

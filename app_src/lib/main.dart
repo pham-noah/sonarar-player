@@ -16,7 +16,7 @@ import 'context/places.dart';
 import 'screens/places_screen.dart';
 import 'context/weather_codes.dart';
 import 'core/app_state.dart';
-import 'player/boot_warm.dart';
+import 'player/art_warmer.dart';
 import 'core/constants.dart';
 import 'core/diag_log.dart';
 import 'core/latest_load.dart';
@@ -75,6 +75,7 @@ import 'update/update_bar.dart';
 import 'theme/personalization.dart';
 import 'theme/skin.dart';
 import 'theme/theme_preset.dart';
+import 'theme/theme_session.dart';
 import 'theme/tab_motif.dart';
 import 'theme/skin_policy.dart';
 import 'library/lyrics.dart';
@@ -1159,7 +1160,20 @@ class _HomeShellState extends State<HomeShell>
       await _stores.playlists.load(libraryIds: libraryIds),
     );
 
-    widget.state.setUserPresets(await _stores.themePresets.load());
+    widget.state.onPresetsChanged = _themeSession.touched;
+    final loadedPresets = await _stores.themePresets.load();
+    final migratedPresets = [
+      for (final p in loadedPresets)
+        p.personalization == null
+            ? p.copyWith(personalization: Personalization.defaults)
+            : p,
+    ];
+    widget.state.setUserPresets(migratedPresets);
+    if (migratedPresets.length != loadedPresets.length ||
+        loadedPresets.any((p) => p.personalization == null)) {
+      // A theme written before themes carried a whole look: give it one now.
+      unawaited(_persistPresets());
+    }
     final wantedPreset = _prefs.activePresetId;
     if (wantedPreset != null) {
       for (final p in widget.state.allPresets) {
@@ -1336,7 +1350,13 @@ class _HomeShellState extends State<HomeShell>
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(_warmArt());
+      if (mounted) {
+        unawaited(ArtWarmer(
+          context: context,
+          state: widget.state,
+          cover: _coverProvider,
+        ).warm());
+      }
     });
 
     if (_askedStorage && _storageAccess == StorageAccess.denied) {
@@ -1449,6 +1469,7 @@ class _HomeShellState extends State<HomeShell>
   void dispose() {
     _disposed = true;
     _downloads.removeListener(_onDownloadProblem);
+    _themeSession.dispose();
     _tickerWanted.dispose();
 
     _shellTick.dispose();
@@ -1967,6 +1988,9 @@ class _HomeShellState extends State<HomeShell>
     return trimmed.isEmpty ? null : trimmed;
   }
 
+  late final ThemeSession _themeSession =
+      ThemeSession(save: (presets) => _stores.themePresets.save(presets));
+
   Future<void> _persistPresets() =>
       _stores.themePresets.save(widget.state.userPresets);
 
@@ -2172,14 +2196,19 @@ class _HomeShellState extends State<HomeShell>
     return _coverCache;
   }
 
-  VoidCallback _cycleSkin(int delta) => () {
-    final order = [for (final s in kAllSkins) s.id];
-    final at = order.indexOf(widget.state.skin.id);
 
-    final next = order[(at + delta + order.length) % order.length];
-    widget.state.chooseSkinManually(next);
-    if (mounted) setState(() {});
-  };
+
+  /// The library is written in scan order, so what arrived last is at the end.
+  /// Newest ten, newest first — enough for a rail, cheap enough to build on
+  /// every frame without touching the disk.
+  List<Track> get _recentTracks {
+    final all = _repo.tracks;
+    final out = <Track>[];
+    for (var i = all.length - 1; i >= 0 && out.length < 10; i--) {
+      out.add(all[i]);
+    }
+    return out;
+  }
 
   List<PlayEvent> _lastEvents = const [];
 
@@ -2360,7 +2389,8 @@ class _HomeShellState extends State<HomeShell>
   }
 
   void _openPersonalizePage() {
-    Navigator.of(context).push(MaterialPageRoute<void>(
+    unawaited(Navigator.of(context)
+        .push(MaterialPageRoute<void>(
       builder: (_) => PresentationScope(
         presentation: widget.state.presentation,
         child: PersonalizeScreen(
@@ -2389,7 +2419,8 @@ class _HomeShellState extends State<HomeShell>
           },
         ),
       ),
-    ));
+    ))
+        .whenComplete(() => unawaited(_themeSession.flush())));
   }
 
   /// Same shape as the preset the Settings tile writes, so a look saved from
@@ -2749,6 +2780,7 @@ class _HomeShellState extends State<HomeShell>
         AppTab.home => HomeScreen(
           skin: skin,
           headerArt: _headerArt(skin),
+          recent: _recentTracks,
           home: widget.state.personalization.home,
           onOpenPersonalize: _openPersonalizePage,
           headerMark: _brandMark(),
@@ -3250,42 +3282,7 @@ class _HomeShellState extends State<HomeShell>
 
   /// Decoding art takes long enough to be seen. It happens once the shell is on
   /// screen, so opening the app is never gated on warm pictures.
-  Future<void> _warmArt() async {
-    final currentArt = widget.state.art;
-    final warmStarted = DateTime.now();
-    for (final piece in artToWarmBeforeGate(
-      pieces: widget.state.artSet.pieces,
-      current: currentArt,
-    )) {
-      if (!mounted) return;
-      await precacheImage(
-        ResizeImage(AssetImage(piece.assetPath), width: kPlayerArtDecodeWidth),
-        context,
-      );
-      if (!mounted) return;
-      await precacheImage(
-        ResizeImage(AssetImage(piece.assetPath), width: kHeaderArtDecodeWidth),
-        context,
-      );
-    }
-    final openCover = _coverProvider();
-    if (openCover != null && mounted) {
-      await precacheImage(openCover, context);
-    }
-    // ignore: avoid_print
-    print('[Sonarar][BOOT] warm=${DateTime.now().difference(warmStarted).inMilliseconds}ms '
-        'cover=${openCover != null}');
-    for (final piece in artToWarmAfterGate(
-      pieces: widget.state.artSet.pieces,
-      current: widget.state.art,
-    )) {
-      if (!mounted) return;
-      unawaited(precacheImage(
-        ResizeImage(AssetImage(piece.assetPath), width: 900),
-        context,
-      ));
-    }
-  }
+
 
   Widget _shell(BuildContext context) {
     final skin = widget.state.uiSkin;
@@ -3574,8 +3571,6 @@ children: [
                       // ignore: discarded_futures
                       _skipPrevious();
                     },
-                    onSwipeThemeUp: _cycleSkin(1),
-                    onSwipeThemeDown: _cycleSkin(-1),
 
                     variants: () {
                       final t = widget.state.currentTrack;

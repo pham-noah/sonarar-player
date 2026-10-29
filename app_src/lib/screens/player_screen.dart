@@ -95,8 +95,6 @@ class PlayerScreen extends StatelessWidget {
     this.onVolume,
     this.onSwipeNext,
     this.onSwipePrevious,
-    this.onSwipeThemeUp,
-    this.onSwipeThemeDown,
     this.variants = const [],
     this.onSwapVariant,
     this.placeName,
@@ -188,8 +186,6 @@ class PlayerScreen extends StatelessWidget {
 
   final VoidCallback? onSwipeNext;
   final VoidCallback? onSwipePrevious;
-  final VoidCallback? onSwipeThemeUp;
-  final VoidCallback? onSwipeThemeDown;
 
   @override
   Widget build(BuildContext context) {
@@ -214,12 +210,15 @@ class PlayerScreen extends StatelessWidget {
     }
   }
 
+  /// Swiping the player up opens the queue; down puts it away. Changing the
+  /// theme used to live here, which meant a careless swipe rewrote the theme
+  /// you were wearing with no way to see it coming.
   void _swipeVertical(DragEndDetails d) {
     final v = d.primaryVelocity ?? 0;
-    if (v > 220) {
-      onSwipeThemeDown?.call();
-    } else if (v < -220) {
-      onSwipeThemeUp?.call();
+    if (v < -220) {
+      onPanel?.call(PlayerPanel.queue);
+    } else if (v > 220) {
+      onPanel?.call(PlayerPanel.none);
     }
   }
 

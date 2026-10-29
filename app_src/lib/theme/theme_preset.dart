@@ -46,6 +46,7 @@ class ThemePreset {
     SkinId? artSkinId,
     SkinId? languageSkinId,
     String? layoutId,
+    Personalization? personalization,
     bool clearArt = false,
     bool clearLanguage = false,
   }) =>
@@ -58,6 +59,7 @@ class ThemePreset {
         languageSkinId:
             clearLanguage ? null : (languageSkinId ?? this.languageSkinId),
         layoutId: layoutId ?? this.layoutId,
+        personalization: personalization ?? this.personalization,
         builtIn: false,
       );
 
@@ -119,7 +121,10 @@ final List<ThemePreset> kBuiltInPresets = [
       id: 'builtin_${s.id.name}',
       name: s.displayName,
       skinId: s.id,
-      layoutId: 'persona',
+      layoutId: 'sonar',
+      // A theme has to be able to say what every part of the look is, or
+      // switching to it leaves the previous theme's pictures and accent behind.
+      personalization: Personalization.defaults,
       builtIn: true,
     ),
 ];

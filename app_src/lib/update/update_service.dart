@@ -41,7 +41,11 @@ const _repo = 'pham-noah/sonarar-player';
 /// Asks GitHub for the newest release and returns it only if it is newer than
 /// [currentBuild]. Never throws: a music player that will not open because
 /// GitHub was slow is a broken music player.
-Future<AppUpdate?> checkForUpdate(int currentBuild, {http.Client? client}) async {
+Future<AppUpdate?> checkForUpdate(
+  int currentBuild, {
+  String currentVersion = '',
+  http.Client? client,
+}) async {
   if (!kSelfUpdate) return null;
   final http.Client c = client ?? http.Client();
   try {
@@ -59,12 +63,17 @@ Future<AppUpdate?> checkForUpdate(int currentBuild, {http.Client? client}) async
     final asset = _apkAsset(body['assets']);
     if (tag is! String || asset == null) return null;
 
-    final build = _buildNumber('${name ?? tag}');
-    if (build == null || build <= currentBuild) return null;
+    // A release title usually carries the build (`0.2.2+22`); early ones did
+    // not, and a check that gives up on those silently never fires. Use the
+    // build when it is there, the version when it is not.
+    final build = _buildNumber('${name ?? ''} $tag');
+    final newer =
+        build != null ? build > currentBuild : _isNewer(tag, currentVersion);
+    if (!newer) return null;
 
     return AppUpdate(
       version: tag.replaceFirst('v', ''),
-      build: build,
+      build: build ?? 0,
       apkUrl: asset.$1,
       sizeBytes: asset.$2,
       notesUrl: body['html_url'] is String ? body['html_url'] as String : '',
@@ -93,11 +102,30 @@ Future<AppUpdate?> checkForUpdate(int currentBuild, {http.Client? client}) async
   return (url, size is int ? size : 0);
 }
 
+/// True when [tag] names a version above [current].
+bool _isNewer(String tag, String current) {
+  final a = _semver(tag);
+  final b = _semver(current);
+  if (a == null || b == null) return false;
+  if (a.$1 != b.$1) return a.$1 > b.$1;
+  if (a.$2 != b.$2) return a.$2 > b.$2;
+  return a.$3 > b.$3;
+}
+
+(int, int, int)? _semver(String text) {
+  final match = RegExp(r'(\d+)\.(\d+)\.(\d+)').firstMatch(text);
+  if (match == null) return null;
+  return (
+    int.parse(match.group(1)!),
+    int.parse(match.group(2)!),
+    int.parse(match.group(3)!),
+  );
+}
+
 /// `0.2.1+21` — the part after `+` is the versionCode the phone compares.
 int? _buildNumber(String text) {
-  final plus = text.lastIndexOf('+');
-  if (plus < 0) return null;
-  return int.tryParse(text.substring(plus + 1).trim());
+  final match = RegExp(r'\+(\d+)').firstMatch(text);
+  return match == null ? null : int.parse(match.group(1)!);
 }
 
 /// Downloads the APK into the user's Downloads folder, reporting progress in

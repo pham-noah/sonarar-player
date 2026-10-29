@@ -8,13 +8,6 @@ RepoType: git
 Repo: https://github.com/pham-noah/sonarar-player.git
 
 Builds:
-  - versionName: 0.2.1
-    versionCode: 21
-    commit: v0.2.1
-    # F-Droid forbids self-updating apps: compile the update check out.
-    build:
-      - $$flutter$$/bin/flutter build apk --release --target-platform=android-arm64 --dart-define=SONARAR_SELF_UPDATE=false
-    output: build/app/outputs/flutter-apk/app-release.apk
   - versionName: 0.2.0
     versionCode: 20
     commit: v0.2.0

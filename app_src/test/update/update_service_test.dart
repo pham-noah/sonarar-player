@@ -36,9 +36,38 @@ void main() {
     expect(update.apkUrl, 'https://example.test/app.apk');
   });
 
+  test('a release title without a build number is still noticed', () async {
+    // The 0.2.1 release is titled "Sonarar 0.2.1 — Personalize": no +21. A check
+    // that requires one would never fire on this repo's own releases.
+    final update = await checkForUpdate(
+      appVersionCode,
+      currentVersion: appVersionName,
+      client: clientReturning(release(
+        tag: 'v0.2.2',
+        name: 'Sonarar 0.2.2 Personalize',
+      )),
+    );
+
+    expect(update?.version, '0.2.2');
+  });
+
+  test('a release title without a build is not offered when it is the same version',
+      () async {
+    final update = await checkForUpdate(
+      appVersionCode,
+      currentVersion: appVersionName,
+      client: clientReturning(release(
+        tag: 'v$appVersionName',
+        name: 'Sonarar $appVersionName Personalize',
+      )),
+    );
+
+    expect(update, isNull);
+  });
+
   test('the same build is not offered again', () async {
     final update = await checkForUpdate(appVersionCode,
-        client: clientReturning(release(name: '0.2.1+21')));
+        client: clientReturning(release(name: '0.2.0+$appVersionCode')));
 
     expect(update, isNull, reason: 'the app offered itself as an update');
   });
@@ -127,7 +156,7 @@ void main() {
     final line = RegExp(r'^version:\s*(\S+)\s*$', multiLine: true)
         .firstMatch(pubspec)
         ?.group(1);
-    expect(line, '${appVersionName}+${appVersionCode}');
+    expect(line, '$appVersionName+$appVersionCode');
   });
 
   test('F-Droid builds turn the whole thing off', () {

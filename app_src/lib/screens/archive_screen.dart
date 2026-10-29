@@ -10,7 +10,6 @@ import '../library/compendium.dart';
 import '../library/track.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
-import '../theme/slab.dart';
 import 'compendium_screen.dart';
 import '../widgets/framed_art.dart';
 import '../widgets/kit.dart';
@@ -77,16 +76,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (!widget.inline) ...[
-                  ScreenTitle(
-                    skin: skin,
-                    text: widget.state.languageSkin.word(
-                      WordKey.libraryRoom,
-                      'LIBRARY TOOLS',
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                ],
+                // The app bar already names this page. Printing the name a
+                // second time at the same size, 133px lower, reads as a bug and
+                // costs the first screen a quarter of its list.
+                if (!widget.inline) const SizedBox(height: 4),
 
                 if (entries != null) ...[
                   Text(

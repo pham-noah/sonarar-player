@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import '../library/history.dart';
 import '../library/play_log.dart';
 import '../library/track.dart';
+import '../theme/slab.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
-import '../theme/slab.dart';
 import '../widgets/kit.dart';
 import '../widgets/pressable.dart';
 
@@ -68,10 +68,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ? const EdgeInsets.fromLTRB(20, 8, 20, 24)
               : LayoutSpec.screenPadding,
           children: [
-            if (!widget.inline) ...[
-              ScreenTitle(skin: skin, text: 'HISTORY'),
-              const SizedBox(height: 16),
-            ],
+            if (!widget.inline) const SizedBox(height: 4),
 
             if (h.totalPlays == 0 && h.month.isEmpty)
               Text(

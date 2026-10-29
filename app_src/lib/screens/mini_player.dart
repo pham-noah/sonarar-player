@@ -2,6 +2,7 @@ library;
 
 import 'package:flutter/material.dart' hide RepeatMode;
 
+import '../core/track_labels.dart';
 import '../core/constants.dart';
 import '../library/track.dart';
 
@@ -159,7 +160,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.track.title,
+                              titleWithoutArtist(widget.track.title, widget.track.artist),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(

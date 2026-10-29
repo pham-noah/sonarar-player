@@ -734,7 +734,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         skin: skin,
         title: title,
         mark: widget.headerMark,
-        trailing: plus(presentation.palette.textPrimary),
+        trailing: plus(skin.accent),
       );
     }
 
@@ -749,7 +749,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               skin: skin,
               label: title,
 
-              trailing: plus(presentation.palette.pageFill ?? presentation.palette.background),
+              trailing: plus(skin.accent),
             ),
           ),
         ],

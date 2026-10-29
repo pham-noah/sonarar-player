@@ -16,6 +16,7 @@ import 'context/places.dart';
 import 'screens/places_screen.dart';
 import 'context/weather_codes.dart';
 import 'core/app_state.dart';
+import 'player/boot_warm.dart';
 import 'core/constants.dart';
 import 'core/diag_log.dart';
 import 'core/latest_load.dart';
@@ -86,7 +87,6 @@ import 'widgets/framed_art.dart';
 import 'widgets/spectrum.dart';
 import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
-import 'player/boot_warm.dart';
 import 'player/queue_mode.dart';
 import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
@@ -746,8 +746,7 @@ class _HomeShellState extends State<HomeShell>
   }
   bool _loading = true;
 
-  double _bootProgress = 0.02;
-  String _bootLabel = 'starting';
+
 
   bool _needsSetup = false;
 
@@ -1057,8 +1056,6 @@ class _HomeShellState extends State<HomeShell>
     final since = _lastPhase == null ? null : now.difference(_lastPhase!).inMilliseconds;
     _lastPhase = now;
     if (since != null) _phaseCosts[label] = since;
-    _bootProgress = progress;
-    _bootLabel = label;
     if (mounted) setState(() {});
     // ignore: avoid_print
     print('[Sonarar] boot ${(progress * 100).round()}% $label'
@@ -1328,52 +1325,6 @@ class _HomeShellState extends State<HomeShell>
         'shuffle=${widget.state.queue?.isShuffled ?? false}');
 
     if (!mounted) return;
-    final currentArt = widget.state.art;
-
-    if (!mounted) return;
-
-    final warmStarted = DateTime.now();
-    for (final piece in artToWarmBeforeGate(
-      pieces: widget.state.artSet.pieces,
-      current: currentArt,
-    )) {
-      if (!mounted) return;
-      _boot(0.94, 'warming artwork');
-      await precacheImage(
-        ResizeImage(AssetImage(piece.assetPath), width: kPlayerArtDecodeWidth),
-        context,
-      );
-      if (!mounted) return;
-      await precacheImage(
-        ResizeImage(AssetImage(piece.assetPath), width: kHeaderArtDecodeWidth),
-        context,
-      );
-    }
-
-    final openCover = _coverProvider();
-    if (openCover != null && mounted) {
-      await precacheImage(openCover, context);
-    }
-    // ignore: avoid_print
-    print('[Sonarar][BOOT] warm=${DateTime.now().difference(warmStarted).inMilliseconds}ms '
-        'pieces=${artToWarmBeforeGate(pieces: widget.state.artSet.pieces, current: currentArt).length} '
-        'cover=${openCover != null}');
-
-    final remaining = artToWarmAfterGate(
-      pieces: widget.state.artSet.pieces,
-      current: widget.state.art,
-    );
-    if (remaining.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        for (final piece in remaining) {
-          unawaited(precacheImage(
-            ResizeImage(AssetImage(piece.assetPath), width: 900),
-            context,
-          ));
-        }
-      });
-    }
 
     _boot(1.0, 'ready');
     setState(() {
@@ -1382,6 +1333,10 @@ class _HomeShellState extends State<HomeShell>
         _tabSettled = true;
         if (_tab == AppTab.home && !_homeAvailable) _tab = AppTab.library;
       }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_warmArt());
     });
 
     if (_askedStorage && _storageAccess == StorageAccess.denied) {
@@ -3288,47 +3243,49 @@ class _HomeShellState extends State<HomeShell>
     });
   }
 
-  /// A flat colour for the whole boot reads as a hang; say what is loading.
-  Widget _splash(Skin skin) => ColoredBox(
-        color: skin.background,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'SONARAR',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 6,
-                  color: skin.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: 172,
-                child: ClipRect(
-                  child: LinearProgressIndicator(
-                    value: _bootProgress.clamp(0.0, 1.0),
-                    minHeight: 2,
-                    backgroundColor: skin.panel,
-                    color: skin.accent,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                _bootLabel,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: skin.textSecondary,
-                  letterSpacing: 0.4,
-                ),
-              ),
-            ],
-          ),
-        ),
+  /// Nothing to look at on purpose. The app opens on the skin's own colour and
+  /// then the shell; a wordmark and a progress bar on every launch is an intro
+  /// nobody asked for, and it only exists because art used to be decoded first.
+  Widget _splash(Skin skin) => ColoredBox(color: skin.background);
+
+  /// Decoding art takes long enough to be seen. It happens once the shell is on
+  /// screen, so opening the app is never gated on warm pictures.
+  Future<void> _warmArt() async {
+    final currentArt = widget.state.art;
+    final warmStarted = DateTime.now();
+    for (final piece in artToWarmBeforeGate(
+      pieces: widget.state.artSet.pieces,
+      current: currentArt,
+    )) {
+      if (!mounted) return;
+      await precacheImage(
+        ResizeImage(AssetImage(piece.assetPath), width: kPlayerArtDecodeWidth),
+        context,
       );
+      if (!mounted) return;
+      await precacheImage(
+        ResizeImage(AssetImage(piece.assetPath), width: kHeaderArtDecodeWidth),
+        context,
+      );
+    }
+    final openCover = _coverProvider();
+    if (openCover != null && mounted) {
+      await precacheImage(openCover, context);
+    }
+    // ignore: avoid_print
+    print('[Sonarar][BOOT] warm=${DateTime.now().difference(warmStarted).inMilliseconds}ms '
+        'cover=${openCover != null}');
+    for (final piece in artToWarmAfterGate(
+      pieces: widget.state.artSet.pieces,
+      current: widget.state.art,
+    )) {
+      if (!mounted) return;
+      unawaited(precacheImage(
+        ResizeImage(AssetImage(piece.assetPath), width: 900),
+        context,
+      ));
+    }
+  }
 
   Widget _shell(BuildContext context) {
     final skin = widget.state.uiSkin;

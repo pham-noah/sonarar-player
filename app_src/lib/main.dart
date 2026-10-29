@@ -2793,6 +2793,7 @@ class _HomeShellState extends State<HomeShell>
   Widget _tabContent(AppTab tab, Skin skin) => switch (tab) {
         AppTab.home => HomeScreen(
           skin: skin,
+          headerArt: _headerArt(skin),
           home: widget.state.personalization.home,
           onOpenPersonalize: _openPersonalizePage,
           headerMark: _brandMark(),

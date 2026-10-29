@@ -14,6 +14,7 @@ import '../library/track.dart';
 import '../theme/layout.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
+import '../widgets/art_scrim.dart';
 
 enum HomeTab { home, quickPick, fromLibrary, genre, recap }
 
@@ -52,9 +53,14 @@ class HomeScreen extends StatelessWidget {
     this.placeIcon,
     this.hasFix = false,
     this.contextEnabled = true,
+    this.headerArt,
   });
 
   final Skin skin;
+
+  /// The picture this place wears, if it wears one. Home was the one place with
+  /// no art at all, so choosing a picture for HOME did nothing.
+  final Widget? headerArt;
 
   final String? band;
 
@@ -123,7 +129,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final list = SafeArea(
       bottom: false,
       child: ListView(
         padding: EdgeInsets.fromLTRB(
@@ -233,6 +239,29 @@ class HomeScreen extends StatelessWidget {
 
         ],
       ),
+    );
+
+    final art = headerArt;
+    if (art == null) return list;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 320,
+          child: IgnorePointer(child: art),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 320,
+          child: ArtScrim(color: skin.background),
+        ),
+        list,
+      ],
     );
   }
 

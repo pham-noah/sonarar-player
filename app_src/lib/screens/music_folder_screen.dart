@@ -80,6 +80,14 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
     return parts.isEmpty ? path : parts.last;
   }
 
+  static String _jumpLabel(String path) => switch (path) {
+        '/storage/emulated/0' => 'INTERNAL',
+        '/storage/emulated/0/Music' => 'MUSIC',
+        '/storage/emulated/0/Download' => 'DOWNLOAD',
+        '/sdcard' => 'SDCARD',
+        _ => path.split('/').last,
+      };
+
   String? get _parent {
     if (_path == '/' || _path.isEmpty) return null;
     final cut = _path.lastIndexOf(Platform.pathSeparator);
@@ -131,6 +139,31 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                   ),
                 ],
               ),
+            ),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final root in MusicFolderScreen.roots)
+                  if (root != _path && Directory(root).existsSync())
+                    TextButton(
+                      key: Key('music-folder-jump-$root'),
+                      onPressed: () => _open(root),
+                      style: TextButton.styleFrom(
+                        foregroundColor: skin.accent,
+                        minimumSize: const Size(0, 30),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        _jumpLabel(root),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+              ],
             ),
             Expanded(
               child: _busy

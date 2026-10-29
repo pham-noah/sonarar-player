@@ -623,7 +623,21 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
             ],
             if (_tab == PersonalizeTab.themes) ...[
-            SectionBand(skin: skin, label: 'THEMES'),
+            // The tab already says THEMES; a band repeating it wastes the one
+            // line that could tell you where you stand.
+            Text(
+              widget.state.preset == null
+                  ? '${widget.state.allPresets.length} BUILT IN · NONE WORN'
+                  : '${widget.state.allPresets.length} AVAILABLE · WEARING '
+                        '${widget.state.preset!.name.toUpperCase()}',
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor - 4,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1,
+                color: skin.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 10),
             for (final preset in widget.state.allPresets) ...[
               _themeRow(skin, preset),
               const SizedBox(height: 6),
@@ -1397,6 +1411,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
   }
 
+  Widget _themeSwatch(Skin theme, bool active) => Container(
+    width: 20,
+    height: 20,
+    decoration: BoxDecoration(
+      color: theme.background,
+      border: Border.all(
+        color: active ? theme.accent : theme.textSecondary.withValues(alpha: 0.5),
+        width: active ? 2 : 1,
+      ),
+    ),
+    alignment: Alignment.bottomRight,
+    child: Container(width: 9, height: 9, color: theme.accent),
+  );
+
   Widget _themeRow(Skin skin, ThemePreset preset) {
     final active = widget.state.preset?.id == preset.id;
     return GestureDetector(
@@ -1414,6 +1442,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         ),
         child: Row(
           children: [
+            // A theme called Abyss or Crimson is a colour, and a name alone
+            // makes six of them a reading exercise. The swatch is the theme's
+            // own two colours: its ground and its accent.
+            _themeSwatch(skinFor(preset.skinId), active),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 preset.name,
@@ -1424,7 +1457,17 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 ),
               ),
             ),
-            if (preset.builtIn)
+            if (active)
+              Text(
+                'WORN',
+                style: TextStyle(
+                  fontSize: LayoutSpec.fontFloor,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.8,
+                  color: skin.accent,
+                ),
+              )
+            else if (preset.builtIn)
               Text(
                 'BUILT IN',
                 style: TextStyle(

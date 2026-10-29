@@ -229,37 +229,44 @@ class KitTabs<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entries = labels.entries.toList();
     return SizedBox(
       height: height,
       child: Row(
         children: [
-          for (final entry in labels.entries)
+          for (var i = 0; i < entries.length; i++)
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(right: 5),
+                // No trailing gap on the last tab: the strip ends where the
+                // content ends, instead of 5px short of it.
+                padding: EdgeInsets.only(
+                  right: i == entries.length - 1 ? 0 : 5,
+                ),
                 child: GestureDetector(
-                  key: keyBuilder?.call(entry.key),
-                  onTap: () => onSelected(entry.key),
+                  key: keyBuilder?.call(entries[i].key),
+                  onTap: () => onSelected(entries[i].key),
                   behavior: HitTestBehavior.opaque,
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 140),
+                    curve: Curves.easeOut,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: entry.key == selected
+                      color: entries[i].key == selected
                           ? skin.accent
                           : Colors.transparent,
                       border: Border.all(
-                        color: entry.key == selected
+                        color: entries[i].key == selected
                             ? skin.accent
                             : skin.textSecondary.withValues(alpha: 0.35),
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      entry.value,
+                      entries[i].value,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
                       style: TextStyle(
-                        color: entry.key == selected
+                        color: entries[i].key == selected
                             ? skin.onAccent
                             : skin.textSecondary,
                         fontSize: LayoutSpec.fontFloor - 5,

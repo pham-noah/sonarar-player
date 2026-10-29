@@ -39,9 +39,15 @@ class SettingsScreen extends StatefulWidget {
     this.prefs,
     this.onPrefsChanged,
     this.weather = WeatherCondition.unknown,
+    this.musicRoot,
+    this.onOpenMusicFolder,
   });
 
   final AppState state;
+
+  /// The folder the library is read from, and the door to change it.
+  final String? musicRoot;
+  final VoidCallback? onOpenMusicFolder;
 
   final bool showTitle;
 
@@ -230,6 +236,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.diversity_1_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(personaLayer: v))),
 
+              if (widget.onOpenMusicFolder != null) ...[
+                SectionBand(skin: skin, label: 'LIBRARY'),
+                _row(
+                  skin,
+                  label: 'MUSIC FOLDER',
+                  icon: Icons.folder_rounded,
+                  onTap: widget.onOpenMusicFolder,
+                  trailing: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 170),
+                    child: Text(
+                      widget.musicRoot ?? 'default',
+                      maxLines: 2,
+                      textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: skin.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+                  child: Text(
+                    'A folder is a library when it holds library_manifest.json. '
+                    'Your history, playlists and themes stay where they are, so '
+                    'changing this never loses them.',
+                    style: TextStyle(fontSize: 11, color: skin.textSecondary),
+                  ),
+                ),
+              ],
               SectionBand(skin: skin, label: 'INTERFACE'),
               _toggle(skin, 'TAB ANIMATION', prefs!.tabAnimation,
                   icon: Icons.movie_filter_rounded,

@@ -18,6 +18,7 @@ import 'context/weather_codes.dart';
 import 'core/app_state.dart';
 import 'player/art_warmer.dart';
 import 'core/constants.dart';
+import 'core/music_root.dart';
 import 'core/diag_log.dart';
 import 'core/latest_load.dart';
 import 'core/prefs_decode.dart' as decode;
@@ -52,6 +53,7 @@ import 'screens/never_in_shuffle_screen.dart';
 import 'screens/library_management_panel.dart';
 import 'screens/library_browser.dart';
 import 'screens/library_screen.dart';
+import 'screens/music_folder_screen.dart';
 import 'screens/personalize_screen.dart';
 import 'screens/player_screen.dart';
 import 'screens/playlist_import_sheet.dart';
@@ -263,6 +265,7 @@ class _HomeShellState extends State<HomeShell>
 
     with WidgetsBindingObserver {
   final LibraryRepository _repo = LibraryRepository();
+  String _musicRoot = kAndroidLibraryRoot;
 
   late final DownloadManager _downloads = DownloadManager(
     repo: _repo,
@@ -1083,6 +1086,8 @@ class _HomeShellState extends State<HomeShell>
     print('[Sonarar] storage after request=$_storageAccess');
 
     _boot(0.18, 'reading your library');
+    _musicRoot = await MusicRoot.read();
+    _repo.root = _musicRoot;
     await _repo.load();
     _boot(0.52, 'found ${_repo.tracks.length} tracks');
     // ignore: avoid_print
@@ -1092,7 +1097,9 @@ class _HomeShellState extends State<HomeShell>
         'accessDenied=${_repo.accessDenied}');
 
     _boot(0.60, 'opening your saved state');
-    _stores = await StateStores.open(libraryRoot: _repo.libraryRoot);
+    // Deliberately the default root, not the chosen one: plays, playlists and
+    // themes are not music, and changing the music folder must not move them.
+    _stores = await StateStores.open(libraryRoot: kAndroidLibraryRoot);
     widget.state.libraryRoot = _repo.libraryRoot;
 
     unawaited(_refreshHomeRails());
@@ -2361,6 +2368,8 @@ class _HomeShellState extends State<HomeShell>
       (_) => SettingsScreen(
         state: widget.state,
         section: SettingsSection.behaviour,
+        musicRoot: _musicRoot,
+        onOpenMusicFolder: _openMusicFolder,
         prefs: _prefs,
         onPrefsChanged: _setPrefs,
         onContextsChanged: () {
@@ -2386,6 +2395,44 @@ class _HomeShellState extends State<HomeShell>
         },
       ),
     );
+  }
+
+  Future<void> _openMusicFolder() async {
+    final chosen = await Navigator.of(context).push<String>(
+      MaterialPageRoute<String>(
+        builder: (_) => MusicFolderScreen(
+          skin: widget.state.uiSkin,
+          current: _musicRoot,
+        ),
+      ),
+    );
+    if (chosen == null || chosen == _musicRoot) return;
+    await MusicRoot.write(chosen);
+    if (!mounted) return;
+    final restart = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: widget.state.uiSkin.panel,
+        title: Text('Music folder saved',
+            style: TextStyle(color: widget.state.uiSkin.textPrimary)),
+        content: Text(
+          'Sonarar reads the library once at launch, so it will load $chosen '
+          'next time it opens.',
+          style: TextStyle(color: widget.state.uiSkin.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('LATER'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('RESTART NOW'),
+          ),
+        ],
+      ),
+    );
+    if (restart == true) await SystemNavigator.pop();
   }
 
   void _openPersonalizePage() {
@@ -2981,6 +3028,8 @@ class _HomeShellState extends State<HomeShell>
 
         AppTab.settings => SettingsScreen(
           state: widget.state,
+          musicRoot: _musicRoot,
+          onOpenMusicFolder: _openMusicFolder,
           onOpenDiagnostics: () => _openDoor(_InlineDoor.diagnostics),
           onSavePreset: (name) {
             final made = ThemePreset(

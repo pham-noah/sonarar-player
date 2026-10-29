@@ -31,7 +31,12 @@ class LibraryRepository {
     return '$_libraryRoot$_sep$normalised';
   }
 
-  Future<String> _resolveRoot() async => kAndroidLibraryRoot;
+  /// Set before [load] when the folder lives somewhere other than the default.
+  String? _root;
+
+  set root(String? value) => _root = value;
+
+  Future<String> _resolveRoot() async => _root ?? kAndroidLibraryRoot;
 
   Future<void> load() async {
     _accessDenied = false;
@@ -53,6 +58,14 @@ class LibraryRepository {
 
     if (!await _canReadRoot()) {
       _accessDenied = true;
+    }
+
+    // A chosen folder that has lost its manifest must read as empty, not as the
+    // demo library shipped in the APK — that would look like the music vanished.
+    if (_root != null) {
+      _tracks = const [];
+      _loadedFrom = null;
+      return;
     }
 
     try {

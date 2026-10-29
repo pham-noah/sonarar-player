@@ -147,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               StaggerIn(
                 index: 3,
                 style: StaggerStyle.stamp,
-                child: SectionBand(skin: skin, label: 'BEHAVIOUR'),
+                child: SectionBand(skin: skin, label: 'PLAYBACK'),
               ),
               _toggle(skin, 'RESUME ON OPEN', prefs!.resumeOnLaunch,
                   icon: Icons.play_circle_outline_rounded,
@@ -194,6 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _toggle(skin, 'OFFICIAL ONLY', prefs!.officialOnly,
                     icon: Icons.verified_rounded,
                     (v) => onPrefsChanged!(prefs!.copyWith(officialOnly: v))),
+              SectionBand(skin: skin, label: 'CONTEXT'),
               _toggle(skin, 'OFFLINE', prefs!.allowNetwork,
                   icon: Icons.wifi_off_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(allowNetwork: v))),
@@ -218,6 +219,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _toggle(skin, 'AUTO THEME', prefs!.autoSkin,
                   icon: Icons.palette_outlined,
                   (v) => onPrefsChanged!(prefs!.copyWith(autoSkin: v))),
+              SectionBand(skin: skin, label: 'LISTENING MEMORY'),
               _toggle(skin, 'LEARN FROM SKIPS', prefs!.learnFromSkips,
                   icon: Icons.psychology_alt_outlined,
                   (v) => onPrefsChanged!(prefs!.copyWith(learnFromSkips: v))),
@@ -228,6 +230,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.diversity_1_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(personaLayer: v))),
 
+              SectionBand(skin: skin, label: 'INTERFACE'),
               _toggle(skin, 'TAB ANIMATION', prefs!.tabAnimation,
                   icon: Icons.movie_filter_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(tabAnimation: v))),
@@ -298,9 +301,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _toggle(skin, 'ROMAJI', prefs!.showRomaji,
                   icon: Icons.translate_rounded,
                   (v) => onPrefsChanged?.call(prefs!.copyWith(showRomaji: v))),
-              _toggle(skin, 'CHARACTER FOLLOWS TRACK', prefs!.cycleCharacterArt,
-                  icon: Icons.face_retouching_natural_rounded,
-                  (v) => onPrefsChanged!(prefs!.copyWith(cycleCharacterArt: v))),
 
               if (prefs!.contextMix)
                 _toggle(skin, 'DYNAMIC BY DEFAULT', prefs!.dynamicByDefault,

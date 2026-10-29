@@ -3,6 +3,7 @@ library;
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart' hide RepeatMode;
 
+import '../widgets/art_scrim.dart';
 import '../widgets/cover_button.dart';
 import '../widgets/pressable.dart';
 import '../widgets/framed_art.dart';
@@ -226,7 +227,8 @@ class PlayerScreen extends StatelessWidget {
     final pal = PresentationScope.of(context, fallback: skin).palette;
     final showFigure =
         art != null &&
-        (state.presentation.kit.chrome.artByDefault ||
+        (state.artChosen ||
+            state.presentation.kit.chrome.artByDefault ||
             state.artSkinOverride != null);
     final chrome = state.presentation.kit.chrome;
     return Stack(
@@ -242,14 +244,14 @@ class PlayerScreen extends StatelessWidget {
 
         // The photo under the player's own art. When the backdrop asks for the
         // cover instead, this stays out of the way and the art does the work.
-        if (state.personalization.backdrop.isSet &&
+        if (state.personalization.backdropFor(SurfaceId.player).isSet &&
             !state.personalization.backdrop.coverOnPlayer)
           Positioned.fill(
             child: PersonalBackdrop(
               root: state.libraryRoot == null
                   ? null
                   : Directory(state.libraryRoot!),
-              spec: state.personalization.backdrop,
+              spec: state.personalization.backdropFor(SurfaceId.player),
               skin: skin,
             ),
           ),
@@ -362,23 +364,7 @@ class PlayerScreen extends StatelessWidget {
           ),
 
         if (!lyricsMode && chrome.hemisphereScrim)
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    pal.background.withValues(alpha: 0.88),
-                    pal.background.withValues(alpha: 0.52),
-                    pal.background.withValues(alpha: 0.05),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.42, 0.80, 1.0],
-                ),
-              ),
-            ),
-          ),
+          Positioned.fill(child: ArtScrim(color: pal.background)),
 
         if (!lyricsMode)
           SafeArea(

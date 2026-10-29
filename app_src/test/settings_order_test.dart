@@ -15,7 +15,10 @@ import 'package:sonarar/theme/skin_policy.dart';
 
 const _wanted = <String>[
   'LOOK',
-  'BEHAVIOUR',
+  'PLAYBACK',
+  'CONTEXT',
+  'LISTENING MEMORY',
+  'INTERFACE',
   'IF SOMETHING IS WRONG',
 ];
 

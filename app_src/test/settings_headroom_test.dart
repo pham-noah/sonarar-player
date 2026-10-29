@@ -59,7 +59,10 @@ void main() {
 
     final labels = <String>[
       'LOOK',
-      'BEHAVIOUR',
+      'PLAYBACK',
+      'CONTEXT',
+      'LISTENING MEMORY',
+      'INTERFACE',
       'IF SOMETHING IS WRONG',
     ];
     for (final label in labels) {
@@ -76,7 +79,7 @@ void main() {
   }
 
   group('the pushed page opens with NO headroom', () {
-    testWidgets('B E H A V I O U R', (tester) async {
+    testWidgets('P L A Y B A C K', (tester) async {
       final top = await firstSectionTop(tester, SettingsSection.behaviour);
       expect(top, lessThanOrEqualTo(_maxFirstSectionTop),
           reason: 'the behaviour page opens with ${top.toStringAsFixed(1)}px of '

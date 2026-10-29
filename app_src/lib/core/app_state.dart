@@ -1173,6 +1173,13 @@ class AppState extends ChangeNotifier {
     );
   }
 
+  /// Whether a picture was chosen at all, rather than inherited from a layout.
+  /// The chrome decides how art is composed; it does not get to hide a picture
+  /// the user picked.
+  bool get artChosen =>
+      _personalization.bundle != null ||
+      _personalization.surfaces.values.any((look) => look.art != null);
+
   /// The framing for a picture: its own spec.json, or the one the look file
   /// holds when the picture is a shipped asset that cannot carry a file.
   ArtSpec specFor(SkinArt art) => _personalization.specFor(art.key, art.spec);
@@ -1191,6 +1198,32 @@ class AppState extends ChangeNotifier {
   }
 
   bool get hasArt => artSet.hasArt;
+
+  /// A new track moves every worn picture on to the next frame of its own
+  /// bundle, so places that chose their own art keep pace with the one set
+  /// everywhere instead of freezing on one image.
+  void cycleArtForTrack() {
+    nextArt();
+    if (_personalization.surfaces.isEmpty) return;
+    final next = Map<SurfaceId, SurfaceLook>.from(_personalization.surfaces);
+    var changed = false;
+    for (final entry in _personalization.surfaces.entries) {
+      final key = entry.value.art;
+      if (key == null) continue;
+      for (final bundle in _bundles) {
+        final at = bundle.set.pieces.indexWhere((p) => p.key == key);
+        if (at < 0 || bundle.set.length < 2) continue;
+        final piece = bundle.set.pieces[(at + 1) % bundle.set.length];
+        next[entry.key] = entry.value.copyWith(art: piece.key);
+        changed = true;
+        break;
+      }
+    }
+    if (!changed) return;
+    _personalization = _personalization.copyWith(surfaces: next);
+    _presentationCache = null;
+    notifyListeners();
+  }
 
   void nextArt() {
     _artIndex = artSet.nextIndex(_artIndex);

@@ -21,32 +21,44 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('the screen offers the three things and a way to keep them', (tester) async {
+  testWidgets('the screen is five tabs, each showing its own part', (tester) async {
     await pump(tester);
 
-    expect(find.text('BACKDROP'), findsOneWidget);
-    expect(find.text('ACCENT'), findsOneWidget);
-    // HOME appears twice on purpose: the reorderable Home section and the
-    // place selector. Different jobs, same word.
-    expect(find.text('HOME'), findsNWidgets(2));
+    for (final tab in ['look', 'pictures', 'art', 'home', 'themes']) {
+      expect(find.byKey(Key('personalize-tab-$tab')), findsOneWidget,
+          reason: 'the $tab tab is missing');
+    }
+
+    // LOOK is where you land: the layout and the shape of a song list.
+    expect(find.text('LAYOUT'), findsOneWidget);
+    expect(find.text('SONG LIST'), findsOneWidget);
+    expect(find.text('EVERYWHERE'), findsNothing,
+        reason: 'pictures belong to their own tab');
+
+    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.pumpAndSettle();
     expect(find.text('EVERYWHERE'), findsOneWidget,
         reason: 'the screen lost the "one picture for all places" option');
+    expect(find.text('BACKDROP'), findsOneWidget);
+    expect(find.text('LAYOUT'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('personalize-tab-home')));
+    await tester.pumpAndSettle();
+    expect(find.text('CONTINUE LISTENING'), findsOneWidget);
     expect(find.text('NOW stays at the top — it is the page header, not a section.'),
         findsOneWidget);
-  });
-
-  testWidgets('NOW is not offered as a reorderable row', (tester) async {
-    await pump(tester);
-
-    expect(find.text('CONTINUE LISTENING'), findsOneWidget);
     expect(find.text('NOW'), findsNothing);
   });
 
   testWidgets('hiding a section keeps its row on screen and marks it hidden', (tester) async {
     await pump(tester);
 
+    await tester.tap(find.byKey(const Key('personalize-tab-home')));
+    await tester.pumpAndSettle();
+
     final row = find.byKey(const ValueKey('home-row-recap'));
-    await tester.scrollUntilVisible(row, 200);
+    await tester.scrollUntilVisible(row, 200,
+        scrollable: find.byType(Scrollable).first);
     await tester.pumpAndSettle();
 
     await tester.tap(find.descendant(of: row, matching: find.byType(Switch)));
@@ -59,8 +71,12 @@ void main() {
   testWidgets('moving a section up writes the new order', (tester) async {
     await pump(tester);
 
+    await tester.tap(find.byKey(const Key('personalize-tab-home')));
+    await tester.pumpAndSettle();
+
     final row = find.byKey(const ValueKey('home-row-recap'));
-    await tester.scrollUntilVisible(row, 200);
+    await tester.scrollUntilVisible(row, 200,
+        scrollable: find.byType(Scrollable).first);
     await tester.pumpAndSettle();
 
     await tester.tap(find.descendant(of: row, matching: find.byIcon(Icons.keyboard_arrow_up_rounded)));

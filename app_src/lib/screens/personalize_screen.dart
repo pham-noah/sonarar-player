@@ -24,6 +24,10 @@ import '../widgets/devices.dart';
 /// painted behind each tab, where the accent comes from, and which Home
 /// sections show in which order. Settings keeps behaviour only, so there is one
 /// place to look instead of two that half-overlap.
+/// The parts of the look, one at a time. Seven sections in a single scroll is
+/// a scavenger hunt; five tabs is a page you can finish.
+enum PersonalizeTab { look, pictures, art, home, themes }
+
 class PersonalizeScreen extends StatefulWidget {
   const PersonalizeScreen({
     super.key,
@@ -55,6 +59,7 @@ class PersonalizeScreen extends StatefulWidget {
 }
 
 class _PersonalizeScreenState extends State<PersonalizeScreen> {
+  PersonalizeTab _tab = PersonalizeTab.look;
   late Personalization _p = widget.state.personalization;
 
   Skin get _skin => widget.state.uiSkin;
@@ -91,6 +96,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       backgroundColor: skin.background,
       body: SafeArea(
         child: ListView(
+          // Each tab keeps its own scroll position: switching parts should not
+          // drop you halfway down a different page.
+          key: PageStorageKey('personalize-${_tab.name}'),
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [
             Row(
@@ -112,8 +120,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
             const SizedBox(height: 8),
             _preview(skin),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+            _tabs(skin),
+            const SizedBox(height: 14),
 
+            if (_tab == PersonalizeTab.look) ...[
             SectionBand(skin: skin, label: 'LAYOUT'),
             const SizedBox(height: 8),
             Row(
@@ -154,6 +165,75 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
             const SizedBox(height: 18),
 
+            SectionBand(skin: skin, label: 'ACCENT'),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final source in AccentSource.values)
+                  _chip(
+                    skin,
+                    switch (source) {
+                      AccentSource.skin => 'SKIN',
+                      AccentSource.image => 'FROM PHOTO',
+                      AccentSource.manual => 'PICK',
+                    },
+                    _p.accent.source == source,
+                    () => _apply(
+                      _p.copyWith(
+                        accent: AccentSpec(
+                          source: source,
+                          value: _p.accent.value,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (_p.accent.source == AccentSource.image)
+              _button(
+                skin,
+                'TAKE THE COLOUR FROM THE PHOTO',
+                _accentFromPhoto,
+                quiet: true,
+              ),
+            if (_p.accent.source == AccentSource.manual) ...[
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  for (final colour in _swatches)
+                    GestureDetector(
+                      onTap: () => _apply(
+                        _p.copyWith(
+                          accent: AccentSpec(
+                            source: AccentSource.manual,
+                            value: colour.toARGB32(),
+                          ),
+                        ),
+                      ),
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: colour,
+                          border: Border.all(
+                            color: _p.accent.value == colour.toARGB32()
+                                ? skin.textPrimary
+                                : skin.textSecondary.withValues(alpha: 0.4),
+                            width: _p.accent.value == colour.toARGB32() ? 3 : 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 18),
+
+            ],
+            if (_tab == PersonalizeTab.pictures) ...[
             SectionBand(skin: skin, label: 'PICTURES FOR'),
             Wrap(
               spacing: 8,
@@ -260,6 +340,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ],
             const SizedBox(height: 18),
 
+            ],
+            if (_tab == PersonalizeTab.art) ...[
             SectionBand(skin: skin, label: 'ART'),
             Wrap(
               spacing: 8,
@@ -299,6 +381,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+            _toggleRow(
+              skin,
+              'PICTURES FOLLOW TRACK',
+              'Each new song moves on to the next picture in the bundle.',
+              widget.prefs?.cycleCharacterArt ?? false,
+              (v) => widget.onPrefsChanged?.call(
+                widget.prefs!.copyWith(cycleCharacterArt: v),
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               'A bundle is a folder of pictures in Music/Sonarar/art. Every '
@@ -312,73 +404,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
             const SizedBox(height: 18),
 
-            SectionBand(skin: skin, label: 'ACCENT'),
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final source in AccentSource.values)
-                  _chip(
-                    skin,
-                    switch (source) {
-                      AccentSource.skin => 'SKIN',
-                      AccentSource.image => 'FROM PHOTO',
-                      AccentSource.manual => 'PICK',
-                    },
-                    _p.accent.source == source,
-                    () => _apply(
-                      _p.copyWith(
-                        accent: AccentSpec(
-                          source: source,
-                          value: _p.accent.value,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            if (_p.accent.source == AccentSource.image)
-              _button(
-                skin,
-                'TAKE THE COLOUR FROM THE PHOTO',
-                _accentFromPhoto,
-                quiet: true,
-              ),
-            if (_p.accent.source == AccentSource.manual) ...[
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  for (final colour in _swatches)
-                    GestureDetector(
-                      onTap: () => _apply(
-                        _p.copyWith(
-                          accent: AccentSpec(
-                            source: AccentSource.manual,
-                            value: colour.toARGB32(),
-                          ),
-                        ),
-                      ),
-                      child: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: colour,
-                          border: Border.all(
-                            color: _p.accent.value == colour.toARGB32()
-                                ? skin.textPrimary
-                                : skin.textSecondary.withValues(alpha: 0.4),
-                            width: _p.accent.value == colour.toARGB32() ? 3 : 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
             ],
-            const SizedBox(height: 18),
-
+            if (_tab == PersonalizeTab.home) ...[
             SectionBand(skin: skin, label: 'HOME'),
             Text(
               'NOW stays at the top — it is the page header, not a section.',
@@ -392,6 +419,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               _sectionRow(skin, section),
             const SizedBox(height: 18),
 
+            ],
+            if (_tab == PersonalizeTab.themes) ...[
             SectionBand(skin: skin, label: 'THEMES'),
             for (final preset in widget.state.allPresets) ...[
               _themeRow(skin, preset),
@@ -399,6 +428,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ],
             if (widget.onSaveTheme != null)
               _button(skin, 'SAVE THIS LOOK AS A THEME', _saveTheme),
+            ],
           ],
         ),
       ),
@@ -974,6 +1004,101 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
   }
+
+  /// The parts of the look, as tabs. One page at a time, so the screen has a
+  /// bottom and you can see what you have already set.
+  Widget _tabs(Skin skin) {
+    const labels = {
+      PersonalizeTab.look: 'LOOK',
+      PersonalizeTab.pictures: 'PICTURES',
+      PersonalizeTab.art: 'ART',
+      PersonalizeTab.home: 'HOME',
+      PersonalizeTab.themes: 'THEMES',
+    };
+    return SizedBox(
+      height: 36,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(children: [
+          for (final entry in labels.entries)
+            Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: GestureDetector(
+                key: Key('personalize-tab-${entry.key.name}'),
+                onTap: () => setState(() => _tab = entry.key),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: _tab == entry.key ? skin.accent : Colors.transparent,
+                    border: Border.all(
+                      color: _tab == entry.key
+                          ? skin.accent
+                          : skin.textSecondary.withValues(alpha: 0.35),
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    entry.value,
+                    style: TextStyle(
+                      color: _tab == entry.key
+                          ? skin.onAccent
+                          : skin.textSecondary,
+                      fontSize: LayoutSpec.fontFloor - 4,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ]),
+      ),
+    );
+  }
+
+  Widget _toggleRow(
+    Skin skin,
+    String label,
+    String note,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: skin.textPrimary,
+                  fontSize: LayoutSpec.fontFloor,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.1,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                note,
+                style: TextStyle(
+                  color: skin.textSecondary,
+                  fontSize: LayoutSpec.fontFloor - 4,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Switch(
+          value: value,
+          activeThumbColor: skin.accent,
+          onChanged: onChanged,
+        ),
+      ],
+    ),
+  );
 
   Widget _button(
     Skin skin,

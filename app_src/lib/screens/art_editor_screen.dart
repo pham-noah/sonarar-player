@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../art/art_focus.dart';
 import '../art/art_spec.dart';
 import '../theme/skin.dart';
+import '../widgets/art_scrim.dart';
 import '../widgets/framed_art.dart';
 
 /// Places one picture inside its frame, full screen, with the real thing in
@@ -92,6 +93,9 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                       burn: _spec.fade,
                     ),
                   ),
+                  // The player dims the left third behind the title; framing
+                  // has to be judged against that, not against a clean image.
+                  Positioned.fill(child: ArtScrim(color: widget.skin.background)),
                   // The edge of what the player will show. Without it, a zoomed
                   // picture looks identical to a fitted one.
                   Positioned.fill(

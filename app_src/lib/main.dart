@@ -1601,7 +1601,7 @@ class _HomeShellState extends State<HomeShell>
     )) {
       _cyclingArt = true;
       try {
-        widget.state.nextArt();
+        widget.state.cycleArtForTrack();
       } finally {
         _cyclingArt = false;
       }
@@ -3469,7 +3469,9 @@ class _HomeShellState extends State<HomeShell>
 
   Widget? _headerArt(Skin skin, {double opacity = 0.9}) {
     final chrome = widget.state.presentation.kit.chrome;
-    if (!chrome.artByDefault && widget.state.artSkinOverride == null) {
+    if (!widget.state.artChosen &&
+        !chrome.artByDefault &&
+        widget.state.artSkinOverride == null) {
       return null;
     }
     final art = widget.state.artForSurface(_surfaceForTab);

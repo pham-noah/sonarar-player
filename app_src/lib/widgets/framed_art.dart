@@ -13,6 +13,7 @@ class FramedArt extends StatelessWidget {
     this.cacheWidth,
     this.enterFrom,
     this.opacity = 1.0,
+    this.burn = 0.0,
   });
 
   final String assetPath;
@@ -26,6 +27,13 @@ class FramedArt extends StatelessWidget {
   final double? enterFrom;
 
   final double opacity;
+
+  /// How far the art's edges dissolve into what is behind it, 0..1.
+  ///
+  /// A cut edge is a rectangle; the burn is what makes the picture sit in the
+  /// room instead of on top of it. It is a mask, not a painted overlay: an
+  /// overlay darkens the middle of the picture too, which is a different look.
+  final double burn;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +55,34 @@ class FramedArt extends StatelessWidget {
         final drawnW = aspect * frame.scale;
         final drawnH = frame.scale;
 
-        return ClipRect(
+        // The dissolve follows the framing, so the part the user centred stays
+        // solid wherever they put it.
+        final centre = Alignment(
+          (focus.dx * 0.8).clamp(-1.0, 1.0) + 0.15,
+          (-focus.dy * 0.8).clamp(-1.0, 1.0) - 0.10,
+        );
+
+        Widget mask(Widget child) {
+          if (burn <= 0) return child;
+          final solid = (1.0 - 0.28 * burn).clamp(0.0, 1.0);
+          return ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (rect) => RadialGradient(
+              center: centre,
+              radius: 1.05,
+              colors: [
+                Colors.black.withValues(alpha: solid),
+                Colors.black.withValues(alpha: solid * 0.72),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.62, 1.0],
+            ).createShader(rect),
+            child: child,
+          );
+        }
+
+        return mask(
+          ClipRect(
           child: OverflowBox(
             alignment: Alignment.center,
             minWidth: 0,
@@ -71,6 +106,7 @@ class FramedArt extends StatelessWidget {
                 ),
               ),
             ),
+          ),
           ),
         );
       },

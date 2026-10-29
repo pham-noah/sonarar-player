@@ -273,7 +273,7 @@ class PlayerScreen extends StatelessWidget {
                 focus: state.artFocus,
                 cacheWidth: 900,
                 enterFrom: -220,
-
+                burn: 1.0,
               ),
             ),
           ),
@@ -294,6 +294,7 @@ class PlayerScreen extends StatelessWidget {
                       focus: state.artFocus,
                       cacheWidth: 900,
                       enterFrom: -220,
+                      burn: 1.0,
                       opacity: lyricsMode ? kLyricsArtOpacity : 1.0,
                     ),
                   );

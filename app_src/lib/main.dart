@@ -3457,6 +3457,7 @@ class _HomeShellState extends State<HomeShell>
       focus: widget.state.artFocus.copyWith(dy: -0.25, zoom: 1.15),
       cacheWidth: 1080,
       opacity: opacity,
+      burn: 1.0,
     );
   }
 

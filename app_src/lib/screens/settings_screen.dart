@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../widgets/pressable.dart';
 import '../widgets/devices.dart';
 import '../widgets/kit.dart';
+import '../backup/backup_section.dart';
 
 import '../context/weather_codes.dart';
 import '../core/app_state.dart';
@@ -41,6 +42,9 @@ class SettingsScreen extends StatefulWidget {
     this.weather = WeatherCondition.unknown,
     this.musicRoot,
     this.onOpenMusicFolder,
+    this.stateDirectory,
+    this.downloadDirectory,
+    this.appVersion,
   });
 
   final AppState state;
@@ -48,6 +52,13 @@ class SettingsScreen extends StatefulWidget {
   /// The folder the library is read from, and the door to change it.
   final String? musicRoot;
   final VoidCallback? onOpenMusicFolder;
+
+  /// Where the `.state` folder lives and where a backup is written. Backup
+  /// hides itself when either is unknown, so a test or a preview that builds
+  /// this page without a shell still renders.
+  final String? stateDirectory;
+  final String? downloadDirectory;
+  final String? appVersion;
 
   final bool showTitle;
 
@@ -333,6 +344,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 16),
             ],
+            if (_tab == SettingsTab.system &&
+                widget._showBehaviour &&
+                widget.stateDirectory != null &&
+                widget.downloadDirectory != null)
+              BackupSection(
+                skin: skin,
+                stateDirectory: widget.stateDirectory!,
+                downloadDirectory: widget.downloadDirectory!,
+                appVersion: widget.appVersion,
+                row: ({required label, required icon, trailing, onTap}) =>
+                    _row(skin,
+                        label: label,
+                        icon: icon,
+                        trailing: trailing ?? const SizedBox.shrink(),
+                        onTap: onTap),
+              ),
           ]),
           ],
         ),

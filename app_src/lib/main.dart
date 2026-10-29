@@ -15,6 +15,7 @@ import 'context/place_icons.dart';
 import 'context/places.dart';
 import 'screens/places_screen.dart';
 import 'context/weather_codes.dart';
+import 'core/build_info.dart';
 import 'core/app_state.dart';
 import 'player/art_warmer.dart';
 import 'core/constants.dart';
@@ -299,6 +300,12 @@ class _HomeShellState extends State<HomeShell>
   );
 
   late final StateStores _stores;
+
+  /// Downloads is where a user already knows to look for a file they own, and
+  /// it is the one folder the file pickers of other apps open by default.
+  String get _backupDirectory => Platform.isAndroid
+      ? '/storage/emulated/0/Download'
+      : '${Directory.systemTemp.path}/sonarar-backups';
 
   String _stateDir = '';
 
@@ -2390,6 +2397,9 @@ class _HomeShellState extends State<HomeShell>
         state: widget.state,
         section: SettingsSection.behaviour,
         musicRoot: _musicRoot,
+        stateDirectory: _stores.directory,
+        downloadDirectory: _backupDirectory,
+        appVersion: '$appVersionName+$appVersionCode',
         onOpenMusicFolder: _openMusicFolder,
         prefs: _prefs,
         onPrefsChanged: _setPrefs,
@@ -3050,6 +3060,9 @@ class _HomeShellState extends State<HomeShell>
         AppTab.settings => SettingsScreen(
           state: widget.state,
           musicRoot: _musicRoot,
+          stateDirectory: _stores.directory,
+          downloadDirectory: _backupDirectory,
+          appVersion: '$appVersionName+$appVersionCode',
           onOpenMusicFolder: _openMusicFolder,
           onOpenDiagnostics: () => _openDoor(_InlineDoor.diagnostics),
           onSavePreset: (name) {

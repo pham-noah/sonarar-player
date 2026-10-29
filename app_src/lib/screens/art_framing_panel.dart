@@ -79,6 +79,9 @@ class ArtFramingPanel extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   FramedArt(
+                    // The editor previews the burn, or the user frames art that
+                    // will look different once it is on the screen.
+                    burn: 1.0,
                     assetPath: piece.assetPath,
                     aspect: piece.aspect,
                     focus: focus,

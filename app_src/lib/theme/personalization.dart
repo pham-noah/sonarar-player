@@ -11,16 +11,72 @@ import 'dart:ui' show Color;
 /// This decides only three things: what is painted behind the room, where the
 /// accent comes from, and which Home sections show in which order. Keeping it
 /// one document is what stops a fourth pref key being invented per widget.
+/// The app has four places you look at. Each may hang its own picture; the
+/// accent does not travel with them, because four accents is an app arguing
+/// with itself.
+enum SurfaceId { home, library, search, player }
+
+/// What one surface shows behind and around it. Null means "whatever the
+/// default is", which is why a fresh install needs no entries here at all.
+class SurfaceLook {
+  const SurfaceLook({this.room, this.art});
+
+  /// Photo file name inside `<library>/backgrounds/`.
+  final String? room;
+
+  /// Art picture: `bundle/frame.png`, relative to `<library>/art/`.
+  final String? art;
+
+  bool get isSet => room != null || art != null;
+
+  SurfaceLook copyWith({String? room, String? art, bool clearRoom = false, bool clearArt = false}) =>
+      SurfaceLook(
+        room: clearRoom ? null : (room ?? this.room),
+        art: clearArt ? null : (art ?? this.art),
+      );
+
+  Map<String, Object?> toJson() => {
+        if (room != null) 'room': room,
+        if (art != null) 'art': art,
+      };
+
+  static SurfaceLook fromJson(Object? raw) {
+    if (raw is! Map) return const SurfaceLook();
+    String? str(Object? v) => v is String && v.isNotEmpty ? v : null;
+    return SurfaceLook(room: str(raw['room']), art: str(raw['art']));
+  }
+}
+
 class Personalization {
   const Personalization({
     this.backdrop = BackdropSpec.none,
     this.accent = const AccentSpec(),
     this.home = HomeLayout.defaults,
+    this.surfaces = const {},
+    this.bundle,
   });
 
   final BackdropSpec backdrop;
   final AccentSpec accent;
   final HomeLayout home;
+
+  /// Per-place pictures. Empty is the normal state: one picture everywhere.
+  final Map<SurfaceId, SurfaceLook> surfaces;
+
+  /// The art bundle the app wears, by folder name. Null is the built-in art.
+  final String? bundle;
+
+  /// The photo this place wears: its own, or the default one.
+  ///
+  /// A per-surface picture carries its own framing with it, so a photo that
+  /// was cropped for the player is not re-cropped for Library.
+  BackdropSpec backdropFor(SurfaceId surface) {
+    final room = surfaces[surface]?.room;
+    if (room == null) return backdrop;
+    // The per-place photo keeps the default's framing: one picture, one set of
+    // sliders. Framing belongs to the picture, and only the picture changed.
+    return backdrop.copyWith(file: room);
+  }
 
   static const Personalization defaults = Personalization();
 
@@ -28,24 +84,47 @@ class Personalization {
       !backdrop.isSet &&
       accent.source == AccentSource.skin &&
       home.order == HomeLayout.defaults.order &&
-      home.hidden.isEmpty;
+      home.hidden.isEmpty &&
+      surfaces.isEmpty &&
+      bundle == null;
 
   Personalization copyWith({
     BackdropSpec? backdrop,
     AccentSpec? accent,
     HomeLayout? home,
+    Map<SurfaceId, SurfaceLook>? surfaces,
+    String? bundle,
+    bool clearBundle = false,
   }) =>
       Personalization(
         backdrop: backdrop ?? this.backdrop,
         accent: accent ?? this.accent,
         home: home ?? this.home,
+        surfaces: surfaces ?? this.surfaces,
+        bundle: clearBundle ? null : (bundle ?? this.bundle),
       );
+
+  /// Writes one place's look, dropping the entry when it says nothing.
+  Personalization withSurface(SurfaceId surface, SurfaceLook look) {
+    final next = Map<SurfaceId, SurfaceLook>.from(surfaces);
+    if (look.isSet) {
+      next[surface] = look;
+    } else {
+      next.remove(surface);
+    }
+    return copyWith(surfaces: next);
+  }
 
   Map<String, Object?> toJson() => {
         'v': 1,
         'backdrop': backdrop.toJson(),
         'accent': accent.toJson(),
         'home': home.toJson(),
+        if (bundle != null) 'bundle': bundle,
+        if (surfaces.isNotEmpty)
+          'surfaces': {
+            for (final e in surfaces.entries) e.key.name: e.value.toJson(),
+          },
       };
 
   String encode() => jsonEncode(toJson());
@@ -62,11 +141,30 @@ class Personalization {
         backdrop: BackdropSpec.fromJson(decoded['backdrop']),
         accent: AccentSpec.fromJson(decoded['accent']),
         home: HomeLayout.fromJson(decoded['home']),
+        surfaces: _surfacesFrom(decoded['surfaces']),
+        bundle: decoded['bundle'] is String && (decoded['bundle'] as String).isNotEmpty
+            ? decoded['bundle'] as String
+            : null,
       );
     } catch (_) {
       return defaults;
     }
   }
+}
+
+Map<SurfaceId, SurfaceLook> _surfacesFrom(Object? raw) {
+  if (raw is! Map) return const {};
+  final out = <SurfaceId, SurfaceLook>{};
+  for (final entry in raw.entries) {
+    final surface = SurfaceId.values
+        .where((s) => s.name == entry.key)
+        .cast<SurfaceId?>()
+        .firstWhere((s) => s != null, orElse: () => null);
+    if (surface == null) continue;
+    final look = SurfaceLook.fromJson(entry.value);
+    if (look.isSet) out[surface] = look;
+  }
+  return out;
 }
 
 /// A photo behind the app.

@@ -33,6 +33,7 @@ class ScreenBackdrop extends StatelessWidget {
 
     return IgnorePointer(
       child: FramedArt(
+        burn: 1.0,
         assetPath: piece.assetPath,
         aspect: piece.aspect,
         focus: focus ?? piece.focus,

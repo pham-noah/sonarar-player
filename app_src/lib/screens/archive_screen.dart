@@ -166,6 +166,7 @@ class ArchiveBackdrop extends StatelessWidget {
     if (piece == null) return const SizedBox.shrink();
 
     return FramedArt(
+      burn: 1.0,
       assetPath: piece.assetPath,
       aspect: piece.aspect,
       focus: focus,

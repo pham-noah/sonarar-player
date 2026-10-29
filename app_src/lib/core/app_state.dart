@@ -3,6 +3,7 @@ library;
 import 'package:flutter/foundation.dart';
 
 import '../art/art_focus.dart';
+import '../art/art_bundle.dart';
 import '../art/skin_art.dart';
 import '../library/bonds.dart';
 import '../library/exclusions.dart';
@@ -676,7 +677,15 @@ class AppState extends ChangeNotifier {
 
   void setPersonalization(Personalization next) {
     if (next.encode() == _personalization.encode()) return;
+    // A theme is a starting point, not a standing order. Once the user changes
+    // anything it has said, the look is theirs: keeping the preset attached
+    // meant the next launch re-applied the theme over their choice.
+    final applied = _preset?.personalization;
+    if (applied != null && next.encode() != applied.encode()) _preset = null;
     _personalization = next;
+    // The palette carries the accent, and it is cached: without this the drawer
+    // and every Sheet kept painting the old colour until the layout changed.
+    _presentationCache = null;
     // Anything listening to the skin as a value has to see the new accent too.
     skinListenable.value = _accented(_skin);
     // ignore: discarded_futures
@@ -721,7 +730,7 @@ class AppState extends ChangeNotifier {
   Presentation? _presentationCache;
 
   Presentation get presentation =>
-      _presentationCache ??= presentationFor(_layoutId, _skin,
+      _presentationCache ??= presentationFor(_layoutId, _accented(_skin),
           paletteIndex: _paletteIndex);
 
   LayoutPalette get palette => presentation.palette;
@@ -1109,7 +1118,29 @@ class AppState extends ChangeNotifier {
   int _artIndex = 0;
   int get artIndex => _artIndex;
 
-  SkinArtSet get artSet => artFor(_artSkinOverride ?? _skin.id);
+  /// Bundles found on disk. Empty until the library root is known.
+  List<ArtBundle> _bundles = const [];
+  List<ArtBundle> get bundles => _bundles;
+
+  void setArtBundles(List<ArtBundle> bundles) {
+    _bundles = bundles;
+    if (_personalization.bundle != null &&
+        !bundles.any((b) => b.name == _personalization.bundle)) {
+      // The folder is gone: fall back rather than showing nothing at all.
+      _personalization = _personalization.copyWith(clearBundle: true);
+    }
+    notifyListeners();
+  }
+
+  SkinArtSet get artSet {
+    final chosen = _personalization.bundle;
+    if (chosen != null) {
+      for (final bundle in _bundles) {
+        if (bundle.name == chosen) return bundle.set;
+      }
+    }
+    return artFor(_artSkinOverride ?? _skin.id);
+  }
 
   SkinArt? get art => artSet.atOrNull(_artIndex);
 

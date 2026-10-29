@@ -68,6 +68,8 @@ import 'theme/ambient_backdrop.dart';
 import 'theme/backdrop_layer.dart';
 import 'theme/layout.dart';
 import 'theme/layout_kit.dart';
+import 'art/art_bundle.dart';
+import 'theme/personalization.dart';
 import 'theme/skin.dart';
 import 'theme/theme_preset.dart';
 import 'theme/tab_motif.dart';
@@ -2232,10 +2234,15 @@ class _HomeShellState extends State<HomeShell>
     await _loadCurrentTrack(startAt: wasAt, autoPlay: wasPlaying);
   }
 
+  Future<void> _refreshArtBundles() async {
+    widget.state.setArtBundles(scanArtBundles(_repo.libraryRoot));
+  }
+
   Future<void> _rereadLibrary() async {
     await _repo.load();
     if (!mounted) return;
     widget.state.attachLibrary(_repo.tracks);
+    await _refreshArtBundles();
     await _refreshDerivedPlaylists();
     if (mounted) setState(() {});
   }
@@ -3099,25 +3106,35 @@ class _HomeShellState extends State<HomeShell>
       onDragToQueue: _queueFromDrag,
     );
 
+  /// The place this tab is, for per-place pictures. Settings has none of its
+  /// own and wears the default.
+  SurfaceId get _surfaceForTab => switch (_tab) {
+        AppTab.home => SurfaceId.home,
+        AppTab.library => SurfaceId.library,
+        AppTab.search => SurfaceId.search,
+        AppTab.settings => SurfaceId.home,
+      };
+
   Widget _tabBackdrop(Skin skin) {
     final personalization = widget.state.personalization;
+    final photo = personalization.backdropFor(_surfaceForTab);
     final root = _repo.libraryRoot;
     return Stack(
         children: [
           // The photo sits under everything the skin paints, so the palette
           // still reads as the skin and the image is scenery, not wallpaper.
-          if (personalization.backdrop.isSet)
+          if (photo.isSet)
             Positioned.fill(
               child: PersonalBackdrop(
                 root: root == null ? null : Directory(root),
-                spec: personalization.backdrop,
+                spec: photo,
                 skin: skin,
               ),
             ),
           Positioned.fill(
             child: AmbientBackdrop(
               presentation: widget.state.presentation,
-              transparent: personalization.backdrop.isSet,
+              transparent: photo.isSet,
             ),
           ),
           Positioned.fill(

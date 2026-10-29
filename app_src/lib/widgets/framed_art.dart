@@ -1,5 +1,7 @@
 library;
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../art/art_focus.dart';
@@ -94,16 +96,27 @@ class FramedArt extends StatelessWidget {
               child: SizedBox(
                 width: drawnW,
                 height: drawnH,
-                child: Image.asset(
-                  assetPath,
-
-                  opacity: opacity == 1.0 ? null : AlwaysStoppedAnimation<double>(opacity),
-
-                  fit: BoxFit.fill,
-                  cacheWidth: cacheWidth,
-
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                ),
+                // `file:` marks a picture the user supplied; everything else is
+                // a shipped asset. Same framing either way.
+                child: assetPath.startsWith('file:')
+                    ? Image.file(
+                        File(assetPath.substring(5)),
+                        opacity: opacity == 1.0
+                            ? null
+                            : AlwaysStoppedAnimation<double>(opacity),
+                        fit: BoxFit.fill,
+                        cacheWidth: cacheWidth,
+                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      )
+                    : Image.asset(
+                        assetPath,
+                        opacity: opacity == 1.0
+                            ? null
+                            : AlwaysStoppedAnimation<double>(opacity),
+                        fit: BoxFit.fill,
+                        cacheWidth: cacheWidth,
+                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      ),
               ),
             ),
           ),

@@ -8,6 +8,7 @@ import '../core/app_state.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
 import '../theme/theme_preset.dart';
+import '../art/art_bundle.dart';
 import '../theme/backdrop_import.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
@@ -63,9 +64,22 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     widget.state.setPersonalization(next);
   }
 
-  void _setBackdrop(BackdropSpec b) => _apply(_p.copyWith(backdrop: b));
+  /// Which place the picture controls edit. Null is the default, the one every
+  /// place uses unless it was given its own.
+  SurfaceId? _surface;
 
-  BackdropSpec get _b => _p.backdrop;
+  void _setBackdrop(BackdropSpec b) {
+    if (_surface == null) {
+      _apply(_p.copyWith(backdrop: b));
+      return;
+    }
+    // A per-place picture is the picture only; the framing sliders stay with
+    // the default, so one photo cannot end up cropped four different ways.
+    _apply(_p.withSurface(_surface!, SurfaceLook(room: b.file)));
+  }
+
+  BackdropSpec get _b =>
+      _surface == null ? _p.backdrop : _p.backdropFor(_surface!);
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +141,30 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
             const SizedBox(height: 18),
 
+            SectionBand(skin: skin, label: 'PICTURES FOR'),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _chip(skin, 'EVERYWHERE', _surface == null,
+                    () => setState(() => _surface = null)),
+                for (final surface in SurfaceId.values)
+                  _chip(
+                    skin,
+                    switch (surface) {
+                      SurfaceId.home => 'HOME',
+                      SurfaceId.library => 'LIBRARY',
+                      SurfaceId.search => 'SEARCH',
+                      SurfaceId.player => 'PLAYER',
+                    },
+                    _surface == surface,
+                    () => setState(() => _surface = surface),
+                    marked: _p.surfaces[surface]?.isSet == true,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 18),
+
             SectionBand(skin: skin, label: 'BACKDROP'),
             Row(
               children: [
@@ -143,7 +181,19 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   ),
               ],
             ),
-            if (_b.isSet) ...[
+            if (_b.isSet && _surface != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                'Framing follows EVERYWHERE. Pick a place to give it its own '
+                'picture; the sliders below stay with the default.',
+                style: TextStyle(
+                  color: skin.textSecondary,
+                  fontSize: LayoutSpec.fontFloor - 4,
+                  height: 1.4,
+                ),
+              ),
+            ],
+            if (_b.isSet && _surface == null) ...[
               const SizedBox(height: 14),
               _focusGrid(skin),
               _slider(skin, 'BLUR', _b.blur, 0, 24,
@@ -159,6 +209,39 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               _toggle(skin, 'PLAYER USES THE COVER', _b.coverOnPlayer,
                   (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v))),
             ],
+            const SizedBox(height: 18),
+
+            SectionBand(skin: skin, label: 'ART'),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _chip(skin, 'BUILT IN', _p.bundle == null,
+                    () => _apply(_p.copyWith(clearBundle: true))),
+                for (final bundle in widget.state.bundles)
+                  _chip(skin, bundle.name.toUpperCase(), _p.bundle == bundle.name,
+                      () => _apply(_p.copyWith(bundle: bundle.name))),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _button(skin, 'NEW BUNDLE FROM A PICTURE', _newBundle),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'A bundle is a folder of pictures in Music/Sonarar/art. Every '
+              'picture in it is a frame of that art; drop more in and it has '
+              'more. ${widget.state.bundles.isEmpty ? 'No folders yet.' : ''}',
+              style: TextStyle(
+                color: skin.textSecondary,
+                fontSize: LayoutSpec.fontFloor - 4,
+                height: 1.4,
+              ),
+            ),
             const SizedBox(height: 18),
 
             SectionBand(skin: skin, label: 'ACCENT'),
@@ -283,6 +366,46 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   }
 
   // ---- backdrop ------------------------------------------------------------
+
+  /// Starts a bundle around one picture the user already has. The folder can
+  /// take more frames afterwards; this is only the first one.
+  Future<void> _newBundle() async {
+    final root = _root;
+    if (root == null) return;
+    final images = candidateImages();
+    if (!mounted) return;
+    if (images.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No pictures found in Pictures, DCIM or Download.'),
+      ));
+      return;
+    }
+    final picked = await showModalBottomSheet<File>(
+      context: context,
+      backgroundColor: _skin.panel,
+      builder: (ctx) => SafeArea(
+        child: GridView.builder(
+          padding: const EdgeInsets.all(12),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+          ),
+          itemCount: images.length,
+          itemBuilder: (_, i) => GestureDetector(
+            onTap: () => Navigator.of(ctx).pop(images[i]),
+            child: Image.file(images[i], fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background)),
+          ),
+        ),
+      ),
+    );
+    if (picked == null || !mounted) return;
+    final dir = createBundleFrom(root.path, picked);
+    final name = dir.path.split(Platform.pathSeparator).last;
+    widget.state.setArtBundles(scanArtBundles(root.path));
+    _apply(_p.copyWith(bundle: name));
+  }
 
   Future<void> _chooseImage() async {
     final images = candidateImages();
@@ -614,16 +737,23 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         ),
       );
 
-  Widget _chip(Skin skin, String label, bool active, VoidCallback onTap) => GestureDetector(
+  /// [marked] shows a place that has its own picture even while you are
+  /// looking at another one, so the selector answers "where is custom?".
+  Widget _chip(Skin skin, String label, bool active, VoidCallback onTap,
+          {bool marked = false}) =>
+      GestureDetector(
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: active ? skin.accent : skin.panel,
-            border: Border.all(color: active ? skin.accent : skin.textSecondary.withValues(alpha: 0.4)),
+            border: Border.all(
+              color: active ? skin.accent : skin.textSecondary.withValues(alpha: 0.4),
+              width: marked && !active ? 2 : 1,
+            ),
           ),
           child: Text(
-            label,
+            marked && !active ? '• $label' : label,
             style: TextStyle(
               fontSize: LayoutSpec.fontFloor,
               fontWeight: FontWeight.w900,

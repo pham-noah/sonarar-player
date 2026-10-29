@@ -26,7 +26,11 @@ void main() {
 
     expect(find.text('BACKDROP'), findsOneWidget);
     expect(find.text('ACCENT'), findsOneWidget);
-    expect(find.text('HOME'), findsOneWidget);
+    // HOME appears twice on purpose: the reorderable Home section and the
+    // place selector. Different jobs, same word.
+    expect(find.text('HOME'), findsNWidgets(2));
+    expect(find.text('EVERYWHERE'), findsOneWidget,
+        reason: 'the screen lost the "one picture for all places" option');
     expect(find.text('NOW stays at the top — it is the page header, not a section.'),
         findsOneWidget);
   });

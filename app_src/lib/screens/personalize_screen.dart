@@ -16,7 +16,9 @@ import '../theme/backdrop_import.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
+import '../widgets/art_scrim.dart';
 import '../widgets/devices.dart';
+import '../widgets/framed_art.dart';
 
 /// PERSONALIZE — the one place the app's look is decided.
 ///
@@ -260,6 +262,35 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   ),
               ],
             ),
+
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _chip(
+                  skin,
+                  'BUILT IN',
+                  _wornBundle == null && _surfaceArt == null,
+                  () => _setArt(null),
+                ),
+                for (final bundle in widget.state.bundles)
+                  _chip(
+                    skin,
+                    bundle.name.toUpperCase(),
+                    _surface == null
+                        ? _p.bundle == bundle.name
+                        : _surfaceArt == bundle.set.pieces.first.key,
+                    () => _setArt(bundle.name),
+                    marked:
+                        _surface != null && _p.surfaces[_surface!]?.art != null,
+                  ),
+              ],
+            ),
+            if (_wornPiece != null) ...[
+              const SizedBox(height: 10),
+              _button(skin, 'ADJUST FRAMING', _adjustArt),
+            ],
             const SizedBox(height: 18),
 
             SectionBand(skin: skin, label: 'BACKDROP'),
@@ -342,39 +373,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
             ],
             if (_tab == PersonalizeTab.art) ...[
-            SectionBand(skin: skin, label: 'ART'),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _chip(
-                  skin,
-                  'BUILT IN',
-                  _wornBundle == null && _surfaceArt == null,
-                  () => _setArt(null),
-                ),
-                for (final bundle in widget.state.bundles)
-                  _chip(
-                    skin,
-                    bundle.name.toUpperCase(),
-                    _surface == null
-                        ? _p.bundle == bundle.name
-                        : _surfaceArt == bundle.set.pieces.first.key,
-                    () => _setArt(bundle.name),
-                    marked:
-                        _surface != null && _p.surfaces[_surface!]?.art != null,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
+            SectionBand(skin: skin, label: 'ART FOLDERS'),
             Row(
               children: [
                 Expanded(
                   child: _button(skin, 'NEW BUNDLE FROM A PICTURE', _newBundle),
                 ),
-                const SizedBox(width: 8),
-                if (_wornPiece != null)
-                  Expanded(child: _button(skin, 'ADJUST', _adjustArt)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _button(skin, 'RESCAN', _rescanArt, quiet: true),
@@ -437,61 +441,176 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   // ---- preview -------------------------------------------------------------
 
+  /// A miniature of the app, not a colour swatch. It shows the wordmark, the
+  /// shape the panels take in this layout, the picture the screen actually
+  /// wears, the scrim over it, and the accent where it lands — so a choice can
+  /// be judged here instead of by walking back to Home to look.
   Widget _preview(Skin skin) {
     final root = _root;
-    return Container(
-      height: 168,
-      color: skin.background,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (_b.isSet && root != null)
-            PersonalBackdrop(root: root, spec: _b, skin: skin),
-          Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.greeting ?? 'SONARAR',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontTitle,
-                    fontWeight: FontWeight.w900,
-                    color: skin.textPrimary,
-                  ),
+    final kind = widget.state.layoutId;
+    final chrome = widget.state.presentation.kit.chrome;
+    final art = widget.state.art;
+    final glass = kind == LayoutKind.glass;
+    final sonar = kind == LayoutKind.sonar;
+    final radius = glass ? 18.0 : (sonar ? 1.0 : 8.0);
+    final panel = glass
+        ? Colors.white.withValues(alpha: 0.10)
+        : (sonar ? Colors.transparent : skin.panel);
+    final edge = glass
+        ? Colors.white.withValues(alpha: 0.22)
+        : skin.textSecondary.withValues(alpha: 0.16);
+
+    Widget row(String title, String sub, {double alpha = 1, bool lead = false}) =>
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+          decoration: BoxDecoration(
+            color: panel,
+            border: Border.all(color: edge),
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: Row(
+            children: [
+              if (lead)
+                Container(
+                  width: 3,
+                  height: 26,
+                  margin: const EdgeInsets.only(right: 8),
+                  color: skin.accent,
                 ),
-                Row(
+              Container(
+                width: 26,
+                height: 26,
+                margin: const EdgeInsets.only(right: 8),
+                color: skin.accent.withValues(alpha: 0.22),
+                child: Icon(Icons.music_note_rounded,
+                    size: 14, color: skin.accent.withValues(alpha: alpha)),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(width: 44, height: 44, color: skin.accent),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Accent on the panel',
-                            style: TextStyle(
-                              fontSize: LayoutSpec.fontFloor,
-                              color: skin.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            'secondary line',
-                            style: TextStyle(
-                              fontSize: LayoutSpec.fontFloor,
-                              color: skin.textSecondary,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor - 3,
+                        fontWeight: FontWeight.w700,
+                        color: skin.textPrimary.withValues(alpha: alpha),
+                      ),
+                    ),
+                    Text(
+                      sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor - 5,
+                        color: skin.textSecondary.withValues(alpha: alpha),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(glass ? 14 : 4),
+      child: Container(
+        height: 216,
+        color: skin.background,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (art != null)
+              FramedArt(
+                assetPath: art.assetPath,
+                aspect: art.aspect,
+                spec: art.spec,
+                focus: widget.state.artFocus,
+                cacheWidth: 720,
+                burn: 1.0,
+              )
+            else if (_b.isSet && root != null)
+              PersonalBackdrop(root: root, spec: _b, skin: skin),
+            if (art != null) ArtScrim(color: skin.background),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (chrome.wordmark)
+                              Text(
+                                'SONARAR',
+                                style: TextStyle(
+                                  fontSize: LayoutSpec.fontFloor - 2,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: sonar ? 5 : 2,
+                                  color: skin.textPrimary,
+                                ),
+                              ),
+                            const SizedBox(height: 3),
+                            Text(
+                              widget.greeting ?? 'Good evening',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: LayoutSpec.fontTitle - 4,
+                                fontWeight: FontWeight.w900,
+                                color: skin.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: skin.accent,
+                          borderRadius: BorderRadius.circular(radius),
+                        ),
+                        child: Icon(Icons.play_arrow_rounded,
+                            size: 15, color: skin.onAccent),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  row('Beneath the Mask', 'ATLUS Sound Team', lead: sonar),
+                  const SizedBox(height: 5),
+                  row('Layer Cake', 'Persona 5 · 3:12', alpha: 0.55),
+                  const SizedBox(height: 7),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: Container(height: 3, color: skin.accent),
+                        ),
+                        Expanded(
+                          flex: 6,
+                          child: Container(
+                            height: 3,
+                            color: skin.textSecondary.withValues(alpha: 0.25),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

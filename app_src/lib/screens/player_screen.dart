@@ -363,7 +363,7 @@ class PlayerScreen extends StatelessWidget {
             ),
           ),
 
-        if (!lyricsMode && chrome.hemisphereScrim)
+        if (!lyricsMode && (chrome.hemisphereScrim || showFigure))
           Positioned.fill(child: ArtScrim(color: pal.background)),
 
         if (!lyricsMode)

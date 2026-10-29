@@ -50,6 +50,22 @@ void main() {
     expect(find.text('NOW'), findsNothing);
   });
 
+  testWidgets('a place and its picture live together, folders live apart', (tester) async {
+    await pump(tester);
+
+    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.pumpAndSettle();
+    expect(find.text('EVERYWHERE'), findsOneWidget);
+    expect(find.text('BUILT IN'), findsOneWidget,
+        reason: 'choosing which picture a place wears belongs under the place chips');
+
+    await tester.tap(find.byKey(const Key('personalize-tab-art')));
+    await tester.pumpAndSettle();
+    expect(find.text('ART FOLDERS'), findsOneWidget);
+    expect(find.text('BUILT IN'), findsNothing,
+        reason: 'ART is about folders on disk, not about which picture is worn');
+  });
+
   testWidgets('hiding a section keeps its row on screen and marks it hidden', (tester) async {
     await pump(tester);
 

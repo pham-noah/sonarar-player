@@ -125,7 +125,12 @@ class LibraryBrowserBar extends StatelessWidget {
   }
 
   Widget _segment(String label, LibraryView view, {bool flexible = true}) {
+    // Two different things wear two different marks. The fill means a filter is
+    // applied — filling the view you happen to be on made it read as a default
+    // filter. The view you are on gets an underline instead, so the strip
+    // answers "where am I" without claiming a filter is on.
     final active = view == current && view == pickedView;
+    final here = view == current;
 
     final body = GestureDetector(
         onTap: () => onSelect(view),
@@ -136,10 +141,26 @@ class LibraryBrowserBar extends StatelessWidget {
             color: active
                 ? skin.accent.withValues(alpha: 0.92)
                 : skin.background.withValues(alpha: 0.45),
-            border: Border.all(
-              color: active
-                  ? skin.accent
-                  : skin.textSecondary.withValues(alpha: 0.55),
+            border: Border(
+              top: BorderSide(
+                color: active
+                    ? skin.accent
+                    : skin.textSecondary.withValues(alpha: 0.55),
+              ),
+              left: BorderSide(
+                color: active
+                    ? skin.accent
+                    : skin.textSecondary.withValues(alpha: 0.55),
+              ),
+              right: BorderSide(
+                color: active
+                    ? skin.accent
+                    : skin.textSecondary.withValues(alpha: 0.55),
+              ),
+              bottom: BorderSide(
+                color: here ? skin.accent : skin.textSecondary.withValues(alpha: 0.55),
+                width: here ? 2 : 1,
+              ),
             ),
           ),
           child: Column(
@@ -156,7 +177,9 @@ class LibraryBrowserBar extends StatelessWidget {
                     letterSpacing: 0.2,
                     fontWeight: FontWeight.w900,
 
-                    color: active ? skin.onAccent : skin.textPrimary,
+                    color: active
+                        ? skin.onAccent
+                        : (here ? skin.accent : skin.textPrimary),
                   ),
                 ),
               ),

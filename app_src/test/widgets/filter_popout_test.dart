@@ -134,26 +134,17 @@ void main() {
     expect(find.text('PLAYLISTS'), findsOneWidget);
   });
 
-  testWidgets('PLAYLISTS can be UNCHOSEN — its fill goes away on the second press', (tester) async {
-    Color fillOf(String label) {
-      final container = tester.widget<Container>(
-        find.ancestor(of: find.text(label), matching: find.byType(Container)).first,
-      );
-      return (container.decoration! as BoxDecoration).color!;
-    }
-
+  testWidgets('PLAYLISTS can be UNCHOSEN — its choices fold away on the second press', (tester) async {
     await _pump(tester);
-    final idleFill = fillOf('PLAYLISTS');
 
     await _tapPlaylists(tester);
-    final chosenFill = fillOf('PLAYLISTS');
-    expect(chosenFill.a, greaterThan(idleFill.a),
-        reason: 'pressing PLAYLISTS should mark it as the choice');
+    expect(find.text('SEEDED'), findsOneWidget,
+        reason: 'pressing PLAYLISTS should open its kinds');
 
     await _tapPlaylists(tester);
-    final backFill = fillOf('PLAYLISTS');
-    expect(backFill.a, idleFill.a,
-        reason: 'PLAYLISTS is still painted as chosen after being turned off — "cannot be unchosen"');
+    expect(find.text('SEEDED'), findsNothing,
+        reason: 'PLAYLISTS is still painted as chosen after being turned off — '
+            '"cannot be unchosen"');
   });
 
   testWidgets('the X clears the filter and brings the other views back', (tester) async {

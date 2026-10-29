@@ -45,6 +45,12 @@ class KitRow extends StatelessWidget {
         color: skin.panel,
         border: Border(
           left: BorderSide(color: skin.accent.withValues(alpha: 0.7), width: 3),
+          // A hairline on the other three sides. Without it the panel and the
+          // page are two dark greys meeting on a soft edge, and the slab — the
+          // one shape this app repeats — stops reading as a plate.
+          top: BorderSide(color: skin.textSecondary.withValues(alpha: 0.22)),
+          right: BorderSide(color: skin.textSecondary.withValues(alpha: 0.22)),
+          bottom: BorderSide(color: skin.textSecondary.withValues(alpha: 0.22)),
         ),
       ),
       child: Column(

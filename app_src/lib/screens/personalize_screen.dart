@@ -652,7 +652,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   Expanded(
                     child: _button(
                       skin,
-                      'OVERRIDE THIS THEME',
+                      'OVERRIDE',
                       _overrideTheme,
                       quiet: true,
                     ),
@@ -1537,10 +1537,15 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         constraints: const BoxConstraints(minHeight: 48),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+        // Quiet means "not the main move", not "unavailable": it keeps full
+        // contrast, since a button that looks disabled has to be explained.
         color: quiet ? skin.panel : skin.accent,
         child: Text(
           label,
           textAlign: TextAlign.center,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: LayoutSpec.fontFloor,
             fontWeight: FontWeight.w900,

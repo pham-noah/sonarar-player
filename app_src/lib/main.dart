@@ -135,7 +135,12 @@ Future<void> main() async {
     return true;
   };
 
-  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+  // audio_service's init holds the platform thread for ~2s on this device,
+  // and the first frame waits behind it. Nothing needs the service before
+  // playback (see `_audioReady`), so it starts once the first frame is on
+  // screen instead of standing in front of it.
+  Future<void> startAudio() async {
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return;
     final tAudio = DateTime.now();
     _audioInit = () async {
       await JustAudioBackground.init(
@@ -150,8 +155,9 @@ Future<void> main() async {
       );
       // ignore: avoid_print
       print('[Sonarar][MAIN] audio_service READY in ${DateTime.now().difference(tAudio).inMilliseconds}ms '
-          '(started before runApp, finished whenever it finishes)');
+          '(started after the first frame)');
     }();
+    await _audioInit;
   }
 
   unawaited(diagLog.restore());
@@ -163,7 +169,20 @@ Future<void> main() async {
 
   // ignore: avoid_print
   print('[Sonarar][MAIN] pre_runApp=${DateTime.now().difference(tMain).inMilliseconds}ms');
+
+  var firstFrameLogged = false;
+  WidgetsBinding.instance.addTimingsCallback((timings) {
+    if (firstFrameLogged) return;
+    firstFrameLogged = true;
+    final t = timings.last;
+    // ignore: avoid_print
+    print('[Sonarar][FRAME] first frame build=${t.buildDuration.inMilliseconds}ms '
+        'raster=${t.rasterDuration.inMilliseconds}ms '
+        'at=${DateTime.now().difference(tMain).inMilliseconds}ms');
+  });
+
   runApp(const SonararApp());
+  WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(startAudio()));
 }
 
 class SonararApp extends StatefulWidget {

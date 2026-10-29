@@ -398,7 +398,11 @@ class HomeScreen extends StatelessWidget {
               color: skin.panel,
               child: Icon(Icons.queue_music_rounded, color: skin.accentDeep, size: 30),
             )
-          : Image(image: FileImage(File(cover)), fit: BoxFit.cover),
+          // Full-size art in a small slot is a decode the UI never uses.
+          : Image(
+              image: ResizeImage(FileImage(File(cover)), width: 312),
+              fit: BoxFit.cover,
+            ),
     );
   }
 
@@ -530,7 +534,10 @@ class HomeScreen extends StatelessWidget {
               height: 72,
               child: (cover == null || !File(cover).existsSync())
                   ? ColoredBox(color: pal.surface)
-                  : Image(image: FileImage(File(cover)), fit: BoxFit.cover),
+                  : Image(
+                      image: ResizeImage(FileImage(File(cover)), width: 216),
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -825,7 +832,10 @@ class _QuickPickRow extends StatelessWidget {
             height: 44,
             child: (coverPath == null || !File(coverPath!).existsSync())
                 ? ColoredBox(color: skin.panel)
-                : Image(image: FileImage(File(coverPath!)), fit: BoxFit.cover),
+                : Image(
+                    image: ResizeImage(FileImage(File(coverPath!)), width: 132),
+                    fit: BoxFit.cover,
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(

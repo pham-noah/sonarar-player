@@ -1013,6 +1013,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             child: Image.file(
               images[i],
               fit: BoxFit.cover,
+              cacheWidth: 300,
               errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background),
             ),
           ),
@@ -1049,6 +1050,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             child: Image.file(
               images[i],
               fit: BoxFit.cover,
+              cacheWidth: 300,
               errorBuilder: (_, __, ___) => ColoredBox(color: _skin.background),
             ),
           ),
@@ -1079,6 +1081,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   Image.file(
                     file,
                     fit: BoxFit.cover,
+                    cacheWidth: 288,
                     errorBuilder: (_, __, ___) => ColoredBox(color: skin.panel),
                   ),
                 GridView.count(

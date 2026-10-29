@@ -732,7 +732,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 height: 42,
                 child: cover == null
                     ? Container(color: skin.panel)
-                    : Image.file(File(cover), fit: BoxFit.cover,
+                    : Image.file(File(cover),
+                        fit: BoxFit.cover,
+                        cacheWidth: 168,
                         errorBuilder: (_, __, ___) => Container(color: skin.panel)),
               ),
             ),

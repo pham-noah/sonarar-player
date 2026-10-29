@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' show Color;
 
+import '../art/art_spec.dart';
+
 /// Everything the PERSONALIZE screen owns, in one record.
 ///
 /// The skin still decides the room — background, panel, text, skew, wordmark.
@@ -54,6 +56,7 @@ class Personalization {
     this.home = HomeLayout.defaults,
     this.surfaces = const {},
     this.bundle,
+    this.artSpecs = const {},
   });
 
   final BackdropSpec backdrop;
@@ -65,6 +68,25 @@ class Personalization {
 
   /// The art bundle the app wears, by folder name. Null is the built-in art.
   final String? bundle;
+
+  /// Framing for art that has no folder of its own, keyed by art key. Bundles
+  /// keep theirs in `spec.json` beside the pictures; built-in art cannot write
+  /// to the APK, so it lives here.
+  final Map<String, ArtSpec> artSpecs;
+
+  ArtSpec specFor(String artKey, ArtSpec fallback) =>
+      artSpecs[artKey] ?? fallback;
+
+  /// Writes framing for one art key, dropping it when it says nothing.
+  Personalization withArtSpec(String artKey, ArtSpec spec) {
+    final next = Map<String, ArtSpec>.from(artSpecs);
+    if (spec.isDefault) {
+      next.remove(artKey);
+    } else {
+      next[artKey] = spec;
+    }
+    return copyWith(artSpecs: next);
+  }
 
   /// The photo this place wears: its own, or the default one.
   ///
@@ -86,7 +108,8 @@ class Personalization {
       home.order == HomeLayout.defaults.order &&
       home.hidden.isEmpty &&
       surfaces.isEmpty &&
-      bundle == null;
+      bundle == null &&
+      artSpecs.isEmpty;
 
   Personalization copyWith({
     BackdropSpec? backdrop,
@@ -95,6 +118,7 @@ class Personalization {
     Map<SurfaceId, SurfaceLook>? surfaces,
     String? bundle,
     bool clearBundle = false,
+    Map<String, ArtSpec>? artSpecs,
   }) =>
       Personalization(
         backdrop: backdrop ?? this.backdrop,
@@ -102,6 +126,7 @@ class Personalization {
         home: home ?? this.home,
         surfaces: surfaces ?? this.surfaces,
         bundle: clearBundle ? null : (bundle ?? this.bundle),
+        artSpecs: artSpecs ?? this.artSpecs,
       );
 
   /// Writes one place's look, dropping the entry when it says nothing.
@@ -121,6 +146,10 @@ class Personalization {
         'accent': accent.toJson(),
         'home': home.toJson(),
         if (bundle != null) 'bundle': bundle,
+        if (artSpecs.isNotEmpty)
+          'artSpecs': {
+            for (final e in artSpecs.entries) e.key: e.value.toJson(),
+          },
         if (surfaces.isNotEmpty)
           'surfaces': {
             for (final e in surfaces.entries) e.key.name: e.value.toJson(),
@@ -145,6 +174,7 @@ class Personalization {
         bundle: decoded['bundle'] is String && (decoded['bundle'] as String).isNotEmpty
             ? decoded['bundle'] as String
             : null,
+        artSpecs: _artSpecsFrom(decoded['artSpecs']),
       );
     } catch (_) {
       return defaults;
@@ -163,6 +193,18 @@ Map<SurfaceId, SurfaceLook> _surfacesFrom(Object? raw) {
     if (surface == null) continue;
     final look = SurfaceLook.fromJson(entry.value);
     if (look.isSet) out[surface] = look;
+  }
+  return out;
+}
+
+Map<String, ArtSpec> _artSpecsFrom(Object? raw) {
+  if (raw is! Map) return const {};
+  final out = <String, ArtSpec>{};
+  for (final entry in raw.entries) {
+    final key = entry.key;
+    if (key is! String || key.isEmpty) continue;
+    final spec = ArtSpec.fromJson(entry.value);
+    if (!spec.isDefault) out[key] = spec;
   }
   return out;
 }

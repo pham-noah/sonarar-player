@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../art/art_focus.dart';
 import '../art/art_bundle.dart';
+import '../art/art_spec.dart';
 import '../art/skin_art.dart';
 import '../library/bonds.dart';
 import '../library/exclusions.dart';
@@ -1152,7 +1153,29 @@ class AppState extends ChangeNotifier {
     return artFor(_artSkinOverride ?? _skin.id);
   }
 
-  SkinArt? get art => artSet.atOrNull(_artIndex);
+  SkinArt? get art {
+    final piece = artSet.atOrNull(_artIndex);
+    return piece == null ? null : _wearing(piece);
+  }
+
+  /// The picture as it should be drawn: its own framing, or the one the look
+  /// file holds for it. One place applies this, so no caller can forget.
+  SkinArt _wearing(SkinArt art) {
+    final spec = specFor(art);
+    if (spec == art.spec) return art;
+    return SkinArt(
+      key: art.key,
+      assetPath: art.assetPath,
+      aspect: art.aspect,
+      focus: art.focus,
+      fullBleed: art.fullBleed,
+      spec: spec,
+    );
+  }
+
+  /// The framing for a picture: its own spec.json, or the one the look file
+  /// holds when the picture is a shipped asset that cannot carry a file.
+  ArtSpec specFor(SkinArt art) => _personalization.specFor(art.key, art.spec);
 
   /// The picture this place wears: its own, or the one set everywhere.
   SkinArt? artForSurface(SurfaceId surface) {
@@ -1160,7 +1183,7 @@ class AppState extends ChangeNotifier {
     if (chosen != null) {
       for (final bundle in _bundles) {
         for (final piece in bundle.set.pieces) {
-          if (piece.key == chosen) return piece;
+          if (piece.key == chosen) return _wearing(piece);
         }
       }
     }

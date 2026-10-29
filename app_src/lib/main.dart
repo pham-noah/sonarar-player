@@ -68,12 +68,9 @@ import 'theme/ambient_backdrop.dart';
 import 'theme/backdrop_layer.dart';
 import 'theme/layout.dart';
 import 'theme/layout_kit.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'art/art_bundle.dart';
-import 'core/build_info.dart';
-import 'update/update_service.dart';
+import 'update/update_bar.dart';
 import 'theme/personalization.dart';
 import 'theme/skin.dart';
 import 'theme/theme_preset.dart';
@@ -433,93 +430,6 @@ class _HomeShellState extends State<HomeShell>
 
   final ValueNotifier<Duration?> _sleepLeft = ValueNotifier(null);
   AppTab _tab = AppTab.home;
-
-  /// The newer release, if GitHub has one and this build is allowed to look.
-  AppUpdate? _update;
-  double? _updateProgress;
-
-  Future<void> _checkForUpdate() async {
-    final update = await checkForUpdate(appVersionCode);
-    if (!mounted || update == null) return;
-    setState(() => _update = update);
-  }
-
-  Future<void> _installUpdate(AppUpdate update) async {
-    final downloads = await getDownloadsDirectory();
-    if (downloads == null) return;
-    setState(() => _updateProgress = 0);
-    final file = await downloadUpdate(
-      update,
-      downloads,
-      onProgress: (p) {
-        if (mounted) setState(() => _updateProgress = p);
-      },
-    );
-    if (!mounted) return;
-    setState(() => _updateProgress = null);
-    if (file == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('The download did not finish. Try again.')),
-      );
-      return;
-    }
-    // The system installer still asks; this only offers the file to it.
-    await OpenFilex.open(file.path);
-  }
-
-  Widget _updateBar(Skin skin) {
-    final update = _update;
-    if (update == null) return const SizedBox.shrink();
-    final progress = _updateProgress;
-    return Material(
-      color: skin.panel,
-      child: InkWell(
-        onTap: progress == null ? () => _installUpdate(update) : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-          child: Row(
-            children: [
-              Icon(Icons.system_update_rounded, size: 18, color: skin.accent),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  progress == null
-                      ? '${update.label} is out'
-                      : 'Downloading ${(progress * 100).round()}%',
-                  style: TextStyle(
-                    color: skin.textPrimary,
-                    fontSize: LayoutSpec.fontFloor,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              Text(
-                progress == null ? 'UPDATE' : '',
-                style: TextStyle(
-                  color: skin.accent,
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              if (progress != null) ...[
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 60,
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 3,
-                    color: skin.accent,
-                    backgroundColor: skin.textSecondary.withValues(alpha: 0.2),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   bool _tabSettled = false;
 
@@ -945,11 +855,6 @@ class _HomeShellState extends State<HomeShell>
     WidgetsBinding.instance.addObserver(this);
 
     unawaited(_load());
-    // After the shell is up: an update check must never sit in front of the
-    // first frame, and the answer arriving late is fine — it draws a bar.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_checkForUpdate());
-    });
   }
 
   bool _inFront = true;
@@ -3337,7 +3242,7 @@ class _HomeShellState extends State<HomeShell>
       ShellFrame.docked => Column(
           children: [
 
-            _updateBar(skin),
+            UpdateBar(skin: skin),
             Expanded(
               child: Stack(
                 children: [_tabBackdrop(skin), _tabContentArrival(skin)],

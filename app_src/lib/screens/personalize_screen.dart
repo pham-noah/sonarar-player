@@ -10,6 +10,7 @@ import '../theme/layout.dart';
 import '../theme/theme_preset.dart';
 import '../art/art_bundle.dart';
 import '../art/art_spec.dart';
+import '../art/skin_art.dart';
 import '../screens/art_editor_screen.dart';
 import '../theme/backdrop_import.dart';
 import '../theme/backdrop_layer.dart';
@@ -290,8 +291,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   child: _button(skin, 'NEW BUNDLE FROM A PICTURE', _newBundle),
                 ),
                 const SizedBox(width: 8),
-                if (_wornBundle != null)
+                if (_wornPiece != null)
                   Expanded(child: _button(skin, 'ADJUST', _adjustArt)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _button(skin, 'RESCAN', _rescanArt, quiet: true),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -501,28 +506,63 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     _apply(_p.withSurface(_surface!, look));
   }
 
+  /// Opens the editor for whatever picture this place wears — a bundle picture,
+  /// whose framing lives beside it, or a shipped one, whose framing lives in the
+  /// look file because an APK cannot be written to.
   Future<void> _adjustArt() async {
-    final bundle = _wornBundle;
+    final piece = _wornPiece;
     final root = _root;
-    if (bundle == null || root == null) return;
-    final piece = bundle.set.pieces.first;
+    if (piece == null) return;
 
-    final dir = Directory('${root.path}/art/${bundle.name}');
+    final bundle = _wornBundle;
+    final dir = bundle == null || root == null
+        ? null
+        : Directory('${root.path}/art/${bundle.name}');
+
     final saved = await Navigator.of(context).push<ArtSpec>(
       MaterialPageRoute(
         builder: (_) => ArtEditorScreen(
           skin: _skin,
-          bundle: dir,
           assetPath: piece.assetPath,
           aspect: piece.aspect,
           focus: piece.focus,
-          initial: ArtSpec.read(dir),
+          initial: dir == null
+              ? widget.state.specFor(piece)
+              : ArtSpec.read(dir),
         ),
       ),
     );
     if (saved == null || !mounted) return;
+
+    if (dir != null) {
+      ArtSpec.write(dir, saved);
+      if (root != null) widget.state.setArtBundles(scanArtBundles(root.path));
+    } else {
+      _apply(_p.withArtSpec(piece.key, saved));
+    }
+    setState(() {});
+  }
+
+  /// Re-reads the art folders. Pictures dropped in from a file manager while
+  /// the app is open are otherwise invisible until the next launch.
+  void _rescanArt() {
+    final root = _root;
+    if (root == null) return;
     widget.state.setArtBundles(scanArtBundles(root.path));
     setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${widget.state.bundles.length} art folder'
+          '${widget.state.bundles.length == 1 ? '' : 's'} found.'),
+    ));
+  }
+
+  /// The picture currently being framed: a place's own, or the global one.
+  SkinArt? get _wornPiece {
+    if (_surface != null) {
+      final own = widget.state.artForSurface(_surface!);
+      if (own != null && _surfaceArt != null) return own;
+    }
+    return widget.state.art;
   }
 
   /// Starts a bundle around one picture the user already has. The folder can

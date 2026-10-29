@@ -1,7 +1,5 @@
 library;
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../art/art_focus.dart';
@@ -16,21 +14,17 @@ class ArtEditorScreen extends StatefulWidget {
   const ArtEditorScreen({
     super.key,
     required this.skin,
-    required this.bundle,
     required this.assetPath,
     required this.aspect,
     required this.focus,
     required this.initial,
-    this.onSave,
   });
 
   final Skin skin;
-  final Directory bundle;
   final String assetPath;
   final double aspect;
   final ArtFocus focus;
   final ArtSpec initial;
-  final ValueChanged<ArtSpec>? onSave;
 
   @override
   State<ArtEditorScreen> createState() => _ArtEditorScreenState();
@@ -66,11 +60,9 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
           ),
           TextButton(
             key: const Key('art-save'),
-            onPressed: () {
-              ArtSpec.write(widget.bundle, _spec);
-              widget.onSave?.call(_spec);
-              Navigator.of(context).maybePop();
-            },
+            // Framing goes back to the caller: a bundle keeps it beside the
+            // pictures, built-in art keeps it in the look file.
+            onPressed: () => Navigator.of(context).pop(_spec),
             child: Text(
               'SAVE',
               style: TextStyle(color: skin.accent, fontWeight: FontWeight.w900),
@@ -205,6 +197,18 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
           max: max,
           activeColor: skin.accent,
           onChanged: onChanged,
+        ),
+      ),
+      SizedBox(
+        width: 52,
+        child: Text(
+          format(value),
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            color: skin.accent,
+            fontSize: LayoutSpec.fontFloor - 4,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     ],

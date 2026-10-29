@@ -26,7 +26,7 @@ The library pictured is twelve generated tracks — the real one is your own mus
 
 Take the latest APK from [Releases](../../releases) and open it on the device.
 
-**0.1.3** (versionCode 19) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+**0.2.0** (versionCode 20) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
 Every release here is signed with the same project key, so they install over each other. A 32-bit
 phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed
@@ -64,9 +64,17 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
   and swipe actions, a compendium of everything with how much you have heard, listening history by day
   and hour, and lyrics with romaji readings: full for Korean, kana-only for Japanese (kanji are shown
   as written, since reading them aloud would mean shipping a 32 MB dictionary).
-- **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Persona,
+- **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Sonar,
   Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
   library folder. Tracks without a spectrum file simply show no bars.
+- **Personalize** — one screen for everything visual: layout, song list shape, backdrop, accent,
+  Home order, art and saved themes. Your accent reaches every surface, including the sidebar.
+- **Art folders** — drop a folder of pictures into `Music/Sonarar/art/` and it becomes a bundle: each
+  picture is a frame of that art. RESCAN picks up folders added while the app is open. Open ADJUST to
+  drag, zoom, rotate, mirror or fade any picture; the framing is saved beside the pictures, or in the
+  look file for the shipped art, and it follows the picture everywhere.
+- **Per-place pictures** — every place (Home, Library, Search, Player) can wear its own picture, or
+  share the one set everywhere.
 - **Optional network** — weather from Open-Meteo, nearby places from Overpass, and YouTube playlist
   downloads through yt-dlp into the same library format.
 
@@ -102,6 +110,12 @@ flutter analyze --fatal-infos && flutter test
 The APK is unsigned unless `android/key.properties` (gitignored) names a `storeFile`,
 `storePassword`, `keyAlias` and `keyPassword`. `--target-platform=android-arm64` is not optional: the
 default build packages two more ABIs that no phone runs and that make up most of the file size.
+
+## Updates
+
+Sonarar can check GitHub for a newer release and offer it: it downloads the APK and hands it to the
+system installer. Nothing is installed silently, and no release is fetched on your behalf beyond that
+check. F-Droid builds have the checker compiled out — the store updates the app.
 
 ## Privacy
 

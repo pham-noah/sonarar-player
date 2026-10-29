@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/art/art_bundle.dart';
+import 'package:sonarar/art/skin_art.dart';
 import 'package:sonarar/core/app_state.dart';
+import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/screens/personalize_screen.dart';
 import 'package:sonarar/theme/personalization.dart';
 
@@ -120,5 +126,52 @@ void main() {
     final swatch = find.byType(GestureDetector).at(0);
     expect(swatch, findsOneWidget);
     expect(state.personalization.accent.source, AccentSource.manual);
+  });
+
+  testWidgets('a folder with two pictures gives a place both, and one is worn',
+      (tester) async {
+    // A picture has to exist on disk for a tile to draw; a 1x1 PNG is enough.
+    final dir = Directory.systemTemp.createTempSync('sonarar-art-');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final one = File('${dir.path}/one.png')
+      ..writeAsBytesSync(base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      ));
+    final two = File('${dir.path}/two.png')..writeAsBytesSync(one.readAsBytesSync());
+    state.setArtBundles([
+      ArtBundle(
+        name: 'TWO',
+        set: SkinArtSet(SkinId.abyss, [
+          SkinArt(key: 'TWO/one.png', assetPath: 'file:${one.path}', aspect: 1),
+          SkinArt(key: 'TWO/two.png', assetPath: 'file:${two.path}', aspect: 1),
+        ]),
+      ),
+    ]);
+
+    await pump(tester);
+    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('LIBRARY'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('TWO 1'), findsOneWidget);
+    expect(find.text('TWO 2'), findsOneWidget,
+        reason: 'a folder of two pictures must offer both, not just the first');
+
+    await tester.tap(find.text('TWO 2'));
+    await tester.pumpAndSettle();
+
+    expect(state.personalization.surfaces[SurfaceId.library]?.art, 'TWO/two.png',
+        reason: 'the place wears the picture that was tapped');
+  });
+
+  testWidgets('a picture from the phone is offered as a place picture too',
+      (tester) async {
+    await pump(tester);
+    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('FROM PHONE'), findsOneWidget,
+        reason: 'the picker must not be limited to folders already on the card');
   });
 }

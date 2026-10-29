@@ -67,8 +67,15 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Sonar,
   Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
   library folder. Tracks without a spectrum file simply show no bars.
-- **Personalize** — one screen for everything visual: layout, song list shape, backdrop, accent,
-  Home order, art and saved themes. Your accent reaches every surface, including the sidebar.
+- **Personalize** — THEMES first, then LOOK (layout, song list shape, accent), PICTURES (per-place
+  pictures and framing), ART (folders on disk) and HOME (section order). Your accent reaches every
+  surface, including the sidebar.
+- **Themes own the whole look** — skin, layout, accent, backdrop, Home order, every per-place
+  picture, the art bundle and its framing. Editing anything edits the theme you are wearing, so
+  switching away and back returns your version; the theme file is written once the hand stops
+  moving, not on every tick.
+- **Recently added** — downloaded music lands on Home in RECENTLY ADDED, newest first. It used to
+  live only in Library, because every other Home rail needs play history or a playlist.
 - **Art folders** — drop a folder of pictures into `Music/Sonarar/art/` and it becomes a bundle: each
   picture is a frame of that art. RESCAN picks up folders added while the app is open. Open ADJUST to
   drag, zoom, rotate, mirror or fade any picture; the framing is saved beside the pictures, or in the

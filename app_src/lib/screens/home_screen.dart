@@ -592,7 +592,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _bandText(String label) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 4, 2, 8),
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
         child: Text(
           label,
           style: TextStyle(

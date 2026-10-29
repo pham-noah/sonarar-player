@@ -95,6 +95,9 @@ List<Widget> compendiumSliverList({
               entry: rows[i],
               playing: rows[i].track.id == playingTrackId,
               onSummon: onSummon,
+              // Eight rows in a row saying "Not heard yet" is one fact repeated
+              // eight times. Say it where the run starts.
+              showNote: i == 0 || rows[i - 1].neverHeard != rows[i].neverHeard,
             ),
           ),
         ),
@@ -107,6 +110,7 @@ Widget compendiumRow({
   required bool playing,
   required void Function(Track)? onSummon,
   Presentation? presentation,
+  bool showNote = true,
 }) {
   final t = entry.track;
   final at = entry.lastPlayedAt;
@@ -135,13 +139,18 @@ Widget compendiumRow({
                     color: playing ? skin.accent : skin.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  entry.neverHeard ? 'Not heard yet' : '${entry.plays}x$when',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
-                ),
+                if (showNote) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    entry.neverHeard ? 'Not heard yet' : '${entry.plays}x$when',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontLabel,
+                      color: skin.textSecondary,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -240,6 +249,8 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
           StaggerIn(
             index: i,
             style: StaggerStyle.drop,
+            // Eight rows in a row saying "Not heard yet" is one fact repeated
+            // eight times. Say it once, where the run starts.
             child: _row(skin, rows[i]),
           ),
       const SizedBox(height: 24),

@@ -1437,7 +1437,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         decoration: BoxDecoration(
           color: active ? skin.accent.withValues(alpha: 0.16) : skin.panel,
           border: Border(
-            left: BorderSide(color: skin.accent, width: active ? 3 : 1),
+            // One spine, one meaning: accent on the theme you are wearing,
+            // quiet grey on the rest. Six lime spines said nothing.
+            left: BorderSide(
+              color: active
+                  ? skin.accent
+                  : skin.textSecondary.withValues(alpha: 0.35),
+              width: 3,
+            ),
           ),
         ),
         child: Row(

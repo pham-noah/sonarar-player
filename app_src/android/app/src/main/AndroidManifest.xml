@@ -27,6 +27,10 @@
     <!-- The media control IS a notification: without this the player has no
          shade or lock-screen presence. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Self-update: the downloaded APK is handed to the system installer, which
+         still asks the user to confirm. F-Droid builds turn the check off. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <!-- Only the spectrum probe asks for this: a Visualizer on the output mix
          requires it. Playback never touches the microphone. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>

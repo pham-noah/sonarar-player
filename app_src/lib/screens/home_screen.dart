@@ -18,6 +18,26 @@ import '../widgets/art_scrim.dart';
 
 enum HomeTab { home, quickPick, fromLibrary, genre, recap }
 
+/// "[Artist] - [Title]" as a single title string spends the whole first line
+/// naming the artist a second time, and the line that identifies the track is
+/// the one that gets cut. When the title already carries its artist, drop it —
+/// the artist has its own line underneath.
+String _titleWithoutArtist(String title, String artist) {
+  final by = artist.toLowerCase();
+  for (final sep in const [' - ', ' – ', ' — ']) {
+    final at = title.indexOf(sep);
+    if (at <= 0) continue;
+    final head = title.substring(0, at).trim().toLowerCase();
+    // The artist line is often longer than the name in the title
+    // ("ヨルシカ / n-buna Official" vs "ヨルシカ"), so the head only has to be
+    // part of the artist — not equal to it.
+    if (head.length >= 2 && by.contains(head)) {
+      return title.substring(at + sep.length).trim();
+    }
+  }
+  return title;
+}
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,
@@ -472,7 +492,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      t.title,
+                      _titleWithoutArtist(t.title, t.artist),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -605,7 +625,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    t.title,
+                    _titleWithoutArtist(t.title, t.artist),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

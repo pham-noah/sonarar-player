@@ -1,0 +1,15 @@
+0.2.0 (build 20)
+
+Your own look: a photo behind the app, an accent that comes from it, and a Home
+page in the order you want.
+
+- Personalize screen: Settings -> THEME -> PERSONALIZE.
+- Backdrop: pick a picture already on the phone, tap the part that matters (it
+  stays centred whatever the screen shape), then blur, dim, zoom and rotate it.
+  Tint it with the accent so it belongs to the skin, or leave it alone.
+- Accent: keep the skin's, take the dominant colour out of the photo, or pick
+  one. Text drawn on the accent is recomputed, so a pale accent gets dark text.
+- Home: reorder the sections and hide the ones you never open. NOW stays at the
+  top, where the header is.
+- A look saves as a theme, and a theme now carries the photo and the Home order
+  as well as the skin.

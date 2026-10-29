@@ -56,6 +56,29 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets('a picture given to Home is actually drawn, behind the header',
+      (tester) async {
+    tester.view.physicalSize = const Size(400, 900) * 3;
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: HomeScreen(
+          skin: kSkinCrimson,
+          band: 'afternoon',
+          greeting: 'Good afternoon',
+          allTracks: [for (var i = 0; i < 4; i++) _t(i)],
+          onPlay: (_) {},
+          headerArt: const SizedBox.expand(key: Key('home-art')),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('home-art')), findsOneWidget,
+        reason: 'the HOME place chip wrote art that nothing rendered');
+  });
+
   testWidgets('there is no tab strip — Home is one page', (tester) async {
     await _pump(tester);
 

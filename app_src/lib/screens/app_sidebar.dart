@@ -145,8 +145,14 @@ class SidebarMarkButton extends StatelessWidget {
       onTap: () => Scaffold.of(context).openDrawer(),
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.only(right: 12, top: 4, bottom: 4),
-        child: SizedBox(width: size, height: size, child: mark),
+        padding: const EdgeInsets.only(right: 6, top: 4, bottom: 4),
+        // The mark looked like a 34px logo and behaved like one: the drawer was
+        // hard to hit. The artwork stays the same size; the target does not.
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Center(child: SizedBox(width: size, height: size, child: mark)),
+        ),
       ),
     );
   }

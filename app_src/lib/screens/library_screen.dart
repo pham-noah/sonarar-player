@@ -1329,8 +1329,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           mainAxisSpacing: 10,
                           crossAxisSpacing: 10,
                         ),
-                        itemBuilder: (context, i) =>
-                            _gridCard(context, i, rows, skin, inPlaylist),
+                        itemBuilder: (context, i) => RepaintBoundary(
+                          // A scrolling grid repaints only the tiles that moved.
+                          child: _gridCard(context, i, rows, skin, inPlaylist),
+                        ),
                       ),
                     )
                   else
@@ -1426,7 +1428,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
       child: widget.coverPathFor(t) == null
           ? null
-          : Image.file(File(widget.coverPathFor(t)!), fit: BoxFit.cover),
+          : Image.file(
+              File(widget.coverPathFor(t)!),
+              fit: BoxFit.cover,
+              // Decoding a full-size cover per tile is what makes a grid
+              // stutter while it is still moving. Tiles are small; ask small.
+              cacheWidth: 320,
+            ),
     );
 
     final drag = widget.onDragToQueue;

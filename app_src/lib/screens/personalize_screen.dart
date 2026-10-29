@@ -99,34 +99,49 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     return Scaffold(
       backgroundColor: skin.background,
       body: SafeArea(
-        child: ListView(
-          // Each tab keeps its own scroll position: switching parts should not
-          // drop you halfway down a different page.
-          key: PageStorageKey('personalize-${_tab.name}'),
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
+        child: Column(
           children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => Navigator.of(context).maybePop(),
-                  icon: Icon(Icons.arrow_back_rounded, color: skin.textPrimary),
-                ),
-                Text(
-                  'PERSONALIZE',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontBase,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.6,
-                    color: skin.textPrimary,
+            // The strip and the way back stay put: switching parts should never
+            // mean scrolling up to reach them first.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: Icon(
+                          Icons.arrow_back_rounded,
+                          color: skin.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        'PERSONALIZE',
+                        style: TextStyle(
+                          fontSize: LayoutSpec.fontBase,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.6,
+                          color: skin.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  _tabs(skin),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            _preview(skin),
             const SizedBox(height: 12),
-            _tabs(skin),
-            const SizedBox(height: 14),
+            Expanded(
+              child: ListView(
+                // Each tab keeps its own scroll position: switching parts should
+                // not drop you halfway down a different page.
+                key: PageStorageKey('personalize-${_tab.name}'),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                children: [
+                  _preview(skin),
+                  const SizedBox(height: 14),
 
             if (_tab == PersonalizeTab.look) ...[
             SectionBand(skin: skin, label: 'LAYOUT'),
@@ -656,6 +671,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               ),
             ],
             ],
+                ],
+              ),
+            ),
           ],
         ),
       ),

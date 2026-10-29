@@ -379,8 +379,8 @@ class _HomeShellState extends State<HomeShell>
     }
   }
 
-  void _applyLayoutPref() => widget.state.setLayout(decode.layoutFromPrefs(_prefs.layoutId),
-      paletteIndex: _prefs.paletteIndex);
+  void _applyLayoutPref() =>
+      widget.state.setLayout(decode.layoutFromPrefs(_prefs.layoutId));
 
   void _syncPresetToPrefs() {
     _setPrefs(_prefs.copyWith(
@@ -1169,16 +1169,14 @@ class _HomeShellState extends State<HomeShell>
     }
     if (_prefs.activePresetId == null) {
       final savedSkin = decode.skinFromPrefs(_prefs.skinId);
-      final savedArt = decode.skinFromPrefs(_prefs.artSkinId);
       final savedWords = decode.skinFromPrefs(_prefs.languageSkinId);
-      if (savedSkin != null || savedArt != null || savedWords != null) {
+      if (savedSkin != null || savedWords != null) {
         widget.state.applyPreset(ThemePreset(
           id: 'saved_look',
           name: 'Saved',
 
           skinId: savedSkin ?? widget.state.skin.id,
 
-          artSkinId: savedArt,
           languageSkinId: savedWords,
         ));
       }

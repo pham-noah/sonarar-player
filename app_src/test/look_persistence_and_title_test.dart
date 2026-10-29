@@ -56,33 +56,25 @@ void main() {
     });
   }
 
-  group('the look choices are persisted', () {
-    test('art set, words and palette survive a round trip through the file', () {
-      const saved = AppPrefs(
-        artSkinId: 'p3r',
-        languageSkinId: 'mono',
-        skinId: 'p5r',
-      );
-      final restored = AppPrefs.fromJson(saved.toJson());
+  group('the dead look keys are gone', () {
+    test('art and palette are not written any more', () {
+      const saved = AppPrefs(languageSkinId: 'mono', skinId: 'p5r');
+      final json = saved.toJson();
 
-      expect(restored.artSkinId, 'p3r');
+      expect(json.containsKey('art_skin'), isFalse,
+          reason: 'the art key outlived the art picker');
+      expect(json.containsKey('palette_index'), isFalse,
+          reason: 'the palette key outlived the palette picker');
+    });
+
+    test('an old file carrying them still loads, ignoring them', () {
+      final restored = AppPrefs.fromJson(const {
+        'art_skin': 'p3r',
+        'palette_index': 2,
+        'language_skin': 'mono',
+      });
       expect(restored.languageSkinId, 'mono');
-      expect(restored.skinId, 'p5r');
-    });
-
-    test('an older file with none of the keys gets "follow the palette", not a wrong value',
-        () {
-      final restored = AppPrefs.fromJson(const {'layout_id': 'solid'});
-      expect(restored.artSkinId, isNull);
-      expect(restored.languageSkinId, isNull);
       expect(restored.skinId, isNull);
-    });
-
-    test('"follow the palette" can be written back to null', () {
-      const worn = AppPrefs(artSkinId: 'p3r');
-      expect(worn.copyWith(clearArtSkin: true).artSkinId, isNull);
-
-      expect(worn.copyWith(showFps: true).artSkinId, 'p3r');
     });
   });
 }

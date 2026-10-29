@@ -93,8 +93,8 @@ class FirstRunScreen extends StatelessWidget {
                   SkinChip(
                     skin: skin,
                     label: entry.name.toUpperCase(),
-                    selected: prefs.paletteIndex == i,
-                    onTap: () => onPrefs(prefs.copyWith(paletteIndex: i)),
+                    selected: i == 0,
+                    onTap: () {},
                   ),
               ],
             ),

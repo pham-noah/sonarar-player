@@ -28,11 +28,9 @@ class AppPrefs {
     this.showRomaji = true,
     this.dynamicByDefault = true,
     this.layoutId = 'persona',
-    this.paletteIndex = 0,
     this.refillWhenQueueEnds = false,
     this.libraryIsGrid,
     this.activePresetId,
-    this.artSkinId,
     this.languageSkinId,
     this.skinId,
     this.spectrumSmoothness,
@@ -96,11 +94,9 @@ class AppPrefs {
 
   final bool? libraryIsGrid;
 
-  final int paletteIndex;
 
   final String layoutId;
 
-  final String? artSkinId;
 
   final String? languageSkinId;
 
@@ -166,10 +162,7 @@ class AppPrefs {
     bool? libraryIsGrid,
     bool clearLibraryGrid = false,
     String? layoutId,
-    int? paletteIndex,
     String? activePresetId,
-    String? artSkinId,
-    bool clearArtSkin = false,
     String? languageSkinId,
     bool clearLanguageSkin = false,
     String? skinId,
@@ -212,11 +205,9 @@ class AppPrefs {
         libraryIsGrid:
             clearLibraryGrid ? null : (libraryIsGrid ?? this.libraryIsGrid),
         layoutId: layoutId ?? this.layoutId,
-        paletteIndex: paletteIndex ?? this.paletteIndex,
         activePresetId:
             clearPreset ? null : (activePresetId ?? initial.activePresetId),
 
-        artSkinId: clearArtSkin ? null : (artSkinId ?? this.artSkinId),
         languageSkinId:
             clearLanguageSkin ? null : (languageSkinId ?? this.languageSkinId),
         skinId: skinId ?? this.skinId,
@@ -265,11 +256,9 @@ class AppPrefs {
 
         if (libraryIsGrid != null) 'library_is_grid': libraryIsGrid,
         'layout_id': layoutId,
-        'palette_index': paletteIndex,
 
         if (activePresetId != null) 'active_preset': activePresetId,
 
-        if (artSkinId != null) 'art_skin': artSkinId,
         if (languageSkinId != null) 'language_skin': languageSkinId,
         if (skinId != null) 'skin_id': skinId,
 
@@ -328,11 +317,7 @@ class AppPrefs {
           ? raw['layout_id'] as String
           : initial.layoutId,
 
-      paletteIndex: (raw['palette_index'] is int && (raw['palette_index'] as int) >= 0)
-          ? raw['palette_index'] as int
-          : initial.paletteIndex,
       activePresetId: _str(raw['active_preset']),
-      artSkinId: _str(raw['art_skin']),
       languageSkinId: _str(raw['language_skin']),
       skinId: _str(raw['skin_id']),
 

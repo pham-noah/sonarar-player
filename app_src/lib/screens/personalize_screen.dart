@@ -1015,19 +1015,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       PersonalizeTab.home: 'HOME',
       PersonalizeTab.themes: 'THEMES',
     };
+    // Five tabs share the width; nothing scrolls, nothing is cut off.
     return SizedBox(
-      height: 36,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: [
+      height: 34,
+      child: Row(
+        children: [
           for (final entry in labels.entries)
-            Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: GestureDetector(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: GestureDetector(
                 key: Key('personalize-tab-${entry.key.name}'),
                 onTap: () => setState(() => _tab = entry.key),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  padding: EdgeInsets.zero,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: _tab == entry.key ? skin.accent : Colors.transparent,
@@ -1038,21 +1039,26 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text(
+                  child: Center(
+                    child: Text(
                     entry.value,
+                    maxLines: 1,
+                    overflow: TextOverflow.clip,
                     style: TextStyle(
                       color: _tab == entry.key
                           ? skin.onAccent
                           : skin.textSecondary,
-                      fontSize: LayoutSpec.fontFloor - 4,
+                      fontSize: LayoutSpec.fontFloor - 5,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 1.2,
+                      letterSpacing: 0.8,
+                    ),
                     ),
                   ),
                 ),
               ),
             ),
-        ]),
+            ),
+        ],
       ),
     );
   }

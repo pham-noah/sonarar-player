@@ -157,7 +157,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       child: Text(
                         _jumpLabel(root),
                         style: const TextStyle(
-                          fontSize: 11,
+                          fontSize: 12,
                           letterSpacing: 1.2,
                           fontWeight: FontWeight.w700,
                         ),

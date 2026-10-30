@@ -286,7 +286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       textAlign: TextAlign.right,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 12,
                         color: skin.textSecondary,
                       ),
                     ),
@@ -298,7 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'A folder is a library when it holds library_manifest.json. '
                     'Your history, playlists and themes stay where they are, so '
                     'changing this never loses them.',
-                    style: TextStyle(fontSize: 11, color: skin.textSecondary),
+                    style: TextStyle(fontSize: 12, color: skin.textSecondary),
                   ),
                 ),
               ],
@@ -310,7 +310,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Text(
                 'TAB ANIMATION and SPECTRUM live in Personalize now — they '
                 'change how the app looks, so they sit with the look.',
-                style: TextStyle(fontSize: 11, color: skin.textSecondary),
+                style: TextStyle(fontSize: 12, color: skin.textSecondary),
               ),
               _toggle(skin, 'ROMAJI', prefs!.showRomaji,
                   icon: Icons.translate_rounded,

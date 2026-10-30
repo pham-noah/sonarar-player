@@ -295,7 +295,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                     color: onTheme
                                         ? skin.accent
                                         : skin.textSecondary,
-                                    fontSize: LayoutSpec.fontFloor - 5,
+                                    fontSize: LayoutSpec.fontMicro,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1,
                                   ),
@@ -368,7 +368,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                     color: onTheme
                                         ? skin.accent
                                         : skin.textSecondary,
-                                    fontSize: LayoutSpec.fontFloor - 5,
+                                    fontSize: LayoutSpec.fontMicro,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1,
                                   ),
@@ -829,7 +829,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: LayoutSpec.fontFloor - 5,
+                    fontSize: LayoutSpec.fontMicro,
                     color: skin.textSecondary.withValues(alpha: alpha),
                   ),
                 ),
@@ -1152,7 +1152,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: active ? skin.accent : skin.textSecondary,
-                fontSize: LayoutSpec.fontFloor - 5,
+                fontSize: LayoutSpec.fontMicro,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.4,
               ),
@@ -1176,7 +1176,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           'NO PICTURE — THE SKIN PAINTS THIS',
           style: TextStyle(
             color: skin.textSecondary,
-            fontSize: LayoutSpec.fontFloor - 5,
+            fontSize: LayoutSpec.fontMicro,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
           ),
@@ -1224,7 +1224,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         _b.fromArt ? 'FOLDER' : 'PHOTO',
                         style: TextStyle(
                           color: skin.accent,
-                          fontSize: LayoutSpec.fontFloor - 6,
+                          fontSize: LayoutSpec.fontMicro,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.2,
                         ),
@@ -1242,7 +1242,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           'FRAME $at/$total',
                           style: TextStyle(
                             color: skin.textPrimary,
-                            fontSize: LayoutSpec.fontFloor - 6,
+                            fontSize: LayoutSpec.fontMicro,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1,
                           ),
@@ -1900,7 +1900,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             label,
             style: TextStyle(
               color: skin.textSecondary,
-              fontSize: LayoutSpec.fontFloor - 5,
+              fontSize: LayoutSpec.fontMicro,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.6,
             ),

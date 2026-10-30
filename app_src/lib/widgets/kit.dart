@@ -275,7 +275,7 @@ class KitTabs<T> extends StatelessWidget {
                         color: entries[i].key == selected
                             ? skin.onAccent
                             : skin.textSecondary,
-                        fontSize: LayoutSpec.fontFloor - 5,
+                        fontSize: LayoutSpec.fontMicro,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0.8,
                       ),

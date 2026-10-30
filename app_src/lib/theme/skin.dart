@@ -288,6 +288,11 @@ abstract final class LayoutSpec {
 
   static const double fontFloor = 16.0;
 
+  /// The smallest type in the app. Anything computed as `fontFloor - 5` or
+  /// `- 6` landed at 10 or 11, under the floor it was supposed to respect; this
+  /// is the number those mean.
+  static const double fontMicro = 12.0;
+
   static const double tapTarget = 56.0;
 
   static const double gapS = 10.0;

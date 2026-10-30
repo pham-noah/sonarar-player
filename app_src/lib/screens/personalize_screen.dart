@@ -441,7 +441,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ],
                     if (_b.isSet) ...[
                       const SizedBox(height: 14),
-                      _button(skin, 'REFRAME', _reframe, quiet: true),
+                      _button(
+                        skin,
+                        _canReframe ? 'REFRAME' : 'REFRAME — NO FILE TO MOVE',
+                        _reframe,
+                        quiet: !_canReframe,
+                      ),
                       const SizedBox(height: 6),
                       _slider(
                         skin,
@@ -456,9 +461,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         'DIM',
                         _b.dim,
                         0,
-                        // The layer paints 85% of the value, so 1.00 could never
-                        // look like 1.00. The slider ends where the dim ends.
-                        0.85,
+                        BackdropSpec.maxDim,
                         (v) => _setBackdrop(_b.copyWith(dim: v)),
                       ),
                       _slider(
@@ -1249,6 +1252,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   }
 
   /// Opens the picture full screen for framing.
+  /// Whether REFRAME can open this picture at all. A built-in art picture lives
+  /// inside the APK and has no file to frame, so the button says so instead of
+  /// being tappable and quietly doing nothing.
+  bool get _canReframe {
+    final root = _root;
+    if (root == null) return false;
+    final art = _b.artKey == null ? null : widget.state.artByKey(_b.artKey!);
+    if (art != null) return art.assetPath.startsWith('file:');
+    final file = backdropFile(root, _b);
+    return file != null && file.existsSync();
+  }
+
   Future<void> _reframe() async {
     final root = _root;
     if (root == null) return;

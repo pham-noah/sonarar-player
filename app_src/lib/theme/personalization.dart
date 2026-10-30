@@ -374,6 +374,11 @@ class BackdropSpec {
   /// framework assertion, not a harmless overflow.
   static const maxRotation = 45.0;
 
+  /// The most the picture can be dimmed. The layer paints 85% of the value, so
+  /// the slider stops there; an old save holding 1.0 would sit outside a slider
+  /// that ends at 0.85, which throws.
+  static const maxDim = 0.85;
+
   /// 1 is untouched. Above 1 the picture gets louder, below 1 greyer.
   final double saturation;
 
@@ -424,7 +429,7 @@ class BackdropSpec {
         scale: (scale ?? this.scale).clamp(1.0, maxScale),
         rotationDeg: (rotationDeg ?? this.rotationDeg).clamp(-maxRotation, maxRotation),
         blur: (blur ?? this.blur).clamp(0.0, 24.0),
-        dim: _clamp01(dim ?? this.dim),
+        dim: (_clamp01(dim ?? this.dim)).clamp(0.0, maxDim),
         tint: tint ?? this.tint,
         coverOnPlayer: coverOnPlayer ?? this.coverOnPlayer,
         artKey: clearArt ? null : (artKey ?? this.artKey),
@@ -465,7 +470,7 @@ class BackdropSpec {
       scale: _num(raw['scale'], 1).clamp(1.0, maxScale),
       rotationDeg: _num(raw['rot'], 0).clamp(-maxRotation, maxRotation),
       blur: _num(raw['blur'], 0).clamp(0.0, 24.0),
-      dim: _clamp01(_num(raw['dim'], 0.35)),
+      dim: _clamp01(_num(raw['dim'], 0.35)).clamp(0.0, maxDim),
       tint: raw['tint'] is bool ? raw['tint'] as bool : true,
       coverOnPlayer: raw['cover'] is bool ? raw['cover'] as bool : false,
       artKey: raw['art'] is String && (raw['art'] as String).isNotEmpty

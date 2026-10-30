@@ -53,6 +53,14 @@ void main() {
     expect(spec.scale, 3);
   });
 
+  test('an old dim above the slider cannot crash the slider', () {
+    expect(BackdropSpec.fromJson({'file': 'a.jpg', 'dim': 1}).dim,
+        BackdropSpec.maxDim);
+    expect(
+        const BackdropSpec(file: 'a.jpg').copyWith(dim: 1).dim,
+        BackdropSpec.maxDim);
+  });
+
   test('rotation is clamped to what the editors offer', () {
     // A slider handed a value past its own range is a framework assertion, so
     // nothing may arrive in the editor at 90 degrees.

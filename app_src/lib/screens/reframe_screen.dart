@@ -93,23 +93,37 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     child: SizedBox(
                       width: size.width,
                       height: size.height,
-                      child: GestureDetector(
-                        key: const Key('reframe-canvas'),
-                        onPanUpdate: (d) => _pan(d.delta, size),
-                        child: ClipRect(
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              // The runtime layer itself, not a copy of it: grain,
-                              // vignette, burn, blur and dim all land where they
-                              // will land on the phone.
-                              PersonalBackdrop(
-                                root: null,
-                                file: widget.file,
-                                spec: _spec,
-                                skin: widget.skin,
+                      // The edge of the picture is the edge of the screen it
+                      // will fill. Without a line there, a dark picture on a
+                      // black page looks like it has no edge at all.
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          border: Border.all(
+                            color: skin.textSecondary.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: GestureDetector(
+                            key: const Key('reframe-canvas'),
+                            onPanUpdate: (d) => _pan(d.delta, size),
+                            child: ClipRect(
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  // The runtime layer itself, not a copy of it: grain,
+                                  // vignette, burn, blur and dim all land where they
+                                  // will land on the phone.
+                                  PersonalBackdrop(
+                                    root: null,
+                                    file: widget.file,
+                                    spec: _spec,
+                                    skin: widget.skin,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -141,7 +155,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     'DIM',
                     _spec.dim,
                     0,
-                    0.85,
+                    BackdropSpec.maxDim,
                     (v) => setState(() => _spec = _spec.copyWith(dim: v)),
                   ),
                 ],

@@ -17,6 +17,7 @@ import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import 'app_header.dart';
 import '../widgets/screen_backdrop.dart';
+import '../widgets/toasts.dart';
 import 'playlist_import_sheet.dart';
 
 String foldForSearch(String s) => _foldForSearch(s);
@@ -659,9 +660,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 if (failure != null) ...[
                   const SizedBox(height: 4),
                   GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(failure)),
-                    ),
+                    onTap: () => toast(context, failure),
                     child: Text(
                       'FAILED — ${failure.replaceFirst('Download failed: ', '')}',
                       maxLines: 1,

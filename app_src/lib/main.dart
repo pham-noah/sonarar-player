@@ -27,6 +27,7 @@ import 'core/prefs_decode.dart' as decode;
 import 'core/shortcuts.dart';
 import 'core/prefs.dart';
 import 'widgets/download_ring.dart';
+import 'widgets/name_prompt.dart';
 import 'widgets/toasts.dart';
 import 'widgets/fps_overlay.dart';
 import 'download/download_manager.dart';
@@ -2009,37 +2010,12 @@ class _HomeShellState extends State<HomeShell>
         : 'Already in ${playlist.name}');
   }
 
-  Future<String?> _askPlaylistName() async {
-    final controller = TextEditingController();
-    final name = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: widget.state.uiSkin.background,
-        title: Text('New playlist',
-            style: TextStyle(color: widget.state.skin.textPrimary)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: TextStyle(color: widget.state.skin.textPrimary),
-          decoration: const InputDecoration(hintText: 'Name'),
-          onSubmitted: (v) => Navigator.of(ctx).pop(v),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: const Text('CREATE'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    final trimmed = (name ?? '').trim();
-    return trimmed.isEmpty ? null : trimmed;
-  }
+  Future<String?> _askPlaylistName() => askForName(
+        context,
+        widget.state.uiSkin,
+        title: 'New playlist',
+        confirm: 'CREATE',
+      );
 
   late final ThemeSession _themeSession =
       ThemeSession(save: (presets) => _stores.themePresets.save(presets));
@@ -2633,33 +2609,12 @@ class _HomeShellState extends State<HomeShell>
       );
 
   Future<void> _saveQueueAsPlaylist() async {
-    final controller = TextEditingController();
-    final name = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: widget.state.uiSkin.background,
-        title: Text('Save queue as playlist',
-            style: TextStyle(color: widget.state.skin.textPrimary)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: TextStyle(color: widget.state.skin.textPrimary),
-          decoration: const InputDecoration(hintText: 'Name'),
-          onSubmitted: (v) => Navigator.of(ctx).pop(v),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: const Text('SAVE'),
-          ),
-        ],
-      ),
+    final name = await askForName(
+      context,
+      widget.state.uiSkin,
+      title: 'Save queue as playlist',
     );
-    if (!mounted || name == null || name.trim().isEmpty) return;
+    if (!mounted || name == null) return;
     final made = widget.state.saveQueueAsPlaylist(name);
     if (made == null) {
       _toast('There is nothing in the queue to save.');

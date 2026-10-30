@@ -137,4 +137,15 @@ void main() {
       expect(q.allowNetwork, isFalse);
     });
   });
+
+  group('the update check can be declined', () {
+    test('it is ON for a file that predates the switch', () {
+      expect(AppPrefs.fromJson({'show_fps': true}).checkForUpdates, isTrue);
+    });
+
+    test('off stays off across a save and a reload', () {
+      final p = const AppPrefs().copyWith(checkForUpdates: false);
+      expect(AppPrefs.fromJson(p.toJson()).checkForUpdates, isFalse);
+    });
+  });
 }

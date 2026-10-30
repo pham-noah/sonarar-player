@@ -16,9 +16,12 @@ import 'update_service.dart';
 /// it. When there is nothing newer it draws nothing at all — no empty row, no
 /// reserved space.
 class UpdateBar extends StatefulWidget {
-  const UpdateBar({super.key, required this.skin});
+  const UpdateBar({super.key, required this.skin, this.enabled = true});
 
   final Skin skin;
+
+  /// Off means no check at all — not a check whose result is hidden.
+  final bool enabled;
 
   @override
   State<UpdateBar> createState() => _UpdateBarState();
@@ -33,6 +36,7 @@ class _UpdateBarState extends State<UpdateBar> {
     super.initState();
     // After the first frame: an update check must never sit in front of the
     // app opening.
+    if (!widget.enabled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) unawaited(_check());
     });

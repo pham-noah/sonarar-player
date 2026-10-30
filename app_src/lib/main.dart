@@ -21,6 +21,7 @@ import 'player/art_warmer.dart';
 import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
+import 'core/legal.dart';
 import 'core/latest_load.dart';
 import 'core/prefs_decode.dart' as decode;
 import 'core/shortcuts.dart';
@@ -181,6 +182,8 @@ Future<void> main() async {
         'raster=${t.rasterDuration.inMilliseconds}ms '
         'at=${DateTime.now().difference(tMain).inMilliseconds}ms');
   });
+
+  registerLicenses();
 
   runApp(const SonararApp());
   WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(startAudio()));
@@ -3366,7 +3369,7 @@ class _HomeShellState extends State<HomeShell>
       ShellFrame.docked => Column(
           children: [
 
-            UpdateBar(skin: skin),
+            UpdateBar(skin: skin, enabled: _prefs.checkForUpdates),
             Expanded(
               child: Stack(
                 children: [_tabBackdrop(skin), _tabContentArrival(skin)],

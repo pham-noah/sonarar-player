@@ -36,6 +36,23 @@ class MainActivity : AudioServiceActivity() {
 
         audioRoute = AudioRouteBridge(this).also { it.attach(flutterEngine) }
 
+        // A link in ABOUT opens in the browser, or in the app that claims it.
+        // A phone with no browser gets a message, not a crash.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LINKS_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "open" -> {
+                        val url = call.argument<String>("url")
+                        if (url == null) {
+                            result.success(false)
+                        } else {
+                            result.success(openExternal(url))
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PROBE_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -57,6 +74,17 @@ class MainActivity : AudioServiceActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    private fun openExternal(url: String): Boolean = try {
+        startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+        true
+    } catch (e: Exception) {
+        Log.w("Sonarar", "no handler for $url", e)
+        false
     }
 
     private fun storageStatus(): String {
@@ -240,6 +268,8 @@ class MainActivity : AudioServiceActivity() {
         private const val REQUEST_CODE = 4711
         private const val REQUEST_CODE_NOTIF = 4712
         private const val REQUEST_CODE_RECORD = 4713
+        private const val LINKS_CHANNEL = "personar/links"
+
         private const val PROBE_CHANNEL = "com.noah.personar/spectrum_probe"
     }
 }

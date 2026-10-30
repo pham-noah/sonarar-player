@@ -12,6 +12,7 @@ class AppPrefs {
     this.officialOnly = false,
     this.tabAnimation = true,
     this.showFps = false,
+    this.checkForUpdates = true,
     this.weatherRefreshMinutes = 30,
     this.allowNetwork = true,
     this.contextWeather = false,
@@ -57,6 +58,10 @@ class AppPrefs {
   final bool tabAnimation;
 
   final bool showFps;
+
+  /// Asking GitHub for a newer build. Off means the app never phones home
+  /// about itself; the check is a courtesy, so it can be declined.
+  final bool checkForUpdates;
 
   final int weatherRefreshMinutes;
 
@@ -142,6 +147,7 @@ class AppPrefs {
     bool? officialOnly,
     bool? tabAnimation,
     bool? showFps,
+    bool? checkForUpdates,
     int? weatherRefreshMinutes,
     bool? allowNetwork,
     bool? contextWeather,
@@ -185,6 +191,7 @@ class AppPrefs {
         officialOnly: officialOnly ?? this.officialOnly,
         tabAnimation: tabAnimation ?? this.tabAnimation,
         showFps: showFps ?? this.showFps,
+        checkForUpdates: checkForUpdates ?? this.checkForUpdates,
         weatherRefreshMinutes:
             (weatherRefreshMinutes ?? this.weatherRefreshMinutes).clamp(5, 180),
         allowNetwork: allowNetwork ?? this.allowNetwork,
@@ -237,6 +244,7 @@ class AppPrefs {
         'official_only': officialOnly,
         'tab_animation': tabAnimation,
         'show_fps': showFps,
+        'check_for_updates': checkForUpdates,
         'weather_refresh_minutes': weatherRefreshMinutes,
         'allow_network': allowNetwork,
         'context_weather': contextWeather,
@@ -287,6 +295,7 @@ class AppPrefs {
 
       tabAnimation: raw['tab_animation'] != false,
       showFps: raw['show_fps'] == true,
+      checkForUpdates: raw['check_for_updates'] != false,
       weatherRefreshMinutes:
           _int(raw['weather_refresh_minutes']) ?? initial.weatherRefreshMinutes,
       allowNetwork: _bool(raw['allow_network']) ?? initial.allowNetwork,

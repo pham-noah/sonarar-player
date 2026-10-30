@@ -9,6 +9,7 @@ import '../backup/backup_section.dart';
 
 import '../context/weather_codes.dart';
 import '../core/app_state.dart';
+import '../core/links.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
@@ -307,6 +308,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _toggle(skin, 'FPS COUNTER', prefs!.showFps,
                   icon: Icons.speed_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(showFps: v))),
+              _toggle(skin, 'CHECK FOR UPDATES', prefs!.checkForUpdates,
+                  icon: Icons.system_update_rounded,
+                  (v) =>
+                      onPrefsChanged!(prefs!.copyWith(checkForUpdates: v))),
               Text(
                 'TAB ANIMATION and SPECTRUM live in Personalize now — they '
                 'change how the app looks, so they sit with the look.',
@@ -342,6 +347,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     size: 20, color: skin.textSecondary.withValues(alpha: 0.6)),
                 onTap: onOpenDiagnostics,
               ),
+              const SizedBox(height: 16),
+            ],
+            if (_tab == SettingsTab.system) ...[
+              SectionBand(skin: skin, label: 'ABOUT'),
+              // The name of the person who made this, and where the code lives.
+              // Both are links: a credit you cannot follow is a stamp.
+              _aboutRow(
+                skin,
+                label: 'MADE BY NOAH PHAM',
+                icon: Icons.person_rounded,
+                url: Links.author,
+              ),
+              _aboutRow(
+                skin,
+                label: 'SOURCE ON GITHUB',
+                icon: Icons.code_rounded,
+                url: Links.source,
+              ),
+              // Flutter collects every package's licence text; ours are in the
+              // list above, so this page is the whole story in one place.
+              _row(
+                skin,
+                label: 'LICENSES',
+                icon: Icons.article_rounded,
+                trailing: Icon(Icons.chevron_right_rounded,
+                    size: 20, color: skin.textSecondary.withValues(alpha: 0.6)),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => LicensePage(
+                      applicationName: 'Sonarar',
+                      applicationVersion: widget.appVersion,
+                      applicationLegalese:
+                          'GPL-3.0 — made by Noah Pham. Source and the exact '
+                          'licence at github.com/pham-noah/sonarar-player',
+                    ),
+                  ),
+                ),
+              ),
+              if (widget.appVersion != null && widget.appVersion!.isNotEmpty)
+                _row(
+                  skin,
+                  label: 'VERSION ${widget.appVersion}',
+                  icon: Icons.info_outline_rounded,
+                  trailing: const SizedBox.shrink(),
+                ),
               const SizedBox(height: 16),
             ],
             if (_tab == SettingsTab.system &&
@@ -393,6 +443,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
           activeTrackColor: skin.accent.withValues(alpha: 0.35),
         ),
         onTap: () => onChanged(!value),
+      );
+
+  Widget _aboutRow(
+    Skin skin, {
+    required String label,
+    required IconData icon,
+    required String url,
+  }) =>
+      _row(
+        skin,
+        label: label,
+        icon: icon,
+        trailing: Icon(Icons.open_in_new_rounded,
+            size: 18, color: skin.textSecondary.withValues(alpha: 0.6)),
+        onTap: () async {
+          final opened = await openExternal(url);
+          if (!opened && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('No app here can open $url')),
+            );
+          }
+        },
       );
 
   // ignore: unused_element

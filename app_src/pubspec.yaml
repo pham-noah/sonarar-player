@@ -38,4 +38,5 @@ flutter:
     - assets/library/
     - assets/config/
     - assets/brand/
+    - assets/legal/
     - assets/themes/

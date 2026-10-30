@@ -2271,6 +2271,9 @@ class _HomeShellState extends State<HomeShell>
     widget.state.attachLibrary(_repo.tracks);
     await _refreshArtBundles();
     await _refreshDerivedPlaylists();
+    // The rails are built from the library AND the play log; a new download is
+    // new library, so they are stale the moment the file lands.
+    await _refreshHomeRails();
     if (mounted) setState(() {});
   }
 
@@ -2328,7 +2331,15 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _appendThenRefresh(PlayEvent event) async {
     await _stores.playLog.append(event);
     if (!mounted) return;
+    // The event just landed on disk. Everything downstream of the play log —
+    // Archive, History, the Home rails that count plays — reads this snapshot,
+    // and it used to be refreshed only when History was opened, so a song
+    // played this session was invisible to them until you opened History once.
+    final events = await _stores.playLog.read();
+    if (!mounted) return;
+    setState(() => _lastEvents = events);
     await _refreshDerivedPlaylists();
+    await _refreshHomeRails();
   }
 
   Future<void> _refreshDerivedPlaylists() async {
@@ -3208,6 +3219,9 @@ class _HomeShellState extends State<HomeShell>
                 root: root == null ? null : Directory(root),
                 spec: photo,
                 skin: skin,
+                art: photo.artKey == null
+                    ? null
+                    : widget.state.artByKey(photo.artKey!),
               ),
             ),
           if (!photo.isSet && personalization.fill.isSet)

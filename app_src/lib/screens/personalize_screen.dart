@@ -11,9 +11,7 @@ import '../theme/theme_preset.dart';
 import '../widgets/kit.dart';
 import '../widgets/spectrum.dart';
 import '../art/art_bundle.dart';
-import '../art/art_spec.dart';
 import '../art/skin_art.dart';
-import '../screens/art_editor_screen.dart';
 import '../theme/backdrop_import.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
@@ -30,7 +28,7 @@ import '../widgets/framed_art.dart';
 /// place to look instead of two that half-overlap.
 /// The parts of the look, one at a time. Seven sections in a single scroll is
 /// a scavenger hunt; five tabs is a page you can finish.
-enum PersonalizeTab { themes, look, pictures, art, home }
+enum PersonalizeTab { themes, look, art, home }
 
 class PersonalizeScreen extends StatefulWidget {
   const PersonalizeScreen({
@@ -80,6 +78,17 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// place uses unless it was given its own.
   SurfaceId? _surface;
 
+  /// The one picture slot. A folder piece and a photo are the same thing here;
+  /// what differs is whether it can walk to a next frame.
+  void _setPic(String? artKey, {File? photo}) {
+    _setBackdrop(_b.copyWith(
+      artKey: artKey,
+      clearArt: artKey == null,
+      file: photo?.uri.pathSegments.last,
+      clearFile: photo != null ? false : artKey != null,
+    ));
+  }
+
   void _setBackdrop(BackdropSpec b) {
     if (_surface == null) {
       _apply(_p.copyWith(backdrop: b));
@@ -87,7 +96,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     }
     // A per-place picture is the picture only; the framing sliders stay with
     // the default, so one photo cannot end up cropped four different ways.
-    _apply(_p.withSurface(_surface!, SurfaceLook(room: b.file)));
+    _apply(_p.withSurface(
+      _surface!,
+      SurfaceLook(room: b.fromArt ? null : b.file, art: b.artKey),
+    ));
   }
 
   BackdropSpec get _b =>
@@ -296,8 +308,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             const SizedBox(height: 18),
 
             ],
-            if (_tab == PersonalizeTab.pictures) ...[
-            SectionBand(skin: skin, label: 'PICTURES FOR'),
+            if (_tab == PersonalizeTab.art) ...[
+            SectionBand(skin: skin, label: 'PICTURE FOR'),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -335,10 +347,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   _artTile(
                     skin,
                     label: 'BUILT IN',
-                    selected: _surface == null
-                        ? _p.bundle == null
-                        : _surfaceArt == null,
-                    onTap: () => _setArt(null),
+                    selected: !_b.isSet,
+                    onTap: () => _setPic(null),
                     child: Icon(
                       Icons.auto_awesome_outlined,
                       size: 26,
@@ -350,8 +360,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       _artTile(
                         skin,
                         label: bundle.name.toUpperCase(),
-                        selected: _p.bundle == bundle.name,
-                        onTap: () => _setArt(bundle.name),
+                        selected: _b.artKey != null &&
+                            bundle.set.pieces.any((p) => p.key == _b.artKey),
+                        onTap: () {
+                          if (bundle.set.pieces.isEmpty) return;
+                          _setPic(bundle.set.pieces.first.key);
+                        },
                         piece: bundle.set.pieces.first,
                       )
                   else
@@ -363,17 +377,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           // one of them, so every picture is its own tile.
                           label: bundle.set.pieces.length == 1
                               ? bundle.name.toUpperCase()
-                              : '${bundle.name.toUpperCase()} '
-                                  '${bundle.set.pieces.indexOf(piece) + 1}',
-                          selected: _p.surfaces[_surface!]?.art == piece.key,
-                          onTap: () => _setArt(bundle.name, pieceKey: piece.key),
+                              : '${bundle.name.toUpperCase()} · '
+                                  '${bundle.set.pieces.indexOf(piece) + 1}'
+                                  '/${bundle.set.pieces.length}',
+                          selected: _b.artKey == piece.key,
+                          onTap: () => _setPic(piece.key),
                           piece: piece,
                         ),
                   _artTile(
                     skin,
                     label: 'FROM PHONE',
                     selected: false,
-                    onTap: _pickPictureForPlace,
+                    onTap: _importPictures,
                     child: Icon(
                       Icons.add_photo_alternate_outlined,
                       size: 26,
@@ -386,29 +401,25 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             const SizedBox(height: 8),
             Text(
               _surface == null
-                  ? 'EVERYWHERE wears one art folder and moves through its '
-                      'pictures as tracks change. Pick a place for one picture.'
-                  : 'This place wears one picture. Framing belongs to the '
-                      'picture, so the same photo can be cropped differently '
-                      'here and on the player.',
+                  ? 'One picture behind everything: a photo, or a folder of art '
+                      'that walks to its next frame as tracks change.'
+                  : 'This place wears one picture — a photo or a piece of an '
+                      'art folder. Framing follows the picture everywhere it '
+                      'is used.',
               style: TextStyle(
                 color: skin.textSecondary,
                 fontSize: LayoutSpec.fontFloor - 4,
                 height: 1.4,
               ),
             ),
-            if (_wornPiece != null) ...[
+            if (_b.isSet) ...[
               const SizedBox(height: 10),
-              _button(skin, 'ADJUST FRAMING', _adjustArt),
-            ],
-            const SizedBox(height: 18),
-
-            SectionBand(skin: skin, label: 'BACKDROP'),
-            Row(
-              children: [
-                Expanded(child: _button(skin, 'CHOOSE IMAGE', _chooseImage)),
-                const SizedBox(width: 8),
-                if (_b.isSet)
+              Row(
+                children: [
+                  Expanded(
+                    child: _button(skin, 'CHOOSE IMAGE', _chooseImage, quiet: true),
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: _button(
                       skin,
@@ -417,8 +428,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       quiet: true,
                     ),
                   ),
-              ],
-            ),
+                ],
+              ),
+            ],
             if (_b.isSet && _surface != null) ...[
               const SizedBox(height: 10),
               Text(
@@ -478,6 +490,25 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 _b.coverOnPlayer,
                 (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v)),
               ),
+              if (_b.fromArt)
+                _toggle(
+                  skin,
+                  'FOLLOW TRACK',
+                  _b.followTrack,
+                  (v) => _setBackdrop(_b.copyWith(followTrack: v)),
+                ),
+              _slider(skin, 'SATURATION', _b.saturation, 0, 2,
+                  (v) => _setBackdrop(_b.copyWith(saturation: v)),
+                  shown: '${(_b.saturation * 100).round()}%'),
+              _slider(skin, 'CONTRAST', _b.contrast, 0.5, 2,
+                  (v) => _setBackdrop(_b.copyWith(contrast: v)),
+                  shown: '${(_b.contrast * 100).round()}%'),
+              _slider(skin, 'VIGNETTE', _b.vignette, 0, 1,
+                  (v) => _setBackdrop(_b.copyWith(vignette: v))),
+              _slider(skin, 'GRAIN', _b.grain, 0, 1,
+                  (v) => _setBackdrop(_b.copyWith(grain: v))),
+              _slider(skin, 'BURN', _b.burn, 0, 1,
+                  (v) => _setBackdrop(_b.copyWith(burn: v))),
               if (_surface != null)
                 Text(
                   'Framing belongs to the picture, so these sliders move it '
@@ -584,6 +615,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               ],
             ),
             const SizedBox(height: 10),
+            for (final folder in widget.state.bundles)
+              _folderCard(skin, folder),
+            const SizedBox(height: 4),
             _toggleRow(
               skin,
               'PICTURES FOLLOW TRACK',
@@ -872,82 +906,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   // ---- backdrop ------------------------------------------------------------
 
-  /// The bundle this place wears, if it wears one.
-  ArtBundle? get _wornBundle {
-    final name = _surface == null ? _p.bundle : null;
-    for (final bundle in widget.state.bundles) {
-      if (bundle.name == name) return bundle;
-      if (_surface != null && bundle.set.pieces.first.key == _surfaceArt) {
-        return bundle;
-      }
-    }
-    return null;
-  }
-
-  String? get _surfaceArt =>
-      _surface == null ? null : _p.surfaces[_surface!]?.art;
-
-  /// Picking art is picking it for the place you are looking at, when a place is
-  /// selected. There is one art bundle in the app; places choose pictures from
-  /// it rather than each carrying a private copy.
-  void _setArt(String? bundleName, {String? pieceKey}) {
-    if (_surface == null) {
-      _apply(
-        bundleName == null
-            ? _p.copyWith(clearBundle: true)
-            : _p.copyWith(bundle: bundleName),
-      );
-      return;
-    }
-    String? key = pieceKey;
-    for (final bundle in widget.state.bundles) {
-      if (bundle.name != bundleName) continue;
-      key ??= bundle.set.pieces.first.key;
-    }
-    final look = (_p.surfaces[_surface!] ?? const SurfaceLook()).copyWith(
-      art: key,
-      clearArt: key == null,
-    );
-    _apply(_p.withSurface(_surface!, look));
-  }
-
-  /// Opens the editor for whatever picture this place wears — a bundle picture,
-  /// whose framing lives beside it, or a shipped one, whose framing lives in the
-  /// look file because an APK cannot be written to.
-  Future<void> _adjustArt() async {
-    final piece = _wornPiece;
-    final root = _root;
-    if (piece == null) return;
-
-    final bundle = _wornBundle;
-    final dir = bundle == null || root == null
-        ? null
-        : Directory('${root.path}/art/${bundle.name}');
-
-    final saved = await Navigator.of(context).push<ArtSpec>(
-      MaterialPageRoute(
-        builder: (_) => ArtEditorScreen(
-          skin: _skin,
-          assetPath: piece.assetPath,
-          aspect: piece.aspect,
-          focus: piece.focus,
-          initial: dir == null
-              ? widget.state.specFor(piece)
-              : ArtSpec.read(dir),
-        ),
-      ),
-    );
-    if (saved == null || !mounted) return;
-
-    if (dir != null) {
-      ArtSpec.write(dir, saved);
-      if (root != null) widget.state.setArtBundles(scanArtBundles(root.path));
-    } else {
-      _apply(_p.withArtSpec(piece.key, saved));
-    }
-    setState(() {});
-  }
-
   /// Re-reads the art folders. Pictures dropped in from a file manager while
   /// the app is open are otherwise invisible until the next launch.
   void _rescanArt() {
@@ -961,15 +919,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     ));
   }
 
-  /// The picture currently being framed: a place's own, or the global one.
-  SkinArt? get _wornPiece {
-    if (_surface != null) {
-      final own = widget.state.artForSurface(_surface!);
-      if (own != null && _surfaceArt != null) return own;
-    }
-    return widget.state.art;
-  }
-
   /// Starts a bundle around one picture the user already has. The folder can
   /// take more frames afterwards; this is only the first one.
   Future<void> _newBundle() async {
@@ -977,10 +926,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (root == null) return;
     final picked = await _pickPictureFromPhone();
     if (picked == null || !mounted) return;
-    final dir = createBundleFrom(root.path, picked);
-    final name = dir.path.split(Platform.pathSeparator).last;
+    final name = await _askFolderName();
+    if (!mounted) return;
+    final dir = createFolderFrom(root.path, picked, name: name);
+    final folder = dir.path.split(Platform.pathSeparator).last;
     widget.state.setArtBundles(scanArtBundles(root.path));
-    _apply(_p.copyWith(bundle: name));
+    _apply(_p.copyWith(bundle: folder));
   }
 
   /// The phone's own pictures, as a sheet of thumbnails. One door for both
@@ -1061,7 +1012,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (picked == null || root == null) return;
     final copied = await importBackground(root, picked);
     if (copied == null || !mounted) return;
-    _setBackdrop(_b.copyWith(file: copied.uri.pathSegments.last));
+    _setBackdrop(_b.copyWith(
+      file: copied.uri.pathSegments.last,
+      clearArt: true,
+    ));
   }
 
   Widget _focusGrid(Skin skin) {
@@ -1510,7 +1464,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     labels: const {
       PersonalizeTab.themes: 'THEMES',
       PersonalizeTab.look: 'LOOK',
-      PersonalizeTab.pictures: 'PICTURES',
       PersonalizeTab.art: 'ART',
       PersonalizeTab.home: 'HOME',
     },
@@ -1623,46 +1576,362 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         ),
       );
 
-  /// Copies the chosen picture into `art/` and wears it here.
+  /// Copies a picture into `art/` and wears it here.
   ///
-  /// A bundle is the only kind of picture the app can frame, name and keep
-  /// after a reboot, so a phone photo becomes a bundle of one rather than a
-  /// path stored on its own.
-  Future<void> _pickPictureForPlace() async {
+  /// A folder holds a set — that is what makes FOLLOW TRACK possible — so this
+  /// asks whether the picture starts a new folder or joins one already there,
+  /// instead of making a folder of one every time.
+  Future<void> _importPictures() async {
     final root = _root;
     if (root == null) return;
     final picked = await _pickPictureFromPhone();
     if (picked == null || !mounted) return;
 
-    final dir = createBundleFrom(root.path, picked);
-    final name = dir.path.split(Platform.pathSeparator).last;
+    final folders = widget.state.bundles;
+    String? choice;
+    if (folders.isNotEmpty) {
+      choice = await showModalBottomSheet<String>(
+        context: context,
+        backgroundColor: _skin.panel,
+        builder: (ctx) => SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+                child: Text(
+                  'ADD TO A FOLDER',
+                  style: TextStyle(
+                    color: _skin.textSecondary,
+                    fontSize: LayoutSpec.fontFloor - 4,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.4,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.create_new_folder_outlined,
+                    color: _skin.accent),
+                title: Text('NEW FOLDER',
+                    style: TextStyle(
+                      color: _skin.textPrimary,
+                      fontSize: LayoutSpec.fontFloor,
+                      fontWeight: FontWeight.w800,
+                    )),
+                onTap: () => Navigator.of(ctx).pop('__new__'),
+              ),
+              for (final folder in folders)
+                ListTile(
+                  leading: const Icon(Icons.folder_outlined),
+                  title: Text(folder.name.toUpperCase(),
+                      style: TextStyle(
+                        color: _skin.textPrimary,
+                        fontSize: LayoutSpec.fontFloor,
+                      )),
+                  subtitle: Text(
+                      '${folder.set.pieces.length} picture'
+                      '${folder.set.pieces.length == 1 ? '' : 's'}',
+                      style: TextStyle(
+                        color: _skin.textSecondary,
+                        fontSize: LayoutSpec.fontFloor - 4,
+                      )),
+                  onTap: () => Navigator.of(ctx).pop(folder.name),
+                ),
+            ],
+          ),
+        ),
+      );
+      if (choice == null || !mounted) return;
+    }
+
+    String folderName;
+    if (choice == null || choice == '__new__') {
+      final name = await _askFolderName();
+      if (!mounted) return;
+      folderName = createFolderFrom(root.path, picked, name: name)
+          .path
+          .split(Platform.pathSeparator)
+          .last;
+    } else {
+      addToFolder(Directory('${root.path}/art/$choice'), picked);
+      folderName = choice;
+    }
+
     widget.state.setArtBundles(scanArtBundles(root.path));
     String? key;
-    for (final bundle in widget.state.bundles) {
-      if (bundle.name == name) key = bundle.set.pieces.first.key;
+    for (final folder in widget.state.bundles) {
+      if (folder.name != folderName) continue;
+      key = folder.set.pieces.last.key;
     }
-    setState(() {
-      if (_surface == null) {
-        _apply(_p.copyWith(bundle: name));
-      } else if (key != null) {
-        _apply(
-          _p.withSurface(
-            _surface!,
-            (_p.surfaces[_surface!] ?? const SurfaceLook()).copyWith(art: key),
-          ),
-        );
-      }
-    });
+    if (key != null) _setPic(key);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _surface == null
-              ? 'That picture is now the everywhere art.'
-              : 'That picture now hangs here — frame it with ADJUST FRAMING.',
+      SnackBar(content: Text('Added to $folderName.')),
+    );
+  }
+
+  Future<String?> _askFolderName() async {
+    final ctrl = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _skin.panel,
+        title: Text('NAME THE FOLDER',
+            style: TextStyle(
+              color: _skin.textPrimary,
+              fontSize: LayoutSpec.fontFloor,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.2,
+            )),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          style: TextStyle(color: _skin.textPrimary),
+          decoration: InputDecoration(
+            hintText: 'late night',
+            hintStyle: TextStyle(color: _skin.textSecondary),
+          ),
+          onSubmitted: (v) => Navigator.of(ctx).pop(v),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child:
+                Text('CANCEL', style: TextStyle(color: _skin.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(ctrl.text),
+            child: Text('MAKE',
+                style: TextStyle(
+                  color: _skin.accent,
+                  fontWeight: FontWeight.w900,
+                )),
+          ),
+        ],
       ),
     );
+    ctrl.dispose();
+    return name;
+  }
+
+  /// One row per art folder: its pictures, and the three things you do to a
+  /// folder — add to it, rename it, delete it. A folder is a set, so removing a
+  /// picture happens on the picture, not in a menu.
+  Widget _folderCard(Skin skin, ArtBundle folder) {
+    final worn = folder.set.pieces.any((p) => p.key == _b.artKey);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+      decoration: BoxDecoration(
+        color: skin.panel,
+        border: Border(
+          left: BorderSide(
+            color: worn ? skin.accent : skin.textSecondary.withValues(alpha: 0.3),
+            width: 3,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${folder.name.toUpperCase()}  ·  '
+                  '${folder.set.pieces.length}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: worn ? skin.accent : skin.textPrimary,
+                    fontSize: LayoutSpec.fontFloor - 3,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+              _miniAction(skin, Icons.add_photo_alternate_outlined, 'ADD',
+                  () => _addToFolder(folder)),
+              _miniAction(skin, Icons.drive_file_rename_outline, 'RENAME',
+                  () => _renameFolder(folder)),
+              _miniAction(skin, Icons.delete_outline, 'DELETE',
+                  () => _deleteFolder(folder)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 46,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (final piece in folder.set.pieces)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () => _setPic(piece.key),
+                          child: SizedBox(
+                            width: 62,
+                            height: 46,
+                            child: piece.assetPath.startsWith('file:')
+                                ? Image.file(
+                                    File(piece.assetPath.substring(5)),
+                                    fit: BoxFit.cover,
+                                    cacheWidth: 186,
+                                    errorBuilder: (_, __, ___) =>
+                                        ColoredBox(color: skin.background),
+                                  )
+                                : Image.asset(
+                                    piece.assetPath,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) =>
+                                        ColoredBox(color: skin.background),
+                                  ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () => _removePiece(folder, piece),
+                            child: Container(
+                              color: Colors.black54,
+                              padding: const EdgeInsets.all(1),
+                              child: Icon(Icons.close_rounded,
+                                  size: 13, color: skin.textPrimary),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _miniAction(
+    Skin skin,
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) =>
+      InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Row(
+            children: [
+              Icon(icon, size: 14, color: skin.textSecondary),
+              const SizedBox(width: 3),
+              Text(
+                label,
+                style: TextStyle(
+                  color: skin.textSecondary,
+                  fontSize: LayoutSpec.fontFloor - 5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Future<void> _addToFolder(ArtBundle folder) async {
+    final root = _root;
+    if (root == null) return;
+    final picked = await _pickPictureFromPhone();
+    if (picked == null || !mounted) return;
+    addToFolder(Directory('${root.path}/art/${folder.name}'), picked);
+    widget.state.setArtBundles(scanArtBundles(root.path));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Added to ${folder.name}.')),
+    );
+  }
+
+  Future<void> _renameFolder(ArtBundle folder) async {
+    final root = _root;
+    if (root == null) return;
+    final name = await _askFolderName();
+    if (name == null || !mounted) return;
+    final renamed =
+        renameFolder(Directory('${root.path}/art/${folder.name}'), name);
+    final newName = renamed.path.split(Platform.pathSeparator).last;
+    widget.state.setArtBundles(scanArtBundles(root.path));
+    if (_p.bundle == folder.name) _apply(_p.copyWith(bundle: newName));
+  }
+
+  Future<void> _deleteFolder(ArtBundle folder) async {
+    final root = _root;
+    if (root == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _skin.panel,
+        title: Text('DELETE ${folder.name.toUpperCase()}?',
+            style: TextStyle(
+              color: _skin.textPrimary,
+              fontSize: LayoutSpec.fontFloor,
+              fontWeight: FontWeight.w900,
+            )),
+        content: Text(
+          'The ${folder.set.pieces.length} pictures in this folder are deleted '
+          'with it. Your originals on the phone are untouched.',
+          style: TextStyle(
+            color: _skin.textSecondary,
+            fontSize: LayoutSpec.fontFloor - 3,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child:
+                Text('KEEP', style: TextStyle(color: _skin.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text('DELETE',
+                style: TextStyle(
+                  color: _skin.accent,
+                  fontWeight: FontWeight.w900,
+                )),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    if (folder.set.pieces.any((p) => p.key == _b.artKey)) _setPic(null);
+    deleteFolder(Directory('${root.path}/art/${folder.name}'));
+    widget.state.setArtBundles(scanArtBundles(root.path));
+  }
+
+  void _removePiece(ArtBundle folder, SkinArt piece) {
+    final root = _root;
+    if (root == null) return;
+    if (folder.set.pieces.length == 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('That is the only picture left — delete the folder.'),
+        ),
+      );
+      return;
+    }
+    removeFromFolder(
+      Directory('${root.path}/art/${folder.name}'),
+      piece.assetPath.startsWith('file:')
+          ? piece.assetPath.substring(5).split(Platform.pathSeparator).last
+          : piece.assetPath.split('/').last,
+    );
+    if (_b.artKey == piece.key) _setPic(null);
+    widget.state.setArtBundles(scanArtBundles(root.path));
   }
 
   Widget _chip(
@@ -1704,15 +1973,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     double value,
     double min,
     double max,
-    ValueChanged<double> onChanged,
-  ) => KitSlider(
+    ValueChanged<double> onChanged, {
+    String? shown,
+  }) => KitSlider(
     skin: skin,
     label: label,
     value: value,
     min: min,
     max: max,
     onChanged: onChanged,
-    shown: value.toStringAsFixed(value <= 1 ? 2 : 0),
+    shown: shown ?? value.toStringAsFixed(value <= 1 ? 2 : 0),
   );
 
   Widget _toggle(

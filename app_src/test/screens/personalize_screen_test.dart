@@ -27,10 +27,10 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('the screen is five tabs, each showing its own part', (tester) async {
+  testWidgets('the screen is four tabs, each showing its own part', (tester) async {
     await pump(tester);
 
-    for (final tab in ['look', 'pictures', 'art', 'home', 'themes']) {
+    for (final tab in ['look', 'art', 'home', 'themes']) {
       expect(find.byKey(Key('personalize-tab-$tab')), findsOneWidget,
           reason: 'the $tab tab is missing');
     }
@@ -44,13 +44,16 @@ void main() {
     expect(find.text('LAYOUT'), findsOneWidget);
     expect(find.text('SONG LIST'), findsOneWidget);
     expect(find.text('EVERYWHERE'), findsNothing,
-        reason: 'pictures belong to their own tab');
+        reason: 'the picture slot lives in the ART tab, not the look tab');
 
-    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
     expect(find.text('EVERYWHERE'), findsOneWidget,
         reason: 'the screen lost the "one picture for all places" option');
-    expect(find.text('BACKDROP'), findsOneWidget);
+    expect(find.text('PICTURE FOR'), findsOneWidget,
+        reason: 'the picture and the folders that fill it are one tab');
+    expect(find.text('BACKDROP'), findsNothing,
+        reason: 'a photo is a picture like any other — it lost its own section');
     expect(find.text('LAYOUT'), findsNothing);
 
     await tester.tap(find.byKey(const Key('personalize-tab-home')));
@@ -61,20 +64,25 @@ void main() {
     expect(find.text('NOW'), findsNothing);
   });
 
-  testWidgets('a place and its picture live together, folders live apart', (tester) async {
+  testWidgets('one ART tab holds the picture and the folders under it',
+      (tester) async {
     await pump(tester);
-
-    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
-    await tester.pumpAndSettle();
-    expect(find.text('EVERYWHERE'), findsOneWidget);
-    expect(find.text('BUILT IN'), findsOneWidget,
-        reason: 'choosing which picture a place wears belongs under the place chips');
 
     await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
-    expect(find.text('ART FOLDERS'), findsOneWidget);
-    expect(find.text('BUILT IN'), findsNothing,
-        reason: 'ART is about folders on disk, not about which picture is worn');
+
+    expect(find.text('EVERYWHERE'), findsOneWidget);
+    expect(find.text('BUILT IN'), findsOneWidget,
+        reason: 'the place chips and the picture strip live in the same tab');
+
+    await tester.scrollUntilVisible(
+      find.text('ART FOLDERS'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('ART FOLDERS'), findsOneWidget,
+        reason: 'the folders that fill the picture slot sit under it, not in a tab of their own');
   });
 
   testWidgets('hiding a section keeps its row on screen and marks it hidden', (tester) async {
@@ -149,16 +157,16 @@ void main() {
     ]);
 
     await pump(tester);
-    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('LIBRARY'));
     await tester.pumpAndSettle();
 
-    expect(find.text('TWO 1'), findsOneWidget);
-    expect(find.text('TWO 2'), findsOneWidget,
+    expect(find.text('TWO · 1/2'), findsOneWidget);
+    expect(find.text('TWO · 2/2'), findsOneWidget,
         reason: 'a folder of two pictures must offer both, not just the first');
 
-    await tester.tap(find.text('TWO 2'));
+    await tester.tap(find.text('TWO · 2/2'));
     await tester.pumpAndSettle();
 
     expect(state.personalization.surfaces[SurfaceId.library]?.art, 'TWO/two.png',
@@ -168,7 +176,7 @@ void main() {
   testWidgets('a picture from the phone is offered as a place picture too',
       (tester) async {
     await pump(tester);
-    await tester.tap(find.byKey(const Key('personalize-tab-pictures')));
+    await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
 
     expect(find.text('FROM PHONE'), findsOneWidget,

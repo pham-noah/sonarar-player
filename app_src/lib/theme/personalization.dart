@@ -146,11 +146,17 @@ class Personalization {
   /// A per-surface picture carries its own framing with it, so a photo that
   /// was cropped for the player is not re-cropped for Library.
   BackdropSpec backdropFor(SurfaceId surface) {
-    final room = surfaces[surface]?.room;
+    final look = surfaces[surface];
+    if (look == null) return backdrop;
+    // A place's own picture wins, and art wins over a photo of the same place:
+    // the art tab is where a place was given an identity.
+    final art = look.art;
+    if (art != null) return backdrop.copyWith(artKey: art, clearFile: true);
+    final room = look.room;
     if (room == null) return backdrop;
     // The per-place photo keeps the default's framing: one picture, one set of
     // sliders. Framing belongs to the picture, and only the picture changed.
-    return backdrop.copyWith(file: room);
+    return backdrop.copyWith(file: room, clearArt: true);
   }
 
   static const Personalization defaults = Personalization();
@@ -284,6 +290,13 @@ class BackdropSpec {
     this.dim = 0.35,
     this.tint = true,
     this.coverOnPlayer = false,
+    this.artKey,
+    this.followTrack = true,
+    this.saturation = 1,
+    this.contrast = 1,
+    this.vignette = 0,
+    this.grain = 0,
+    this.burn = 0,
   });
 
   static const BackdropSpec none = BackdropSpec();
@@ -311,7 +324,37 @@ class BackdropSpec {
   /// On the player, use the current track's cover instead of the photo.
   final bool coverOnPlayer;
 
-  bool get isSet => file != null && file!.isNotEmpty;
+  /// A picture from the art bundles (`bundle/frame.png`) used instead of [file].
+  /// This is the merge: an art folder can back the app the same way a photo can,
+  /// and it keeps the thing a photo cannot do — walking to the next frame as the
+  /// track changes.
+  final String? artKey;
+
+  /// With [artKey] set, move to the next frame of its bundle on every track.
+  final bool followTrack;
+
+  /// 1 is untouched. Above 1 the picture gets louder, below 1 greyer.
+  final double saturation;
+
+  final double contrast;
+
+  /// Darkened corners, 0..1 — what keeps a bright picture from flattening the
+  /// edges of the interface.
+  final double vignette;
+
+  /// Film grain, 0..1. Cheap, and it hides banding in a dimmed photo.
+  final double grain;
+
+  /// 0..1, the image sinks into the page colour at the bottom. The art wash did
+  /// this so text at the foot of a screen never sits on a busy edge.
+  final double burn;
+
+  bool get isSet =>
+      (file != null && file!.isNotEmpty) ||
+      (artKey != null && artKey!.isNotEmpty);
+
+  /// True when the picture comes from an art bundle rather than a photo.
+  bool get fromArt => artKey != null && artKey!.isNotEmpty;
 
   BackdropSpec copyWith({
     String? file,
@@ -324,6 +367,14 @@ class BackdropSpec {
     double? dim,
     bool? tint,
     bool? coverOnPlayer,
+    String? artKey,
+    bool clearArt = false,
+    bool? followTrack,
+    double? saturation,
+    double? contrast,
+    double? vignette,
+    double? grain,
+    double? burn,
   }) =>
       BackdropSpec(
         file: clearFile ? null : (file ?? this.file),
@@ -335,6 +386,13 @@ class BackdropSpec {
         dim: _clamp01(dim ?? this.dim),
         tint: tint ?? this.tint,
         coverOnPlayer: coverOnPlayer ?? this.coverOnPlayer,
+        artKey: clearArt ? null : (artKey ?? this.artKey),
+        followTrack: followTrack ?? this.followTrack,
+        saturation: (saturation ?? this.saturation).clamp(0.0, 2.0),
+        contrast: (contrast ?? this.contrast).clamp(0.5, 2.0),
+        vignette: _clamp01(vignette ?? this.vignette),
+        grain: _clamp01(grain ?? this.grain),
+        burn: _clamp01(burn ?? this.burn),
       );
 
   Map<String, Object?> toJson() => {
@@ -362,6 +420,15 @@ class BackdropSpec {
       dim: _clamp01(_num(raw['dim'], 0.35)),
       tint: raw['tint'] is bool ? raw['tint'] as bool : true,
       coverOnPlayer: raw['cover'] is bool ? raw['cover'] as bool : false,
+      artKey: raw['art'] is String && (raw['art'] as String).isNotEmpty
+          ? raw['art'] as String
+          : null,
+      followTrack: raw['follow'] is bool ? raw['follow'] as bool : true,
+      saturation: _num(raw['sat'], 1).clamp(0.0, 2.0),
+      contrast: _num(raw['con'], 1).clamp(0.5, 2.0),
+      vignette: _clamp01(_num(raw['vig'], 0)),
+      grain: _clamp01(_num(raw['grain'], 0)),
+      burn: _clamp01(_num(raw['burn'], 0)),
     );
   }
 }

@@ -1198,6 +1198,22 @@ class AppState extends ChangeNotifier {
     return artFor(_artSkinOverride ?? _skin.id);
   }
 
+  /// A picture by key, so the backdrop layer can wear an art piece without
+  /// knowing how bundles are stored.
+  SkinArt? artByKey(String key) {
+    for (final bundle in _bundles) {
+      for (final piece in bundle.set.pieces) {
+        if (piece.key == key) return _wearing(piece);
+      }
+    }
+    return null;
+  }
+
+  /// True when this place already wears a backdrop picture, art or photo. The
+  /// in-screen art wash must then stay out of the way: one picture per place.
+  bool backdropOwnsSurface(SurfaceId surface) =>
+      _personalization.backdropFor(surface).isSet;
+
   SkinArt? get art {
     final piece = artSet.atOrNull(_artIndex);
     return piece == null ? null : _wearing(piece);
@@ -1249,6 +1265,10 @@ class AppState extends ChangeNotifier {
   /// everywhere instead of freezing on one image.
   void cycleArtForTrack() {
     nextArt();
+    _advanceBackdropArt();
+    // A place wearing art as its backdrop obeys the same switch as EVERYWHERE,
+    // so turning FOLLOW TRACK off stops every picture, not just the default.
+    if (!_personalization.backdrop.followTrack) return;
     if (_personalization.surfaces.isEmpty) return;
     final next = Map<SurfaceId, SurfaceLook>.from(_personalization.surfaces);
     var changed = false;
@@ -1268,6 +1288,25 @@ class AppState extends ChangeNotifier {
     _personalization = _personalization.copyWith(surfaces: next);
     _presentationCache = null;
     notifyListeners();
+  }
+
+  /// The backdrop wears an art bundle: walk to the next frame of that bundle on
+  /// every track. This is the one thing a photo could never do, and it is why
+  /// the two layers became one.
+  void _advanceBackdropArt() {
+    final spec = _personalization.backdrop;
+    final key = spec.artKey;
+    if (key == null || !spec.followTrack) return;
+    for (final bundle in _bundles) {
+      final at = bundle.set.pieces.indexWhere((p) => p.key == key);
+      if (at < 0) continue;
+      if (bundle.set.length < 2) return;
+      final piece = bundle.set.pieces[(at + 1) % bundle.set.length];
+      _personalization = _personalization.copyWith(
+        backdrop: spec.copyWith(artKey: piece.key),
+      );
+      return;
+    }
   }
 
   void nextArt() {

@@ -66,11 +66,73 @@ List<ArtBundle> scanArtBundles(String? libraryRoot) {
 
 /// Makes a bundle from one picture, so the feature has a door before the user
 /// has a folder of art to drop in.
-Directory createBundleFrom(String libraryRoot, File picture) {
-  final stamp = DateTime.now().millisecondsSinceEpoch;
-  final dir = Directory('$libraryRoot/art/bundle-$stamp')
-    ..createSync(recursive: true);
-  final name = picture.path.split(Platform.pathSeparator).last;
-  picture.copySync('${dir.path}/$name');
+Directory createFolderFrom(String libraryRoot, File picture, {String? name}) {
+  final folder = _uniqueFolder(libraryRoot, name ?? _stampName());
+  folder.createSync(recursive: true);
+  picture.copySync('${folder.path}/${_fileName(picture)}');
+  return folder;
+}
+
+/// One folder is a set of pictures, not a picture. Adding to an existing folder
+/// is how a place gets something to walk through as tracks change.
+File addToFolder(Directory folder, File picture) {
+  var target = File('${folder.path}/${_fileName(picture)}');
+  var n = 2;
+  while (target.existsSync()) {
+    final name = _fileName(picture);
+    final dot = name.lastIndexOf('.');
+    final stem = dot <= 0 ? name : name.substring(0, dot);
+    final ext = dot <= 0 ? '' : name.substring(dot);
+    target = File('${folder.path}/$stem-$n$ext');
+    n++;
+  }
+  return picture.copySync(target.path);
+}
+
+/// Renames the folder on disk. The name is the folder label in Personalize, so a
+/// row of `bundle-1730…` is a row nobody can read.
+Directory renameFolder(Directory folder, String name) {
+  final target = Directory('${folder.parent.path}/${_dashed(name)}');
+  if (target.path == folder.path) return folder;
+  if (target.existsSync()) return folder;
+  return folder.renameSync(target.path);
+}
+
+/// Takes one picture out of a folder. The folder itself stays — removing a
+/// folder is a different, louder action.
+bool removeFromFolder(Directory folder, String name) {
+  final f = File('${folder.path}/$name');
+  if (!f.existsSync()) return false;
+  f.deleteSync();
+  return true;
+}
+
+/// Deletes the folder and everything in it. The pictures are copies made by the
+/// app, so this is not the user's original photo.
+void deleteFolder(Directory folder) {
+  if (folder.existsSync()) folder.deleteSync(recursive: true);
+}
+
+String _stampName() => 'folder-${DateTime.now().millisecondsSinceEpoch}';
+
+Directory _uniqueFolder(String libraryRoot, String name) {
+  var dir = Directory('$libraryRoot/art/${_dashed(name)}');
+  var n = 2;
+  while (dir.existsSync()) {
+    dir = Directory('$libraryRoot/art/${_dashed(name)}-$n');
+    n++;
+  }
   return dir;
+}
+
+String _fileName(File f) => f.path.split(Platform.pathSeparator).last;
+
+/// No spaces: these are folder names other tools have to survive too.
+String _dashed(String name) {
+  final cleaned = name
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+  return cleaned.isEmpty ? _stampName() : cleaned;
 }

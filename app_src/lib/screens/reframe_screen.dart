@@ -81,38 +81,51 @@ class _ReframeScreenState extends State<ReframeScreen> {
             Expanded(
               child: LayoutBuilder(
                 builder: (context, box) {
-                  final size = Size(box.maxWidth, box.maxHeight);
-                  return GestureDetector(
-                    key: const Key('reframe-canvas'),
-                    onPanUpdate: (d) => _pan(d.delta, size),
-                    child: ClipRect(
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // Same framing code the app uses, so the result is
-                          // exactly what you see here.
-                          PersonalBackdrop.frame(
-                            size: size,
-                            scale: _spec.scale,
-                            rotationDeg: _spec.rotationDeg,
-                            focusX: _spec.focusX,
-                            focusY: _spec.focusY,
-                            child: Image.file(
-                              widget.file,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  const ColoredBox(color: Colors.black26),
-                            ),
-                          ),
-                          // The picture darkens the way the app will darken it.
-                          IgnorePointer(
-                            child: ColoredBox(
-                              color: Colors.black.withValues(
-                                alpha: _spec.dim.clamp(0.0, 0.85),
+                  // The canvas is the shape of the screen it will fill. Any other
+                  // shape crops the picture differently, so the preview and the app
+                  // would disagree no matter how the maths lined up.
+                  final screen = MediaQuery.sizeOf(context);
+                  final aspect = screen.width / screen.height;
+                  final size = box.maxWidth / box.maxHeight > aspect
+                      ? Size(box.maxHeight * aspect, box.maxHeight)
+                      : Size(box.maxWidth, box.maxWidth / aspect);
+                  return Center(
+                    child: SizedBox(
+                      width: size.width,
+                      height: size.height,
+                      child: GestureDetector(
+                        key: const Key('reframe-canvas'),
+                        onPanUpdate: (d) => _pan(d.delta, size),
+                        child: ClipRect(
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              // Same framing code the app uses, so the result is
+                              // exactly what you see here.
+                              PersonalBackdrop.frame(
+                                size: size,
+                                scale: _spec.scale,
+                                rotationDeg: _spec.rotationDeg,
+                                focusX: _spec.focusX,
+                                focusY: _spec.focusY,
+                                child: Image.file(
+                                  widget.file,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const ColoredBox(color: Colors.black26),
+                                ),
                               ),
-                            ),
+                              // The picture darkens the way the app will darken it.
+                              IgnorePointer(
+                                child: ColoredBox(
+                                  color: Colors.black.withValues(
+                                    alpha: _spec.dim.clamp(0.0, 0.85),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   );

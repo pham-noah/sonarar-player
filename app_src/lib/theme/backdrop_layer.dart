@@ -92,7 +92,10 @@ class PersonalBackdrop extends StatelessWidget {
     final dpr = MediaQuery.maybeOf(context)?.devicePixelRatio ?? 1;
     final width = MediaQuery.maybeOf(context)?.size.width ?? 1080;
     final cacheWidth = (width * dpr).round().clamp(360, 2160);
-    final alignment = Alignment(spec.focusX * 2 - 1, spec.focusY * 2 - 1);
+    // Cover centres the picture; the focus is carried by the frame's offset
+    // alone. Applying it here as well shifted the picture twice, which is why
+    // the app never matched the editor.
+    const alignment = Alignment.center;
 
     Widget photo;
     if (picture != null) {

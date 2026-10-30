@@ -2,6 +2,7 @@ library;
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
@@ -991,19 +992,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (!mounted) return;
     // An empty list usually means the app is not allowed to look, not that the
     // phone has no pictures. Ask first, then say what actually happened.
-    if (images.isEmpty && Platform.isAndroid) {
+    if (images.isEmpty && defaultTargetPlatform == TargetPlatform.android) {
       final access = await StoragePermission.request();
       if (!mounted) return;
       if (access != StorageAccess.denied) images = candidateImages();
       if (images.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              access == StorageAccess.denied
-                  ? 'Sonarar cannot see your pictures — allow photo access in Settings.'
-                  : 'No pictures found in Pictures, DCIM or Download.',
-            ),
-          ),
+          SnackBar(content: Text(noPicturesMessage(access))),
         );
         return;
       }
@@ -2177,3 +2172,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     dense: true,
   );
 }
+
+/// What to say when the picker has nothing to show. A denial and an empty
+/// phone are different problems, and telling a person the wrong one sends
+/// them looking in the wrong place.
+String noPicturesMessage(StorageAccess access) => access == StorageAccess.denied
+    ? 'Sonarar cannot see your pictures — allow photo access in Settings.'
+    : 'No pictures found in Pictures, DCIM or Download.';

@@ -121,12 +121,56 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     // ignore: avoid_print
-    print('SHELL bar=${tester.getRect(find.byType(SnackBar))} '
-        'mini=${tester.getRect(find.byKey(const Key('mini')))}');
+    final barRect = tester.getRect(find.byType(SnackBar));
+    final miniRect = tester.getRect(find.byKey(const Key('mini')));
+    // ignore: avoid_print
+    print('SHELL bar=$barRect mini=$miniRect');
+    expect(barRect.bottom, lessThanOrEqualTo(miniRect.top + 1),
+        reason: 'on a normal screen the bar sits above the mini player, not on it');
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('../../../.hermes/tmp/toast_shell.png'),
     );
+  });
+
+  testWidgets('a callback on the screen below still reaches the top', (tester) async {
+    await tester.binding.setSurfaceSize(_phone);
+    late BuildContext screenCtx;
+    await tester.pumpWidget(_app(Builder(builder: (context) {
+      screenCtx = context;
+      return Scaffold(
+        backgroundColor: _skin.background,
+        body: Center(
+          child: TextButton(
+            onPressed: () => unawaited(showModalBottomSheet<void>(
+              context: context,
+              backgroundColor: _skin.background,
+              isScrollControlled: true,
+              builder: (ctx) => _sheetBody(),
+            )),
+            child: const Text('open'),
+          ),
+        ),
+        bottomNavigationBar: _miniPlayer(),
+      );
+    })));
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    // The shell's own context — the page route, now covered by the sheet.
+    toast(screenCtx, 'Removed "Burn My Dread"');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    final card = find.byKey(const ValueKey('sonarar-toast'));
+    // ignore: avoid_print
+    print('UNDER sheet=${tester.getRect(find.byType(BottomSheet))} '
+        'bars=${tester.widgetList(card).length} snackbars=${tester.widgetList(find.byType(SnackBar)).length}');
+    expect(tester.widgetList(find.byType(SnackBar)), isEmpty,
+        reason: 'the screen is covered, so its messenger would bury the bar');
+    final hit = tester.hitTestOnBinding(tester.getCenter(card));
+    expect(hit.path.any((e) => identical(e.target, tester.renderObject(card))),
+        isTrue);
   });
 
   testWidgets('sheet case: bar raised from inside a modal sheet', (tester) async {
@@ -158,9 +202,25 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     // ignore: avoid_print
-    print('SHEET sheet=${tester.getRect(find.byType(BottomSheet))} '
-        'bars=${tester.widgetList(find.byType(SnackBar)).length} '
-        'barRect=${tester.widgetList(find.byType(SnackBar)).isEmpty ? 'none' : tester.getRect(find.byType(SnackBar)).toString()}');
+    final sheetRect = tester.getRect(find.byType(BottomSheet));
+    final card = find.byKey(const ValueKey('sonarar-toast'));
+    // ignore: avoid_print
+    print('SHEET sheet=$sheetRect bars=${tester.widgetList(card).length} '
+        'barRect=${tester.widgetList(card).isEmpty ? 'none' : tester.getRect(card).toString()}');
+    expect(tester.widgetList(find.byType(SnackBar)), isEmpty,
+        reason: 'a SnackBar here would be painted behind the sheet and never seen');
+    expect(card, findsOneWidget, reason: 'the bar must exist somewhere visible');
+    expect(tester.getRect(card).top, greaterThan(sheetRect.top),
+        reason: 'it is drawn in the sheet area, and now above it');
+
+    // z-order, not just position: the thing under the finger at the bar's
+    // centre must be the bar. Before the fix the sheet was on top and ate it.
+    final hit = tester.hitTestOnBinding(tester.getCenter(card));
+    expect(
+      hit.path.any((e) => identical(e.target, tester.renderObject(card))),
+      isTrue,
+      reason: 'the sheet is painted over the bar again',
+    );
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('../../../.hermes/tmp/toast_sheet.png'),

@@ -410,8 +410,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   if (_tab == PersonalizeTab.art) ...[
                     SectionBand(skin: skin, label: 'PICTURE FOR'),
                     _picturePreview(skin),
-                    const SizedBox(height: 8),
-                    const SizedBox(height: 6),
                     const SizedBox(height: 10),
                     _scopeStrip(skin),
 
@@ -437,10 +435,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    if (_b.isSet && _surface != null) ...[
-                      const SizedBox(height: 10),
-                    ],
                     if (_b.isSet) ...[
                       const SizedBox(height: 14),
                       _button(

@@ -50,4 +50,27 @@ void main() {
       matchesGoldenFile('goldens/personalize.png'),
     );
   });
+
+  testWidgets('PERSONALIZE, ART tab at phone size', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final root = Directory.systemTemp.createTempSync('sonarar-shot-art');
+    await tester.pumpWidget(MaterialApp(
+      theme: ThemeData(useMaterial3: false),
+      home: PersonalizeScreen(state: AppState()..libraryRoot = root.path, onSaveTheme: (_) {}),
+    ));
+    await tester.pump();
+
+    await tester.tap(find.text('ART'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    await expectLater(
+      find.byType(PersonalizeScreen),
+      matchesGoldenFile('goldens/personalize_art.png'),
+    );
+  });
 }

@@ -911,6 +911,11 @@ class _HomeShellState extends State<HomeShell>
     _inFront = inFront;
     _syncWakelock();
 
+    // The library folder is not ours: a downloader, a file manager or the
+    // system can move things while we are away. Coming back to the front is the
+    // one moment worth re-walking the disk, and only if the walk we have is old.
+    if (inFront) unawaited(_refreshLibraryIfStale());
+
     if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
       if (!_loading) _flushState();
     }
@@ -930,6 +935,17 @@ class _HomeShellState extends State<HomeShell>
   }
 
   bool _wakelockOn = false;
+
+  Future<void> _refreshLibraryIfStale() async {
+    final scan = _repo.scan;
+    if (scan != null && scan.isReadable && !scan.isStale(DateTime.now())) {
+      return;
+    }
+    final changed = await _repo.refresh();
+    if (!changed || !mounted) return;
+    widget.state.attachLibrary(_repo.tracks);
+    setState(() {});
+  }
 
   Future<void> _swapToVariant(Track target) async {
     final engine = _audio;

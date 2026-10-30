@@ -3473,22 +3473,24 @@ class _HomeShellState extends State<HomeShell>
         skin: skin,
         mark: _brandMark(),
         entries: [
-          SidebarEntry(
-            label: 'HISTORY',
-            icon: Icons.insights_rounded,
-            onTap: _openHistory,
-          ),
+          if (_prefs.recordHistory)
+            SidebarEntry(
+              label: 'HISTORY',
+              icon: Icons.insights_rounded,
+              onTap: _openHistory,
+            ),
           if (!_prefs.allowNetwork)
             SidebarEntry(
               label: 'PLACES',
               icon: Icons.location_on_rounded,
               onTap: _openPlacesPage,
             ),
-          SidebarEntry(
-            label: 'THE ARCHIVE',
-            icon: Icons.meeting_room_rounded,
-            onTap: _openArchive,
-          ),
+          if (_prefs.recordHistory)
+            SidebarEntry(
+              label: 'THE ARCHIVE',
+              icon: Icons.meeting_room_rounded,
+              onTap: _openArchive,
+            ),
           SidebarEntry(
             label: 'PERSONALIZE',
             icon: Icons.tune_rounded,

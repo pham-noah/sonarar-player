@@ -291,9 +291,11 @@ class AudioEngine {
   Future<void> setRepeatMode(RepeatMode mode) async {
     _appRepeat = mode;
     try {
-      await _player.setLoopMode(
-        mode == RepeatMode.one ? LoopMode.one : LoopMode.off,
-      );
+      // NEVER the engine's own loop. A loop inside the player never reports
+      // completion, so a song on repeat was invisible to close-out: no play
+      // recorded, no count, nothing in History. The app repeats instead, which
+      // means every pass ends the way a listen ends and gets counted.
+      await _player.setLoopMode(LoopMode.off);
     } catch (_) {
     }
   }

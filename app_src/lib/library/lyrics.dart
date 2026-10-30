@@ -185,6 +185,42 @@ String cleanArtist(String artist) {
   return a.isEmpty ? artist.trim() : a;
 }
 
+/// Every way an upload title might be the song title. LRCLIB indexes songs, not
+/// videos: "April Encounter - 很美味 (Hen Meiwei)《当我飞奔向你》Chi/Eng/Pinyin
+/// lyrics" has to be read down to "April Encounter" before it will match.
+Iterable<String> queryReadings(String raw) sync* {
+  final t = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+  if (t.isEmpty) return;
+
+  // Cut the trailing show name, romanisation and "lyrics" tags in one go.
+  final bare = t
+      .replaceAll(RegExp(r'\s*[\(\[《【〈][^\)\]》】〉]*[\)\]》】〉]'), ' ')
+      .replaceAll(
+        RegExp(
+          r'\s*\b(lyrics?|lyric video|eng(lish)?\s*sub|chi/eng(/pinyin)?|'
+          r'han/rom/eng|color coded|official( video)?|audio|mv|hd)\b.*$',
+          caseSensitive: false,
+        ),
+        ' ',
+      )
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+
+  final seen = <String>{};
+  for (final piece in <String>[
+    bare,
+    ...t.split(RegExp(r'\s+[-–—|]\s+')),
+    ...bare.split(RegExp(r'\s+[-–—|]\s+')),
+  ]) {
+    final read = piece
+        .replaceAll(RegExp(r'[\-–—/|]+\s*$'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    if (read.length < 2) continue;
+    if (seen.add(read.toLowerCase())) yield read;
+  }
+}
+
 class LyricsService {
   LyricsService({required this.cacheDirectory, http.Client? client})
       : _client = client ?? http.Client();
@@ -240,29 +276,41 @@ class LyricsService {
     required String artist,
     Duration? duration,
   }) async {
-    final wanted = normaliseQuery(title);
     final who = cleanArtist(artist);
 
-    // Pass one: both fields, cleaned. This is the precise query.
-    var hit = _bestOf(
-      await _search({
-        'track_name': wanted,
-        if (who.isNotEmpty) 'artist_name': who,
-      }),
-      title: wanted,
-      artist: who,
-      duration: duration,
-    );
+    // An upload title is not a song title. "April Encounter - 很美味 (Hen Meiwei)
+    // 《当我飞奔向你》Chi/Eng/Pinyin lyrics" is one song written five ways, and
+    // the old rule — keep what follows the dash — threw away the only part
+    // LRCLIB knows. Every plausible reading is tried, best first.
+    final candidates = <String>{normaliseQuery(title)};
+    for (final read in queryReadings(title)) {
+      candidates.add(read);
+    }
+    candidates.removeWhere((c) => c.trim().isEmpty);
 
-    // Pass two: title alone. Uploads often carry a channel name as the artist
-    // ("ヨルシカ / n-buna Official") that LRCLIB has never heard of, and the
-    // strict query then returns nothing at all.
-    hit ??= _bestOf(
-      await _search({'track_name': wanted}),
-      title: wanted,
-      artist: who,
-      duration: duration,
-    );
+    Map<String, dynamic>? hit;
+    for (final wanted in candidates) {
+      hit = _bestOf(
+        await _search({
+          'track_name': wanted,
+          if (who.isNotEmpty) 'artist_name': who,
+        }),
+        title: wanted,
+        artist: who,
+        duration: duration,
+      );
+      // The channel name is usually not the artist, so the strict query fails
+      // on anything uploaded by a fan account. Title alone is the second read.
+      // Title alone means title alone: keeping the channel name here rejected
+      // every fan upload, because LRCLIB files the song under its real artist.
+      hit ??= _bestOf(
+        await _search({'track_name': wanted}),
+        title: wanted,
+        artist: '',
+        duration: duration,
+      );
+      if (hit != null) break;
+    }
 
     if (hit == null) {
       return Lyrics(lines: const [], instrumental: false, source: 'not found');
@@ -302,7 +350,7 @@ class LyricsService {
   /// lyrics" is why some tracks came up empty and stayed empty for the session.
   Future<List<dynamic>> _search(Map<String, String> query) async {
     final uri = Uri.https('lrclib.net', '/api/search', query);
-    for (var attempt = 0; attempt < 3; attempt++) {
+    for (var attempt = 0; attempt < 6; attempt++) {
       try {
         final response =
             await _client.get(uri).timeout(const Duration(seconds: 12));
@@ -322,8 +370,12 @@ class LyricsService {
       } on FormatException {
         return const [];
       }
-      await Future<void>.delayed(Duration(milliseconds: 600 * (attempt + 1)));
+      await Future<void>.delayed(
+        Duration(milliseconds: 500 * (attempt + 1) + (attempt * 137)),
+      );
     }
+    // Every attempt hit a busy or unreachable server. Returning an empty list
+    // here made a 503 look like "this song has no lyrics" and cached it.
     return const [];
   }
 
@@ -338,6 +390,10 @@ class LyricsService {
   }) {
     Map<String, dynamic>? synced;
     Map<String, dynamic>? plain;
+    // Same song, different cut: a video that carries the track plus three
+    // minutes of the drama it soundtracked. Better lyrics than none.
+    Map<String, dynamic>? farSynced;
+    Map<String, dynamic>? farPlain;
     for (final row in rows) {
       if (row is! Map) continue;
       final map = row.cast<String, dynamic>();
@@ -357,7 +413,18 @@ class LyricsService {
       final seconds = map['duration'];
       if (duration != null && seconds is num && seconds > 0) {
         final gap = (seconds - duration.inSeconds).abs();
-        if (gap > 12) continue;
+        // A video that opens on dialogue runs minutes longer than the track it
+        // contains. Short songs get a floor, long ones a proportional window.
+        final window = duration.inSeconds < 90 ? 20 : duration.inSeconds * 0.2;
+        if (gap > window) {
+          final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;
+          if (hasSynced) {
+            farSynced ??= map;
+          } else if ((map['plainLyrics'] as String?)?.isNotEmpty ?? false) {
+            farPlain ??= map;
+          }
+          continue;
+        }
       }
       final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;
       if (hasSynced) {
@@ -366,7 +433,7 @@ class LyricsService {
         plain ??= map;
       }
     }
-    return synced ?? plain;
+    return synced ?? plain ?? farSynced ?? farPlain;
   }
 
   /// Same song title across the punctuation and spacing the two sides disagree

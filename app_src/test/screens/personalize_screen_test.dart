@@ -72,8 +72,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('EVERYWHERE'), findsOneWidget);
-    expect(find.text('BUILT IN'), findsOneWidget,
-        reason: 'the place chips and the picture strip live in the same tab');
+    expect(find.text('NO PICTURE'), findsOneWidget,
+        reason: 'the place chips and the picture choices live in the same tab');
 
     await tester.scrollUntilVisible(
       find.text('ART FOLDERS'),
@@ -162,11 +162,11 @@ void main() {
     await tester.tap(find.text('LIBRARY'));
     await tester.pumpAndSettle();
 
-    expect(find.text('TWO · 1/2'), findsOneWidget);
-    expect(find.text('TWO · 2/2'), findsOneWidget,
+    // The folder renders both pictures as tappable frames.
+    expect(find.byKey(const Key('folder-frame-TWO/two.png')), findsOneWidget,
         reason: 'a folder of two pictures must offer both, not just the first');
 
-    await tester.tap(find.text('TWO · 2/2'));
+    await tester.tap(find.byKey(const Key('folder-frame-TWO/two.png')));
     await tester.pumpAndSettle();
 
     expect(state.personalization.surfaces[SurfaceId.library]?.art, 'TWO/two.png',
@@ -179,7 +179,7 @@ void main() {
     await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
 
-    expect(find.text('FROM PHONE'), findsOneWidget,
+    expect(find.text('A PHOTO'), findsOneWidget,
         reason: 'the picker must not be limited to folders already on the card');
   });
 }

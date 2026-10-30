@@ -310,6 +310,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ],
             if (_tab == PersonalizeTab.art) ...[
             SectionBand(skin: skin, label: 'PICTURE FOR'),
+            _picturePreview(skin),
+            const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -337,66 +339,23 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
 
             const SizedBox(height: 10),
-            // Pictures, not folder names. A row of names asks you to remember
-            // what "TEST-BUNDLE" looks like; a row of pictures shows you.
-            SizedBox(
-              height: 132,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _artTile(
+            // Two choices at the top, then the folders that fill the slot. The
+            // strip that used to sit here listed the same folders a second time.
+            Row(
+              children: [
+                Expanded(
+                  child: _button(
                     skin,
-                    label: 'BUILT IN',
-                    selected: !_b.isSet,
-                    onTap: () => _setPic(null),
-                    child: Icon(
-                      Icons.auto_awesome_outlined,
-                      size: 26,
-                      color: skin.textSecondary,
-                    ),
+                    'NO PICTURE',
+                    () => _setBackdrop(const BackdropSpec()),
+                    quiet: !_b.isSet,
                   ),
-                  if (_surface == null)
-                    for (final bundle in widget.state.bundles)
-                      _artTile(
-                        skin,
-                        label: bundle.name.toUpperCase(),
-                        selected: _b.artKey != null &&
-                            bundle.set.pieces.any((p) => p.key == _b.artKey),
-                        onTap: () {
-                          if (bundle.set.pieces.isEmpty) return;
-                          _setPic(bundle.set.pieces.first.key);
-                        },
-                        piece: bundle.set.pieces.first,
-                      )
-                  else
-                    for (final bundle in widget.state.bundles)
-                      for (final piece in bundle.set.pieces)
-                        _artTile(
-                          skin,
-                          // One folder can hold many pictures; a place wears
-                          // one of them, so every picture is its own tile.
-                          label: bundle.set.pieces.length == 1
-                              ? bundle.name.toUpperCase()
-                              : '${bundle.name.toUpperCase()} · '
-                                  '${bundle.set.pieces.indexOf(piece) + 1}'
-                                  '/${bundle.set.pieces.length}',
-                          selected: _b.artKey == piece.key,
-                          onTap: () => _setPic(piece.key),
-                          piece: piece,
-                        ),
-                  _artTile(
-                    skin,
-                    label: 'FROM PHONE',
-                    selected: false,
-                    onTap: _importPictures,
-                    child: Icon(
-                      Icons.add_photo_alternate_outlined,
-                      size: 26,
-                      color: skin.accent,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _button(skin, 'A PHOTO', _chooseImage, quiet: _b.isSet),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Text(
@@ -606,7 +565,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             Row(
               children: [
                 Expanded(
-                  child: _button(skin, 'NEW BUNDLE FROM A PICTURE', _newBundle),
+                  child: _button(skin, 'NEW FOLDER', _importPictures),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -618,20 +577,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             for (final folder in widget.state.bundles)
               _folderCard(skin, folder),
             const SizedBox(height: 4),
-            _toggleRow(
-              skin,
-              'PICTURES FOLLOW TRACK',
-              'Each new song moves on to the next picture in the bundle.',
-              widget.prefs?.cycleCharacterArt ?? false,
-              (v) => widget.onPrefsChanged?.call(
-                widget.prefs!.copyWith(cycleCharacterArt: v),
-              ),
-            ),
             const SizedBox(height: 8),
             Text(
-              'A bundle is a folder of pictures in Music/Sonarar/art. Every '
-              'picture in it is a frame of that art; drop more in and it has '
-              'more. ${widget.state.bundles.isEmpty ? 'No folders yet.' : ''}',
+              widget.state.bundles.isEmpty
+                  ? 'No folders yet. A folder is a set of pictures in '
+                      'Music/Sonarar/art; a place wears one of them.'
+                  : 'Tap a picture in a folder to wear it here. FOLLOW TRACK '
+                      'above decides whether the folder walks on with each song.',
               style: TextStyle(
                 color: skin.textSecondary,
                 fontSize: LayoutSpec.fontFloor - 4,
@@ -919,21 +871,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     ));
   }
 
-  /// Starts a bundle around one picture the user already has. The folder can
-  /// take more frames afterwards; this is only the first one.
-  Future<void> _newBundle() async {
-    final root = _root;
-    if (root == null) return;
-    final picked = await _pickPictureFromPhone();
-    if (picked == null || !mounted) return;
-    final name = await _askFolderName();
-    if (!mounted) return;
-    final dir = createFolderFrom(root.path, picked, name: name);
-    final folder = dir.path.split(Platform.pathSeparator).last;
-    widget.state.setArtBundles(scanArtBundles(root.path));
-    _apply(_p.copyWith(bundle: folder));
-  }
-
   /// The phone's own pictures, as a sheet of thumbnails. One door for both
   /// "make a folder of art" and "put this photo on a place".
   Future<File?> _pickPictureFromPhone() async {
@@ -1016,6 +953,102 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       file: copied.uri.pathSegments.last,
       clearArt: true,
     ));
+  }
+
+  /// What the picture looks like right now, with every slider already applied.
+  /// Framing a photo you cannot see is guesswork, and the controls sit below
+  /// the fold — so the result travels with you.
+  Widget _picturePreview(Skin skin) {
+    if (!_b.isSet) {
+      return Container(
+        height: 92,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: skin.panel,
+          border: Border.all(
+            color: skin.textSecondary.withValues(alpha: 0.22),
+          ),
+        ),
+        child: Text(
+          'NO PICTURE — THE SKIN PAINTS THIS',
+          style: TextStyle(
+            color: skin.textSecondary,
+            fontSize: LayoutSpec.fontFloor - 5,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.2,
+          ),
+        ),
+      );
+    }
+
+    final root = _root;
+    final art = _b.artKey == null ? null : widget.state.artByKey(_b.artKey!);
+    // Which frame of which folder this is, so the label means something.
+    var at = 1;
+    var total = 0;
+    for (final folder in widget.state.bundles) {
+      final i = folder.set.pieces.indexWhere((p) => p.key == _b.artKey);
+      if (i < 0) continue;
+      at = i + 1;
+      total = folder.set.pieces.length;
+      break;
+    }
+
+    return ClipRect(
+      child: SizedBox(
+        height: 148,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            PersonalBackdrop(
+              root: root,
+              spec: _b,
+              skin: skin,
+              art: art,
+            ),
+            Positioned(
+              left: 8,
+              bottom: 8,
+              right: 8,
+              child: Row(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    color: Colors.black.withValues(alpha: 0.55),
+                    child: Text(
+                      _b.fromArt ? 'FOLDER' : 'PHOTO',
+                      style: TextStyle(
+                        color: skin.accent,
+                        fontSize: LayoutSpec.fontFloor - 6,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  if (_b.fromArt && total > 1)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      color: Colors.black.withValues(alpha: 0.55),
+                      child: Text(
+                        'FRAME $at/$total',
+                        style: TextStyle(
+                          color: skin.textPrimary,
+                          fontSize: LayoutSpec.fontFloor - 6,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _focusGrid(Skin skin) {
@@ -1524,58 +1557,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// looking at another one, so the selector answers "where is custom?".
   /// One picture in the picker: the picture itself, its name underneath, and
   /// a ring when it is the one being worn.
-  Widget _artTile(
-    Skin skin, {
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-    SkinArt? piece,
-    Widget? child,
-  }) =>
-      Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: GestureDetector(
-          onTap: onTap,
-          child: SizedBox(
-            width: 96,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 96,
-                  height: 96,
-                  decoration: BoxDecoration(
-                    color: skin.panel,
-                    border: Border.all(
-                      color: selected
-                          ? skin.accent
-                          : skin.textSecondary.withValues(alpha: 0.22),
-                      width: selected ? 2 : 1,
-                    ),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: piece == null
-                      ? Center(child: child)
-                      : _ArtThumb(piece: piece.assetPath),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontFloor - 4,
-                    letterSpacing: 0.8,
-                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                    color: selected ? skin.accent : skin.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
   /// Copies a picture into `art/` and wears it here.
   ///
   /// A folder holds a set — that is what makes FOLLOW TRACK possible — so this
@@ -1771,6 +1752,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     child: Stack(
                       children: [
                         GestureDetector(
+                          key: Key('folder-frame-${piece.key}'),
                           onTap: () => _setPic(piece.key),
                           child: SizedBox(
                             width: 62,
@@ -1997,30 +1979,4 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     onChanged: onChanged,
     dense: true,
   );
-}
-
-/// A picture from a bundle, at thumbnail size. Bundles point at files on the
-/// card (`file:` prefix); shipped art is an asset. One widget, both kinds.
-class _ArtThumb extends StatelessWidget {
-  const _ArtThumb({required this.piece});
-
-  final String piece;
-
-  @override
-  Widget build(BuildContext context) {
-    if (piece.startsWith('file:')) {
-      return Image.file(
-        File(piece.substring(5)),
-        fit: BoxFit.cover,
-        cacheWidth: 192,
-        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-      );
-    }
-    return Image.asset(
-      piece,
-      fit: BoxFit.cover,
-      cacheWidth: 192,
-      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-    );
-  }
 }

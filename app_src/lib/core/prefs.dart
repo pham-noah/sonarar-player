@@ -21,7 +21,7 @@ class AppPrefs {
     this.learnFromSkips = false,
     this.weatherVariants = false,
     this.autoSkin = false,
-    this.recordHistory = false,
+    this.recordHistory = true,
     this.personaLayer = false,
     this.cycleCharacterArt = true,
     this.showVisualiser = true,
@@ -247,6 +247,7 @@ class AppPrefs {
         'weather_variants': weatherVariants,
         'auto_skin': autoSkin,
         'record_history': recordHistory,
+        'prefs_version': 2,
         'persona_layer': personaLayer,
         'cycle_character_art': cycleCharacterArt,
         'show_visualiser': showVisualiser,
@@ -296,7 +297,12 @@ class AppPrefs {
       learnFromSkips: _bool(raw['learn_from_skips']) ?? initial.learnFromSkips,
       weatherVariants: _bool(raw['weather_variants']) ?? initial.weatherVariants,
       autoSkin: _bool(raw['auto_skin']) ?? initial.autoSkin,
-      recordHistory: _bool(raw['record_history']) ?? initial.recordHistory,
+      // Files written before prefs_version existed carry `record_history: false`
+      // only because that was the default then — nobody chose it. Reading that
+      // as a decision kept History empty on every install that predates this.
+      recordHistory: raw['prefs_version'] == null
+          ? true
+          : (_bool(raw['record_history']) ?? initial.recordHistory),
       personaLayer: _bool(raw['persona_layer']) ?? initial.personaLayer,
 
       cycleCharacterArt:

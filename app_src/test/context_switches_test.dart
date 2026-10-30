@@ -86,7 +86,8 @@ void main() {
       expect(fresh.learnFromSkips, isFalse);
       expect(fresh.weatherVariants, isFalse);
       expect(fresh.autoSkin, isFalse);
-      expect(fresh.recordHistory, isFalse);
+      expect(fresh.recordHistory, isTrue,
+          reason: 'a history nobody records is a screen that cannot fill');
       expect(fresh.personaLayer, isFalse);
     });
 

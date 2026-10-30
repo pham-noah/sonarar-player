@@ -36,6 +36,17 @@ class _ReframeScreenState extends State<ReframeScreen> {
     });
   }
 
+  /// Whether the picture in the editor differs from the one it opened with, so
+  /// RESET can read as available only when there is something to reset.
+  bool get _changed {
+    final a = _spec.toJson();
+    final b = widget.initial.toJson();
+    for (final key in a.keys) {
+      if (a[key].toString() != b[key].toString()) return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final skin = widget.skin;
@@ -58,6 +69,22 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     ),
                   ),
                   const Spacer(),
+                  // Undo the drag as easily as making it: the picture you
+                  // started with is one tap away, not a careful reverse drag.
+                  TextButton(
+                    key: const Key('reframe-reset'),
+                    onPressed: _changed
+                        ? () => setState(() => _spec = widget.initial)
+                        : null,
+                    child: Text(
+                      'RESET',
+                      style: TextStyle(
+                        color: _changed
+                            ? skin.textSecondary
+                            : skin.textSecondary.withValues(alpha: 0.35),
+                      ),
+                    ),
+                  ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text(

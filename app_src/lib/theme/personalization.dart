@@ -21,7 +21,7 @@ enum SurfaceId { home, library, search, player }
 /// What one surface shows behind and around it. Null means "whatever the
 /// default is", which is why a fresh install needs no entries here at all.
 class SurfaceLook {
-  const SurfaceLook({this.room, this.art});
+  const SurfaceLook({this.room, this.art, this.spec});
 
   /// Photo file name inside `<library>/backgrounds/`.
   final String? room;
@@ -29,23 +29,42 @@ class SurfaceLook {
   /// Art picture: `bundle/frame.png`, relative to `<library>/art/`.
   final String? art;
 
+  /// This place's own framing. A picture is framed once, for the place it was
+  /// put on; falling back to the default's framing made every place look like
+  /// EVERYWHERE no matter what was dragged.
+  final BackdropSpec? spec;
+
   bool get isSet => room != null || art != null;
 
-  SurfaceLook copyWith({String? room, String? art, bool clearRoom = false, bool clearArt = false}) =>
+  SurfaceLook copyWith({
+    String? room,
+    String? art,
+    BackdropSpec? spec,
+    bool clearRoom = false,
+    bool clearArt = false,
+    bool clearSpec = false,
+  }) =>
       SurfaceLook(
         room: clearRoom ? null : (room ?? this.room),
         art: clearArt ? null : (art ?? this.art),
+        spec: clearSpec ? null : (spec ?? this.spec),
       );
 
   Map<String, Object?> toJson() => {
         if (room != null) 'room': room,
         if (art != null) 'art': art,
+        if (spec != null) 'spec': spec!.toJson(),
       };
 
   static SurfaceLook fromJson(Object? raw) {
     if (raw is! Map) return const SurfaceLook();
     String? str(Object? v) => v is String && v.isNotEmpty ? v : null;
-    return SurfaceLook(room: str(raw['room']), art: str(raw['art']));
+    final spec = raw['spec'];
+    return SurfaceLook(
+      room: str(raw['room']),
+      art: str(raw['art']),
+      spec: spec is Map ? BackdropSpec.fromJson(spec) : null,
+    );
   }
 }
 
@@ -154,12 +173,12 @@ class Personalization {
     if (look == null) return backdrop;
     // A place's own picture wins, and art wins over a photo of the same place:
     // the art tab is where a place was given an identity.
+    // A place that has been framed keeps what it was framed with.
+    if (look.spec != null) return look.spec!;
     final art = look.art;
     if (art != null) return backdrop.copyWith(artKey: art, clearFile: true);
     final room = look.room;
     if (room == null) return backdrop;
-    // The per-place photo keeps the default's framing: one picture, one set of
-    // sliders. Framing belongs to the picture, and only the picture changed.
     return backdrop.copyWith(file: room, clearArt: true);
   }
 
@@ -414,6 +433,13 @@ class BackdropSpec {
         'dim': dim,
         'tint': tint,
         'cover': coverOnPlayer,
+        'art': artKey,
+        'follow': followTrack,
+        'sat': saturation,
+        'con': contrast,
+        'vig': vignette,
+        'grain': grain,
+        'burn': burn,
       };
 
   factory BackdropSpec.fromJson(Object? raw) {

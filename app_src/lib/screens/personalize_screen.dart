@@ -98,10 +98,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       return;
     }
     // A place picture has no framing of its own.
+    // The whole spec, not just the file name: a place keeps the framing it was
+    // given, otherwise REFRAME on a place saved nothing at all.
     _apply(
       _p.withSurface(
         _surface!,
-        SurfaceLook(room: b.fromArt ? null : b.file, art: b.artKey),
+        SurfaceLook(
+          room: b.fromArt ? null : b.file,
+          art: b.artKey,
+          spec: b,
+        ),
       ),
     );
   }
@@ -1244,7 +1250,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   Future<void> _reframe() async {
     final root = _root;
     if (root == null) return;
-    final file = backdropFile(root, _b);
+    // An art folder is framed the same way a photo is: resolve its frame to a
+    // real file and hand it to the same editor.
+    final art = _b.artKey == null ? null : widget.state.artByKey(_b.artKey!);
+    final file = art != null && art.assetPath.startsWith('file:')
+        ? File(art.assetPath.substring(5))
+        : backdropFile(root, _b);
     if (file == null || !file.existsSync()) return;
     final next = await Navigator.of(context).push<BackdropSpec>(
       MaterialPageRoute(

@@ -38,6 +38,7 @@ class PersonalBackdrop extends StatelessWidget {
     required this.spec,
     required this.skin,
     this.art,
+    this.file,
   });
 
   final Directory? root;
@@ -48,6 +49,10 @@ class PersonalBackdrop extends StatelessWidget {
   /// Merge: an art folder is just another way to fill this same layer, so it
   /// inherits every control a photo has — including the ones art never had.
   final SkinArt? art;
+
+  /// A file to paint directly, for the editor, which has one but no library
+  /// root yet. Everything else still resolves from [root] and [spec].
+  final File? file;
 
   /// A rectangle rotated by theta must grow by this much to still cover it.
   static double rotationPadding(double degrees) {
@@ -85,9 +90,9 @@ class PersonalBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final file = backdropFile(root, spec);
+    final resolved = file ?? backdropFile(root, spec);
     final picture = art;
-    if (file == null && picture == null) return const SizedBox.shrink();
+    if (resolved == null && picture == null) return const SizedBox.shrink();
 
     final dpr = MediaQuery.maybeOf(context)?.devicePixelRatio ?? 1;
     final width = MediaQuery.maybeOf(context)?.size.width ?? 1080;
@@ -117,7 +122,7 @@ class PersonalBackdrop extends StatelessWidget {
             );
     } else {
       photo = Image.file(
-        file!,
+        resolved!,
         fit: BoxFit.cover,
         cacheWidth: cacheWidth,
         alignment: alignment,

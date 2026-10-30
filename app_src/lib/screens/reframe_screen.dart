@@ -100,28 +100,14 @@ class _ReframeScreenState extends State<ReframeScreen> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              // Same framing code the app uses, so the result is
-                              // exactly what you see here.
-                              PersonalBackdrop.frame(
-                                size: size,
-                                scale: _spec.scale,
-                                rotationDeg: _spec.rotationDeg,
-                                focusX: _spec.focusX,
-                                focusY: _spec.focusY,
-                                child: Image.file(
-                                  widget.file,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) =>
-                                      const ColoredBox(color: Colors.black26),
-                                ),
-                              ),
-                              // The picture darkens the way the app will darken it.
-                              IgnorePointer(
-                                child: ColoredBox(
-                                  color: Colors.black.withValues(
-                                    alpha: _spec.dim.clamp(0.0, 0.85),
-                                  ),
-                                ),
+                              // The runtime layer itself, not a copy of it: grain,
+                              // vignette, burn, blur and dim all land where they
+                              // will land on the phone.
+                              PersonalBackdrop(
+                                root: null,
+                                file: widget.file,
+                                spec: _spec,
+                                skin: widget.skin,
                               ),
                             ],
                           ),

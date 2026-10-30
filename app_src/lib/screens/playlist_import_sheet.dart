@@ -12,7 +12,6 @@ import '../download/download_manager.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/playlist_read.dart';
 import '../library/playlists.dart';
-import '../widgets/toasts.dart';
 import '../theme/skin.dart';
 import '../theme/layout.dart';
 
@@ -159,6 +158,10 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
   final Map<String, int> _seen = {};
   final Map<String, int> _total = {};
 
+  /// A line the sheet says to itself. A snackbar cannot be used here: the
+  /// sheet covers the bottom of the screen, so the bar is drawn behind it.
+  String? _notice;
+
   @override
   void initState() {
     super.initState();
@@ -181,11 +184,16 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     });
   }
 
+  void _say(String message) {
+    if (!mounted) return;
+    setState(() => _notice = message);
+  }
+
   Future<void> _persist(List<PlaylistSource> next) async {
     setState(() => _sources = next);
     final ok = await widget.store.save(next);
     if (!ok && mounted) {
-      toast(context, 'Saved for now, but it could not be written to disk.');
+      _say('Saved for now, but it could not be written to disk.');
     }
   }
 
@@ -425,14 +433,14 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     final id = playlistIdFrom(linkCtl.text);
 
     if (label.isEmpty || id == null) {
-      toast(context, label.isEmpty ? 'A playlist needs a name' : 'That link has no playlist id in it');
+      _say(label.isEmpty ? 'A playlist needs a name' : 'That link has no playlist id in it');
       return;
     }
 
     final next = [..._sources];
     if (existing == null) {
       if (next.any((s) => s.label.toLowerCase() == label.toLowerCase())) {
-        toast(context, 'You already have a playlist called "$label"');
+        _say('You already have a playlist called "$label"');
         return;
       }
       next.add(PlaylistSource(
@@ -522,6 +530,15 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           const SizedBox(height: 4),
           Text('Import one, or update it later — only the new songs are fetched.',
               style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
+          if (_notice != null) ...[
+            const SizedBox(height: 10),
+            Text(_notice!,
+                style: TextStyle(
+                  fontSize: LayoutSpec.fontFloor,
+                  color: skin.accent,
+                  fontWeight: FontWeight.w600,
+                )),
+          ],
           const SizedBox(height: 14),
 
           if (_loading)

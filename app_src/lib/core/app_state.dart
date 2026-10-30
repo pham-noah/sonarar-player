@@ -774,7 +774,10 @@ class AppState extends ChangeNotifier {
     _layoutId,
     _accented(_skin),
     paletteIndex: _paletteIndex,
-    takeBase: _personalization.base != null,
+    // SOLID is flat panels, so the base belongs in it. GLASS builds its look
+    // out of the translucency of its own palette and SONAR already takes the
+    // skin; repainting either would erase what makes them those layouts.
+    takeBase: _personalization.base != null && _layoutId == LayoutKind.solid,
   );
 
   LayoutPalette get palette => presentation.palette;

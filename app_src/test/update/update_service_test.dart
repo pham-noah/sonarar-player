@@ -166,6 +166,35 @@ void main() {
     expect(line, '$appVersionName+$appVersionCode');
   });
 
+  test('a title without a build still compares versions', () async {
+    // The release title carries no `+NN`: the tag has to do the work, and it
+    // can only do it if the app says which version it is. A caller that passes
+    // neither would silently never see this release.
+    final release = <String, Object?>{
+      'tag_name': 'v9.9.10',
+      'name': 'Sonarar 9.9.10',
+      'html_url': 'https://example.test/release',
+      'assets': [
+        {
+          'name': 'Sonarar-9.9.10-arm64.apk',
+          'browser_download_url': 'https://example.test/a.apk',
+          'size': 1024,
+        },
+      ],
+    };
+
+    final newer = await checkForUpdate(appVersionCode,
+        client: clientReturning(release));
+    expect(newer?.version, '9.9.10');
+
+    final same = await checkForUpdate(
+      appVersionCode,
+      currentVersion: '9.9.10',
+      client: clientReturning(release),
+    );
+    expect(same, isNull, reason: 'the build we are on is not an update');
+  });
+
   test('F-Droid builds turn the whole thing off', () {
     // Compile-time switch: this test documents the contract, and the F-Droid
     // build passes --dart-define=SONARAR_SELF_UPDATE=false.

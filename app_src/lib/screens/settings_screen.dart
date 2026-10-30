@@ -123,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
     final check = widget.checkUpdate ??
         () => checkForUpdate(appVersionCode,
-            currentVersion: widget.appVersion ?? '');
+            currentVersion: widget.appVersion ?? appVersionName);
     final update = await check();
     if (!mounted) return;
     // Hand the answer to the banner, whether or not the automatic check is on:

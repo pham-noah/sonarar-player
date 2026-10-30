@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
+import '../core/build_info.dart';
+
 /// A release the user could move to.
 class AppUpdate {
   const AppUpdate({
@@ -49,7 +51,10 @@ const _repo = 'pham-noah/sonarar-player';
 /// GitHub was slow is a broken music player.
 Future<AppUpdate?> checkForUpdate(
   int currentBuild, {
-  String currentVersion = '',
+  // What this build answers to. The default is the build's own version, because
+  // a caller that forgets it turns a release title without `+NN` into a check
+  // that never fires — the version comparison needs both sides.
+  String currentVersion = appVersionName,
   http.Client? client,
 }) async {
   if (!kSelfUpdate) return null;

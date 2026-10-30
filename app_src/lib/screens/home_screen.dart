@@ -588,6 +588,14 @@ class HomeScreen extends StatelessWidget {
             letterSpacing: 2.2,
             fontWeight: FontWeight.w900,
             color: skin.accent,
+            // The band sits on artwork, so it needs a shadow of its own.
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.85),
+                blurRadius: 6,
+                offset: const Offset(0, 1),
+              ),
+            ],
           ),
         ),
       );

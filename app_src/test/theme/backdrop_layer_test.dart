@@ -42,6 +42,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    // A golden can be regenerated from a broken frame; this cannot.
+    expect(find.byType(Image), findsOneWidget);
     await expectLater(
       find.byType(PersonalBackdrop),
       matchesGoldenFile('goldens/backdrop_photo.png'),

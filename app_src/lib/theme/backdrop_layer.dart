@@ -154,6 +154,7 @@ class PersonalBackdrop extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
+                photo,
                 if (spec.grain > 0)
                   Positioned.fill(
                     child: IgnorePointer(

@@ -11,6 +11,7 @@ import '../theme/layout.dart';
 import '../screens/reframe_screen.dart';
 import '../theme/theme_preset.dart';
 import '../widgets/kit.dart';
+import '../widgets/toasts.dart';
 import '../widgets/spectrum.dart';
 import '../art/art_bundle.dart';
 import '../art/skin_art.dart';
@@ -938,14 +939,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (root == null) return;
     widget.state.setArtBundles(scanArtBundles(root.path));
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${widget.state.bundles.length} art folder'
-          '${widget.state.bundles.length == 1 ? '' : 's'} found.',
-        ),
-      ),
-    );
+    toast(context, '${widget.state.bundles.length} art folder'
+          '${widget.state.bundles.length == 1 ? '' : 's'} found.');
   }
 
   /// The phone's own pictures, as a sheet of thumbnails. One door for both
@@ -954,11 +949,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final images = candidateImages();
     if (!mounted) return null;
     if (images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No pictures found in Pictures, DCIM or Download.'),
-        ),
-      );
+      toast(context, 'No pictures found in Pictures, DCIM or Download.');
       return null;
     }
     return showModalBottomSheet<File>(
@@ -997,18 +988,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       if (!mounted) return;
       if (access != StorageAccess.denied) images = candidateImages();
       if (images.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(noPicturesMessage(access))),
-        );
+        toast(context, noPicturesMessage(access));
         return;
       }
     }
     if (images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No pictures found in Pictures, DCIM or Download.'),
-        ),
-      );
+      toast(context, 'No pictures found in Pictures, DCIM or Download.');
       return;
     }
     final picked = await showModalBottomSheet<File>(
@@ -1503,15 +1488,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final name = widget.state.preset?.name;
     final done = widget.state.overrideActiveTheme();
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          done
+    toast(context, done
               ? 'Saved into "$name".'
-              : 'No theme is worn, so there was nothing to override.',
-        ),
-      ),
-    );
+              : 'No theme is worn, so there was nothing to override.');
   }
 
   void _setFill(BackdropFill fill) => _apply(_p.copyWith(fill: fill));
@@ -1991,21 +1970,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       file = backdropFile(root, _b);
     }
     if (file == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No photo chosen, so no colour taken.')),
-      );
+      toast(context, 'No photo chosen, so no colour taken.');
       return;
     }
     final colour = await accentFromImage(file);
     if (!mounted) return;
     if (colour == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'That picture has no colour strong enough to be an accent.',
-          ),
-        ),
-      );
+      toast(context, 'That picture has no colour strong enough to be an accent.');
       return;
     }
     final argb = colour.toARGB32();
@@ -2015,14 +1986,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Accent taken from the photo: '
-          '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
-        ),
-      ),
-    );
+    toast(context, 'Accent taken from the photo: '
+          '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}');
   }
 
   Future<void> _renameFolder(ArtBundle folder) async {
@@ -2091,11 +2056,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final root = _root;
     if (root == null) return;
     if (folder.set.pieces.length == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('That is the only picture left — delete the folder.'),
-        ),
-      );
+      toast(context, 'That is the only picture left — delete the folder.');
       return;
     }
     removeFromFolder(

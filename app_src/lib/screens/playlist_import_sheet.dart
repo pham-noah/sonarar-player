@@ -12,6 +12,7 @@ import '../download/download_manager.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/playlist_read.dart';
 import '../library/playlists.dart';
+import '../widgets/toasts.dart';
 import '../theme/skin.dart';
 import '../theme/layout.dart';
 
@@ -184,9 +185,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     setState(() => _sources = next);
     final ok = await widget.store.save(next);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Saved for now, but it could not be written to disk.'),
-      ));
+      toast(context, 'Saved for now, but it could not be written to disk.');
     }
   }
 
@@ -426,20 +425,14 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     final id = playlistIdFrom(linkCtl.text);
 
     if (label.isEmpty || id == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          label.isEmpty ? 'A playlist needs a name' : 'That link has no playlist id in it',
-        ),
-      ));
+      toast(context, label.isEmpty ? 'A playlist needs a name' : 'That link has no playlist id in it');
       return;
     }
 
     final next = [..._sources];
     if (existing == null) {
       if (next.any((s) => s.label.toLowerCase() == label.toLowerCase())) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('You already have a playlist called "$label"')),
-        );
+        toast(context, 'You already have a playlist called "$label"');
         return;
       }
       next.add(PlaylistSource(

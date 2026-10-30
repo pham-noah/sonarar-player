@@ -2805,265 +2805,271 @@ class _HomeShellState extends State<HomeShell>
   }
 
   Widget _tabContent(AppTab tab, Skin skin) => switch (tab) {
-        AppTab.home => HomeScreen(
-          skin: skin,
-          headerArt: _headerArt(skin),
-          recent: _recentTracks,
-          home: widget.state.personalization.home,
-          onOpenPersonalize: _openPersonalizePage,
-          headerMark: _brandMark(),
-          band: decode.bandNameOf(_ctxForHome?.band),
-          continueTrack: _continueTrack,
-          jumpBackIn: _jumpBackIn,
-          heavyRotation: _heavyRotation,
-          greeting: _homeGreeting,
-          nowMixName: widget.state.dynamicMix()?.name,
-          onPlayNowMix: _playNowMix,
-          newFromLibrary: _newFromLibrary,
-          rediscover: _rediscoverTracks,
-
-          mostPlayed: _heavyRotation,
-          likedSongs: _likedTracks,
-          recentPlaylist: _mostRecentPlaylist,
-          onPlayPlaylist: (p) => _playPlaylistFromHome(p),
-          onOpenRecentPlaylist: () {
-            final p = _mostRecentPlaylist;
-            if (p != null) _openPlaylistPage(p);
-          },
-          onOpenRecap: _openRecap,
-          genreLists: _genreLists,
-          libraryPlaylists: _libraryPlaylists,
-          recapTracks: _recapTracks,
-          recapLabel: _recapLabel,
-
-          allTracks: _repo.tracks,
-          onOpenRediscover: _openRediscover,
-          coverPathFor: _repo.coverPathFor,
-          onPlay: _playFromHome,
-          weather: _ctx.weatherReading?.condition ?? WeatherCondition.unknown,
-          placeName: _ctx.currentPlaceId == null
-              ? null
-              : _ctx.placeBook.byId(_ctx.currentPlaceId!)?.name,
-          placeIcon: _ctx.currentPlaceId == null
-              ? null
-              : placeIconFor(_ctx.placeBook.byId(_ctx.currentPlaceId!)?.icon),
-          hasFix: _ctx.currentPlaceId != null,
-          contextEnabled: widget.state.contextEnabled,
-        ),
-        AppTab.library => LibraryScreen(
-
-          entryToken: _libraryEntry,
-          grid: _prefs.libraryIsGrid ?? widget.state.arrangement.libraryIsGrid,
-          headerScrollsAway: widget.state.arrangement.headerScrollsAway,
-          contentMaxWidth: widget.state.arrangement.contentMaxWidth,
-          tracks: _repo.tracks,
-          coverPathFor: _repo.coverPathFor,
-          skin: skin,
-          headerArt: _headerArt(skin),
-          libraryRoot: _repo.libraryRoot,
-
-          onManage: _openLibraryManagement,
-
-          onDragToQueue: widget.state.queue == null ? null : _queueFromDrag,
-          likedIds: widget.state.favorites.ids,
-
-          likedOrder: widget.state.favorites.orderedIds,
-
-          headerMark: _brandMark(),
-          playlistSort: _prefs.playlistSortName,
-          pinnedPlaylistIds: _effectivePins,
-          recentPlaylistIds: _prefs.recentPlaylistIds ?? const [],
-          onPlaylistSort: (v) => _setPrefs(_prefs.copyWith(playlistSort: v)),
-          onTogglePin: _togglePin,
-          onPlaylistGrid: (v) => setState(() => _playlistGridOverride = v),
-          playlistGrid: _playlistGridOverride,
-          onPlaylistOpened: (p) => _notePlaylistOpened(p.id),
-
-          onAddSongsTo: _addSongsToPlaylist,
-
-          searchRequest: _searchRequest,
-          closeListRequest: _closeListRequest,
-          onListOpenChanged: (open) {
-            if (open != _libraryListOpen) {
-              setState(() => _libraryListOpen = open);
-            }
-          },
-          artistRequest: _artistRequest,
-
-          onPlay: (t) {
-            widget.state.playTrackElsewhere(t);
-            // ignore: discarded_futures
-            _loadCurrentTrack();
-          },
-          playlists: widget.state.playlists,
-
-          visiblePlaylists: widget.state.visiblePlaylists,
-          derivedPlaylists: widget.state.derivedPlaylists,
-
-          dynamicBlurb: _dynamicBlurb(),
-
-          onPlayPlaylist: (p) {
-            // ignore: avoid_print
-            print('[Sonarar][PLAYPRESS] id=${p.id} name="${p.name}" '
-                'tracks=${p.trackIds.length} library=${widget.state.library.length} '
-                'dynamicMix=${widget.state.dynamicMix()?.length ?? -1}');
-            if (widget.state.playPlaylist(p)) {
-              // ignore: discarded_futures
-              _loadCurrentTrack();
-            } else {
-              // ignore: avoid_print
-              print('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
-              _toast('That playlist has nothing playable');
-            }
-          },
-
-          onOpenPlaylist: (_) {},
-          onOpenArtist: (_) {},
-          onCreatePlaylist: (name) {
-            widget.state.createPlaylist(name);
-            // ignore: discarded_futures
-            _persistPlaylists();
-            _toast('Created "$name"');
-          },
-
-          onRemoveFromPlaylist: (p, t) {
-            widget.state.removeTrackFromPlaylist(p, t.id);
-            // ignore: discarded_futures
-            _persistPlaylists();
-            _toast('Removed from ${p.name}');
-          },
-          onDeletePlaylist: (p) {
-            final slot = widget.state.playlistIndexOf(p.id);
-            widget.state.deletePlaylist(p.id);
-            // ignore: discarded_futures
-            _persistPlaylists();
-            _toastUndo('Deleted "${p.name}"', () {
-              if (!widget.state.restorePlaylist(slot, p)) return;
-              // ignore: discarded_futures
-              _persistPlaylists();
-            });
-          },
-
-          onQueue: (t) {
-            final ok = widget.state.addToQueue(t);
-            _toast(ok ? 'Added to queue — ${t.title}' : 'Already in the queue');
-            return ok ? SwipeOutcome.queued : SwipeOutcome.alreadyQueued;
-          },
-
-          onLike: (t) {
-            final liked = widget.state.toggleFavorite(t.id);
-            _persistLists();
-            _toast(liked ? 'Liked — ${t.title}' : 'Removed from Liked');
-            return liked ? SwipeOutcome.liked : SwipeOutcome.unliked;
-          },
-
-          onTogglePlay: (_) {
-            // ignore: discarded_futures
-            _togglePlay();
-          },
-
-          playingTrackId: widget.state.currentTrack?.id,
-
-          isPlaying: _playing,
-        ),
-
-        AppTab.search => YoutubeSearchScreen(
-          state: widget.state,
-          headerMark: _brandMark(),
-          repo: _repo,
-          downloads: _downloads,
-
-          allowNetwork: _prefs.allowNetwork,
-          searchOnline: _prefs.searchOnline ?? false,
-          onSearchOnline: (v) => _setPrefs(_prefs.copyWith(searchOnline: v)),
-          playlistStore: PlaylistSources(
-            File('$_stateDir/imported_playlists.json'),
-          ),
-
-          onDownloaded: (_) {
-            // ignore: discarded_futures
-            _reloadLibraryAfterDownload();
-          },
-
-          onPlay: (trackId) {
-            final t = widget.state.library.firstWhere(
-              (x) => x.id == trackId,
-              orElse: () => widget.state.currentTrack ?? _repo.tracks.first,
-            );
-            widget.state.playTrackElsewhere(t);
-            // ignore: discarded_futures
-            _loadCurrentTrack();
-          },
-          officialOnly: _prefs.officialOnly,
-          onEnsurePlaylist: (name) => widget.state.ensurePlaylist(name),
-          onAddToPlaylist: (pl, trackId) {
-            widget.state.addTrackToPlaylist(pl, trackId);
-            _persistListsNow();
-          },
-
-          manifest: _repo.libraryRoot == null
-              ? null
-              : File(
-                  '${_repo.libraryRoot}${Platform.pathSeparator}$kManifestFileName'),
-        ),
-
-        AppTab.settings => SettingsScreen(
-          state: widget.state,
-          musicRoot: _musicRoot,
-          stateDirectory: _stores.directory,
-          downloadDirectory: _backupDirectory,
-          appVersion: '$appVersionName+$appVersionCode',
-          onOpenMusicFolder: _openMusicFolder,
-          onOpenDiagnostics: () => _openDoor(_InlineDoor.diagnostics),
-          onSavePreset: (name) {
-            final made = ThemePreset(
-              id: freshPresetId({
-                for (final p in widget.state.allPresets) p.id,
-              }),
-              name: name,
-              skinId: widget.state.skin.id,
-              artSkinId: widget.state.artSkinOverride,
-              languageSkinId:
-                  widget.state.languageSkin.id == widget.state.skin.id
-                      ? null
-                      : widget.state.languageSkin.id,
-              layoutId: widget.state.layoutId.name,
-              personalization: widget.state.personalization,
-            );
-            widget.state.setUserPresets([
-              ...widget.state.userPresets,
-              made,
-            ]);
-            widget.state.applyPreset(made);
-            // ignore: discarded_futures
-            _persistPresets();
-            setState(() {});
-            _toast('Saved "$name"');
-          },
-          onDeletePreset: (p) {
-            widget.state.setUserPresets([
-              for (final x in widget.state.userPresets)
-                if (x.id != p.id) x,
-            ]);
-
-            if (widget.state.preset?.id == p.id) {
-              widget.state.clearPreset();
-            }
-            // ignore: discarded_futures
-            _persistPresets();
-            setState(() {});
-            _toast('Deleted "${p.name}"');
-          },
-
-          weather: _ctx.weatherReading?.condition ?? WeatherCondition.unknown,
-
-          onContextsChanged: () {
-            _syncPresetToPrefs();
-          },
-          prefs: _prefs,
-          onPrefsChanged: _setPrefs,
-        ),
+        AppTab.home => _homeTab(skin),
+        AppTab.library => _libraryTab(skin),
+        AppTab.search => _searchTab(skin),
+        AppTab.settings => _settingsTab(skin),
       };
+  /// The home tab, wired. `_tabContent` is the routing; this is the wiring.
+  Widget _homeTab(Skin skin) => HomeScreen(
+        skin: skin,
+        headerArt: _headerArt(skin),
+        recent: _recentTracks,
+        home: widget.state.personalization.home,
+        onOpenPersonalize: _openPersonalizePage,
+        headerMark: _brandMark(),
+        band: decode.bandNameOf(_ctxForHome?.band),
+        continueTrack: _continueTrack,
+        jumpBackIn: _jumpBackIn,
+        heavyRotation: _heavyRotation,
+        greeting: _homeGreeting,
+        nowMixName: widget.state.dynamicMix()?.name,
+        onPlayNowMix: _playNowMix,
+        newFromLibrary: _newFromLibrary,
+        rediscover: _rediscoverTracks,
+
+        mostPlayed: _heavyRotation,
+        likedSongs: _likedTracks,
+        recentPlaylist: _mostRecentPlaylist,
+        onPlayPlaylist: (p) => _playPlaylistFromHome(p),
+        onOpenRecentPlaylist: () {
+          final p = _mostRecentPlaylist;
+          if (p != null) _openPlaylistPage(p);
+        },
+        onOpenRecap: _openRecap,
+        genreLists: _genreLists,
+        libraryPlaylists: _libraryPlaylists,
+        recapTracks: _recapTracks,
+        recapLabel: _recapLabel,
+
+        allTracks: _repo.tracks,
+        onOpenRediscover: _openRediscover,
+        coverPathFor: _repo.coverPathFor,
+        onPlay: _playFromHome,
+        weather: _ctx.weatherReading?.condition ?? WeatherCondition.unknown,
+        placeName: _ctx.currentPlaceId == null
+            ? null
+            : _ctx.placeBook.byId(_ctx.currentPlaceId!)?.name,
+        placeIcon: _ctx.currentPlaceId == null
+            ? null
+            : placeIconFor(_ctx.placeBook.byId(_ctx.currentPlaceId!)?.icon),
+        hasFix: _ctx.currentPlaceId != null,
+        contextEnabled: widget.state.contextEnabled,
+      );
+  /// The library tab, wired. `_tabContent` is the routing; this is the wiring.
+  Widget _libraryTab(Skin skin) => LibraryScreen(
+
+        entryToken: _libraryEntry,
+        grid: _prefs.libraryIsGrid ?? widget.state.arrangement.libraryIsGrid,
+        headerScrollsAway: widget.state.arrangement.headerScrollsAway,
+        contentMaxWidth: widget.state.arrangement.contentMaxWidth,
+        tracks: _repo.tracks,
+        coverPathFor: _repo.coverPathFor,
+        skin: skin,
+        headerArt: _headerArt(skin),
+        libraryRoot: _repo.libraryRoot,
+
+        onManage: _openLibraryManagement,
+
+        onDragToQueue: widget.state.queue == null ? null : _queueFromDrag,
+        likedIds: widget.state.favorites.ids,
+
+        likedOrder: widget.state.favorites.orderedIds,
+
+        headerMark: _brandMark(),
+        playlistSort: _prefs.playlistSortName,
+        pinnedPlaylistIds: _effectivePins,
+        recentPlaylistIds: _prefs.recentPlaylistIds ?? const [],
+        onPlaylistSort: (v) => _setPrefs(_prefs.copyWith(playlistSort: v)),
+        onTogglePin: _togglePin,
+        onPlaylistGrid: (v) => setState(() => _playlistGridOverride = v),
+        playlistGrid: _playlistGridOverride,
+        onPlaylistOpened: (p) => _notePlaylistOpened(p.id),
+
+        onAddSongsTo: _addSongsToPlaylist,
+
+        searchRequest: _searchRequest,
+        closeListRequest: _closeListRequest,
+        onListOpenChanged: (open) {
+          if (open != _libraryListOpen) {
+            setState(() => _libraryListOpen = open);
+          }
+        },
+        artistRequest: _artistRequest,
+
+        onPlay: (t) {
+          widget.state.playTrackElsewhere(t);
+          // ignore: discarded_futures
+          _loadCurrentTrack();
+        },
+        playlists: widget.state.playlists,
+
+        visiblePlaylists: widget.state.visiblePlaylists,
+        derivedPlaylists: widget.state.derivedPlaylists,
+
+        dynamicBlurb: _dynamicBlurb(),
+
+        onPlayPlaylist: (p) {
+          // ignore: avoid_print
+          print('[Sonarar][PLAYPRESS] id=${p.id} name="${p.name}" '
+              'tracks=${p.trackIds.length} library=${widget.state.library.length} '
+              'dynamicMix=${widget.state.dynamicMix()?.length ?? -1}');
+          if (widget.state.playPlaylist(p)) {
+            // ignore: discarded_futures
+            _loadCurrentTrack();
+          } else {
+            // ignore: avoid_print
+            print('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
+            _toast('That playlist has nothing playable');
+          }
+        },
+
+        onOpenPlaylist: (_) {},
+        onOpenArtist: (_) {},
+        onCreatePlaylist: (name) {
+          widget.state.createPlaylist(name);
+          // ignore: discarded_futures
+          _persistPlaylists();
+          _toast('Created "$name"');
+        },
+
+        onRemoveFromPlaylist: (p, t) {
+          widget.state.removeTrackFromPlaylist(p, t.id);
+          // ignore: discarded_futures
+          _persistPlaylists();
+          _toast('Removed from ${p.name}');
+        },
+        onDeletePlaylist: (p) {
+          final slot = widget.state.playlistIndexOf(p.id);
+          widget.state.deletePlaylist(p.id);
+          // ignore: discarded_futures
+          _persistPlaylists();
+          _toastUndo('Deleted "${p.name}"', () {
+            if (!widget.state.restorePlaylist(slot, p)) return;
+            // ignore: discarded_futures
+            _persistPlaylists();
+          });
+        },
+
+        onQueue: (t) {
+          final ok = widget.state.addToQueue(t);
+          _toast(ok ? 'Added to queue — ${t.title}' : 'Already in the queue');
+          return ok ? SwipeOutcome.queued : SwipeOutcome.alreadyQueued;
+        },
+
+        onLike: (t) {
+          final liked = widget.state.toggleFavorite(t.id);
+          _persistLists();
+          _toast(liked ? 'Liked — ${t.title}' : 'Removed from Liked');
+          return liked ? SwipeOutcome.liked : SwipeOutcome.unliked;
+        },
+
+        onTogglePlay: (_) {
+          // ignore: discarded_futures
+          _togglePlay();
+        },
+
+        playingTrackId: widget.state.currentTrack?.id,
+
+        isPlaying: _playing,
+      );
+  /// The search tab, wired. `_tabContent` is the routing; this is the wiring.
+  Widget _searchTab(Skin skin) => YoutubeSearchScreen(
+        state: widget.state,
+        headerMark: _brandMark(),
+        repo: _repo,
+        downloads: _downloads,
+
+        allowNetwork: _prefs.allowNetwork,
+        searchOnline: _prefs.searchOnline ?? false,
+        onSearchOnline: (v) => _setPrefs(_prefs.copyWith(searchOnline: v)),
+        playlistStore: PlaylistSources(
+          File('$_stateDir/imported_playlists.json'),
+        ),
+
+        onDownloaded: (_) {
+          // ignore: discarded_futures
+          _reloadLibraryAfterDownload();
+        },
+
+        onPlay: (trackId) {
+          final t = widget.state.library.firstWhere(
+            (x) => x.id == trackId,
+            orElse: () => widget.state.currentTrack ?? _repo.tracks.first,
+          );
+          widget.state.playTrackElsewhere(t);
+          // ignore: discarded_futures
+          _loadCurrentTrack();
+        },
+        officialOnly: _prefs.officialOnly,
+        onEnsurePlaylist: (name) => widget.state.ensurePlaylist(name),
+        onAddToPlaylist: (pl, trackId) {
+          widget.state.addTrackToPlaylist(pl, trackId);
+          _persistListsNow();
+        },
+
+        manifest: _repo.libraryRoot == null
+            ? null
+            : File(
+                '${_repo.libraryRoot}${Platform.pathSeparator}$kManifestFileName'),
+      );
+  /// The settings tab, wired. `_tabContent` is the routing; this is the wiring.
+  Widget _settingsTab(Skin skin) => SettingsScreen(
+        state: widget.state,
+        musicRoot: _musicRoot,
+        stateDirectory: _stores.directory,
+        downloadDirectory: _backupDirectory,
+        appVersion: '$appVersionName+$appVersionCode',
+        onOpenMusicFolder: _openMusicFolder,
+        onOpenDiagnostics: () => _openDoor(_InlineDoor.diagnostics),
+        onSavePreset: (name) {
+          final made = ThemePreset(
+            id: freshPresetId({
+              for (final p in widget.state.allPresets) p.id,
+            }),
+            name: name,
+            skinId: widget.state.skin.id,
+            artSkinId: widget.state.artSkinOverride,
+            languageSkinId:
+                widget.state.languageSkin.id == widget.state.skin.id
+                    ? null
+                    : widget.state.languageSkin.id,
+            layoutId: widget.state.layoutId.name,
+            personalization: widget.state.personalization,
+          );
+          widget.state.setUserPresets([
+            ...widget.state.userPresets,
+            made,
+          ]);
+          widget.state.applyPreset(made);
+          // ignore: discarded_futures
+          _persistPresets();
+          setState(() {});
+          _toast('Saved "$name"');
+        },
+        onDeletePreset: (p) {
+          widget.state.setUserPresets([
+            for (final x in widget.state.userPresets)
+              if (x.id != p.id) x,
+          ]);
+
+          if (widget.state.preset?.id == p.id) {
+            widget.state.clearPreset();
+          }
+          // ignore: discarded_futures
+          _persistPresets();
+          setState(() {});
+          _toast('Deleted "${p.name}"');
+        },
+
+        weather: _ctx.weatherReading?.condition ?? WeatherCondition.unknown,
+
+        onContextsChanged: () {
+          _syncPresetToPrefs();
+        },
+        prefs: _prefs,
+        onPrefsChanged: _setPrefs,
+      );
 
   Widget _miniPlayer(Skin skin) {
     return ValueListenableBuilder<bool>(

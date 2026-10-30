@@ -6,6 +6,7 @@ import '../core/app_state.dart';
 import '../library/track.dart';
 import '../rules/playlist_explanation.dart';
 import '../theme/skin.dart';
+import '../theme/slab.dart';
 import '../widgets/pressable.dart';
 
 class WhyPanel extends StatelessWidget {
@@ -44,7 +45,7 @@ class WhyPanel extends StatelessWidget {
 
             if (onPick != null && alternatives.isNotEmpty) ...[
               const SizedBox(height: 30),
-              _section(skin, 'NOT THIS ONE?'),
+              SectionLabel(skin: skin, text: 'NOT THIS ONE?'),
               const SizedBox(height: 12),
               for (final t in alternatives) _alternative(skin, t),
             ],
@@ -67,19 +68,6 @@ class WhyPanel extends StatelessWidget {
             fontWeight: FontWeight.w600,
             height: 1.45,
             color: skin.textPrimary,
-          ),
-        ),
-      );
-
-  Widget _section(Skin skin, String label) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontLabel,
-            letterSpacing: 4,
-            fontWeight: FontWeight.w800,
-            color: skin.accent,
           ),
         ),
       );

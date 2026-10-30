@@ -274,8 +274,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (_tab == SettingsTab.library &&
                   widget.onOpenMusicFolder != null) ...[
                 SectionBand(skin: skin, label: 'LIBRARY'),
-                _row(
-                  skin,
+                KitRow(
+                  skin: skin,
                   label: 'MUSIC FOLDER',
                   icon: Icons.folder_rounded,
                   onTap: widget.onOpenMusicFolder,
@@ -338,8 +338,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: StaggerStyle.stamp,
                 child: SectionBand(skin: skin, label: 'IF SOMETHING IS WRONG'),
               ),
-              _row(
-                skin,
+              KitRow(
+                skin: skin,
                 label: 'DIAGNOSTICS',
                 icon: Icons.receipt_long_rounded,
 
@@ -367,8 +367,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               // Flutter collects every package's licence text; ours are in the
               // list above, so this page is the whole story in one place.
-              _row(
-                skin,
+              KitRow(
+                skin: skin,
                 label: 'LICENSES',
                 icon: Icons.article_rounded,
                 trailing: Icon(Icons.chevron_right_rounded,
@@ -386,8 +386,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               if (widget.appVersion != null && widget.appVersion!.isNotEmpty)
-                _row(
-                  skin,
+                KitRow(
+                  skin: skin,
                   label: 'VERSION ${widget.appVersion}',
                   icon: Icons.info_outline_rounded,
                   trailing: const SizedBox.shrink(),
@@ -404,7 +404,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 downloadDirectory: widget.downloadDirectory!,
                 appVersion: widget.appVersion,
                 row: ({required label, required icon, trailing, onTap}) =>
-                    _row(skin,
+                    KitRow(skin: skin,
                         label: label,
                         icon: icon,
                         trailing: trailing ?? const SizedBox.shrink(),
@@ -432,8 +432,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ValueChanged<bool> onChanged, {
     IconData? icon,
   }) =>
-      _row(
-        skin,
+      KitRow(
+        skin: skin,
         label: label,
         icon: icon,
         trailing: Switch(
@@ -451,8 +451,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required IconData icon,
     required String url,
   }) =>
-      _row(
-        skin,
+      KitRow(
+        skin: skin,
         label: label,
         icon: icon,
         trailing: Icon(Icons.open_in_new_rounded,
@@ -558,8 +558,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     VoidCallback? onMore,
     IconData? icon,
   }) =>
-      _row(
-        skin,
+      KitRow(
+        skin: skin,
         label: label,
         icon: icon,
         trailing: Row(
@@ -609,20 +609,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-
-  Widget _row(
-    Skin skin, {
-    required String label,
-    required Widget trailing,
-    IconData? icon,
-    VoidCallback? onTap,
-  }) => KitRow(
-    skin: skin,
-    label: label,
-    icon: icon,
-    trailing: trailing,
-    onTap: onTap,
-  );
 
   // ignore: unused_element
   Widget _pickTile(String label, IconData icon, VoidCallback onTap, {bool? selected}) {

@@ -8,6 +8,7 @@ import '../library/track.dart';
 import '../playback/loop_points.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
+import '../theme/slab.dart';
 import '../widgets/pressable.dart';
 
 class LoopEditorScreen extends StatefulWidget {
@@ -147,7 +148,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             ),
 
             const SizedBox(height: 22),
-            _section(skin, 'REPEAT'),
+            SectionLabel(skin: skin, text: 'REPEAT'),
             Row(
               children: [
                 for (final n in [1, 2, 3, 0])
@@ -233,19 +234,6 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
       ),
     );
   }
-
-  Widget _section(Skin skin, String label) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontLabel,
-            letterSpacing: 4,
-            fontWeight: FontWeight.w800,
-            color: skin.accent,
-          ),
-        ),
-      );
 
   Widget _countChip(Skin skin, int n) {
     final selected = _loopCount == n;

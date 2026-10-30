@@ -56,6 +56,33 @@ class PersonalBackdrop extends StatelessWidget {
     return s;
   }
 
+  /// The one place a picture is framed.
+  ///
+  /// The editor and the app both call this, so what you drag is what you get.
+  /// Offset runs against the focus, which is what makes the picture follow the
+  /// finger instead of fighting it.
+  static Widget frame({
+    required Widget child,
+    required Size size,
+    required double scale,
+    required double rotationDeg,
+    required double focusX,
+    required double focusY,
+  }) {
+    // A picture at 1x still needs room to move, or dragging does nothing until
+    // you zoom. The overscan is the room, so it is part of the scale itself.
+    final pad = (rotationPadding(rotationDeg) * scale * 1.25).clamp(1.0, 12.0);
+    final slackX = (size.width * pad - size.width) / 2;
+    final slackY = (size.height * pad - size.height) / 2;
+    return Transform.rotate(
+      angle: rotationDeg * 3.141592653589793 / 180,
+      child: Transform.translate(
+        offset: Offset(-(focusX * 2 - 1) * slackX, -(focusY * 2 - 1) * slackY),
+        child: Transform.scale(scale: pad, child: child),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final file = backdropFile(root, spec);
@@ -113,80 +140,66 @@ class PersonalBackdrop extends StatelessWidget {
       );
     }
 
-    final pad = rotationPadding(spec.rotationDeg) * spec.scale;
-
     // Focus only means something if it is applied here, not just in the editor.
     // The room to move is whatever the zoom has overflowed the frame by.
     return ClipRect(
       child: LayoutBuilder(
         builder: (context, box) {
-          final slackX = (box.maxWidth * pad - box.maxWidth) / 2;
-          final slackY = (box.maxHeight * pad - box.maxHeight) / 2;
-          return Transform.rotate(
-            angle: spec.rotationDeg * 3.141592653589793 / 180,
-            child: Transform.translate(
-              offset: Offset(
-                (spec.focusX * 2 - 1) * -slackX,
-                (spec.focusY * 2 - 1) * -slackY,
-              ),
-              child: Transform.scale(
-                scale: pad,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    photo,
-                    if (spec.grain > 0)
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: CustomPaint(
-                            painter: _GrainPainter(spec.grain),
-                          ),
-                        ),
-                      ),
-                    if (spec.vignette > 0)
-                      Positioned.fill(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: RadialGradient(
-                              radius: 0.95,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withValues(
-                                  alpha: spec.vignette * 0.85,
-                                ),
-                              ],
-                              stops: const [0.55, 1],
+          return frame(
+            size: Size(box.maxWidth, box.maxHeight),
+            scale: spec.scale,
+            rotationDeg: spec.rotationDeg,
+            focusX: spec.focusX,
+            focusY: spec.focusY,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (spec.grain > 0)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(painter: _GrainPainter(spec.grain)),
+                    ),
+                  ),
+                if (spec.vignette > 0)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          radius: 0.95,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(
+                              alpha: spec.vignette * 0.85,
                             ),
-                          ),
+                          ],
+                          stops: const [0.55, 1],
                         ),
                       ),
-                    if (spec.dim > 0)
-                      ColoredBox(
-                        color: Colors.black.withValues(alpha: spec.dim * 0.85),
-                      ),
-                    if (spec.tint)
-                      ColoredBox(color: skin.accent.withValues(alpha: 0.10)),
-                    if (spec.burn > 0)
-                      Positioned.fill(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                skin.background.withValues(
-                                  alpha: spec.burn * 0.9,
-                                ),
-                              ],
-                              stops: const [0.45, 1],
-                            ),
-                          ),
+                    ),
+                  ),
+                if (spec.dim > 0)
+                  ColoredBox(
+                    color: Colors.black.withValues(alpha: spec.dim * 0.85),
+                  ),
+                if (spec.tint)
+                  ColoredBox(color: skin.accent.withValues(alpha: 0.10)),
+                if (spec.burn > 0)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            skin.background.withValues(alpha: spec.burn * 0.9),
+                          ],
+                          stops: const [0.45, 1],
                         ),
                       ),
-                  ],
-                ),
-              ),
+                    ),
+                  ),
+              ],
             ),
           );
         },

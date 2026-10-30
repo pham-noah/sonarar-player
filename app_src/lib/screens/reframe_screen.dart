@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
 
@@ -88,29 +89,19 @@ class _ReframeScreenState extends State<ReframeScreen> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          // Cover leaves no slack: overscan, then slide.
-                          Transform.translate(
-                            offset: Offset(
-                              (_spec.focusX * 2 - 1) *
-                                  (size.width * _spec.scale * 1.25 -
-                                      size.width) /
-                                  2,
-                              (_spec.focusY * 2 - 1) *
-                                  (size.height * _spec.scale * 1.25 -
-                                      size.height) /
-                                  2,
-                            ),
-                            child: Transform.scale(
-                              scale: _spec.scale * 1.25,
-                              child: Transform.rotate(
-                                angle: _spec.rotationDeg * 3.1415926535 / 180,
-                                child: Image.file(
-                                  widget.file,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) =>
-                                      const ColoredBox(color: Colors.black26),
-                                ),
-                              ),
+                          // Same framing code the app uses, so the result is
+                          // exactly what you see here.
+                          PersonalBackdrop.frame(
+                            size: size,
+                            scale: _spec.scale,
+                            rotationDeg: _spec.rotationDeg,
+                            focusX: _spec.focusX,
+                            focusY: _spec.focusY,
+                            child: Image.file(
+                              widget.file,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const ColoredBox(color: Colors.black26),
                             ),
                           ),
                           // The picture darkens the way the app will darken it.
@@ -153,15 +144,6 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     0,
                     0.85,
                     (v) => setState(() => _spec = _spec.copyWith(dim: v)),
-                  ),
-                  Text(
-                    'Drag the picture: whatever you centre stays centred in '
-                    'every shape the screen takes.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: skin.textSecondary,
-                      fontSize: LayoutSpec.fontFloor - 3,
-                    ),
                   ),
                 ],
               ),

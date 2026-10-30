@@ -128,11 +128,15 @@ void main() {
     // The screen lands on THEMES now; the accent lives under LOOK.
     await tester.tap(find.byKey(const Key('personalize-tab-look')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('PICK'));
+    // The wheel is always open; the first tile is THEME, the rest are colours.
+    final wheel = find.byKey(const Key('accent-wheel'));
+    expect(wheel, findsOneWidget);
+
+    await tester.tap(
+      find.descendant(of: wheel, matching: find.byType(GestureDetector)).at(3),
+    );
     await tester.pump();
 
-    final swatch = find.byType(GestureDetector).at(0);
-    expect(swatch, findsOneWidget);
     expect(state.personalization.accent.source, AccentSource.manual);
   });
 
@@ -159,7 +163,7 @@ void main() {
     await pump(tester);
     await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('LIBRARY'));
+    await tester.tap(find.textContaining('LIBRARY'));
     await tester.pumpAndSettle();
 
     // The folder renders both pictures as tappable frames.

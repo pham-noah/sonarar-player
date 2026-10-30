@@ -185,9 +185,7 @@ String cleanArtist(String artist) {
   return a.isEmpty ? artist.trim() : a;
 }
 
-/// Every way an upload title might be the song title. LRCLIB indexes songs, not
-/// videos: "April Encounter - 很美味 (Hen Meiwei)《当我飞奔向你》Chi/Eng/Pinyin
-/// lyrics" has to be read down to "April Encounter" before it will match.
+/// Readings of an upload title that might be the song title.
 Iterable<String> queryReadings(String raw) sync* {
   final t = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
   if (t.isEmpty) return;
@@ -236,6 +234,7 @@ class LyricsService {
     required String artist,
     bool instrumental = false,
     Duration? duration,
+    String? file,
   }) async {
     if (instrumental) {
       return const Lyrics(lines: [], instrumental: true, source: 'variant tag');
@@ -255,6 +254,7 @@ class LyricsService {
         title: title,
         artist: artist,
         duration: duration,
+        file: file,
       );
     } on SocketException {
       fetched = null;
@@ -275,16 +275,26 @@ class LyricsService {
     required String title,
     required String artist,
     Duration? duration,
+    String? file,
   }) async {
     final who = cleanArtist(artist);
 
-    // An upload title is not a song title. "April Encounter - 很美味 (Hen Meiwei)
-    // 《当我飞奔向你》Chi/Eng/Pinyin lyrics" is one song written five ways, and
-    // the old rule — keep what follows the dash — threw away the only part
-    // LRCLIB knows. Every plausible reading is tried, best first.
+    // Try every plausible reading of an upload title.
     final candidates = <String>{normaliseQuery(title)};
     for (final read in queryReadings(title)) {
       candidates.add(read);
+    }
+    // The file name survives a bad stored title.
+    if (file != null && file.isNotEmpty) {
+      final stem = file
+          .split(RegExp(r'[/\\]'))
+          .last
+          .replaceAll(RegExp(r'\.[A-Za-z0-9]{2,4}$'), '')
+          .replaceAll(RegExp(r'[_]+'), ' ')
+          .replaceAll(RegExp(r'^\d{1,3}[\s.\-]+'), '');
+      for (final read in queryReadings(stem)) {
+        candidates.add(read);
+      }
     }
     candidates.removeWhere((c) => c.trim().isEmpty);
 
@@ -301,8 +311,7 @@ class LyricsService {
       );
       // The channel name is usually not the artist, so the strict query fails
       // on anything uploaded by a fan account. Title alone is the second read.
-      // Title alone means title alone: keeping the channel name here rejected
-      // every fan upload, because LRCLIB files the song under its real artist.
+      // No channel name here: LRCLIB files the song under its real artist.
       hit ??= _bestOf(
         await _search({'track_name': wanted}),
         title: wanted,
@@ -374,8 +383,7 @@ class LyricsService {
         Duration(milliseconds: 500 * (attempt + 1) + (attempt * 137)),
       );
     }
-    // Every attempt hit a busy or unreachable server. Returning an empty list
-    // here made a 503 look like "this song has no lyrics" and cached it.
+    // A busy server is not "no lyrics".
     return const [];
   }
 
@@ -390,8 +398,7 @@ class LyricsService {
   }) {
     Map<String, dynamic>? synced;
     Map<String, dynamic>? plain;
-    // Same song, different cut: a video that carries the track plus three
-    // minutes of the drama it soundtracked. Better lyrics than none.
+    // Same song, different cut.
     Map<String, dynamic>? farSynced;
     Map<String, dynamic>? farPlain;
     for (final row in rows) {
@@ -413,8 +420,7 @@ class LyricsService {
       final seconds = map['duration'];
       if (duration != null && seconds is num && seconds > 0) {
         final gap = (seconds - duration.inSeconds).abs();
-        // A video that opens on dialogue runs minutes longer than the track it
-        // contains. Short songs get a floor, long ones a proportional window.
+        // A video runs longer than the track it contains.
         final window = duration.inSeconds < 90 ? 20 : duration.inSeconds * 0.2;
         if (gap > window) {
           final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;

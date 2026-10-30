@@ -806,10 +806,7 @@ class AppState extends ChangeNotifier {
 
   void applyPreset(ThemePreset preset) {
     _preset = preset;
-    // A theme is every attribute, not just a palette. Falling back to whatever
-    // the last theme left behind meant a built-in theme inherited a photo set
-    // under a different one; a theme that says nothing about pictures says
-    // "none", which is its own answer.
+    // A theme owns its pictures; it does not inherit the last theme's.
     _personalization = preset.personalization ?? const Personalization();
     _skinValue = skinFor(preset.skinId);
     _languageSkin = preset.languageSkinId == null

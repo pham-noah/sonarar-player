@@ -95,8 +95,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       _apply(_p.copyWith(backdrop: b));
       return;
     }
-    // A per-place picture is the picture only; the framing sliders stay with
-    // the default, so one photo cannot end up cropped four different ways.
+    // A place picture has no framing of its own.
     _apply(_p.withSurface(
       _surface!,
       SurfaceLook(room: b.fromArt ? null : b.file, art: b.artKey),
@@ -153,8 +152,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 key: PageStorageKey('personalize-${_tab.name}'),
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
                 children: [
-                  // ART is about the picture behind everything; the mock home
-                  // feed above it read as if it were the picture itself.
+                  // The mock home feed is not the picture.
                   if (_tab != PersonalizeTab.art) ...[
                     _preview(skin),
                     const SizedBox(height: 14),
@@ -257,69 +255,69 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ],
             const SizedBox(height: 18),
 
-            SectionBand(skin: skin, label: 'ACCENT'),
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final source in AccentSource.values)
-                  _chip(
-                    skin,
-                    switch (source) {
-                      AccentSource.skin => 'SKIN',
-                      AccentSource.image => 'FROM PHOTO',
-                      AccentSource.manual => 'PICK',
-                    },
-                    _p.accent.source == source,
-                    () => _setAccentSource(source),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            if (_p.accent.source == AccentSource.image)
-              _button(
-                skin,
-                'TAKE THE COLOUR FROM THE PHOTO',
-                _accentFromPhoto,
-                quiet: true,
-              ),
-            if (_p.accent.source == AccentSource.manual) ...[
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _swatches.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (_, i) {
-                    final colour = _swatches[i];
-                    final picked = _p.accent.value == colour.toARGB32();
+            SectionBand(skin: skin, label: 'PRIMARY COLOUR'),
+            SizedBox(
+              height: 46,
+              child: ListView.separated(
+                key: const Key('accent-wheel'),
+                scrollDirection: Axis.horizontal,
+                itemCount: _swatches.length + 1,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (_, i) {
+                  if (i == 0) {
+                    final onTheme = _p.accent.source == AccentSource.skin;
                     return GestureDetector(
-                      onTap: () => _apply(
-                        _p.copyWith(
-                          accent: AccentSpec(
-                            source: AccentSource.manual,
-                            value: colour.toARGB32(),
+                      key: const Key('accent-theme'),
+                      onTap: () =>
+                          _apply(_p.copyWith(accent: const AccentSpec())),
+                      child: Container(
+                        width: 92,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: skin.panel,
+                          border: Border.all(
+                            color: onTheme ? skin.accent : skin.textSecondary,
+                            width: onTheme ? 2 : 1,
                           ),
                         ),
-                      ),
-                      child: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: colour,
-                          border: Border.all(
-                            color: picked
-                                ? skin.textPrimary
-                                : skin.textSecondary.withValues(alpha: 0.4),
-                            width: picked ? 3 : 1,
+                        child: Text(
+                          'THEME',
+                          style: TextStyle(
+                            color: onTheme ? skin.accent : skin.textSecondary,
+                            fontSize: LayoutSpec.fontFloor - 5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
                           ),
                         ),
                       ),
                     );
-                  },
-                ),
+                  }
+                  final colour = _swatches[i - 1];
+                  final picked = _p.accent.source == AccentSource.manual &&
+                      _p.accent.value == colour.toARGB32();
+                  return GestureDetector(
+                    onTap: () => _apply(
+                      _p.copyWith(
+                        accent: AccentSpec(
+                          source: AccentSource.manual,
+                          value: colour.toARGB32(),
+                        ),
+                      ),
+                    ),
+                    child: Container(
+                      width: 38,
+                      decoration: BoxDecoration(
+                        color: colour,
+                        border: Border.all(
+                          color: picked ? skin.textPrimary : Colors.transparent,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            ],
+            ),
             const SizedBox(height: 18),
 
             ],
@@ -341,8 +339,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             _scopeStrip(skin),
 
             const SizedBox(height: 10),
-            // Two choices at the top, then the folders that fill the slot. The
-            // strip that used to sit here listed the same folders a second time.
             Row(
               children: [
                 Expanded(
@@ -1002,8 +998,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// What the picture looks like right now, with every slider already applied.
   /// Framing a photo you cannot see is guesswork, and the controls sit below
   /// the fold — so the result travels with you.
-  /// One preview per place, side by side: you are choosing what a screen
-  /// wears, so the choice should look like the screen, not like a word.
+  /// One preview per place.
   Widget _scopeStrip(Skin skin) {
     return SizedBox(
       height: 108,
@@ -1063,7 +1058,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              own?.isSet == true ? '• $label' : label,
+              surface == null
+                  ? label
+                  : (own?.isSet == true ? '• $label' : '↳ $label'),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -1173,8 +1170,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
   }
 
-  /// Framing opens the picture full screen. The old nine-square grid asked the
-  /// user to guess which square a drag would land on.
+  /// Opens the picture full screen for framing.
   Future<void> _reframe() async {
     final root = _root;
     if (root == null) return;
@@ -1263,9 +1259,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   // ---- accent --------------------------------------------------------------
 
-  /// The whole wheel, not eight opinions. A player you stare at should let you
-  /// pick the colour you actually want, so the swatches are generated: twelve
-  /// hues, then the neutrals from paper to pitch.
+  /// Twelve hues, then paper to pitch.
   static final List<Color> _swatches = [
     for (var i = 0; i < 12; i++)
       HSLColor.fromAHSL(1, i * 30.0, 0.68, 0.58).toColor(),
@@ -1276,60 +1270,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// Choosing FROM PHOTO takes the colour straight away. It used to only
   /// declare the source and then wait for a second button, which reads as a
   /// chip that does nothing.
-  Future<void> _setAccentSource(AccentSource source) async {
-    _apply(
-      _p.copyWith(
-        accent: AccentSpec(source: source, value: _p.accent.value),
-      ),
-    );
-    if (source == AccentSource.image) await _accentFromPhoto();
-  }
 
-  Future<void> _accentFromPhoto() async {
-    final root = _root;
-    if (root == null) return;
-    var file = backdropFile(root, _b);
-    if (file == null) {
-      // No photo yet: take one. The accent is the photo, so ask for it here
-      // instead of pointing at a button on another band.
-      await _chooseImage();
-      if (!mounted) return;
-      file = backdropFile(root, _b);
-    }
-    if (file == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No photo chosen, so no colour taken.')),
-      );
-      return;
-    }
-    final colour = await accentFromImage(file);
-    if (!mounted) return;
-    if (colour == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'That picture has no colour strong enough to be an accent.',
-          ),
-        ),
-      );
-      return;
-    }
-    final argb = colour.toARGB32();
-    _apply(
-      _p.copyWith(
-        accent: AccentSpec(source: AccentSource.image, value: argb),
-      ),
-    );
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Accent taken from the photo: '
-          '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
-        ),
-      ),
-    );
-  }
 
   // ---- home ----------------------------------------------------------------
 

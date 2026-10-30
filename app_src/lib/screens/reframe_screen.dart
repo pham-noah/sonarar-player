@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
 
-/// Framing a picture is a gesture, not a grid of nine squares. Drag the photo
-/// until the part that matters sits where you want it, then pinch the size.
+/// Drag the picture to frame it.
 class ReframeScreen extends StatefulWidget {
   const ReframeScreen({
     super.key,
@@ -85,19 +84,22 @@ class _ReframeScreenState extends State<ReframeScreen> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Transform.scale(
-                            scale: _spec.scale,
-                            child: Transform.rotate(
-                              angle: _spec.rotationDeg * 3.1415926535 / 180,
-                              child: Image.file(
-                                widget.file,
-                                fit: BoxFit.cover,
-                                alignment: Alignment(
-                                  _spec.focusX * 2 - 1,
-                                  _spec.focusY * 2 - 1,
+                          // Cover leaves no slack: overscan, then slide.
+                          Transform.translate(
+                            offset: Offset(
+                              (_spec.focusX * 2 - 1) * size.width * -0.12,
+                              (_spec.focusY * 2 - 1) * size.height * -0.12,
+                            ),
+                            child: Transform.scale(
+                              scale: _spec.scale * 1.25,
+                              child: Transform.rotate(
+                                angle: _spec.rotationDeg * 3.1415926535 / 180,
+                                child: Image.file(
+                                  widget.file,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const ColoredBox(color: Colors.black26),
                                 ),
-                                errorBuilder: (_, __, ___) =>
-                                    const ColoredBox(color: Colors.black26),
                               ),
                             ),
                           ),

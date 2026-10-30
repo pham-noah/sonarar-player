@@ -297,9 +297,7 @@ class AppPrefs {
       learnFromSkips: _bool(raw['learn_from_skips']) ?? initial.learnFromSkips,
       weatherVariants: _bool(raw['weather_variants']) ?? initial.weatherVariants,
       autoSkin: _bool(raw['auto_skin']) ?? initial.autoSkin,
-      // Files written before prefs_version existed carry `record_history: false`
-      // only because that was the default then — nobody chose it. Reading that
-      // as a decision kept History empty on every install that predates this.
+      // Old files say false only because that was the default then.
       recordHistory: raw['prefs_version'] == null
           ? true
           : (_bool(raw['record_history']) ?? initial.recordHistory),

@@ -1839,6 +1839,9 @@ class _HomeShellState extends State<HomeShell>
       instrumental: _isInstrumental(track),
       // Length is the tie-breaker between the studio take and a live version.
       duration: track.duration,
+      // Downloads from before the title reader was fixed keep the upload title;
+      // the file name is the fallback that still knows the song.
+      file: track.file,
     );
 
     if (!mounted || !_lyricsLoad.isLatest(track.id)) return;

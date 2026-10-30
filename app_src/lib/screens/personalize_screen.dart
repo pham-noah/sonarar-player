@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../core/app_state.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
+import '../screens/reframe_screen.dart';
 import '../theme/theme_preset.dart';
 import '../widgets/kit.dart';
 import '../widgets/spectrum.dart';
@@ -152,8 +153,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 key: PageStorageKey('personalize-${_tab.name}'),
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
                 children: [
-                  _preview(skin),
-                  const SizedBox(height: 14),
+                  // ART is about the picture behind everything; the mock home
+                  // feed above it read as if it were the picture itself.
+                  if (_tab != PersonalizeTab.art) ...[
+                    _preview(skin),
+                    const SizedBox(height: 14),
+                  ],
 
             if (_tab == PersonalizeTab.look) ...[
             SectionBand(skin: skin, label: 'LAYOUT'),
@@ -229,20 +234,25 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 (v) => _prefs((p) => p.copyWith(spectrumScale: v.round())),
               ),
               const SizedBox(height: 6),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final shape in SpectrumShape.values)
-                    _chip(
-                      skin,
-                      shape.label,
-                      widget.prefs?.spectrumShapeName == shape.name,
-                      () => _prefs(
-                        (p) => p.copyWith(spectrumShape: shape.name),
+              SizedBox(
+                height: 42,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    for (final shape in SpectrumShape.values)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _chip(
+                          skin,
+                          shape.label,
+                          widget.prefs?.spectrumShapeName == shape.name,
+                          () => _prefs(
+                            (p) => p.copyWith(spectrumShape: shape.name),
+                          ),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ],
             const SizedBox(height: 18),
@@ -274,12 +284,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               ),
             if (_p.accent.source == AccentSource.manual) ...[
               const SizedBox(height: 10),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  for (final colour in _swatches)
-                    GestureDetector(
+              SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _swatches.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  itemBuilder: (_, i) {
+                    final colour = _swatches[i];
+                    final picked = _p.accent.value == colour.toARGB32();
+                    return GestureDetector(
                       onTap: () => _apply(
                         _p.copyWith(
                           accent: AccentSpec(
@@ -294,15 +308,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         decoration: BoxDecoration(
                           color: colour,
                           border: Border.all(
-                            color: _p.accent.value == colour.toARGB32()
+                            color: picked
                                 ? skin.textPrimary
                                 : skin.textSecondary.withValues(alpha: 0.4),
-                            width: _p.accent.value == colour.toARGB32() ? 3 : 1,
+                            width: picked ? 3 : 1,
                           ),
                         ),
                       ),
-                    ),
-                ],
+                    );
+                  },
+                ),
               ),
             ],
             const SizedBox(height: 18),
@@ -311,32 +326,19 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             if (_tab == PersonalizeTab.art) ...[
             SectionBand(skin: skin, label: 'PICTURE FOR'),
             _picturePreview(skin),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _chip(
-                  skin,
-                  'EVERYWHERE',
-                  _surface == null,
-                  () => setState(() => _surface = null),
-                ),
-                for (final surface in SurfaceId.values)
-                  _chip(
-                    skin,
-                    switch (surface) {
-                      SurfaceId.home => 'HOME',
-                      SurfaceId.library => 'LIBRARY',
-                      SurfaceId.search => 'SEARCH',
-                      SurfaceId.player => 'PLAYER',
-                    },
-                    _surface == surface,
-                    () => setState(() => _surface = surface),
-                    marked: _p.surfaces[surface]?.isSet == true,
-                  ),
-              ],
+            const SizedBox(height: 8),
+            Text(
+              'SCOPE',
+              style: TextStyle(
+                color: skin.textSecondary,
+                fontSize: LayoutSpec.fontFloor - 5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
+              ),
             ),
+            const SizedBox(height: 6),
+            const SizedBox(height: 10),
+            _scopeStrip(skin),
 
             const SizedBox(height: 10),
             // Two choices at the top, then the folders that fill the slot. The
@@ -353,7 +355,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _button(skin, 'A PHOTO', _chooseImage, quiet: _b.isSet),
+                  child: _button(skin, 'ADD PICTURE', _chooseImage, quiet: _b.isSet),
                 ),
               ],
             ),
@@ -371,25 +373,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 height: 1.4,
               ),
             ),
-            if (_b.isSet) ...[
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _button(skin, 'CHOOSE IMAGE', _chooseImage, quiet: true),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _button(
-                      skin,
-                      'REMOVE',
-                      () => _setBackdrop(const BackdropSpec()),
-                      quiet: true,
-                    ),
-                  ),
-                ],
-              ),
-            ],
             if (_b.isSet && _surface != null) ...[
               const SizedBox(height: 10),
               Text(
@@ -404,7 +387,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ],
             if (_b.isSet) ...[
               const SizedBox(height: 14),
-              _focusGrid(skin),
+              _button(
+                skin,
+                'REFRAME',
+                _reframe,
+                quiet: true,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Drag the picture so its centre sits where you want it.',
+                style: TextStyle(
+                  color: skin.textSecondary,
+                  fontSize: LayoutSpec.fontFloor - 4,
+                ),
+              ),
               _slider(
                 skin,
                 'BLUR',
@@ -565,11 +561,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             Row(
               children: [
                 Expanded(
-                  child: _button(skin, 'NEW FOLDER', _importPictures),
+                  child: _button(skin, 'RESCAN', _rescanArt, quiet: true),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _button(skin, 'RESCAN', _rescanArt, quiet: true),
+                  child: _button(skin, 'ADD PICTURE', _chooseImage),
                 ),
               ],
             ),
@@ -946,7 +942,55 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
     final root = _root;
-    if (picked == null || root == null) return;
+    if (picked == null || root == null || !mounted) return;
+    // One picker, then a decision. Choosing a picture and starting a folder
+    // used to be two buttons that both opened the same grid.
+    final where = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: _skin.panel,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.wallpaper_rounded, color: _skin.accent),
+              title: Text(
+                _surface == null ? 'USE IT EVERYWHERE' : 'USE IT HERE',
+                style: TextStyle(color: _skin.textPrimary),
+              ),
+              onTap: () => Navigator.of(ctx).pop('here'),
+            ),
+            ListTile(
+              leading: Icon(Icons.folder_outlined, color: _skin.accent),
+              title: Text(
+                'PUT IT IN A FOLDER',
+                style: TextStyle(color: _skin.textPrimary),
+              ),
+              subtitle: Text(
+                'Folders hold many pictures and can follow the track.',
+                style: TextStyle(color: _skin.textSecondary),
+              ),
+              onTap: () => Navigator.of(ctx).pop('folder'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (where == null || !mounted) return;
+
+    if (where == 'folder') {
+      final made = createFolderFrom(root.path, picked);
+      widget.state.setArtBundles(scanArtBundles(root.path));
+      _setBackdrop(
+        _b.copyWith(
+          artKey:
+              '${made.uri.pathSegments.last}/${picked.uri.pathSegments.last}',
+          clearFile: true,
+        ),
+      );
+      return;
+    }
+
     final copied = await importBackground(root, picked);
     if (copied == null || !mounted) return;
     _setBackdrop(_b.copyWith(
@@ -958,6 +1002,84 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// What the picture looks like right now, with every slider already applied.
   /// Framing a photo you cannot see is guesswork, and the controls sit below
   /// the fold — so the result travels with you.
+  /// One preview per place, side by side: you are choosing what a screen
+  /// wears, so the choice should look like the screen, not like a word.
+  Widget _scopeStrip(Skin skin) {
+    return SizedBox(
+      height: 108,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _scopeTile(skin, 'EVERYWHERE', null),
+          for (final surface in SurfaceId.values)
+            _scopeTile(
+              skin,
+              switch (surface) {
+                SurfaceId.home => 'HOME',
+                SurfaceId.library => 'LIBRARY',
+                SurfaceId.search => 'SEARCH',
+                SurfaceId.player => 'PLAYER',
+              },
+              surface,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _scopeTile(Skin skin, String label, SurfaceId? surface) {
+    final active = _surface == surface;
+    final own = surface == null ? null : _p.surfaces[surface];
+    final wears = surface == null ? _b : _p.backdropFor(surface);
+    final art = wears.artKey == null
+        ? null
+        : widget.state.artByKey(wears.artKey!);
+
+    return GestureDetector(
+      key: Key('scope-${surface?.name ?? 'everywhere'}'),
+      onTap: () => setState(() => _surface = surface),
+      child: Container(
+        width: 104,
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: active ? skin.accent : skin.textSecondary.withValues(alpha: 0.25),
+            width: active ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ClipRect(
+                child: PersonalBackdrop(
+                  root: _root,
+                  spec: wears,
+                  skin: skin,
+                  art: art,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              own?.isSet == true ? '• $label' : label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: active ? skin.accent : skin.textSecondary,
+                fontSize: LayoutSpec.fontFloor - 5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _picturePreview(Skin skin) {
     if (!_b.isSet) {
       return Container(
@@ -1051,6 +1173,26 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
   }
 
+  /// Framing opens the picture full screen. The old nine-square grid asked the
+  /// user to guess which square a drag would land on.
+  Future<void> _reframe() async {
+    final root = _root;
+    if (root == null) return;
+    final file = backdropFile(root, _b);
+    if (file == null || !file.existsSync()) return;
+    final next = await Navigator.of(context).push<BackdropSpec>(
+      MaterialPageRoute(
+        builder: (_) => ReframeScreen(
+          skin: widget.state.uiSkin,
+          file: file,
+          initial: _b,
+        ),
+      ),
+    );
+    if (next != null) _setBackdrop(next);
+  }
+
+  // ignore: unused_element
   Widget _focusGrid(Skin skin) {
     final root = _root;
     final file = root == null ? null : backdropFile(root, _b);
@@ -1121,15 +1263,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   // ---- accent --------------------------------------------------------------
 
-  static const List<Color> _swatches = [
-    Color(0xFFE3B84E),
-    Color(0xFFD2455B),
-    Color(0xFF3BA7C8),
-    Color(0xFF7F62C9),
-    Color(0xFF3FA96B),
-    Color(0xFFE07B39),
-    Color(0xFFB8C4CE),
-    Color(0xFFE8E2D6),
+  /// The whole wheel, not eight opinions. A player you stare at should let you
+  /// pick the colour you actually want, so the swatches are generated: twelve
+  /// hues, then the neutrals from paper to pitch.
+  static final List<Color> _swatches = [
+    for (var i = 0; i < 12; i++)
+      HSLColor.fromAHSL(1, i * 30.0, 0.68, 0.58).toColor(),
+    for (final light in const [0.95, 0.80, 0.62, 0.45, 0.28, 0.12])
+      HSLColor.fromAHSL(1, 0, 0, light).toColor(),
   ];
 
   /// Choosing FROM PHOTO takes the colour straight away. It used to only
@@ -1562,140 +1703,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// A folder holds a set — that is what makes FOLLOW TRACK possible — so this
   /// asks whether the picture starts a new folder or joins one already there,
   /// instead of making a folder of one every time.
-  Future<void> _importPictures() async {
-    final root = _root;
-    if (root == null) return;
-    final picked = await _pickPictureFromPhone();
-    if (picked == null || !mounted) return;
-
-    final folders = widget.state.bundles;
-    String? choice;
-    if (folders.isNotEmpty) {
-      choice = await showModalBottomSheet<String>(
-        context: context,
-        backgroundColor: _skin.panel,
-        builder: (ctx) => SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
-                child: Text(
-                  'ADD TO A FOLDER',
-                  style: TextStyle(
-                    color: _skin.textSecondary,
-                    fontSize: LayoutSpec.fontFloor - 4,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.4,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.create_new_folder_outlined,
-                    color: _skin.accent),
-                title: Text('NEW FOLDER',
-                    style: TextStyle(
-                      color: _skin.textPrimary,
-                      fontSize: LayoutSpec.fontFloor,
-                      fontWeight: FontWeight.w800,
-                    )),
-                onTap: () => Navigator.of(ctx).pop('__new__'),
-              ),
-              for (final folder in folders)
-                ListTile(
-                  leading: const Icon(Icons.folder_outlined),
-                  title: Text(folder.name.toUpperCase(),
-                      style: TextStyle(
-                        color: _skin.textPrimary,
-                        fontSize: LayoutSpec.fontFloor,
-                      )),
-                  subtitle: Text(
-                      '${folder.set.pieces.length} picture'
-                      '${folder.set.pieces.length == 1 ? '' : 's'}',
-                      style: TextStyle(
-                        color: _skin.textSecondary,
-                        fontSize: LayoutSpec.fontFloor - 4,
-                      )),
-                  onTap: () => Navigator.of(ctx).pop(folder.name),
-                ),
-            ],
-          ),
-        ),
-      );
-      if (choice == null || !mounted) return;
-    }
-
-    String folderName;
-    if (choice == null || choice == '__new__') {
-      final name = await _askFolderName();
-      if (!mounted) return;
-      folderName = createFolderFrom(root.path, picked, name: name)
-          .path
-          .split(Platform.pathSeparator)
-          .last;
-    } else {
-      addToFolder(Directory('${root.path}/art/$choice'), picked);
-      folderName = choice;
-    }
-
-    widget.state.setArtBundles(scanArtBundles(root.path));
-    String? key;
-    for (final folder in widget.state.bundles) {
-      if (folder.name != folderName) continue;
-      key = folder.set.pieces.last.key;
-    }
-    if (key != null) _setPic(key);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Added to $folderName.')),
-    );
-  }
-
-  Future<String?> _askFolderName() async {
-    final ctrl = TextEditingController();
-    final name = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: _skin.panel,
-        title: Text('NAME THE FOLDER',
-            style: TextStyle(
-              color: _skin.textPrimary,
-              fontSize: LayoutSpec.fontFloor,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.2,
-            )),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          style: TextStyle(color: _skin.textPrimary),
-          decoration: InputDecoration(
-            hintText: 'late night',
-            hintStyle: TextStyle(color: _skin.textSecondary),
-          ),
-          onSubmitted: (v) => Navigator.of(ctx).pop(v),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child:
-                Text('CANCEL', style: TextStyle(color: _skin.textSecondary)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(ctrl.text),
-            child: Text('MAKE',
-                style: TextStyle(
-                  color: _skin.accent,
-                  fontWeight: FontWeight.w900,
-                )),
-          ),
-        ],
-      ),
-    );
-    ctrl.dispose();
-    return name;
-  }
-
   /// One row per art folder: its pictures, and the three things you do to a
   /// folder — add to it, rename it, delete it. A folder is a set, so removing a
   /// picture happens on the picture, not in a menu.
@@ -1836,6 +1843,53 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Added to ${folder.name}.')),
     );
+  }
+
+  Future<String?> _askFolderName() async {
+    final controller = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _skin.panel,
+        title: Text(
+          'FOLDER NAME',
+          style: TextStyle(
+            color: _skin.textPrimary,
+            fontSize: LayoutSpec.fontFloor,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.4,
+          ),
+        ),
+        content: TextField(
+          key: const Key('folder-name-field'),
+          controller: controller,
+          autofocus: true,
+          style: TextStyle(color: _skin.textPrimary),
+          decoration: InputDecoration(
+            hintText: 'Night drives',
+            hintStyle: TextStyle(color: _skin.textSecondary),
+          ),
+          onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('CANCEL',
+                style: TextStyle(color: _skin.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+            child: Text('SAVE',
+                style: TextStyle(
+                  color: _skin.accent,
+                  fontWeight: FontWeight.w900,
+                )),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    return (name == null || name.isEmpty) ? null : name;
   }
 
   Future<void> _renameFolder(ArtBundle folder) async {

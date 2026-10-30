@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:sonarar/library/lyrics.dart';
 
 /// Live check: does the pipeline find lyrics for a real upload title?

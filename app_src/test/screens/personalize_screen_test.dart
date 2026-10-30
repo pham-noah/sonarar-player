@@ -179,7 +179,7 @@ void main() {
     await tester.tap(find.byKey(const Key('personalize-tab-art')));
     await tester.pumpAndSettle();
 
-    expect(find.text('A PHOTO'), findsOneWidget,
-        reason: 'the picker must not be limited to folders already on the card');
+    expect(find.text('ADD PICTURE'), findsWidgets,
+        reason: 'one door for pictures: the slot and the folders share it');
   });
 }

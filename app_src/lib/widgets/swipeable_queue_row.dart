@@ -144,8 +144,8 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
           color: widget.isCurrent
               ? skin.accent
               : (_hovered
-                  ? skin.accent.withValues(alpha: 0.7)
-                  : skin.textSecondary.withValues(alpha: 0.28)),
+                  ? skin.accentAt(0.7)
+                  : skin.secondary(0.28)),
           width: widget.isCurrent ? 2 : 1,
         ),
       ),
@@ -185,7 +185,7 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
             Icon(Icons.graphic_eq_rounded, color: skin.accent, size: 18)
           else
             Icon(Icons.drag_indicator_rounded,
-                color: skin.textSecondary.withValues(alpha: 0.55), size: 17),
+                color: skin.secondary(0.55), size: 17),
         ],
       ),
     );

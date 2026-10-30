@@ -61,7 +61,7 @@ class LibraryBrowserBar extends StatelessWidget {
                 height: 34,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: skin.accent.withValues(alpha: 0.92),
+                  color: skin.accentAt(0.92),
                   border: Border.all(color: skin.accent),
                 ),
                 child: Icon(Icons.close_rounded, color: skin.onAccent, size: 20),
@@ -90,7 +90,7 @@ class LibraryBrowserBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 4),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: skin.accent.withValues(alpha: 0.14),
+                    color: skin.accentAt(0.14),
                     border: Border.all(color: skin.accent),
                   ),
                   child: Text(
@@ -139,26 +139,26 @@ class LibraryBrowserBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
           decoration: BoxDecoration(
             color: active
-                ? skin.accent.withValues(alpha: 0.92)
+                ? skin.accentAt(0.92)
                 : skin.background.withValues(alpha: 0.45),
             border: Border(
               top: BorderSide(
                 color: active
                     ? skin.accent
-                    : skin.textSecondary.withValues(alpha: 0.55),
+                    : skin.secondary(0.55),
               ),
               left: BorderSide(
                 color: active
                     ? skin.accent
-                    : skin.textSecondary.withValues(alpha: 0.55),
+                    : skin.secondary(0.55),
               ),
               right: BorderSide(
                 color: active
                     ? skin.accent
-                    : skin.textSecondary.withValues(alpha: 0.55),
+                    : skin.secondary(0.55),
               ),
               bottom: BorderSide(
-                color: here ? skin.accent : skin.textSecondary.withValues(alpha: 0.55),
+                color: here ? skin.accent : skin.secondary(0.55),
                 width: here ? 2 : 1,
               ),
             ),
@@ -230,12 +230,12 @@ class PlaylistRow extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(12, 6, 14, 6),
         decoration: BoxDecoration(
           color: isDynamic
-              ? skin.accent.withValues(alpha: 0.12)
+              ? skin.accentAt(0.12)
               : Colors.transparent,
           border: Border.all(
             color: isDynamic
-                ? skin.accent.withValues(alpha: 0.75)
-                : skin.textSecondary.withValues(alpha: 0.28),
+                ? skin.accentAt(0.75)
+                : skin.secondary(0.28),
             width: isDynamic ? 2 : 1,
           ),
         ),
@@ -253,7 +253,7 @@ class PlaylistRow extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                border: Border.all(color: skin.accent.withValues(alpha: 0.5)),
+                border: Border.all(color: skin.accentAt(0.5)),
               ),
               child: cover == null
                   ? ColoredBox(
@@ -357,7 +357,7 @@ class ArtistRow extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
         decoration: BoxDecoration(
           border: Border.all(
-            color: skin.textSecondary.withValues(alpha: 0.28),
+            color: skin.secondary(0.28),
           ),
         ),
         child: Row(
@@ -368,7 +368,7 @@ class ArtistRow extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: skin.accent.withValues(alpha: 0.5)),
+                border: Border.all(color: skin.accentAt(0.5)),
                 image: cover == null
                     ? null
                     : DecorationImage(image: cover!, fit: BoxFit.cover),
@@ -399,7 +399,7 @@ class ArtistRow extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Icon(Icons.chevron_right_rounded,
-                color: skin.textSecondary.withValues(alpha: 0.6), size: 22),
+                color: skin.secondary(0.6), size: 22),
           ],
         ),
       ),

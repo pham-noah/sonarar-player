@@ -78,7 +78,7 @@ class RulesEditorScreen extends StatelessWidget {
               'other state files. The app reads that file at launch.',
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                color: skin.textSecondary.withValues(alpha: 0.85),
+                color: skin.secondary(0.85),
                 height: 1.4,
               ),
             ),
@@ -89,7 +89,7 @@ class RulesEditorScreen extends StatelessWidget {
               'would fire on the day it knows least.',
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                color: skin.textSecondary.withValues(alpha: 0.7),
+                color: skin.secondary(0.7),
                 height: 1.4,
               ),
             ),
@@ -105,7 +105,7 @@ class RulesEditorScreen extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(
             color: active == null
-                ? skin.textSecondary.withValues(alpha: 0.3)
+                ? skin.secondary(0.3)
                 : skin.accent,
             width: active == null ? 1 : 2,
           ),
@@ -149,7 +149,7 @@ class RulesEditorScreen extends StatelessWidget {
           border: Border.all(
             color: isActive
                 ? skin.accent
-                : skin.textSecondary.withValues(alpha: 0.3),
+                : skin.secondary(0.3),
             width: isActive ? 2 : 1,
           ),
         ),
@@ -439,11 +439,11 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? skin.accent.withValues(alpha: 0.2) : Colors.transparent,
+            color: selected ? skin.accentAt(0.2) : Colors.transparent,
             border: Border.all(
               color: selected
                   ? skin.accent
-                  : skin.textSecondary.withValues(alpha: 0.35),
+                  : skin.secondary(0.35),
             ),
           ),
           child: Text(

@@ -60,7 +60,7 @@ class AudioPanel extends StatelessWidget {
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
                   overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
                   activeTrackColor: skin.accent,
-                  inactiveTrackColor: skin.textSecondary.withValues(alpha: 0.3),
+                  inactiveTrackColor: skin.secondary(0.3),
                   thumbColor: skin.accent,
                 ),
                 child: Slider(

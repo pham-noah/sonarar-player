@@ -422,7 +422,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(
-                          color: skin.textSecondary.withValues(alpha: 0.35),
+                          color: skin.secondary(0.35),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -447,11 +447,11 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             border: Border.all(
                               color: widget.searchOnline
                                   ? skin.accent
-                                  : skin.textSecondary.withValues(alpha: 0.5),
+                                  : skin.secondary(0.5),
                               width: widget.searchOnline ? 2 : 1,
                             ),
                             color: widget.searchOnline
-                                ? skin.accent.withValues(alpha: 0.14)
+                                ? skin.accentAt(0.14)
                                 : null,
                           ),
                           child: Tooltip(
@@ -490,7 +490,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                               fontWeight: FontWeight.w800,
                               color: skin.accent)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: skin.accent.withValues(alpha: 0.6)),
+                        side: BorderSide(color: skin.accentAt(0.6)),
                       ),
                     ),
                   ),
@@ -575,7 +575,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     return Container(
       // The row IS the progress. A separate queue above the list made the same
       // download appear twice and never where the user was looking.
-      color: downloading ? skin.accent.withValues(alpha: 0.12) : null,
+      color: downloading ? skin.accentAt(0.12) : null,
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
       child: Row(
         children: [
@@ -618,12 +618,12 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                         decoration: BoxDecoration(
                           color: hit.isOfficialGiven(_vouched)
-                              ? skin.accent.withValues(alpha: 0.22)
+                              ? skin.accentAt(0.22)
                               : skin.panel,
                           border: Border.all(
                             color: hit.isOfficialGiven(_vouched)
                                 ? skin.accent
-                                : skin.textSecondary.withValues(alpha: 0.5),
+                                : skin.secondary(0.5),
                           ),
                         ),
                         child: Text(
@@ -703,7 +703,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             Tooltip(
               message: 'Not an official release',
               child: Icon(Icons.block_rounded,
-                  color: skin.textSecondary.withValues(alpha: 0.5)),
+                  color: skin.secondary(0.5)),
             )
           else
             IconButton(

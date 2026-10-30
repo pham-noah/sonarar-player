@@ -219,7 +219,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
             decoration: BoxDecoration(
               color: widget.skin.panel,
               border: Border(
-                top: BorderSide(color: widget.skin.accent.withValues(alpha: 0.4)),
+                top: BorderSide(color: widget.skin.accentAt(0.4)),
               ),
             ),
             child: content,
@@ -254,7 +254,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
           decoration: armed
               ? BoxDecoration(
                   border: Border.all(color: widget.skin.accent, width: 2),
-                  color: widget.skin.accent.withValues(alpha: 0.16),
+                  color: widget.skin.accentAt(0.16),
                 )
               : null,
           child: swipeable,
@@ -332,7 +332,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
         height: size,
         margin: const EdgeInsets.only(left: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: widget.skin.accent.withValues(alpha: 0.7)),
+          border: Border.all(color: widget.skin.accentAt(0.7)),
         ),
 
         child: CrossFadeSlot(

@@ -191,7 +191,7 @@ class PersonalBackdrop extends StatelessWidget {
                     color: Colors.black.withValues(alpha: spec.dim * 0.85),
                   ),
                 if (spec.tint)
-                  ColoredBox(color: skin.accent.withValues(alpha: 0.10)),
+                  ColoredBox(color: skin.accentAt(0.10)),
                 if (spec.burn > 0)
                   Positioned.fill(
                     child: DecoratedBox(

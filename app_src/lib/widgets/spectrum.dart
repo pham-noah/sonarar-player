@@ -259,7 +259,7 @@ class _BarsPainter extends CustomPainter {
 
     final paint = Paint();
     if (paused) {
-      paint.color = skin.accent.withValues(alpha: 0.45);
+      paint.color = skin.accentAt(0.45);
     }
 
     for (var i = 0; i < n; i++) {

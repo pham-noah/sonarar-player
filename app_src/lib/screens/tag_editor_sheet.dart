@@ -130,7 +130,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
               're-scanning the library.',
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                color: skin.textSecondary.withValues(alpha: 0.8),
+                color: skin.secondary(0.8),
                 height: 1.4,
               ),
             ),
@@ -153,7 +153,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: skin.textPrimary,
                           side: BorderSide(
-                              color: skin.textSecondary.withValues(alpha: 0.5)),
+                              color: skin.secondary(0.5)),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: const Text('UNDO ALL'),
@@ -235,7 +235,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                 borderSide: BorderSide(
                   color: overridden
                       ? skin.accent
-                      : skin.textSecondary.withValues(alpha: 0.25),
+                      : skin.secondary(0.25),
                 ),
               ),
             ),
@@ -249,7 +249,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                color: skin.textSecondary.withValues(alpha: 0.85),
+                color: skin.secondary(0.85),
               ),
             ),
           ],

@@ -126,7 +126,7 @@ class _UpdateBarState extends State<UpdateBar> {
                     value: progress,
                     minHeight: 3,
                     color: skin.accent,
-                    backgroundColor: skin.textSecondary.withValues(alpha: 0.2),
+                    backgroundColor: skin.secondary(0.2),
                   ),
                 ),
               ],

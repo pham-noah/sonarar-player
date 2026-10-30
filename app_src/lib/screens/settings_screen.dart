@@ -363,7 +363,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )
                     : Icon(Icons.chevron_right_rounded,
                         size: 20,
-                        color: skin.textSecondary.withValues(alpha: 0.6)),
+                        color: skin.secondary(0.6)),
               ),
               if (_checkResult != null)
                 Padding(
@@ -408,7 +408,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Icons.receipt_long_rounded,
 
                 trailing: Icon(Icons.chevron_right_rounded,
-                    size: 20, color: skin.textSecondary.withValues(alpha: 0.6)),
+                    size: 20, color: skin.secondary(0.6)),
                 onTap: onOpenDiagnostics,
               ),
               const SizedBox(height: 16),
@@ -436,7 +436,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 label: 'LICENSES',
                 icon: Icons.article_rounded,
                 trailing: Icon(Icons.chevron_right_rounded,
-                    size: 20, color: skin.textSecondary.withValues(alpha: 0.6)),
+                    size: 20, color: skin.secondary(0.6)),
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => LicensePage(
@@ -504,7 +504,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           value: value,
           onChanged: onChanged,
           activeThumbColor: skin.accent,
-          activeTrackColor: skin.accent.withValues(alpha: 0.35),
+          activeTrackColor: skin.accentAt(0.35),
         ),
         onTap: () => onChanged(!value),
       );
@@ -520,7 +520,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         label: label,
         icon: icon,
         trailing: Icon(Icons.open_in_new_rounded,
-            size: 18, color: skin.textSecondary.withValues(alpha: 0.6)),
+            size: 18, color: skin.secondary(0.6)),
         onTap: () async {
           final opened = await openExternal(url);
           if (!opened && mounted) {
@@ -549,7 +549,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           decoration: BoxDecoration(
             color: skin.panel,
             border: Border(
-              left: BorderSide(color: skin.accent.withValues(alpha: 0.7), width: 3),
+              left: BorderSide(color: skin.accentAt(0.7), width: 3),
             ),
           ),
           child: Column(
@@ -594,9 +594,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   data: SliderTheme.of(context).copyWith(
                     trackHeight: 2,
                     activeTrackColor: skin.accent,
-                    inactiveTrackColor: skin.accent.withValues(alpha: 0.22),
+                    inactiveTrackColor: skin.accentAt(0.22),
                     thumbColor: skin.accent,
-                    overlayColor: skin.accent.withValues(alpha: 0.14),
+                    overlayColor: skin.accentAt(0.14),
 
                     thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
                     overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
@@ -658,15 +658,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           decoration: BoxDecoration(
             border: Border.all(
               color: off
-                  ? skin.textSecondary.withValues(alpha: 0.25)
-                  : skin.accent.withValues(alpha: 0.6),
+                  ? skin.secondary(0.25)
+                  : skin.accentAt(0.6),
             ),
           ),
           child: Icon(
             icon,
             size: 18,
             color: off
-                ? skin.textSecondary.withValues(alpha: 0.3)
+                ? skin.secondary(0.3)
                 : skin.accent,
           ),
         ),

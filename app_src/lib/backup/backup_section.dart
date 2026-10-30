@@ -177,7 +177,7 @@ class _BackupSectionState extends State<BackupSection> {
               : Icon(
                   Icons.chevron_right_rounded,
                   size: 20,
-                  color: skin.textSecondary.withValues(alpha: 0.6),
+                  color: skin.secondary(0.6),
                 ),
           onTap: _busy ? null : _save,
         ),
@@ -187,7 +187,7 @@ class _BackupSectionState extends State<BackupSection> {
           trailing: Icon(
             Icons.chevron_right_rounded,
             size: 20,
-            color: skin.textSecondary.withValues(alpha: 0.6),
+            color: skin.secondary(0.6),
           ),
           onTap: _busy ? null : _restore,
         ),

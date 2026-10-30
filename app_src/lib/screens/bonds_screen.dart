@@ -166,7 +166,7 @@ class BondsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: i < bond.rank
                               ? skin.accent
-                              : skin.textSecondary.withValues(alpha: 0.22),
+                              : skin.secondary(0.22),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -219,7 +219,7 @@ class BondsScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontLabel,
-                  color: skin.textPrimary.withValues(alpha: 0.9),
+                  color: skin.primaryText(0.9),
                   fontStyle: FontStyle.italic,
                 ),
               ),

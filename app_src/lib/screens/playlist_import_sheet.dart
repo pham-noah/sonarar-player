@@ -565,7 +565,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                     color: skin.accent,
                   )),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: skin.accent.withValues(alpha: 0.6)),
+                side: BorderSide(color: skin.accentAt(0.6)),
               ),
             ),
           ),

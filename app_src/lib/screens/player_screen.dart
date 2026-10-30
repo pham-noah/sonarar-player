@@ -1431,7 +1431,7 @@ class PlayerScreen extends StatelessWidget {
                   border: Border.all(
                     color: active
                         ? skin.accent
-                        : skin.textSecondary.withValues(alpha: 0.42),
+                        : skin.secondary(0.42),
                   ),
                 ),
                 child: Icon(
@@ -1484,7 +1484,7 @@ class PlayerScreen extends StatelessWidget {
             border: Border.all(
               color: active
                   ? skin.accent
-                  : skin.textSecondary.withValues(alpha: 0.5),
+                  : skin.secondary(0.5),
             ),
           ),
           child: Row(
@@ -1544,7 +1544,7 @@ class PlayerScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-        Container(height: 1, color: skin.accent.withValues(alpha: 0.2)),
+        Container(height: 1, color: skin.accentAt(0.2)),
         const SizedBox(height: 11),
         Transform(
           transform: Matrix4.skewX(-skew),
@@ -1678,7 +1678,7 @@ class PlayerScreen extends StatelessWidget {
               border: Border.all(
                 color: active
                     ? skin.accent
-                    : skin.accent.withValues(alpha: 0.55),
+                    : skin.accentAt(0.55),
                 width: 1.5,
               ),
             ),
@@ -1717,7 +1717,7 @@ class PlayerScreen extends StatelessWidget {
                 color: skin.textPrimary,
                 boxShadow: [
                   BoxShadow(
-                    color: skin.accent.withValues(alpha: 0.42),
+                    color: skin.accentAt(0.42),
                     blurRadius: 30,
                     offset: const Offset(0, 10),
                   ),
@@ -1831,7 +1831,7 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                         child: Align(
                           alignment: Alignment.center,
                           child: ColoredBox(
-                            color: skin.textSecondary.withValues(alpha: 0.26),
+                            color: skin.secondary(0.26),
                             child: const SizedBox(
                               height: 7,
                               width: double.infinity,

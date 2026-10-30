@@ -75,7 +75,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: skin.textPrimary,
-                    side: BorderSide(color: skin.textSecondary.withValues(alpha: 0.5)),
+                    side: BorderSide(color: skin.secondary(0.5)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text('ALLOW EVERYTHING AGAIN'),
@@ -95,7 +95,7 @@ class NeverInShuffleScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: skin.textSecondary.withValues(alpha: 0.3)),
+          border: Border.all(color: skin.secondary(0.3)),
         ),
         child: Row(
           children: [

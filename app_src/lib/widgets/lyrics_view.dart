@@ -198,7 +198,7 @@ class _LyricsViewState extends State<LyricsView> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: skin.background.withValues(alpha: 0.55),
-                    border: Border.all(color: skin.accent.withValues(alpha: 0.8), width: 1.5),
+                    border: Border.all(color: skin.accentAt(0.8), width: 1.5),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                   child: Row(

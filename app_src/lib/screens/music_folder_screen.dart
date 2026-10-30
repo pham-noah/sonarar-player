@@ -186,7 +186,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                                 color: skin.panel,
                                 border: Border(
                                   left: BorderSide(
-                                      color: skin.accent.withValues(alpha: 0.6),
+                                      color: skin.accentAt(0.6),
                                       width: 3),
                                 ),
                               ),

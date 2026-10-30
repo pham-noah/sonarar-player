@@ -49,7 +49,7 @@ class _CoverButtonState extends State<CoverButton> {
           width: widget.size,
           height: widget.size,
           decoration: BoxDecoration(
-            border: Border.all(color: skin.accent.withValues(alpha: 0.8), width: 2),
+            border: Border.all(color: skin.accentAt(0.8), width: 2),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.5),

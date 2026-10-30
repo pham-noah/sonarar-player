@@ -103,7 +103,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: widget.skin.accent.withValues(alpha: 0.45),
+                            color: widget.skin.accentAt(0.45),
                             width: 1,
                           ),
                         ),

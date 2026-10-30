@@ -99,7 +99,7 @@ class LibraryManagementPanel extends StatelessWidget {
 
           if (onRemoveDownload != null) ...[
             const SizedBox(height: 6),
-            Divider(color: skin.textSecondary.withValues(alpha: 0.25)),
+            Divider(color: skin.secondary(0.25)),
             _row(skin, Icons.delete_forever_rounded, 'Remove download', onRemoveDownload),
             Text(
               'Deletes the file from this phone. It is a download, so nothing else has it — the next library '
@@ -140,15 +140,15 @@ class LibraryManagementPanel extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border.all(
                 color: enabled
-                    ? skin.textSecondary.withValues(alpha: 0.35)
-                    : skin.textSecondary.withValues(alpha: 0.15),
+                    ? skin.secondary(0.35)
+                    : skin.secondary(0.15),
               ),
             ),
             child: Row(
               children: [
                 Icon(icon,
                     size: 20,
-                    color: enabled ? skin.accent : skin.textSecondary.withValues(alpha: 0.4)),
+                    color: enabled ? skin.accent : skin.secondary(0.4)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -158,7 +158,7 @@ class LibraryManagementPanel extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: enabled
                           ? skin.textPrimary
-                          : skin.textSecondary.withValues(alpha: 0.5),
+                          : skin.secondary(0.5),
                     ),
                   ),
                 ),

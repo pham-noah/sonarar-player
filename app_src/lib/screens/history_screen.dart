@@ -253,8 +253,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 color: selected
                     ? skin.accent
                     : isToday
-                        ? skin.textPrimary.withValues(alpha: 0.7)
-                        : skin.textSecondary.withValues(alpha: 0.2),
+                        ? skin.primaryText(0.7)
+                        : skin.secondary(0.2),
                 width: selected ? 2 : 1,
               ),
             ),
@@ -265,7 +265,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                 fontWeight: day.isEmpty ? FontWeight.w400 : FontWeight.w900,
                 color: day.isEmpty
-                    ? skin.textSecondary.withValues(alpha: 0.55)
+                    ? skin.secondary(0.55)
 
                     : t > 0.6
                         ? skin.background
@@ -563,7 +563,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Container(
                   height: compact ? 10 : 14,
                   decoration: BoxDecoration(
-                    color: skin.textSecondary.withValues(alpha: 0.15),
+                    color: skin.secondary(0.15),
                   ),
                 ),
                 FractionallySizedBox(

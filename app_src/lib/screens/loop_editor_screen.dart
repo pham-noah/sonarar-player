@@ -250,7 +250,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
           decoration: BoxDecoration(
             color: selected ? skin.panel : Colors.transparent,
             border: Border.all(
-              color: selected ? skin.accent : skin.textSecondary.withValues(alpha: 0.3),
+              color: selected ? skin.accent : skin.secondary(0.3),
               width: selected ? 2 : 1,
             ),
           ),

@@ -299,7 +299,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
                   fontSize: LayoutSpec.fontBase,
                   fontWeight: FontWeight.w900,
                   color: dim
-                      ? skin.textSecondary.withValues(alpha: 0.5)
+                      ? skin.secondary(0.5)
                       : (playing ? skin.onAccent : skin.accent),
                 ),
               ),
@@ -316,7 +316,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
                       fontSize: LayoutSpec.fontSmall,
                       fontWeight: FontWeight.w700,
                       color: dim
-                          ? skin.textSecondary.withValues(alpha: 0.6)
+                          ? skin.secondary(0.6)
                           : (playing ? skin.onAccent : skin.textPrimary),
                     ),
                   ),

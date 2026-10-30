@@ -177,9 +177,9 @@ class SkinChip extends StatelessWidget {
           decoration: BoxDecoration(
 
             borderRadius: BorderRadius.circular(999),
-            color: selected ? skin.accent.withValues(alpha: 0.18) : Colors.transparent,
+            color: selected ? skin.accentAt(0.18) : Colors.transparent,
             border: Border.all(
-              color: selected ? skin.accent : skin.textSecondary.withValues(alpha: 0.35),
+              color: selected ? skin.accent : skin.secondary(0.35),
             ),
           ),
           child: Transform(

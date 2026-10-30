@@ -57,6 +57,15 @@ class Skin {
 
   final Color onAccent;
 
+  /// The faded versions of the three text colours. There are ten different
+  /// alphas in the screens today; every one of them is a decision about
+  /// hierarchy that was made at the call site. They read through here so the
+  /// ladder can be decided in one place later, and so `withValues` stops being
+  /// spelled out a hundred and thirty times.
+  Color secondary(double alpha) => textSecondary.withValues(alpha: alpha);
+  Color primaryText(double alpha) => textPrimary.withValues(alpha: alpha);
+  Color accentAt(double alpha) => accent.withValues(alpha: alpha);
+
   bool get isLight => background.computeLuminance() > 0.5;
 
   Color get slabShadow => isLight

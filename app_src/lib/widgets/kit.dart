@@ -44,13 +44,13 @@ class KitRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: skin.panel,
         border: Border(
-          left: BorderSide(color: skin.accent.withValues(alpha: 0.7), width: 3),
+          left: BorderSide(color: skin.accentAt(0.7), width: 3),
           // A hairline on the other three sides. Without it the panel and the
           // page are two dark greys meeting on a soft edge, and the slab — the
           // one shape this app repeats — stops reading as a plate.
-          top: BorderSide(color: skin.textSecondary.withValues(alpha: 0.22)),
-          right: BorderSide(color: skin.textSecondary.withValues(alpha: 0.22)),
-          bottom: BorderSide(color: skin.textSecondary.withValues(alpha: 0.22)),
+          top: BorderSide(color: skin.secondary(0.22)),
+          right: BorderSide(color: skin.secondary(0.22)),
+          bottom: BorderSide(color: skin.secondary(0.22)),
         ),
       ),
       child: Column(
@@ -263,7 +263,7 @@ class KitTabs<T> extends StatelessWidget {
                       border: Border.all(
                         color: entries[i].key == selected
                             ? skin.accent
-                            : skin.textSecondary.withValues(alpha: 0.35),
+                            : skin.secondary(0.35),
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -328,7 +328,7 @@ class KitSegment<T> extends StatelessWidget {
                     border: Border.all(
                       color: entry.key == selected
                           ? skin.accent
-                          : skin.textSecondary.withValues(alpha: 0.35),
+                          : skin.secondary(0.35),
                     ),
                   ),
                   child: Text(

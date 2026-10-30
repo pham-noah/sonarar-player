@@ -421,10 +421,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
         decoration: BoxDecoration(
           color: on
-              ? skin.accent.withValues(alpha: 0.92)
+              ? skin.accentAt(0.92)
               : skin.background.withValues(alpha: 0.45),
           border: Border.all(
-            color: on ? skin.accent : skin.textSecondary.withValues(alpha: 0.55),
+            color: on ? skin.accent : skin.secondary(0.55),
           ),
         ),
         child: Text(
@@ -457,7 +457,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 border: Border.all(
                   color: pinned
                       ? skin.accent
-                      : skin.textSecondary.withValues(alpha: 0.28),
+                      : skin.secondary(0.28),
                   width: pinned ? 2 : 1,
                 ),
               ),
@@ -552,10 +552,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
         decoration: BoxDecoration(
           color: on
-              ? skin.accent.withValues(alpha: 0.92)
+              ? skin.accentAt(0.92)
               : skin.background.withValues(alpha: 0.45),
           border: Border.all(
-            color: on ? skin.accent : skin.textSecondary.withValues(alpha: 0.55),
+            color: on ? skin.accent : skin.secondary(0.55),
           ),
         ),
         child: Text(
@@ -687,7 +687,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
                 border: Border(
                   bottom: BorderSide(
-                    color: skin.accent.withValues(alpha: 0.45),
+                    color: skin.accentAt(0.45),
                     width: 2,
                   ),
                 ),
@@ -792,7 +792,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 hintText: 'Title, artist, album, folder',
                 hintStyle: TextStyle(
                   fontSize: LayoutSpec.fontBase,
-                  color: skin.textPrimary.withValues(alpha: 0.66),
+                  color: skin.primaryText(0.66),
                 ),
                 border: InputBorder.none,
                 isDense: true,
@@ -983,7 +983,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       ? Icons.view_list_rounded
                       : Icons.grid_view_rounded,
                   color: widget.onPlaylistGrid == null
-                      ? skin.textSecondary.withValues(alpha: 0.4)
+                      ? skin.secondary(0.4)
                       : skin.accent,
                   size: 24,
                 ),

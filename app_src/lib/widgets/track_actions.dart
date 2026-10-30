@@ -80,7 +80,7 @@ class _SquareButton extends StatelessWidget {
           border: Border.all(
             color: active
                 ? skin.accent
-                : skin.textSecondary.withValues(alpha: 0.42),
+                : skin.secondary(0.42),
           ),
         ),
         child: Icon(

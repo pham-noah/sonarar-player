@@ -50,7 +50,7 @@ class LayoutPalette {
         accent: skin.accent,
         accentDeep: skin.accentDeep,
         onAccent: skin.onAccent,
-        border: skin.textSecondary.withValues(alpha: 0.35),
+        border: skin.secondary(0.35),
         shadow: skin.slabShadow,
       );
 

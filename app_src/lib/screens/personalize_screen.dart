@@ -772,7 +772,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         : (sonar ? Colors.transparent : skin.panel);
     final edge = glass
         ? Colors.white.withValues(alpha: 0.22)
-        : skin.textSecondary.withValues(alpha: 0.16);
+        : skin.secondary(0.16);
 
     Widget row(
       String title,
@@ -799,7 +799,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             width: 26,
             height: 26,
             margin: const EdgeInsets.only(right: 8),
-            color: skin.accent.withValues(alpha: 0.22),
+            color: skin.accentAt(0.22),
             child: Icon(
               Icons.music_note_rounded,
               size: 14,
@@ -914,7 +914,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           flex: 6,
                           child: Container(
                             height: 3,
-                            color: skin.textSecondary.withValues(alpha: 0.25),
+                            color: skin.secondary(0.25),
                           ),
                         ),
                       ],
@@ -1134,7 +1134,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           border: Border.all(
             color: active
                 ? skin.accent
-                : skin.textSecondary.withValues(alpha: 0.25),
+                : skin.secondary(0.25),
             width: active ? 2 : 1,
           ),
         ),
@@ -1179,7 +1179,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: skin.panel,
-          border: Border.all(color: skin.textSecondary.withValues(alpha: 0.22)),
+          border: Border.all(color: skin.secondary(0.22)),
         ),
         child: Text(
           'NO PICTURE — THE SKIN PAINTS THIS',
@@ -1546,7 +1546,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 border: Border.all(
                   color: c == selected
                       ? skin.accent
-                      : skin.textSecondary.withValues(alpha: 0.3),
+                      : skin.secondary(0.3),
                   width: c == selected ? 3 : 1,
                 ),
               ),
@@ -1644,14 +1644,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
         decoration: BoxDecoration(
-          color: active ? skin.accent.withValues(alpha: 0.16) : skin.panel,
+          color: active ? skin.accentAt(0.16) : skin.panel,
           border: Border(
             // One spine, one meaning: accent on the theme you are wearing,
             // quiet grey on the rest. Six lime spines said nothing.
             left: BorderSide(
               color: active
                   ? skin.accent
-                  : skin.textSecondary.withValues(alpha: 0.35),
+                  : skin.secondary(0.35),
               width: 3,
             ),
           ),
@@ -1788,7 +1788,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           left: BorderSide(
             color: worn
                 ? skin.accent
-                : skin.textSecondary.withValues(alpha: 0.3),
+                : skin.secondary(0.3),
             width: 3,
           ),
         ),
@@ -2126,7 +2126,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         border: Border.all(
           color: active
               ? skin.accent
-              : skin.textSecondary.withValues(alpha: 0.4),
+              : skin.secondary(0.4),
           width: marked && !active ? 2 : 1,
         ),
       ),

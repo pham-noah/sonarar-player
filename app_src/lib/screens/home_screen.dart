@@ -391,7 +391,7 @@ class HomeScreen extends StatelessWidget {
     final cover = first.isEmpty ? null : coverPathFor?.call(first.first);
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: skin.textSecondary.withValues(alpha: 0.28)),
+        border: Border.all(color: skin.secondary(0.28)),
       ),
       child: (cover == null || !File(cover).existsSync())
           ? ColoredBox(
@@ -463,7 +463,7 @@ class HomeScreen extends StatelessWidget {
                         child: cover == null
                             ? Icon(Icons.music_note_rounded,
                                 size: 26,
-                                color: skin.textSecondary.withValues(alpha: 0.6))
+                                color: skin.secondary(0.6))
                             : Image.file(
                                 File(cover),
                                 fit: BoxFit.cover,

@@ -195,7 +195,7 @@ class MapAttribution extends StatelessWidget {
       'Map data © OpenStreetMap contributors',
       style: TextStyle(
         fontSize: 12,
-        color: skin.textSecondary.withValues(alpha: 0.8),
+        color: skin.secondary(0.8),
       ),
     );
   }
@@ -304,7 +304,7 @@ class SaveSpotButton extends StatelessWidget {
               border: Border.all(
                 color: _usable
                     ? skin.accent
-                    : skin.textSecondary.withValues(alpha: 0.4),
+                    : skin.secondary(0.4),
               ),
             ),
             child: Text(

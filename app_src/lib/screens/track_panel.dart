@@ -121,7 +121,7 @@ class TrackPanel extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: skin.textSecondary.withValues(alpha: 0.25),
+                  color: skin.secondary(0.25),
                 ),
               ),
               child: Row(
@@ -168,7 +168,7 @@ class TrackPanel extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             decoration: BoxDecoration(
-              color: active ? skin.accent.withValues(alpha: 0.12) : Colors.transparent,
+              color: active ? skin.accentAt(0.12) : Colors.transparent,
               border: Border.all(
                 color: active
                     ? skin.accent
@@ -186,7 +186,7 @@ class TrackPanel extends StatelessWidget {
                       ? skin.accent
                       : enabled
                           ? skin.textSecondary
-                          : skin.textSecondary.withValues(alpha: 0.4),
+                          : skin.secondary(0.4),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -199,7 +199,7 @@ class TrackPanel extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: enabled
                           ? skin.textPrimary
-                          : skin.textSecondary.withValues(alpha: 0.5),
+                          : skin.secondary(0.5),
                     ),
                   ),
                 ),

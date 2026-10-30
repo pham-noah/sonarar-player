@@ -424,7 +424,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                               const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: skin.accent.withValues(alpha: 0.6)),
+                                color: skin.accentAt(0.6)),
                           ),
                           child: Text(
                             kind.label.toUpperCase(),
@@ -612,7 +612,7 @@ class _NameSheetState extends State<_NameSheet> {
                             border: Border.all(
                               color: on
                                   ? skin.accent
-                                  : skin.textSecondary.withValues(alpha: 0.5),
+                                  : skin.secondary(0.5),
                             ),
                           ),
                           child: Text(
@@ -751,7 +751,7 @@ class _NameSheetState extends State<_NameSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         border: Border.all(
-                            color: skin.textSecondary.withValues(alpha: 0.4)),
+                            color: skin.secondary(0.4)),
                       ),
                       child: Text(
                         'CANCEL',
@@ -823,17 +823,17 @@ class _NameSheetState extends State<_NameSheet> {
             hintText: hint,
             hintStyle: TextStyle(
               fontSize: 15,
-              color: skin.textSecondary.withValues(alpha: 0.6),
+              color: skin.secondary(0.6),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             border: OutlineInputBorder(
               borderSide:
-                  BorderSide(color: skin.textSecondary.withValues(alpha: 0.4)),
+                  BorderSide(color: skin.secondary(0.4)),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide:
-                  BorderSide(color: skin.textSecondary.withValues(alpha: 0.4)),
+                  BorderSide(color: skin.secondary(0.4)),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: skin.accent, width: 2),

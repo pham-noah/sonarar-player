@@ -80,7 +80,7 @@ class WhyPanel extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                border: Border.all(color: skin.textSecondary.withValues(alpha: 0.3)),
+                border: Border.all(color: skin.secondary(0.3)),
               ),
               child: Row(
                 children: [

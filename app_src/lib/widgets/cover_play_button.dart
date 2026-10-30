@@ -144,7 +144,7 @@ class _HoverableCoverState extends State<_HoverableCover> {
           decoration: BoxDecoration(
             border: widget.showBorder
                 ? Border.all(
-                    color: widget.skin.accent.withValues(alpha: 0.5),
+                    color: widget.skin.accentAt(0.5),
                   )
                 : null,
           ),

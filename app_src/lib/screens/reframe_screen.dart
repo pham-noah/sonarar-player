@@ -81,7 +81,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                       style: TextStyle(
                         color: _changed
                             ? skin.textSecondary
-                            : skin.textSecondary.withValues(alpha: 0.35),
+                            : skin.secondary(0.35),
                       ),
                     ),
                   ),
@@ -133,7 +133,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3),
                           border: Border.all(
-                            color: skin.textSecondary.withValues(alpha: 0.35),
+                            color: skin.secondary(0.35),
                           ),
                         ),
                         child: ClipRRect(

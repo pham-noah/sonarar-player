@@ -10,13 +10,19 @@ import 'package:sonarar/update/update_service.dart';
 
 /// The update check is only allowed to speak when it has something true to say.
 void main() {
-  Map<String, Object?> release({String tag = 'v0.2.2', String name = '0.2.2+22'}) => {
+  // Fixtures are described relative to the version this build says it is, so
+  // bumping the app does not turn them into "no longer newer" and redden the
+  // suite — which is exactly what happened to the 0.2.2 build.
+  const newerTag = 'v9.9.9';
+  final newerBuild = appVersionCode + 1;
+
+  Map<String, Object?> release({String tag = newerTag, String? name}) => {
         'tag_name': tag,
-        'name': name,
+        'name': name ?? '9.9.9+$newerBuild',
         'html_url': 'https://example.test/release',
         'assets': [
           {
-            'name': 'Sonarar-0.2.2-arm64.apk',
+            'name': 'Sonarar-9.9.9-arm64.apk',
             'browser_download_url': 'https://example.test/app.apk',
             'size': 1000,
           },
@@ -32,8 +38,8 @@ void main() {
         client: clientReturning(release()));
 
     expect(update, isNotNull);
-    expect(update!.version, '0.2.2');
-    expect(update.build, 22);
+    expect(update!.version, '9.9.9');
+    expect(update.build, newerBuild);
     expect(update.apkUrl, 'https://example.test/app.apk');
   });
 
@@ -44,12 +50,12 @@ void main() {
       appVersionCode,
       currentVersion: appVersionName,
       client: clientReturning(release(
-        tag: 'v0.2.2',
-        name: 'Sonarar 0.2.2 Personalize',
+        tag: newerTag,
+        name: 'Sonarar 9.9.9 Personalize',
       )),
     );
 
-    expect(update?.version, '0.2.2');
+    expect(update?.version, '9.9.9');
   });
 
   test('a release title without a build is not offered when it is the same version',
@@ -68,7 +74,7 @@ void main() {
 
   test('the same build is not offered again', () async {
     final update = await checkForUpdate(appVersionCode,
-        client: clientReturning(release(name: '0.2.0+$appVersionCode')));
+        client: clientReturning(release(name: '$appVersionName+$appVersionCode')));
 
     expect(update, isNull, reason: 'the app offered itself as an update');
   });
@@ -82,8 +88,8 @@ void main() {
 
   test('a release with no APK is ignored, not half-offered', () async {
     final update = await checkForUpdate(appVersionCode, client: clientReturning({
-      'tag_name': 'v0.2.2',
-      'name': '0.2.2+22',
+      'tag_name': newerTag,
+      'name': '9.9.9+$newerBuild',
       'assets': [
         {'name': 'notes.txt', 'browser_download_url': 'https://example.test/n.txt'},
       ],
@@ -107,11 +113,11 @@ void main() {
 
   test('the arm64 APK is chosen when a release carries several', () async {
     final update = await checkForUpdate(appVersionCode, client: clientReturning({
-      'tag_name': 'v0.2.2',
-      'name': '0.2.2+22',
+      'tag_name': newerTag,
+      'name': '9.9.9+$newerBuild',
       'assets': [
         {
-          'name': 'Sonarar-0.2.2-universal.apk',
+          'name': 'Sonarar-9.9.9-universal.apk',
           'browser_download_url': 'https://example.test/universal.apk',
           'size': 2000,
         },

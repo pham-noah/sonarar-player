@@ -368,6 +368,12 @@ class BackdropSpec {
   /// saved picture every restart.
   static const maxScale = 6.0;
 
+  /// The most the picture can be turned, either way. The editor's slider, the
+  /// clamp and the loader share it: a 30 degree picture opening in an editor
+  /// that ends at 15 threw, because a slider value outside its range is a
+  /// framework assertion, not a harmless overflow.
+  static const maxRotation = 45.0;
+
   /// 1 is untouched. Above 1 the picture gets louder, below 1 greyer.
   final double saturation;
 
@@ -416,7 +422,7 @@ class BackdropSpec {
         focusX: _clamp01(focusX ?? this.focusX),
         focusY: _clamp01(focusY ?? this.focusY),
         scale: (scale ?? this.scale).clamp(1.0, maxScale),
-        rotationDeg: (rotationDeg ?? this.rotationDeg).clamp(-180.0, 180.0),
+        rotationDeg: (rotationDeg ?? this.rotationDeg).clamp(-maxRotation, maxRotation),
         blur: (blur ?? this.blur).clamp(0.0, 24.0),
         dim: _clamp01(dim ?? this.dim),
         tint: tint ?? this.tint,
@@ -457,7 +463,7 @@ class BackdropSpec {
       focusX: _clamp01(_num(raw['fx'], 0.5)),
       focusY: _clamp01(_num(raw['fy'], 0.5)),
       scale: _num(raw['scale'], 1).clamp(1.0, maxScale),
-      rotationDeg: _num(raw['rot'], 0).clamp(-180.0, 180.0),
+      rotationDeg: _num(raw['rot'], 0).clamp(-maxRotation, maxRotation),
       blur: _num(raw['blur'], 0).clamp(0.0, 24.0),
       dim: _clamp01(_num(raw['dim'], 0.35)),
       tint: raw['tint'] is bool ? raw['tint'] as bool : true,

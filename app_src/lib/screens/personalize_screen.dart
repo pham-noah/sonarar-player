@@ -473,8 +473,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         skin,
                         'ROTATION',
                         _b.rotationDeg,
-                        -45,
-                        45,
+                        -BackdropSpec.maxRotation,
+                        BackdropSpec.maxRotation,
                         (v) => _setBackdrop(_b.copyWith(rotationDeg: v)),
                       ),
                       _toggle(

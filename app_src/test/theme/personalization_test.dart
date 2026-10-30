@@ -50,7 +50,7 @@ void main() {
       expect(p.scale, BackdropSpec.maxScale);
       expect(p.blur, 0.0);
       expect(p.dim, 1.0);
-      expect(p.rotationDeg, 180.0);
+      expect(p.rotationDeg, BackdropSpec.maxRotation);
     });
 
     test('an empty file name means no backdrop', () {

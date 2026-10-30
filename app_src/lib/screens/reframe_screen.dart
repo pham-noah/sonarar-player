@@ -132,8 +132,8 @@ class _ReframeScreenState extends State<ReframeScreen> {
                   _slider(
                     'ROTATE',
                     _spec.rotationDeg,
-                    -15,
-                    15,
+                    -BackdropSpec.maxRotation,
+                    BackdropSpec.maxRotation,
                     (v) =>
                         setState(() => _spec = _spec.copyWith(rotationDeg: v)),
                   ),

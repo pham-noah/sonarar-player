@@ -53,6 +53,16 @@ void main() {
     expect(spec.scale, 3);
   });
 
+  test('rotation is clamped to what the editors offer', () {
+    // A slider handed a value past its own range is a framework assertion, so
+    // nothing may arrive in the editor at 90 degrees.
+    expect(BackdropSpec.fromJson({'file': 'a.jpg', 'rot': 90}).rotationDeg,
+        BackdropSpec.maxRotation);
+    expect(const BackdropSpec(file: 'a.jpg', rotationDeg: -90)
+        .copyWith()
+        .rotationDeg, -BackdropSpec.maxRotation);
+  });
+
   test('the zoom ceiling is the ceiling everywhere', () {
     const spec = BackdropSpec(file: 'a.jpg', scale: 6);
     expect(BackdropSpec.fromJson(jsonDecode(jsonEncode(spec.toJson()))).scale, 6);

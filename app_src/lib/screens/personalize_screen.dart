@@ -82,12 +82,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// The one picture slot. A folder piece and a photo are the same thing here;
   /// what differs is whether it can walk to a next frame.
   void _setPic(String? artKey, {File? photo}) {
-    _setBackdrop(_b.copyWith(
-      artKey: artKey,
-      clearArt: artKey == null,
-      file: photo?.uri.pathSegments.last,
-      clearFile: photo != null ? false : artKey != null,
-    ));
+    _setBackdrop(
+      _b.copyWith(
+        artKey: artKey,
+        clearArt: artKey == null,
+        file: photo?.uri.pathSegments.last,
+        clearFile: photo != null ? false : artKey != null,
+      ),
+    );
   }
 
   void _setBackdrop(BackdropSpec b) {
@@ -96,10 +98,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       return;
     }
     // A place picture has no framing of its own.
-    _apply(_p.withSurface(
-      _surface!,
-      SurfaceLook(room: b.fromArt ? null : b.file, art: b.artKey),
-    ));
+    _apply(
+      _p.withSurface(
+        _surface!,
+        SurfaceLook(room: b.fromArt ? null : b.file, art: b.artKey),
+      ),
+    );
   }
 
   BackdropSpec get _b =>
@@ -158,511 +162,522 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 14),
                   ],
 
-            if (_tab == PersonalizeTab.look) ...[
-            SectionBand(skin: skin, label: 'LAYOUT'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                for (final kind in const [
-                  LayoutKind.glass,
-                  LayoutKind.sonar,
-                  LayoutKind.solid,
-                ])
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: _layoutTile(skin, kind),
+                  if (_tab == PersonalizeTab.look) ...[
+                    SectionBand(skin: skin, label: 'LAYOUT'),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        for (final kind in const [
+                          LayoutKind.glass,
+                          LayoutKind.sonar,
+                          LayoutKind.solid,
+                        ])
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: _layoutTile(skin, kind),
+                            ),
+                          ),
+                      ],
                     ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 18),
+                    const SizedBox(height: 18),
 
-            SectionBand(skin: skin, label: 'SONG LIST'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _chip(
-                  skin,
-                  'GRID',
-                  widget.prefs?.libraryIsGrid == true,
-                  () => _setGrid(true),
-                ),
-                const SizedBox(width: 8),
-                _chip(
-                  skin,
-                  'LIST',
-                  widget.prefs?.libraryIsGrid != true,
-                  () => _setGrid(false),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-
-            SectionBand(skin: skin, label: 'MOTION'),
-            _toggleRow(
-              skin,
-              'TAB ANIMATION',
-              'The screens travel into place when you change tab.',
-              widget.prefs?.tabAnimation ?? true,
-              (v) => _prefs((p) => p.copyWith(tabAnimation: v)),
-            ),
-            _toggleRow(
-              skin,
-              'SPECTRUM',
-              'Bars under the player, following the music.',
-              widget.prefs?.showVisualiser ?? false,
-              (v) => _prefs((p) => p.copyWith(showVisualiser: v)),
-            ),
-            if (widget.prefs?.showVisualiser ?? false) ...[
-              _slider(
-                skin,
-                'SMOOTHNESS',
-                (widget.prefs?.spectrumSmoothness ?? 60).toDouble(),
-                0,
-                100,
-                (v) => _prefs((p) => p.copyWith(spectrumSmoothness: v.round())),
-              ),
-              _slider(
-                skin,
-                'SCALE',
-                widget.prefs?.spectrumScalePercent.toDouble() ?? 100,
-                40,
-                220,
-                (v) => _prefs((p) => p.copyWith(spectrumScale: v.round())),
-              ),
-              const SizedBox(height: 6),
-              SizedBox(
-                height: 42,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    for (final shape in SpectrumShape.values)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: _chip(
+                    SectionBand(skin: skin, label: 'SONG LIST'),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _chip(
                           skin,
-                          shape.label,
-                          widget.prefs?.spectrumShapeName == shape.name,
-                          () => _prefs(
-                            (p) => p.copyWith(spectrumShape: shape.name),
-                          ),
+                          'GRID',
+                          widget.prefs?.libraryIsGrid == true,
+                          () => _setGrid(true),
                         ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 18),
-
-            SectionBand(skin: skin, label: 'PRIMARY COLOUR'),
-            SizedBox(
-              height: 46,
-              child: ListView.separated(
-                key: const Key('accent-wheel'),
-                scrollDirection: Axis.horizontal,
-                itemCount: _swatches.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (_, i) {
-                  if (i == 0) {
-                    final onTheme = _p.accent.source == AccentSource.skin;
-                    return GestureDetector(
-                      key: const Key('accent-theme'),
-                      onTap: () =>
-                          _apply(_p.copyWith(accent: const AccentSpec())),
-                      child: Container(
-                        width: 92,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: skin.panel,
-                          border: Border.all(
-                            color: onTheme ? skin.accent : skin.textSecondary,
-                            width: onTheme ? 2 : 1,
-                          ),
+                        const SizedBox(width: 8),
+                        _chip(
+                          skin,
+                          'LIST',
+                          widget.prefs?.libraryIsGrid != true,
+                          () => _setGrid(false),
                         ),
-                        child: Text(
-                          'THEME',
-                          style: TextStyle(
-                            color: onTheme ? skin.accent : skin.textSecondary,
-                            fontSize: LayoutSpec.fontFloor - 5,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  final colour = _swatches[i - 1];
-                  final picked = _p.accent.source == AccentSource.manual &&
-                      _p.accent.value == colour.toARGB32();
-                  return GestureDetector(
-                    onTap: () => _apply(
-                      _p.copyWith(
-                        accent: AccentSpec(
-                          source: AccentSource.manual,
-                          value: colour.toARGB32(),
-                        ),
-                      ),
+                      ],
                     ),
-                    child: Container(
-                      width: 38,
-                      decoration: BoxDecoration(
-                        color: colour,
-                        border: Border.all(
-                          color: picked ? skin.textPrimary : Colors.transparent,
-                          width: 3,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 18),
+                    const SizedBox(height: 18),
 
-            ],
-            if (_tab == PersonalizeTab.art) ...[
-            SectionBand(skin: skin, label: 'PICTURE FOR'),
-            _picturePreview(skin),
-            const SizedBox(height: 8),
-            Text(
-              'SCOPE',
-              style: TextStyle(
-                color: skin.textSecondary,
-                fontSize: LayoutSpec.fontFloor - 5,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const SizedBox(height: 10),
-            _scopeStrip(skin),
-
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: _button(
-                    skin,
-                    'NO PICTURE',
-                    () => _setBackdrop(const BackdropSpec()),
-                    quiet: !_b.isSet,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _button(skin, 'ADD PICTURE', _chooseImage, quiet: _b.isSet),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _surface == null
-                  ? 'One picture behind everything: a photo, or a folder of art '
-                      'that walks to its next frame as tracks change.'
-                  : 'This place wears one picture — a photo or a piece of an '
-                      'art folder. Framing follows the picture everywhere it '
-                      'is used.',
-              style: TextStyle(
-                color: skin.textSecondary,
-                fontSize: LayoutSpec.fontFloor - 4,
-                height: 1.4,
-              ),
-            ),
-            if (_b.isSet && _surface != null) ...[
-              const SizedBox(height: 10),
-              Text(
-                'Framing follows EVERYWHERE: these sliders move this picture '
-                'wherever it is used, not just here.',
-                style: TextStyle(
-                  color: skin.textSecondary,
-                  fontSize: LayoutSpec.fontFloor - 4,
-                  height: 1.4,
-                ),
-              ),
-            ],
-            if (_b.isSet) ...[
-              const SizedBox(height: 14),
-              _button(
-                skin,
-                'REFRAME',
-                _reframe,
-                quiet: true,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Drag the picture so its centre sits where you want it.',
-                style: TextStyle(
-                  color: skin.textSecondary,
-                  fontSize: LayoutSpec.fontFloor - 4,
-                ),
-              ),
-              _slider(
-                skin,
-                'BLUR',
-                _b.blur,
-                0,
-                24,
-                (v) => _setBackdrop(_b.copyWith(blur: v)),
-              ),
-              _slider(
-                skin,
-                'DIM',
-                _b.dim,
-                0,
-                1,
-                (v) => _setBackdrop(_b.copyWith(dim: v)),
-              ),
-              _slider(
-                skin,
-                'ZOOM',
-                _b.scale,
-                1,
-                3,
-                (v) => _setBackdrop(_b.copyWith(scale: v)),
-              ),
-              _slider(
-                skin,
-                'ROTATION',
-                _b.rotationDeg,
-                -45,
-                45,
-                (v) => _setBackdrop(_b.copyWith(rotationDeg: v)),
-              ),
-              _toggle(
-                skin,
-                'TINT WITH ACCENT',
-                _b.tint,
-                (v) => _setBackdrop(_b.copyWith(tint: v)),
-              ),
-              _toggle(
-                skin,
-                'PLAYER USES THE COVER',
-                _b.coverOnPlayer,
-                (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v)),
-              ),
-              if (_b.fromArt)
-                _toggle(
-                  skin,
-                  'FOLLOW TRACK',
-                  _b.followTrack,
-                  (v) => _setBackdrop(_b.copyWith(followTrack: v)),
-                ),
-              _slider(skin, 'SATURATION', _b.saturation, 0, 2,
-                  (v) => _setBackdrop(_b.copyWith(saturation: v)),
-                  shown: '${(_b.saturation * 100).round()}%'),
-              _slider(skin, 'CONTRAST', _b.contrast, 0.5, 2,
-                  (v) => _setBackdrop(_b.copyWith(contrast: v)),
-                  shown: '${(_b.contrast * 100).round()}%'),
-              _slider(skin, 'VIGNETTE', _b.vignette, 0, 1,
-                  (v) => _setBackdrop(_b.copyWith(vignette: v))),
-              _slider(skin, 'GRAIN', _b.grain, 0, 1,
-                  (v) => _setBackdrop(_b.copyWith(grain: v))),
-              _slider(skin, 'BURN', _b.burn, 0, 1,
-                  (v) => _setBackdrop(_b.copyWith(burn: v))),
-              if (_surface != null)
-                Text(
-                  'Framing belongs to the picture, so these sliders move it '
-                  'everywhere that picture is used.',
-                  style: TextStyle(
-                    color: skin.textSecondary,
-                    fontSize: LayoutSpec.fontFloor - 4,
-                    height: 1.4,
-                  ),
-                ),
-            ],
-            if (!_b.isSet) ...[
-              Row(
-                children: [
-                  _chip(
-                    skin,
-                    'SOLID',
-                    _p.fill.isSet && !_p.fill.isGradient,
-                    () => _setFill(
-                      _p.fill.isSet
-                          ? _p.fill.copyWith(clearEnd: true)
-                          : const BackdropFill(start: 0xFF16121C),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  _chip(
-                    skin,
-                    'GRADIENT',
-                    _p.fill.isGradient,
-                    () => _setFill(
-                      BackdropFill(
-                        start: _p.fill.start ?? 0xFF16121C,
-                        end: _p.fill.end ?? 0xFF3A2140,
-                        angle: _p.fill.angle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  _chip(
-                    skin,
-                    'SKIN',
-                    !_p.fill.isSet,
-                    () => _setFill(BackdropFill.none),
-                  ),
-                ],
-              ),
-              if (_p.fill.isSet) ...[
-                const SizedBox(height: 12),
-                Text(
-                  _p.fill.isGradient ? 'FROM' : 'COLOUR',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontFloor,
-                    fontWeight: FontWeight.w800,
-                    color: skin.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                _fillSwatches(
-                  skin,
-                  _p.fill.start ?? 0xFF16121C,
-                  (c) => _setFill(_p.fill.copyWith(start: c)),
-                ),
-                if (_p.fill.isGradient) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    'TO',
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontFloor,
-                      fontWeight: FontWeight.w800,
-                      color: skin.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  _fillSwatches(
-                    skin,
-                    _p.fill.end ?? 0xFF3A2140,
-                    (c) => _setFill(_p.fill.copyWith(end: c)),
-                  ),
-                  _slider(
-                    skin,
-                    'DIRECTION',
-                    _p.fill.angle,
-                    0,
-                    360,
-                    (v) => _setFill(_p.fill.copyWith(angle: v)),
-                  ),
-                ],
-              ],
-            ],
-            const SizedBox(height: 18),
-
-            ],
-            if (_tab == PersonalizeTab.art) ...[
-            SectionBand(skin: skin, label: 'ART FOLDERS'),
-            Row(
-              children: [
-                Expanded(
-                  child: _button(skin, 'RESCAN', _rescanArt, quiet: true),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _button(skin, 'ADD PICTURE', _chooseImage),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            for (final folder in widget.state.bundles)
-              _folderCard(skin, folder),
-            const SizedBox(height: 4),
-            const SizedBox(height: 8),
-            Text(
-              widget.state.bundles.isEmpty
-                  ? 'No folders yet. A folder is a set of pictures in '
-                      'Music/Sonarar/art; a place wears one of them.'
-                  : 'Tap a picture in a folder to wear it here. FOLLOW TRACK '
-                      'above decides whether the folder walks on with each song.',
-              style: TextStyle(
-                color: skin.textSecondary,
-                fontSize: LayoutSpec.fontFloor - 4,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            ],
-            if (_tab == PersonalizeTab.home) ...[
-            SectionBand(skin: skin, label: 'HOME'),
-            Text(
-              'NOW stays at the top — it is the page header, not a section.',
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor,
-                color: skin.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 10),
-            for (final section in _orderedSections())
-              _sectionRow(skin, section),
-            const SizedBox(height: 18),
-
-            ],
-            if (_tab == PersonalizeTab.themes) ...[
-            // The tab already says THEMES; a band repeating it wastes the one
-            // line that could tell you where you stand.
-            Text(
-              widget.state.preset == null
-                  ? '${widget.state.allPresets.length} BUILT IN · NONE WORN'
-                  : '${widget.state.allPresets.length} AVAILABLE · WEARING '
-                        '${widget.state.preset!.name.toUpperCase()}',
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor - 4,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1,
-                color: skin.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 10),
-            for (final preset in widget.state.allPresets) ...[
-              _themeRow(skin, preset),
-              const SizedBox(height: 6),
-            ],
-            if (widget.onSaveTheme != null)
-              Row(
-                children: [
-                  Expanded(
-                    child: _button(skin, 'NEW THEME', _saveTheme),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _button(
+                    SectionBand(skin: skin, label: 'MOTION'),
+                    _toggleRow(
                       skin,
-                      'OVERRIDE',
-                      _overrideTheme,
-                      quiet: true,
+                      'TAB ANIMATION',
+                      widget.prefs?.tabAnimation ?? true,
+                      (v) => _prefs((p) => p.copyWith(tabAnimation: v)),
                     ),
-                  ),
-                ],
-              ),
-            if (widget.state.preset != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                'OVERRIDE writes this look into "${widget.state.preset!.name}", '
-                'the theme you are wearing. NEW THEME keeps this one and starts '
-                'another from it.',
-                style: TextStyle(
-                  color: skin.textSecondary,
-                  fontSize: LayoutSpec.fontFloor - 4,
-                  height: 1.4,
-                ),
-              ),
-            ],
-            if (widget.state.preset == null) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Nothing is worn right now, so there is no theme to override — '
-                'pick one above first, or make a new one.',
-                style: TextStyle(
-                  color: skin.textSecondary,
-                  fontSize: LayoutSpec.fontFloor - 4,
-                  height: 1.4,
-                ),
-              ),
-            ],
-            ],
+                    _toggleRow(
+                      skin,
+                      'SPECTRUM',
+                      widget.prefs?.showVisualiser ?? false,
+                      (v) => _prefs((p) => p.copyWith(showVisualiser: v)),
+                    ),
+                    if (widget.prefs?.showVisualiser ?? false) ...[
+                      _slider(
+                        skin,
+                        'SMOOTHNESS',
+                        (widget.prefs?.spectrumSmoothness ?? 60).toDouble(),
+                        0,
+                        100,
+                        (v) => _prefs(
+                          (p) => p.copyWith(spectrumSmoothness: v.round()),
+                        ),
+                      ),
+                      _slider(
+                        skin,
+                        'SCALE',
+                        widget.prefs?.spectrumScalePercent.toDouble() ?? 100,
+                        40,
+                        220,
+                        (v) =>
+                            _prefs((p) => p.copyWith(spectrumScale: v.round())),
+                      ),
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        height: 42,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            for (final shape in SpectrumShape.values)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: _chip(
+                                  skin,
+                                  shape.label,
+                                  widget.prefs?.spectrumShapeName == shape.name,
+                                  () => _prefs(
+                                    (p) =>
+                                        p.copyWith(spectrumShape: shape.name),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 18),
+
+                    SectionBand(skin: skin, label: 'ACCENT'),
+                    _chip(
+                      skin,
+                      'FROM PHOTO',
+                      _p.accent.source == AccentSource.image,
+                      _accentFromPhoto,
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 46,
+                      child: ListView.separated(
+                        key: const Key('accent-wheel'),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _swatches.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) {
+                          if (i == 0) {
+                            final onTheme =
+                                _p.accent.source == AccentSource.skin;
+                            return GestureDetector(
+                              key: const Key('accent-theme'),
+                              onTap: () => _apply(
+                                _p.copyWith(accent: const AccentSpec()),
+                              ),
+                              child: Container(
+                                width: 92,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: skin.panel,
+                                  border: Border.all(
+                                    color: onTheme
+                                        ? skin.accent
+                                        : skin.textSecondary,
+                                    width: onTheme ? 2 : 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  'THEME',
+                                  style: TextStyle(
+                                    color: onTheme
+                                        ? skin.accent
+                                        : skin.textSecondary,
+                                    fontSize: LayoutSpec.fontFloor - 5,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          final colour = _swatches[i - 1];
+                          final picked =
+                              _p.accent.source == AccentSource.manual &&
+                              _p.accent.value == colour.toARGB32();
+                          return GestureDetector(
+                            onTap: () => _apply(
+                              _p.copyWith(
+                                accent: AccentSpec(
+                                  source: AccentSource.manual,
+                                  value: colour.toARGB32(),
+                                ),
+                              ),
+                            ),
+                            child: Container(
+                              width: 38,
+                              decoration: BoxDecoration(
+                                color: colour,
+                                border: Border.all(
+                                  color: picked
+                                      ? skin.textPrimary
+                                      : Colors.transparent,
+                                  width: 3,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
+                  if (_tab == PersonalizeTab.art) ...[
+                    SectionBand(skin: skin, label: 'PICTURE FOR'),
+                    _picturePreview(skin),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
+                    const SizedBox(height: 10),
+                    _scopeStrip(skin),
+
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _button(
+                            skin,
+                            'NO PICTURE',
+                            () => _setBackdrop(const BackdropSpec()),
+                            quiet: !_b.isSet,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _button(
+                            skin,
+                            'ADD PICTURE',
+                            _chooseImage,
+                            quiet: _b.isSet,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (_b.isSet && _surface != null) ...[
+                      const SizedBox(height: 10),
+                    ],
+                    if (_b.isSet) ...[
+                      const SizedBox(height: 14),
+                      _button(skin, 'REFRAME', _reframe, quiet: true),
+                      const SizedBox(height: 6),
+                      _slider(
+                        skin,
+                        'BLUR',
+                        _b.blur,
+                        0,
+                        24,
+                        (v) => _setBackdrop(_b.copyWith(blur: v)),
+                      ),
+                      _slider(
+                        skin,
+                        'DIM',
+                        _b.dim,
+                        0,
+                        1,
+                        (v) => _setBackdrop(_b.copyWith(dim: v)),
+                      ),
+                      _slider(
+                        skin,
+                        'ZOOM',
+                        _b.scale,
+                        1,
+                        6,
+                        (v) => _setBackdrop(_b.copyWith(scale: v)),
+                      ),
+                      _slider(
+                        skin,
+                        'ROTATION',
+                        _b.rotationDeg,
+                        -45,
+                        45,
+                        (v) => _setBackdrop(_b.copyWith(rotationDeg: v)),
+                      ),
+                      _toggle(
+                        skin,
+                        'TINT WITH ACCENT',
+                        _b.tint,
+                        (v) => _setBackdrop(_b.copyWith(tint: v)),
+                      ),
+                      _toggle(
+                        skin,
+                        'PLAYER USES THE COVER',
+                        _b.coverOnPlayer,
+                        (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v)),
+                      ),
+                      if (_b.fromArt)
+                        _toggle(
+                          skin,
+                          'FOLLOW TRACK',
+                          _b.followTrack,
+                          (v) => _setBackdrop(_b.copyWith(followTrack: v)),
+                        ),
+                      _slider(
+                        skin,
+                        'SATURATION',
+                        _b.saturation,
+                        0,
+                        2,
+                        (v) => _setBackdrop(_b.copyWith(saturation: v)),
+                        shown: '${(_b.saturation * 100).round()}%',
+                      ),
+                      _slider(
+                        skin,
+                        'CONTRAST',
+                        _b.contrast,
+                        0.5,
+                        2,
+                        (v) => _setBackdrop(_b.copyWith(contrast: v)),
+                        shown: '${(_b.contrast * 100).round()}%',
+                      ),
+                      _slider(
+                        skin,
+                        'VIGNETTE',
+                        _b.vignette,
+                        0,
+                        1,
+                        (v) => _setBackdrop(_b.copyWith(vignette: v)),
+                      ),
+                      _slider(
+                        skin,
+                        'GRAIN',
+                        _b.grain,
+                        0,
+                        1,
+                        (v) => _setBackdrop(_b.copyWith(grain: v)),
+                      ),
+                      _slider(
+                        skin,
+                        'BURN',
+                        _b.burn,
+                        0,
+                        1,
+                        (v) => _setBackdrop(_b.copyWith(burn: v)),
+                      ),
+                      if (_surface != null)
+                        Text(
+                          'Framing belongs to the picture, so these sliders move it '
+                          'everywhere that picture is used.',
+                          style: TextStyle(
+                            color: skin.textSecondary,
+                            fontSize: LayoutSpec.fontFloor - 4,
+                            height: 1.4,
+                          ),
+                        ),
+                    ],
+                    if (!_b.isSet) ...[
+                      Row(
+                        children: [
+                          _chip(
+                            skin,
+                            'SOLID',
+                            _p.fill.isSet && !_p.fill.isGradient,
+                            () => _setFill(
+                              _p.fill.isSet
+                                  ? _p.fill.copyWith(clearEnd: true)
+                                  : const BackdropFill(start: 0xFF16121C),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _chip(
+                            skin,
+                            'GRADIENT',
+                            _p.fill.isGradient,
+                            () => _setFill(
+                              BackdropFill(
+                                start: _p.fill.start ?? 0xFF16121C,
+                                end: _p.fill.end ?? 0xFF3A2140,
+                                angle: _p.fill.angle,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _chip(
+                            skin,
+                            'SKIN',
+                            !_p.fill.isSet,
+                            () => _setFill(BackdropFill.none),
+                          ),
+                        ],
+                      ),
+                      if (_p.fill.isSet) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          _p.fill.isGradient ? 'FROM' : 'COLOUR',
+                          style: TextStyle(
+                            fontSize: LayoutSpec.fontFloor,
+                            fontWeight: FontWeight.w800,
+                            color: skin.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        _fillSwatches(
+                          skin,
+                          _p.fill.start ?? 0xFF16121C,
+                          (c) => _setFill(_p.fill.copyWith(start: c)),
+                        ),
+                        if (_p.fill.isGradient) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            'TO',
+                            style: TextStyle(
+                              fontSize: LayoutSpec.fontFloor,
+                              fontWeight: FontWeight.w800,
+                              color: skin.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _fillSwatches(
+                            skin,
+                            _p.fill.end ?? 0xFF3A2140,
+                            (c) => _setFill(_p.fill.copyWith(end: c)),
+                          ),
+                          _slider(
+                            skin,
+                            'DIRECTION',
+                            _p.fill.angle,
+                            0,
+                            360,
+                            (v) => _setFill(_p.fill.copyWith(angle: v)),
+                          ),
+                        ],
+                      ],
+                    ],
+                    const SizedBox(height: 18),
+                  ],
+                  if (_tab == PersonalizeTab.art) ...[
+                    SectionBand(skin: skin, label: 'ART FOLDERS'),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _button(
+                            skin,
+                            'RESCAN',
+                            _rescanArt,
+                            quiet: true,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _button(skin, 'ADD PICTURE', _chooseImage),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    for (final folder in widget.state.bundles)
+                      _folderCard(skin, folder),
+                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.state.bundles.isEmpty
+                          ? 'No folders yet. A folder is a set of pictures in '
+                                'Music/Sonarar/art; a place wears one of them.'
+                          : 'Tap a picture in a folder to wear it here. FOLLOW TRACK '
+                                'above decides whether the folder walks on with each song.',
+                      style: TextStyle(
+                        color: skin.textSecondary,
+                        fontSize: LayoutSpec.fontFloor - 4,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
+                  if (_tab == PersonalizeTab.home) ...[
+                    SectionBand(skin: skin, label: 'HOME'),
+                    Text(
+                      'NOW stays at the top — it is the page header, not a section.',
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor,
+                        color: skin.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    for (final section in _orderedSections())
+                      _sectionRow(skin, section),
+                    const SizedBox(height: 18),
+                  ],
+                  if (_tab == PersonalizeTab.themes) ...[
+                    // The tab already says THEMES; a band repeating it wastes the one
+                    // line that could tell you where you stand.
+                    Text(
+                      widget.state.preset == null
+                          ? '${widget.state.allPresets.length} BUILT IN · NONE WORN'
+                          : '${widget.state.allPresets.length} AVAILABLE · WEARING '
+                                '${widget.state.preset!.name.toUpperCase()}',
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor - 4,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                        color: skin.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    for (final preset in widget.state.allPresets) ...[
+                      _themeRow(skin, preset),
+                      const SizedBox(height: 6),
+                    ],
+                    if (widget.onSaveTheme != null)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _button(skin, 'NEW THEME', _saveTheme),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _button(
+                              skin,
+                              'OVERRIDE',
+                              _overrideTheme,
+                              quiet: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (widget.state.preset != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'OVERRIDE writes this look into "${widget.state.preset!.name}", '
+                        'the theme you are wearing. NEW THEME keeps this one and starts '
+                        'another from it.',
+                        style: TextStyle(
+                          color: skin.textSecondary,
+                          fontSize: LayoutSpec.fontFloor - 4,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                    if (widget.state.preset == null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Nothing is worn right now, so there is no theme to override — '
+                        'pick one above first, or make a new one.',
+                        style: TextStyle(
+                          color: skin.textSecondary,
+                          fontSize: LayoutSpec.fontFloor - 4,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ],
                 ],
               ),
             ),
@@ -693,60 +708,67 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         ? Colors.white.withValues(alpha: 0.22)
         : skin.textSecondary.withValues(alpha: 0.16);
 
-    Widget row(String title, String sub, {double alpha = 1, bool lead = false}) =>
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-          decoration: BoxDecoration(
-            color: panel,
-            border: Border.all(color: edge),
-            borderRadius: BorderRadius.circular(radius),
+    Widget row(
+      String title,
+      String sub, {
+      double alpha = 1,
+      bool lead = false,
+    }) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: panel,
+        border: Border.all(color: edge),
+        borderRadius: BorderRadius.circular(radius),
+      ),
+      child: Row(
+        children: [
+          if (lead)
+            Container(
+              width: 3,
+              height: 26,
+              margin: const EdgeInsets.only(right: 8),
+              color: skin.accent,
+            ),
+          Container(
+            width: 26,
+            height: 26,
+            margin: const EdgeInsets.only(right: 8),
+            color: skin.accent.withValues(alpha: 0.22),
+            child: Icon(
+              Icons.music_note_rounded,
+              size: 14,
+              color: skin.accent.withValues(alpha: alpha),
+            ),
           ),
-          child: Row(
-            children: [
-              if (lead)
-                Container(
-                  width: 3,
-                  height: 26,
-                  margin: const EdgeInsets.only(right: 8),
-                  color: skin.accent,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontFloor - 3,
+                    fontWeight: FontWeight.w700,
+                    color: skin.textPrimary.withValues(alpha: alpha),
+                  ),
                 ),
-              Container(
-                width: 26,
-                height: 26,
-                margin: const EdgeInsets.only(right: 8),
-                color: skin.accent.withValues(alpha: 0.22),
-                child: Icon(Icons.music_note_rounded,
-                    size: 14, color: skin.accent.withValues(alpha: alpha)),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontFloor - 3,
-                        fontWeight: FontWeight.w700,
-                        color: skin.textPrimary.withValues(alpha: alpha),
-                      ),
-                    ),
-                    Text(
-                      sub,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontFloor - 5,
-                        color: skin.textSecondary.withValues(alpha: alpha),
-                      ),
-                    ),
-                  ],
+                Text(
+                  sub,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontFloor - 5,
+                    color: skin.textSecondary.withValues(alpha: alpha),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        );
+        ],
+      ),
+    );
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(glass ? 14 : 4),
@@ -791,16 +813,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                 ),
                               ),
                             const SizedBox(height: 3),
-                            Text(
-                              widget.greeting ?? 'Good evening',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: LayoutSpec.fontTitle - 4,
-                                fontWeight: FontWeight.w900,
-                                color: skin.textPrimary,
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -811,8 +823,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           color: skin.accent,
                           borderRadius: BorderRadius.circular(radius),
                         ),
-                        child: Icon(Icons.play_arrow_rounded,
-                            size: 15, color: skin.onAccent),
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          size: 15,
+                          color: skin.onAccent,
+                        ),
                       ),
                     ],
                   ),
@@ -857,10 +872,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (root == null) return;
     widget.state.setArtBundles(scanArtBundles(root.path));
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('${widget.state.bundles.length} art folder'
-          '${widget.state.bundles.length == 1 ? '' : 's'} found.'),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${widget.state.bundles.length} art folder'
+          '${widget.state.bundles.length == 1 ? '' : 's'} found.',
+        ),
+      ),
+    );
   }
 
   /// The phone's own pictures, as a sheet of thumbnails. One door for both
@@ -989,10 +1008,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
     final copied = await importBackground(root, picked);
     if (copied == null || !mounted) return;
-    _setBackdrop(_b.copyWith(
-      file: copied.uri.pathSegments.last,
-      clearArt: true,
-    ));
+    _setBackdrop(
+      _b.copyWith(file: copied.uri.pathSegments.last, clearArt: true),
+    );
   }
 
   /// What the picture looks like right now, with every slider already applied.
@@ -1007,16 +1025,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         children: [
           _scopeTile(skin, 'EVERYWHERE', null),
           for (final surface in SurfaceId.values)
-            _scopeTile(
-              skin,
-              switch (surface) {
-                SurfaceId.home => 'HOME',
-                SurfaceId.library => 'LIBRARY',
-                SurfaceId.search => 'SEARCH',
-                SurfaceId.player => 'PLAYER',
-              },
-              surface,
-            ),
+            _scopeTile(skin, switch (surface) {
+              SurfaceId.home => 'HOME',
+              SurfaceId.library => 'LIBRARY',
+              SurfaceId.search => 'SEARCH',
+              SurfaceId.player => 'PLAYER',
+            }, surface),
         ],
       ),
     );
@@ -1039,7 +1053,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           border: Border.all(
-            color: active ? skin.accent : skin.textSecondary.withValues(alpha: 0.25),
+            color: active
+                ? skin.accent
+                : skin.textSecondary.withValues(alpha: 0.25),
             width: active ? 2 : 1,
           ),
         ),
@@ -1084,9 +1100,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: skin.panel,
-          border: Border.all(
-            color: skin.textSecondary.withValues(alpha: 0.22),
-          ),
+          border: Border.all(color: skin.textSecondary.withValues(alpha: 0.22)),
         ),
         child: Text(
           'NO PICTURE — THE SKIN PAINTS THIS',
@@ -1119,12 +1133,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            PersonalBackdrop(
-              root: root,
-              spec: _b,
-              skin: skin,
-              art: art,
-            ),
+            PersonalBackdrop(root: root, spec: _b, skin: skin, art: art),
             Positioned(
               left: 8,
               bottom: 8,
@@ -1132,8 +1141,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               child: Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     color: Colors.black.withValues(alpha: 0.55),
                     child: Text(
                       _b.fromArt ? 'FOLDER' : 'PHOTO',
@@ -1149,7 +1160,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   if (_b.fromArt && total > 1)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       color: Colors.black.withValues(alpha: 0.55),
                       child: Text(
                         'FRAME $at/$total',
@@ -1178,11 +1191,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (file == null || !file.existsSync()) return;
     final next = await Navigator.of(context).push<BackdropSpec>(
       MaterialPageRoute(
-        builder: (_) => ReframeScreen(
-          skin: widget.state.uiSkin,
-          file: file,
-          initial: _b,
-        ),
+        builder: (_) =>
+            ReframeScreen(skin: widget.state.uiSkin, file: file, initial: _b),
       ),
     );
     if (next != null) _setBackdrop(next);
@@ -1270,7 +1280,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// Choosing FROM PHOTO takes the colour straight away. It used to only
   /// declare the source and then wait for a second button, which reads as a
   /// chip that does nothing.
-
 
   // ---- home ----------------------------------------------------------------
 
@@ -1394,9 +1403,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   Widget _fillSwatches(Skin skin, int selected, ValueChanged<int> onPick) {
     const colours = [
-      0xFF0B0B10, 0xFF16121C, 0xFF1D2A33, 0xFF2A1B2E,
-      0xFF3A2140, 0xFF12303A, 0xFF4A1F1F, 0xFF2B3A1E,
-      0xFF3B2E18, 0xFFE3B84E, 0xFFD97655, 0xFFB8C4CE,
+      0xFF0B0B10,
+      0xFF16121C,
+      0xFF1D2A33,
+      0xFF2A1B2E,
+      0xFF3A2140,
+      0xFF12303A,
+      0xFF4A1F1F,
+      0xFF2B3A1E,
+      0xFF3B2E18,
+      0xFFE3B84E,
+      0xFFD97655,
+      0xFFB8C4CE,
     ];
     return Wrap(
       spacing: 8,
@@ -1411,7 +1429,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               decoration: BoxDecoration(
                 color: Color(c),
                 border: Border.all(
-                  color: c == selected ? skin.accent : skin.textSecondary.withValues(alpha: 0.3),
+                  color: c == selected
+                      ? skin.accent
+                      : skin.textSecondary.withValues(alpha: 0.3),
                   width: c == selected ? 3 : 1,
                 ),
               ),
@@ -1489,7 +1509,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     decoration: BoxDecoration(
       color: theme.background,
       border: Border.all(
-        color: active ? theme.accent : theme.textSecondary.withValues(alpha: 0.5),
+        color: active
+            ? theme.accent
+            : theme.textSecondary.withValues(alpha: 0.5),
         width: active ? 2 : 1,
       ),
     ),
@@ -1590,13 +1612,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   Widget _toggleRow(
     Skin skin,
     String label,
-    String note,
     bool value,
     ValueChanged<bool> onChanged,
   ) => KitToggle(
     skin: skin,
     label: label,
-    note: note,
     value: value,
     onChanged: onChanged,
   );
@@ -1656,7 +1676,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         color: skin.panel,
         border: Border(
           left: BorderSide(
-            color: worn ? skin.accent : skin.textSecondary.withValues(alpha: 0.3),
+            color: worn
+                ? skin.accent
+                : skin.textSecondary.withValues(alpha: 0.3),
             width: 3,
           ),
         ),
@@ -1680,12 +1702,24 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   ),
                 ),
               ),
-              _miniAction(skin, Icons.add_photo_alternate_outlined, 'ADD',
-                  () => _addToFolder(folder)),
-              _miniAction(skin, Icons.drive_file_rename_outline, 'RENAME',
-                  () => _renameFolder(folder)),
-              _miniAction(skin, Icons.delete_outline, 'DELETE',
-                  () => _deleteFolder(folder)),
+              _miniAction(
+                skin,
+                Icons.add_photo_alternate_outlined,
+                'ADD',
+                () => _addToFolder(folder),
+              ),
+              _miniAction(
+                skin,
+                Icons.drive_file_rename_outline,
+                'RENAME',
+                () => _renameFolder(folder),
+              ),
+              _miniAction(
+                skin,
+                Icons.delete_outline,
+                'DELETE',
+                () => _deleteFolder(folder),
+              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -1729,8 +1763,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                             child: Container(
                               color: Colors.black54,
                               padding: const EdgeInsets.all(1),
-                              child: Icon(Icons.close_rounded,
-                                  size: 13, color: skin.textPrimary),
+                              child: Icon(
+                                Icons.close_rounded,
+                                size: 13,
+                                color: skin.textPrimary,
+                              ),
                             ),
                           ),
                         ),
@@ -1750,28 +1787,27 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     IconData icon,
     String label,
     VoidCallback onTap,
-  ) =>
-      InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Row(
-            children: [
-              Icon(icon, size: 14, color: skin.textSecondary),
-              const SizedBox(width: 3),
-              Text(
-                label,
-                style: TextStyle(
-                  color: skin.textSecondary,
-                  fontSize: LayoutSpec.fontFloor - 5,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.6,
-                ),
-              ),
-            ],
+  ) => InkWell(
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: skin.textSecondary),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              color: skin.textSecondary,
+              fontSize: LayoutSpec.fontFloor - 5,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.6,
+            ),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 
   Future<void> _addToFolder(ArtBundle folder) async {
     final root = _root;
@@ -1781,9 +1817,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     addToFolder(Directory('${root.path}/art/${folder.name}'), picked);
     widget.state.setArtBundles(scanArtBundles(root.path));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Added to ${folder.name}.')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Added to ${folder.name}.')));
   }
 
   Future<String?> _askFolderName() async {
@@ -1815,16 +1850,17 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('CANCEL',
-                style: TextStyle(color: _skin.textSecondary)),
+            child: Text('CANCEL', style: TextStyle(color: _skin.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
-            child: Text('SAVE',
-                style: TextStyle(
-                  color: _skin.accent,
-                  fontWeight: FontWeight.w900,
-                )),
+            child: Text(
+              'SAVE',
+              style: TextStyle(
+                color: _skin.accent,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ],
       ),
@@ -1833,13 +1869,61 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     return (name == null || name.isEmpty) ? null : name;
   }
 
+  Future<void> _accentFromPhoto() async {
+    final root = _root;
+    if (root == null) return;
+    var file = backdropFile(root, _b);
+    if (file == null) {
+      // No photo yet: take one. The accent is the photo, so ask for it here
+      // instead of pointing at a button on another band.
+      await _chooseImage();
+      if (!mounted) return;
+      file = backdropFile(root, _b);
+    }
+    if (file == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No photo chosen, so no colour taken.')),
+      );
+      return;
+    }
+    final colour = await accentFromImage(file);
+    if (!mounted) return;
+    if (colour == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'That picture has no colour strong enough to be an accent.',
+          ),
+        ),
+      );
+      return;
+    }
+    final argb = colour.toARGB32();
+    _apply(
+      _p.copyWith(
+        accent: AccentSpec(source: AccentSource.image, value: argb),
+      ),
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Accent taken from the photo: '
+          '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
+        ),
+      ),
+    );
+  }
+
   Future<void> _renameFolder(ArtBundle folder) async {
     final root = _root;
     if (root == null) return;
     final name = await _askFolderName();
     if (name == null || !mounted) return;
-    final renamed =
-        renameFolder(Directory('${root.path}/art/${folder.name}'), name);
+    final renamed = renameFolder(
+      Directory('${root.path}/art/${folder.name}'),
+      name,
+    );
     final newName = renamed.path.split(Platform.pathSeparator).last;
     widget.state.setArtBundles(scanArtBundles(root.path));
     if (_p.bundle == folder.name) _apply(_p.copyWith(bundle: newName));
@@ -1852,12 +1936,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
-        title: Text('DELETE ${folder.name.toUpperCase()}?',
-            style: TextStyle(
-              color: _skin.textPrimary,
-              fontSize: LayoutSpec.fontFloor,
-              fontWeight: FontWeight.w900,
-            )),
+        title: Text(
+          'DELETE ${folder.name.toUpperCase()}?',
+          style: TextStyle(
+            color: _skin.textPrimary,
+            fontSize: LayoutSpec.fontFloor,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
         content: Text(
           'The ${folder.set.pieces.length} pictures in this folder are deleted '
           'with it. Your originals on the phone are untouched.',
@@ -1870,16 +1956,17 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child:
-                Text('KEEP', style: TextStyle(color: _skin.textSecondary)),
+            child: Text('KEEP', style: TextStyle(color: _skin.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('DELETE',
-                style: TextStyle(
-                  color: _skin.accent,
-                  fontWeight: FontWeight.w900,
-                )),
+            child: Text(
+              'DELETE',
+              style: TextStyle(
+                color: _skin.accent,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ],
       ),

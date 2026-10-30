@@ -58,17 +58,21 @@ class _ReframeScreenState extends State<ReframeScreen> {
                   const Spacer(),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: Text('CANCEL',
-                        style: TextStyle(color: skin.textSecondary)),
+                    child: Text(
+                      'CANCEL',
+                      style: TextStyle(color: skin.textSecondary),
+                    ),
                   ),
                   TextButton(
                     key: const Key('reframe-done'),
                     onPressed: () => Navigator.of(context).pop(_spec),
-                    child: Text('DONE',
-                        style: TextStyle(
-                          color: skin.accent,
-                          fontWeight: FontWeight.w900,
-                        )),
+                    child: Text(
+                      'DONE',
+                      style: TextStyle(
+                        color: skin.accent,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -87,8 +91,14 @@ class _ReframeScreenState extends State<ReframeScreen> {
                           // Cover leaves no slack: overscan, then slide.
                           Transform.translate(
                             offset: Offset(
-                              (_spec.focusX * 2 - 1) * size.width * -0.12,
-                              (_spec.focusY * 2 - 1) * size.height * -0.12,
+                              (_spec.focusX * 2 - 1) *
+                                  (size.width * _spec.scale * 1.25 -
+                                      size.width) /
+                                  2,
+                              (_spec.focusY * 2 - 1) *
+                                  (size.height * _spec.scale * 1.25 -
+                                      size.height) /
+                                  2,
                             ),
                             child: Transform.scale(
                               scale: _spec.scale * 1.25,
@@ -122,12 +132,28 @@ class _ReframeScreenState extends State<ReframeScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 children: [
-                  _slider('SIZE', _spec.scale, 1.0, 2.6,
-                      (v) => setState(() => _spec = _spec.copyWith(scale: v))),
-                  _slider('ROTATE', _spec.rotationDeg, -15, 15,
-                      (v) => setState(() => _spec = _spec.copyWith(rotationDeg: v))),
-                  _slider('DIM', _spec.dim, 0, 0.85,
-                      (v) => setState(() => _spec = _spec.copyWith(dim: v))),
+                  _slider(
+                    'SIZE',
+                    _spec.scale,
+                    1.0,
+                    6.0,
+                    (v) => setState(() => _spec = _spec.copyWith(scale: v)),
+                  ),
+                  _slider(
+                    'ROTATE',
+                    _spec.rotationDeg,
+                    -15,
+                    15,
+                    (v) =>
+                        setState(() => _spec = _spec.copyWith(rotationDeg: v)),
+                  ),
+                  _slider(
+                    'DIM',
+                    _spec.dim,
+                    0,
+                    0.85,
+                    (v) => setState(() => _spec = _spec.copyWith(dim: v)),
+                  ),
                   Text(
                     'Drag the picture: whatever you centre stays centred in '
                     'every shape the screen takes.',

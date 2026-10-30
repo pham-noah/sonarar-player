@@ -15,7 +15,9 @@ import 'skin.dart';
 /// resolving without a rewrite.
 File? backdropFile(Directory? root, BackdropSpec spec) {
   if (root == null || !spec.isSet) return null;
-  final f = File('${root.path}${Platform.pathSeparator}backgrounds${Platform.pathSeparator}${spec.file}');
+  final f = File(
+    '${root.path}${Platform.pathSeparator}backgrounds${Platform.pathSeparator}${spec.file}',
+  );
   return f.existsSync() ? f : null;
 }
 
@@ -113,59 +115,81 @@ class PersonalBackdrop extends StatelessWidget {
 
     final pad = rotationPadding(spec.rotationDeg) * spec.scale;
 
+    // Focus only means something if it is applied here, not just in the editor.
+    // The room to move is whatever the zoom has overflowed the frame by.
     return ClipRect(
-      child: Transform.rotate(
-        angle: spec.rotationDeg * 3.141592653589793 / 180,
-        child: Transform.scale(
-          scale: pad,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              photo,
-              if (spec.grain > 0)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(painter: _GrainPainter(spec.grain)),
-                  ),
-                ),
-              if (spec.vignette > 0)
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        radius: 0.95,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: spec.vignette * 0.85),
-                        ],
-                        stops: const [0.55, 1],
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final slackX = (box.maxWidth * pad - box.maxWidth) / 2;
+          final slackY = (box.maxHeight * pad - box.maxHeight) / 2;
+          return Transform.rotate(
+            angle: spec.rotationDeg * 3.141592653589793 / 180,
+            child: Transform.translate(
+              offset: Offset(
+                (spec.focusX * 2 - 1) * -slackX,
+                (spec.focusY * 2 - 1) * -slackY,
+              ),
+              child: Transform.scale(
+                scale: pad,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    photo,
+                    if (spec.grain > 0)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: CustomPaint(
+                            painter: _GrainPainter(spec.grain),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              if (spec.dim > 0)
-                ColoredBox(color: Colors.black.withValues(alpha: spec.dim * 0.85)),
-              if (spec.tint)
-                ColoredBox(color: skin.accent.withValues(alpha: 0.10)),
-              if (spec.burn > 0)
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          skin.background.withValues(alpha: spec.burn * 0.9),
-                        ],
-                        stops: const [0.45, 1],
+                    if (spec.vignette > 0)
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              radius: 0.95,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(
+                                  alpha: spec.vignette * 0.85,
+                                ),
+                              ],
+                              stops: const [0.55, 1],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    if (spec.dim > 0)
+                      ColoredBox(
+                        color: Colors.black.withValues(alpha: spec.dim * 0.85),
+                      ),
+                    if (spec.tint)
+                      ColoredBox(color: skin.accent.withValues(alpha: 0.10)),
+                    if (spec.burn > 0)
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                skin.background.withValues(
+                                  alpha: spec.burn * 0.9,
+                                ),
+                              ],
+                              stops: const [0.45, 1],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -181,10 +205,26 @@ class PersonalBackdrop extends StatelessWidget {
     final g = (1 - s) * lumG;
     final b = (1 - s) * lumB;
     return [
-      (r + s) * c, g * c, b * c, 0, (1 - c) * 128,
-      r * c, (g + s) * c, b * c, 0, (1 - c) * 128,
-      r * c, g * c, (b + s) * c, 0, (1 - c) * 128,
-      0, 0, 0, 1, 0,
+      (r + s) * c,
+      g * c,
+      b * c,
+      0,
+      (1 - c) * 128,
+      r * c,
+      (g + s) * c,
+      b * c,
+      0,
+      (1 - c) * 128,
+      r * c,
+      g * c,
+      (b + s) * c,
+      0,
+      (1 - c) * 128,
+      0,
+      0,
+      0,
+      1,
+      0,
     ];
   }
 }
@@ -205,8 +245,9 @@ class _GrainPainter extends CustomPainter {
       final dx = rnd.nextDouble() * size.width;
       final dy = rnd.nextDouble() * size.height;
       final v = rnd.nextDouble();
-      paint.color = (v > 0.5 ? Colors.white : Colors.black)
-          .withValues(alpha: strength * 0.10 * v);
+      paint.color = (v > 0.5 ? Colors.white : Colors.black).withValues(
+        alpha: strength * 0.10 * v,
+      );
       canvas.drawRect(Rect.fromLTWH(dx, dy, 1.2, 1.2), paint);
     }
   }

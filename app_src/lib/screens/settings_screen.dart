@@ -202,9 +202,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     letterSpacing: 1.2,
                                     color: skin.textPrimary,
                                   )),
-                              Text('Layout, backdrop, accent, art, Home order',
-                                  style: TextStyle(
-                                      fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
                             ],
                           ),
                         ),
@@ -329,15 +326,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-                  child: Text(
-                    'A folder is a library when it holds library_manifest.json. '
-                    'Your history, playlists and themes stay where they are, so '
-                    'changing this never loses them.',
-                    style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
-                  ),
-                ),
               ],
               if (_tab == SettingsTab.system) ...[
               SectionBand(skin: skin, label: 'INTERFACE'),
@@ -377,11 +365,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-              Text(
-                'TAB ANIMATION and SPECTRUM live in Personalize now — they '
-                'change how the app looks, so they sit with the look.',
-                style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
-              ),
               _toggle(skin, 'ROMAJI', prefs!.showRomaji,
                   icon: Icons.translate_rounded,
                   (v) => onPrefsChanged?.call(prefs!.copyWith(showRomaji: v))),

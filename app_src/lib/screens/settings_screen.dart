@@ -9,6 +9,7 @@ import '../backup/backup_section.dart';
 
 import '../context/weather_codes.dart';
 import '../core/app_state.dart';
+import '../core/build_info.dart';
 import '../core/links.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
@@ -17,6 +18,7 @@ import '../theme/theme_preset.dart';
 import '../widgets/stagger_in.dart';
 
 import '../theme/slab.dart';
+import '../update/update_service.dart';
 
 
 enum SettingsSection {
@@ -46,6 +48,7 @@ class SettingsScreen extends StatefulWidget {
     this.stateDirectory,
     this.downloadDirectory,
     this.appVersion,
+    this.checkUpdate,
   });
 
   final AppState state;
@@ -60,6 +63,9 @@ class SettingsScreen extends StatefulWidget {
   final String? stateDirectory;
   final String? downloadDirectory;
   final String? appVersion;
+
+  /// The manual check, replaceable so a test can answer without a network.
+  final Future<AppUpdate?> Function()? checkUpdate;
 
   final bool showTitle;
 
@@ -97,6 +103,35 @@ enum SettingsTab { look, playback, library, system }
 
 class _SettingsScreenState extends State<SettingsScreen> {
   SettingsTab _tab = SettingsTab.playback;
+
+  /// True while a check the person asked for is in flight. A manual check is
+  /// not the automatic one: it runs even when the switch is off, because the
+  /// switch is about phoning home uninvited.
+  bool _checking = false;
+
+  /// The result of the last manual check, shown under the row so the answer
+  /// stays put instead of sliding away with a snackbar.
+  String? _checkResult;
+
+  Future<void> _checkNow() async {
+    if (_checking) return;
+    setState(() {
+      _checking = true;
+      _checkResult = null;
+    });
+    final check = widget.checkUpdate ??
+        () => checkForUpdate(appVersionCode,
+            currentVersion: widget.appVersion ?? '');
+    final update = await check();
+    if (!mounted) return;
+    setState(() {
+      _checking = false;
+      _checkResult = update == null
+          ? 'You are on the newest build (${widget.appVersion ?? appVersionCode}).'
+          : 'Sonarar ${update.version} is available — the update banner is at '
+              'the top of the app.';
+    });
+  }
 
   AppState get state => widget.state;
   Skin get skin => state.uiSkin;
@@ -312,6 +347,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.system_update_rounded,
                   (v) =>
                       onPrefsChanged!(prefs!.copyWith(checkForUpdates: v))),
+              KitRow(
+                skin: skin,
+                label: _checking ? 'CHECKING…' : 'CHECK NOW',
+                icon: Icons.refresh_rounded,
+                onTap: _checking ? null : _checkNow,
+                trailing: _checking
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: skin.accent,
+                        ),
+                      )
+                    : Icon(Icons.chevron_right_rounded,
+                        size: 20,
+                        color: skin.textSecondary.withValues(alpha: 0.6)),
+              ),
+              if (_checkResult != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Text(
+                    _checkResult!,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontMicro,
+                      color: skin.textSecondary,
+                    ),
+                  ),
+                ),
               Text(
                 'TAB ANIMATION and SPECTRUM live in Personalize now — they '
                 'change how the app looks, so they sit with the look.',

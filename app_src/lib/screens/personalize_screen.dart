@@ -103,11 +103,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     _apply(
       _p.withSurface(
         _surface!,
-        SurfaceLook(
-          room: b.fromArt ? null : b.file,
-          art: b.artKey,
-          spec: b,
-        ),
+        SurfaceLook(room: b.fromArt ? null : b.file, art: b.artKey, spec: b),
       ),
     );
   }
@@ -268,63 +264,69 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 18),
 
                     SectionBand(skin: skin, label: 'BASE'),
-            SizedBox(
-              height: 46,
-              child: ListView.separated(
-                key: const Key('base-row'),
-                scrollDirection: Axis.horizontal,
-                itemCount: _bases.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (_, i) {
-                  if (i == 0) {
-                    final onTheme = _p.base == null;
-                    return GestureDetector(
-                      key: const Key('base-theme'),
-                      onTap: () => _apply(_p.copyWith(clearBase: true)),
-                      child: Container(
-                        width: 92,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: skin.panel,
-                          border: Border.all(
-                            color: onTheme ? skin.accent : skin.textSecondary,
-                            width: onTheme ? 2 : 1,
-                          ),
-                        ),
-                        child: Text(
-                          'THEME',
-                          style: TextStyle(
-                            color: onTheme ? skin.accent : skin.textSecondary,
-                            fontSize: LayoutSpec.fontFloor - 5,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
+                    SizedBox(
+                      height: 46,
+                      child: ListView.separated(
+                        key: const Key('base-row'),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _bases.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) {
+                          if (i == 0) {
+                            final onTheme = _p.base == null;
+                            return GestureDetector(
+                              key: const Key('base-theme'),
+                              onTap: () => _apply(_p.copyWith(clearBase: true)),
+                              child: Container(
+                                width: 92,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: skin.panel,
+                                  border: Border.all(
+                                    color: onTheme
+                                        ? skin.accent
+                                        : skin.textSecondary,
+                                    width: onTheme ? 2 : 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  'THEME',
+                                  style: TextStyle(
+                                    color: onTheme
+                                        ? skin.accent
+                                        : skin.textSecondary,
+                                    fontSize: LayoutSpec.fontFloor - 5,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          final colour = _bases[i - 1];
+                          final picked = _p.base == colour.toARGB32();
+                          return GestureDetector(
+                            onTap: () =>
+                                _apply(_p.copyWith(base: colour.toARGB32())),
+                            child: Container(
+                              width: 46,
+                              color: colour,
+                              child: picked
+                                  ? Icon(
+                                      Icons.check,
+                                      size: 16,
+                                      color: colour.computeLuminance() > 0.5
+                                          ? Colors.black
+                                          : Colors.white,
+                                    )
+                                  : null,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  }
-                  final colour = _bases[i - 1];
-                  final picked = _p.base == colour.toARGB32();
-                  return GestureDetector(
-                    onTap: () =>
-                        _apply(_p.copyWith(base: colour.toARGB32())),
-                    child: Container(
-                      width: 46,
-                      color: colour,
-                      child: picked
-                          ? Icon(Icons.check,
-                              size: 16,
-                              color: colour.computeLuminance() > 0.5
-                                  ? Colors.black
-                                  : Colors.white)
-                          : null,
                     ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            SectionBand(skin: skin, label: 'ACCENT'),
+                    const SizedBox(height: 8),
+                    SectionBand(skin: skin, label: 'ACCENT'),
                     _chip(
                       skin,
                       'FROM PHOTO',
@@ -1198,34 +1200,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     return ClipRect(
       child: SizedBox(
         height: 148,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            PersonalBackdrop(root: root, spec: _b, skin: skin, art: art),
-            Positioned(
-              left: 8,
-              bottom: 8,
-              right: 8,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    color: Colors.black.withValues(alpha: 0.55),
-                    child: Text(
-                      _b.fromArt ? 'FOLDER' : 'PHOTO',
-                      style: TextStyle(
-                        color: skin.accent,
-                        fontSize: LayoutSpec.fontFloor - 6,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  if (_b.fromArt && total > 1)
+        child: GestureDetector(
+          // The picture is what you came to move. Pressing it opens the editor
+          // without hunting for the button under the sliders.
+          onLongPress: _canReframe ? _reframe : null,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              PersonalBackdrop(root: root, spec: _b, skin: skin, art: art),
+              Positioned(
+                left: 8,
+                bottom: 8,
+                right: 8,
+                child: Row(
+                  children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 6,
@@ -1233,25 +1221,43 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       color: Colors.black.withValues(alpha: 0.55),
                       child: Text(
-                        'FRAME $at/$total',
+                        _b.fromArt ? 'FOLDER' : 'PHOTO',
                         style: TextStyle(
-                          color: skin.textPrimary,
+                          color: skin.accent,
                           fontSize: LayoutSpec.fontFloor - 6,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
                         ),
                       ),
                     ),
-                ],
+                    const SizedBox(width: 6),
+                    if (_b.fromArt && total > 1)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        color: Colors.black.withValues(alpha: 0.55),
+                        child: Text(
+                          'FRAME $at/$total',
+                          style: TextStyle(
+                            color: skin.textPrimary,
+                            fontSize: LayoutSpec.fontFloor - 6,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Opens the picture full screen for framing.
   /// Whether REFRAME can open this picture at all. A built-in art picture lives
   /// inside the APK and has no file to frame, so the button says so instead of
   /// being tappable and quietly doing nothing.
@@ -1356,8 +1362,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   /// Base colours: four darks, a mid grey, then light stock.
   static final List<Color> _bases = [
-    for (final c in const [0xFF060606, 0xFF101014, 0xFF1A1512, 0xFF22262B,
-      0xFF2E3238, 0xFF5A5F66, 0xFFDDD8CE, 0xFFF3EFE7])
+    for (final c in const [
+      0xFF060606,
+      0xFF101014,
+      0xFF1A1512,
+      0xFF22262B,
+      0xFF2E3238,
+      0xFF5A5F66,
+      0xFFDDD8CE,
+      0xFFF3EFE7,
+    ])
       Color(c),
   ];
 
@@ -1706,12 +1720,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     String label,
     bool value,
     ValueChanged<bool> onChanged,
-  ) => KitToggle(
-    skin: skin,
-    label: label,
-    value: value,
-    onChanged: onChanged,
-  );
+  ) => KitToggle(skin: skin, label: label, value: value, onChanged: onChanged);
 
   Widget _button(
     Skin skin,

@@ -687,7 +687,7 @@ class _NameSheetState extends State<_NameSheet> {
           Text(
 
             'Tap again to clear',
-            style: TextStyle(color: skin.textSecondary, fontSize: 11),
+            style: TextStyle(color: skin.textSecondary, fontSize: 12),
           ),
           const SizedBox(height: 16),
 

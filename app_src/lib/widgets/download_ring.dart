@@ -89,7 +89,7 @@ class DownloadRing extends StatelessWidget {
                           child: Text(
                             '$waiting',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w900,
                               color: skin.onAccent,
                             ),

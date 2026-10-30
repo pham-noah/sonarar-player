@@ -196,7 +196,7 @@ class _BackupSectionState extends State<BackupSection> {
           child: Text(
             'Tags, likes, playlists, themes and play history — everything that '
             'is not in the audio files. Saved to Downloads.',
-            style: TextStyle(fontSize: 11, color: skin.textSecondary),
+            style: TextStyle(fontSize: 12, color: skin.textSecondary),
           ),
         ),
         const SizedBox(height: 16),

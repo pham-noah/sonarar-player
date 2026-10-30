@@ -12,6 +12,7 @@ import '../library/rediscovery.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/track.dart';
 import '../theme/layout.dart';
+import '../core/time_format.dart';
 import '../theme/skin.dart';
 import '../theme/layout_kit.dart';
 import '../widgets/panel_bodies.dart';
@@ -1842,9 +1843,5 @@ return Stack(
         size: size,
       );
 
-  static String _fmt(Duration d) {
-    final m = d.inMinutes;
-    final s = d.inSeconds % 60;
-    return '$m:${s.toString().padLeft(2, '0')}';
-  }
+  static String _fmt(Duration d) => mmss(d);
 }

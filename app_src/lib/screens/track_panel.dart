@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
+import '../core/time_format.dart';
 import '../library/track.dart';
 import '../theme/skin.dart';
 import '../widgets/pressable.dart';
@@ -221,8 +222,4 @@ class TrackPanel extends StatelessWidget {
   }
 }
 
-String _mmss(Duration d) {
-  final m = d.inMinutes;
-  final s = d.inSeconds % 60;
-  return '$m:${s.toString().padLeft(2, '0')}';
-}
+String _mmss(Duration d) => mmss(d);

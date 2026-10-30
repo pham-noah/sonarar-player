@@ -11,6 +11,7 @@ import '../download/download_manager.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/playlists.dart';
 import '../theme/layout.dart';
+import '../core/time_format.dart';
 import '../library/track.dart';
 import '../library/library_repository.dart';
 import '../theme/personalization.dart';
@@ -762,9 +763,5 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     );
   }
 
-  static String _mmss(Duration d) {
-    final m = d.inMinutes;
-    final s = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$m:$s';
-  }
+  static String _mmss(Duration d) => mmss(d);
 }

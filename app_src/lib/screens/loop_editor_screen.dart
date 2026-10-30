@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
+import '../core/time_format.dart';
 import '../library/track.dart';
 import '../playback/loop_points.dart';
 import '../theme/layout.dart';
@@ -68,11 +69,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
         loopCount: _loopCount,
       );
 
-  String _mmss(Duration d) {
-    final m = d.inMinutes;
-    final s = d.inSeconds % 60;
-    return '$m:${s.toString().padLeft(2, '0')}';
-  }
+  String _mmss(Duration d) => mmss(d);
 
   Future<void> _save() async {
     await widget.onSave(_draft());

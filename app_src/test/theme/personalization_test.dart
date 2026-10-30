@@ -47,7 +47,7 @@ void main() {
 
     test('out-of-range values are clamped, not trusted', () {
       final p = BackdropSpec.fromJson({'file': 'a.jpg', 'scale': 99, 'blur': -4, 'dim': 3, 'rot': 900});
-      expect(p.scale, 4.0);
+      expect(p.scale, BackdropSpec.maxScale);
       expect(p.blur, 0.0);
       expect(p.dim, 1.0);
       expect(p.rotationDeg, 180.0);

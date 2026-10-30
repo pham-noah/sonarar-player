@@ -173,8 +173,10 @@ class Personalization {
     if (look == null) return backdrop;
     // A place's own picture wins, and art wins over a photo of the same place:
     // the art tab is where a place was given an identity.
-    // A place that has been framed keeps what it was framed with.
-    if (look.spec != null) return look.spec!;
+    // A place that has been framed keeps what it was framed with — but only
+    // while it still has a picture. A cleared place must not keep painting the
+    // old one out of its leftover spec.
+    if (look.spec != null && look.isSet) return look.spec!;
     final art = look.art;
     if (art != null) return backdrop.copyWith(artKey: art, clearFile: true);
     final room = look.room;
@@ -361,6 +363,11 @@ class BackdropSpec {
   /// With [artKey] set, move to the next frame of its bundle on every track.
   final bool followTrack;
 
+  /// The most the picture can be zoomed. One number, used by the editor, the
+  /// clamp and the loader: 6 in the editor but 4 on load would quietly crop a
+  /// saved picture every restart.
+  static const maxScale = 6.0;
+
   /// 1 is untouched. Above 1 the picture gets louder, below 1 greyer.
   final double saturation;
 
@@ -408,7 +415,7 @@ class BackdropSpec {
         file: clearFile ? null : (file ?? this.file),
         focusX: _clamp01(focusX ?? this.focusX),
         focusY: _clamp01(focusY ?? this.focusY),
-        scale: (scale ?? this.scale).clamp(1.0, 4.0),
+        scale: (scale ?? this.scale).clamp(1.0, maxScale),
         rotationDeg: (rotationDeg ?? this.rotationDeg).clamp(-180.0, 180.0),
         blur: (blur ?? this.blur).clamp(0.0, 24.0),
         dim: _clamp01(dim ?? this.dim),
@@ -449,7 +456,7 @@ class BackdropSpec {
       file: f is String && f.isNotEmpty ? f : null,
       focusX: _clamp01(_num(raw['fx'], 0.5)),
       focusY: _clamp01(_num(raw['fy'], 0.5)),
-      scale: _num(raw['scale'], 1).clamp(1.0, 4.0),
+      scale: _num(raw['scale'], 1).clamp(1.0, maxScale),
       rotationDeg: _num(raw['rot'], 0).clamp(-180.0, 180.0),
       blur: _num(raw['blur'], 0).clamp(0.0, 24.0),
       dim: _clamp01(_num(raw['dim'], 0.35)),

@@ -53,6 +53,20 @@ void main() {
     expect(spec.scale, 3);
   });
 
+  test('the zoom ceiling is the ceiling everywhere', () {
+    const spec = BackdropSpec(file: 'a.jpg', scale: 6);
+    expect(BackdropSpec.fromJson(jsonDecode(jsonEncode(spec.toJson()))).scale, 6);
+    expect(spec.copyWith(scale: 9).scale, BackdropSpec.maxScale);
+  });
+
+  test('a cleared place paints nothing of its own', () {
+    const p = Personalization(
+      backdrop: BackdropSpec(file: 'default.jpg', focusX: 0.1),
+    );
+    final withStale = p.withSurface(SurfaceId.library, const SurfaceLook());
+    expect(withStale.surfaces, isEmpty);
+  });
+
   test('art keys survive a round trip too', () {
     const spec = BackdropSpec(artKey: 'makoto/frame-2.png', followTrack: true);
     final back = BackdropSpec.fromJson(jsonDecode(jsonEncode(spec.toJson())));

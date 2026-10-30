@@ -126,7 +126,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     'SIZE',
                     _spec.scale,
                     1.0,
-                    6.0,
+                    BackdropSpec.maxScale,
                     (v) => setState(() => _spec = _spec.copyWith(scale: v)),
                   ),
                   _slider(

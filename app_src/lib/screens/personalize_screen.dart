@@ -456,7 +456,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         'DIM',
                         _b.dim,
                         0,
-                        1,
+                        // The layer paints 85% of the value, so 1.00 could never
+                        // look like 1.00. The slider ends where the dim ends.
+                        0.85,
                         (v) => _setBackdrop(_b.copyWith(dim: v)),
                       ),
                       _slider(
@@ -464,7 +466,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         'ZOOM',
                         _b.scale,
                         1,
-                        6,
+                        BackdropSpec.maxScale,
                         (v) => _setBackdrop(_b.copyWith(scale: v)),
                       ),
                       _slider(

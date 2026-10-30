@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../widgets/kit.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
@@ -137,14 +138,14 @@ class _ReframeScreenState extends State<ReframeScreen> {
               child: Column(
                 children: [
                   _slider(
-                    'SIZE',
+                    'ZOOM',
                     _spec.scale,
                     1.0,
                     BackdropSpec.maxScale,
                     (v) => setState(() => _spec = _spec.copyWith(scale: v)),
                   ),
                   _slider(
-                    'ROTATE',
+                    'ROTATION',
                     _spec.rotationDeg,
                     -BackdropSpec.maxRotation,
                     BackdropSpec.maxRotation,
@@ -167,38 +168,23 @@ class _ReframeScreenState extends State<ReframeScreen> {
     );
   }
 
+  /// The app's own slider row, not a second one drawn here: the editor should
+  /// feel like the screen that opened it.
   Widget _slider(
     String label,
     double value,
     double min,
     double max,
     ValueChanged<double> onChanged,
-  ) {
-    final skin = widget.skin;
-    return Row(
-      children: [
-        SizedBox(
-          width: 68,
-          child: Text(
-            label,
-            style: TextStyle(
-              color: skin.textSecondary,
-              fontSize: LayoutSpec.fontFloor - 4,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Slider(
-            value: value.clamp(min, max),
-            min: min,
-            max: max,
-            activeColor: skin.accent,
-            onChanged: onChanged,
-          ),
-        ),
-      ],
-    );
-  }
+  ) =>
+      KitSlider(
+        skin: widget.skin,
+        label: label,
+        value: value,
+        min: min,
+        max: max,
+        onChanged: onChanged,
+        shown: value.toStringAsFixed(value <= 1 ? 2 : 1),
+      );
+
 }

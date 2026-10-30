@@ -286,8 +286,24 @@ class PresentationScope extends InheritedWidget {
       oldWidget.presentation != presentation;
 }
 
+/// GLASS and SOLID keep their own palettes, so the base colour has to be laid
+/// over the chosen one: decoration stays, the room takes the colour.
+LayoutPalette _onBase(LayoutPalette p, Skin skin) => LayoutPalette(
+      background: skin.background,
+      surface: skin.panel,
+      textPrimary: skin.textPrimary,
+      textSecondary: skin.textSecondary,
+      accent: p.accent,
+      accentDeep: p.accentDeep,
+      onAccent: p.onAccent,
+      border: p.border,
+      shadow: p.shadow,
+      ambient: p.ambient,
+      pageFill: skin.background,
+    );
+
 Presentation presentationFor(LayoutKind layout, Skin skin,
-    {int paletteIndex = 0}) {
+    {int paletteIndex = 0, bool takeBase = false}) {
   final kit = layout.kit;
   if (layout == LayoutKind.sonar) {
     return Presentation(
@@ -302,13 +318,15 @@ Presentation presentationFor(LayoutKind layout, Skin skin,
   }
 
   final palettes = kit.palettes;
+  final chosen = palettes[paletteIndex % palettes.length].palette;
+  final pal = takeBase ? _onBase(chosen, skin) : chosen;
   return Presentation(
     layout: layout,
-    palette: palettes[paletteIndex % palettes.length].palette,
+    palette: pal,
     material: layout == LayoutKind.glass ? MaterialStyle.glass : MaterialStyle.flat,
     motion: MotionSpec.restrained,
     arrangement: ScreenLayout.plain,
-    kit: kit.withPalette(palettes[paletteIndex % palettes.length].palette),
+    kit: kit.withPalette(pal),
   );
 }
 

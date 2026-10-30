@@ -3712,7 +3712,9 @@ children: [
                     onSleep: _toggleSleep,
                     stopAfterTrack: _stopAfterTrack,
                     onStopAfterTrack: (v) {
-                      setState(() => _stopAfterTrack = v);
+                      // The player is a pushed route; setState here would not
+                      // repaint it. _shellChanged bumps the tick it listens to.
+                      _shellChanged(() => _stopAfterTrack = v);
                       _toast(v
                           ? 'Stopping after this track'
                           : 'Stop after this track — off');

@@ -131,6 +131,15 @@ class TabBarView2 extends StatelessWidget {
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1,
                           color: colour,
+                          // The bar floats over art, so the label needs its own
+                          // shadow to stay legible on a bright cover.
+                          shadows: [
+                            Shadow(
+                              color: const Color(0xB3000000),
+                              blurRadius: 8,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
                         ),
                       ),
                     ),

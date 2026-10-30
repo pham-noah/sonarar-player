@@ -774,6 +774,7 @@ class AppState extends ChangeNotifier {
     _layoutId,
     _accented(_skin),
     paletteIndex: _paletteIndex,
+    takeBase: _personalization.base != null,
   );
 
   LayoutPalette get palette => presentation.palette;

@@ -12,6 +12,7 @@ import '../theme/skin.dart';
 import 'spectrum_probe_screen.dart';
 import '../theme/slab.dart';
 import '../widgets/pressable.dart';
+import '../widgets/toasts.dart';
 
 class DiagnosticsPanel extends StatefulWidget {
   const DiagnosticsPanel({
@@ -122,15 +123,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
     if (text.isEmpty) return;
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Log copied (${widget.log.length} lines) — paste it anywhere',
-          style: TextStyle(color: widget.skin.textPrimary),
-        ),
-        backgroundColor: widget.skin.onAccent,
-      ),
-    );
+    toast(context, 'Log copied (${widget.log.length} lines) — paste it anywhere');
   }
 
   @override

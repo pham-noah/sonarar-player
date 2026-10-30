@@ -27,6 +27,7 @@ import 'core/prefs_decode.dart' as decode;
 import 'core/shortcuts.dart';
 import 'core/prefs.dart';
 import 'widgets/download_ring.dart';
+import 'widgets/toasts.dart';
 import 'widgets/fps_overlay.dart';
 import 'download/download_manager.dart';
 import 'core/state_stores.dart';
@@ -2064,20 +2065,7 @@ class _HomeShellState extends State<HomeShell>
 
   void _toastUndo(String message, VoidCallback undo) {
     if (!mounted) return;
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-        content: Text(message, maxLines: 1, overflow: TextOverflow.ellipsis),
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(
-          label: 'UNDO',
-          textColor: widget.state.uiSkin.accent,
-          onPressed: undo,
-        ),
-      ));
+    toastUndo(context, widget.state.uiSkin, message, undo);
   }
 
   String? _shownDownloadError;
@@ -2102,33 +2090,12 @@ class _HomeShellState extends State<HomeShell>
 
   void _toastAction(String message, String label, VoidCallback action) {
     if (!mounted) return;
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-        content: Text(message, maxLines: 2, overflow: TextOverflow.ellipsis),
-        duration: const Duration(seconds: 8),
-        behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(
-          label: label,
-          textColor: widget.state.uiSkin.accent,
-          onPressed: action,
-        ),
-      ));
+    toastAction(context, widget.state.uiSkin, message, label, action);
   }
 
   void _toast(String message) {
     if (!mounted) return;
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-        content: Text(message),
-        duration: const Duration(milliseconds: 1400),
-        behavior: SnackBarBehavior.floating,
-      ));
+    toast(context, message);
   }
 
   void _openLibraryManagement(Track track) {

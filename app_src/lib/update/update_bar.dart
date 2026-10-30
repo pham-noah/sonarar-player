@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../core/build_info.dart';
 import '../theme/skin.dart';
+import '../widgets/toasts.dart';
 import 'update_service.dart';
 
 /// The offer to update, as one widget that looks after itself.
@@ -71,9 +72,7 @@ class _UpdateBarState extends State<UpdateBar> {
     if (!mounted) return;
     setState(() => _progress = null);
     if (file == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('The download did not finish. Try again.')),
-      );
+      toast(context, 'The download did not finish. Try again.');
       return;
     }
     // The system installer still asks; this only offers the file to it.

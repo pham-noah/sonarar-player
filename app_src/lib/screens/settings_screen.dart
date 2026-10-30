@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../widgets/pressable.dart';
+import '../widgets/toasts.dart';
 import '../widgets/devices.dart';
 import '../widgets/kit.dart';
 import '../backup/backup_section.dart';
@@ -524,9 +525,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onTap: () async {
           final opened = await openExternal(url);
           if (!opened && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('No app here can open $url')),
-            );
+            toast(context, 'No app here can open $url');
           }
         },
       );

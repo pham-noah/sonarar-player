@@ -117,6 +117,11 @@ class _ReframeScreenState extends State<ReframeScreen> {
                   final size = box.maxWidth / box.maxHeight > aspect
                       ? Size(box.maxHeight * aspect, box.maxHeight)
                       : Size(box.maxWidth, box.maxWidth / aspect);
+                  // A short box (landscape) can leave nothing to drag on, and a
+                  // zero width divides the drag into infinity.
+                  if (size.width < 1 || size.height < 1) {
+                    return const SizedBox.shrink();
+                  }
                   return Center(
                     child: SizedBox(
                       width: size.width,
@@ -160,33 +165,36 @@ class _ReframeScreenState extends State<ReframeScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Column(
-                children: [
-                  _slider(
-                    'ZOOM',
-                    _spec.scale,
-                    1.0,
-                    BackdropSpec.maxScale,
-                    (v) => setState(() => _spec = _spec.copyWith(scale: v)),
-                  ),
-                  _slider(
-                    'ROTATION',
-                    _spec.rotationDeg,
-                    -BackdropSpec.maxRotation,
-                    BackdropSpec.maxRotation,
-                    (v) =>
-                        setState(() => _spec = _spec.copyWith(rotationDeg: v)),
-                  ),
-                  _slider(
-                    'DIM',
-                    _spec.dim,
-                    0,
-                    BackdropSpec.maxDim,
-                    (v) => setState(() => _spec = _spec.copyWith(dim: v)),
-                  ),
-                ],
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  children: [
+                    _slider(
+                      'ZOOM',
+                      _spec.scale,
+                      1.0,
+                      BackdropSpec.maxScale,
+                      (v) => setState(() => _spec = _spec.copyWith(scale: v)),
+                    ),
+                    _slider(
+                      'ROTATION',
+                      _spec.rotationDeg,
+                      -BackdropSpec.maxRotation,
+                      BackdropSpec.maxRotation,
+                      (v) => setState(
+                        () => _spec = _spec.copyWith(rotationDeg: v),
+                      ),
+                    ),
+                    _slider(
+                      'DIM',
+                      _spec.dim,
+                      0,
+                      BackdropSpec.maxDim,
+                      (v) => setState(() => _spec = _spec.copyWith(dim: v)),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -203,15 +211,13 @@ class _ReframeScreenState extends State<ReframeScreen> {
     double min,
     double max,
     ValueChanged<double> onChanged,
-  ) =>
-      KitSlider(
-        skin: widget.skin,
-        label: label,
-        value: value,
-        min: min,
-        max: max,
-        onChanged: onChanged,
-        shown: value.toStringAsFixed(value <= 1 ? 2 : 1),
-      );
-
+  ) => KitSlider(
+    skin: widget.skin,
+    label: label,
+    value: value,
+    min: min,
+    max: max,
+    onChanged: onChanged,
+    shown: value.toStringAsFixed(value <= 1 ? 2 : 1),
+  );
 }

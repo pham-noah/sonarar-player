@@ -90,7 +90,7 @@ class _BackupSectionState extends State<BackupSection> {
                 'with the copy in the file. The current state is saved aside '
                 'first, in pre-restore-…',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: LayoutSpec.fontMicro,
                   height: 1.35,
                   color: widget.skin.textSecondary,
                 ),
@@ -106,7 +106,7 @@ class _BackupSectionState extends State<BackupSection> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: LayoutSpec.fontMicro,
                         color: widget.skin.accent,
                         fontWeight: FontWeight.w700,
                       ),
@@ -148,7 +148,7 @@ class _BackupSectionState extends State<BackupSection> {
       ..clearSnackBars()
       ..showSnackBar(
         SnackBar(
-          content: Text(message, style: const TextStyle(fontSize: 12)),
+          content: Text(message, style: const TextStyle(fontSize: LayoutSpec.fontMicro)),
           backgroundColor: widget.skin.panel,
           duration: const Duration(seconds: 6),
         ),
@@ -196,7 +196,7 @@ class _BackupSectionState extends State<BackupSection> {
           child: Text(
             'Tags, likes, playlists, themes and play history — everything that '
             'is not in the audio files. Saved to Downloads.',
-            style: TextStyle(fontSize: 12, color: skin.textSecondary),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ),
         const SizedBox(height: 16),

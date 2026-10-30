@@ -132,7 +132,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: LayoutSpec.fontMicro,
                         color: skin.textSecondary,
                       ),
                     ),
@@ -157,7 +157,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       child: Text(
                         _jumpLabel(root),
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: LayoutSpec.fontMicro,
                           letterSpacing: 1.2,
                           fontWeight: FontWeight.w700,
                         ),
@@ -225,7 +225,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                         : 'No library_manifest.json here — the app cannot read it as a library.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: LayoutSpec.fontMicro,
                       color: _isLibrary ? skin.accent : skin.textSecondary,
                     ),
                   ),
@@ -249,7 +249,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       child: const Text(
                         'USE THIS FOLDER',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: LayoutSpec.fontMicro,
                           letterSpacing: 2,
                           fontWeight: FontWeight.w900,
                         ),

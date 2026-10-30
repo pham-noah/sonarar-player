@@ -76,7 +76,7 @@ class Stamp extends StatelessWidget {
                 child: Text(
                   label!,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: LayoutSpec.fontMicro,
                     fontWeight: FontWeight.w900,
                     letterSpacing: square ? 0.8 : 1.6,
                     color: fg,

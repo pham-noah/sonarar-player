@@ -379,7 +379,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         title: Text(
           existing == null ? 'NEW PLAYLIST' : 'EDIT PLAYLIST',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: LayoutSpec.fontSmall,
             letterSpacing: 2,
             fontWeight: FontWeight.w800,
             color: skin.accent,
@@ -390,7 +390,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           children: [
             TextField(
               controller: labelCtl,
-              style: TextStyle(fontSize: 16, color: skin.textPrimary),
+              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Name',
                 labelStyle: TextStyle(color: skin.textSecondary),
@@ -399,7 +399,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             const SizedBox(height: 12),
             TextField(
               controller: linkCtl,
-              style: TextStyle(fontSize: 16, color: skin.textPrimary),
+              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Playlist link',
                 labelStyle: TextStyle(color: skin.textSecondary),
@@ -462,11 +462,11 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         backgroundColor: PresentationScope.uiSkin(context, widget.skin).background,
         title: Text('REMOVE "${src.label}"?',
             style: TextStyle(
-                fontSize: 18,
+                fontSize: LayoutSpec.fontSmall,
                 color: PresentationScope.uiSkin(context, widget.skin).textPrimary)),
         content: Text('The downloaded files stay — this only forgets the source.',
             style: TextStyle(
-                fontSize: 16,
+                fontSize: LayoutSpec.fontFloor,
                 color: PresentationScope.uiSkin(context, widget.skin).textSecondary)),
         actions: [
           TextButton(
@@ -514,14 +514,14 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         children: [
           Text('IMPORTED PLAYLISTS',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: LayoutSpec.fontSmall,
                 letterSpacing: 2,
                 fontWeight: FontWeight.w800,
                 color: skin.accent,
               )),
           const SizedBox(height: 4),
           Text('Import one, or update it later — only the new songs are fetched.',
-              style: TextStyle(fontSize: 16, color: skin.textSecondary)),
+              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
           const SizedBox(height: 14),
 
           if (_loading)
@@ -533,7 +533,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 18),
               child: Text('No playlists yet. Add one below.',
-                  style: TextStyle(fontSize: 16, color: skin.textSecondary)),
+                  style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
             )
           else
             Flexible(
@@ -552,7 +552,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
               icon: Icon(Icons.add_rounded, color: skin.accent),
               label: Text('NEW PLAYLIST',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: LayoutSpec.fontFloor,
                     letterSpacing: 1.2,
                     fontWeight: FontWeight.w800,
                     color: skin.accent,
@@ -584,7 +584,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: LayoutSpec.fontSmall,
                           fontWeight: FontWeight.w700,
                           color: skin.textPrimary,
                         )),
@@ -622,14 +622,14 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                       _nowTitle[src.folder]!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 16, color: skin.textPrimary),
+                      style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     _progressTextOf(src.folder),
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: LayoutSpec.fontFloor,
                       fontWeight: FontWeight.w900,
                       color: skin.accent,
                     ),
@@ -660,7 +660,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             Padding(
               padding: const EdgeInsets.only(top: 3, left: 2),
               child: Text(_status[src.folder]!,
-                  style: TextStyle(fontSize: 16, color: skin.textSecondary)),
+                  style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
             ),
         ],
       ),

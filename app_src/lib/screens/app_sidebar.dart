@@ -64,7 +64,7 @@ class AppSidebar extends StatelessWidget {
                       child: Text(
                         'SONARAR',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: LayoutSpec.fontFloor,
                           letterSpacing: 3,
                           fontWeight: FontWeight.w900,
                           color: panelSkin.textPrimary,
@@ -111,7 +111,7 @@ class AppSidebar extends StatelessWidget {
               child: Text(
                 e.label,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: LayoutSpec.fontFloor,
                   letterSpacing: 1.4,
                   fontWeight: FontWeight.w800,
                   color: panelSkin.textPrimary,

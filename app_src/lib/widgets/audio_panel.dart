@@ -125,7 +125,7 @@ class _SectionLabel extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: LayoutSpec.fontMicro,
             letterSpacing: 2.2,
             fontWeight: FontWeight.w900,
             color: skin.accent,
@@ -187,7 +187,7 @@ class _PanelRow extends StatelessWidget {
                       Text(
                         blurb!,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: LayoutSpec.fontMicro,
                           letterSpacing: 1.2,
                           color: skin.textSecondary,
                         ),

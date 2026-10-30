@@ -136,7 +136,7 @@ class ArtFramingPanel extends StatelessWidget {
           Text(
             axis,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: LayoutSpec.fontMicro,
               letterSpacing: 1,
               fontWeight: FontWeight.w900,
               color: skin.textSecondary,

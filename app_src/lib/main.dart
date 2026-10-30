@@ -2117,10 +2117,10 @@ class _HomeShellState extends State<HomeShell>
                   builder: (d) => AlertDialog(
                     backgroundColor: widget.state.uiSkin.background,
                     title: Text('REMOVE "${track.title}"?',
-                        style: TextStyle(fontSize: 18, color: widget.state.skin.textPrimary)),
+                        style: TextStyle(fontSize: LayoutSpec.fontSmall, color: widget.state.skin.textPrimary)),
                     content: Text(
                       'This deletes the file from the phone. It is a download, so nothing else has a copy.',
-                      style: TextStyle(fontSize: 16, color: widget.state.skin.textSecondary),
+                      style: TextStyle(fontSize: LayoutSpec.fontFloor, color: widget.state.skin.textSecondary),
                     ),
                     actions: [
                       TextButton(

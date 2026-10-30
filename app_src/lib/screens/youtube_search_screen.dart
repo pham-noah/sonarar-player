@@ -413,10 +413,10 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     onSubmitted: (_) => _search(),
                     textInputAction: TextInputAction.search,
                     cursorColor: skin.accent,
-                    style: TextStyle(fontSize: 18, color: skin.textPrimary),
+                    style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'Search YouTube',
-                      hintStyle: TextStyle(color: skin.textSecondary, fontSize: 18),
+                      hintStyle: TextStyle(color: skin.textSecondary, fontSize: LayoutSpec.fontSmall),
                       filled: true,
                       fillColor: skin.panel,
                       contentPadding:
@@ -487,7 +487,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       icon: Icon(Icons.playlist_add_rounded, color: skin.accent),
                       label: Text('IMPORT A PLAYLIST',
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: LayoutSpec.fontFloor,
                               letterSpacing: 1.2,
                               fontWeight: FontWeight.w800,
                               color: skin.accent)),
@@ -507,7 +507,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: Text(
                       _error!,
-                      style: TextStyle(fontSize: 16, color: skin.accent),
+                      style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.accent),
                     ),
                   ),
                 Expanded(
@@ -611,7 +611,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 Text(hit.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 18, color: skin.textPrimary)),
+                    style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary)),
                 const SizedBox(height: 2),
                 Row(
                   children: [
@@ -631,7 +631,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         child: Text(
                           hit.isOfficialGiven(_vouched) ? 'OFFICIAL' : 'NOT OFFICIAL',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: LayoutSpec.fontMicro,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.6,
                             color: hit.isOfficialGiven(_vouched) ? skin.accent : skin.textSecondary,
@@ -645,7 +645,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         '${hit.channel} · ${_mmss(hit.duration)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16, color: skin.textSecondary),
+                        style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary),
                       ),
                     ),
                   ],
@@ -746,12 +746,12 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   Text(hit.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 18, color: skin.textPrimary)),
+                      style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary)),
                   const SizedBox(height: 2),
                   Text('${hit.channel} · ${_mmss(hit.duration)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 16, color: skin.textSecondary)),
+                      style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
                 ],
               ),
             ),

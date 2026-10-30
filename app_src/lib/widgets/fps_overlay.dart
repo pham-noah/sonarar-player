@@ -95,7 +95,7 @@ class _FpsOverlayState extends State<FpsOverlay> {
         child: Text(
           '${r.fps.toStringAsFixed(0)} fps  ·  worst ${r.worstMs.toStringAsFixed(0)}ms  ·  ${r.dropped} dropped',
           style: TextStyle(
-            fontSize: 12,
+            fontSize: LayoutSpec.fontMicro,
             fontWeight: FontWeight.w800,
             color: colour,
 

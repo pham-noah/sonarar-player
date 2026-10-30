@@ -294,7 +294,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           const SizedBox(height: 8),
           Text(
             'Tapped point selected — saving here, not where you stand',
-            style: TextStyle(fontSize: 12, color: skin.accent),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
           ),
         ],
 
@@ -312,7 +312,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                     Expanded(
                       child: Text(
                         'You are in ${_hereInside!.name} — tap to edit it',
-                        style: TextStyle(fontSize: 12, color: skin.accent),
+                        style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
                       ),
                     ),
                   ],
@@ -335,7 +335,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           Text(
 
             'Asking OpenStreetMap what is here…',
-            style: TextStyle(fontSize: 12, color: skin.textSecondary),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
 
@@ -344,7 +344,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           Text(
 
             'OpenStreetMap has nothing tagged here. Name it yourself.',
-            style: TextStyle(fontSize: 12, color: skin.textSecondary),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
 
@@ -353,7 +353,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           Text(
 
             'Could not reach OpenStreetMap — name it yourself.',
-            style: TextStyle(fontSize: 12, color: skin.textSecondary),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
 
@@ -429,7 +429,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                           child: Text(
                             kind.label.toUpperCase(),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: LayoutSpec.fontMicro,
                               letterSpacing: 1,
                               fontWeight: FontWeight.w900,
                               color: skin.accent,
@@ -547,7 +547,7 @@ class _NameSheetState extends State<_NameSheet> {
                 child: Text(
                   'You already have a place by this name — saving adds this spot to it rather than '
                   'making a new one.',
-                  style: TextStyle(fontSize: 12, color: skin.accent),
+                  style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
                 ),
               );
             },
@@ -584,7 +584,7 @@ class _NameSheetState extends State<_NameSheet> {
             Text(
               'PLAYLIST HERE',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: LayoutSpec.fontMicro,
                 letterSpacing: 2,
                 fontWeight: FontWeight.w800,
                 color: skin.accent,
@@ -618,7 +618,7 @@ class _NameSheetState extends State<_NameSheet> {
                           child: Text(
                             name,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: LayoutSpec.fontMicro,
                               fontWeight: FontWeight.w800,
                               color: on ? skin.onAccent : skin.textPrimary,
                             ),
@@ -639,7 +639,7 @@ class _NameSheetState extends State<_NameSheet> {
           Text(
             'ICON',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: LayoutSpec.fontMicro,
               letterSpacing: 2,
               fontWeight: FontWeight.w800,
               color: skin.accent,
@@ -687,14 +687,14 @@ class _NameSheetState extends State<_NameSheet> {
           Text(
 
             'Tap again to clear',
-            style: TextStyle(color: skin.textSecondary, fontSize: 12),
+            style: TextStyle(color: skin.textSecondary, fontSize: LayoutSpec.fontMicro),
           ),
           const SizedBox(height: 16),
 
           Text(
             'HOW BIG IS THIS SPOT',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: LayoutSpec.fontMicro,
               letterSpacing: 2,
               fontWeight: FontWeight.w800,
               color: skin.accent,
@@ -718,7 +718,7 @@ class _NameSheetState extends State<_NameSheet> {
                   '${r.round()}m — about '
                   '${r < 120 ? 'one building' : r < 450 ? 'a building and its neighbours' : 'a campus'}',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: LayoutSpec.fontMicro,
                     color: skin.textSecondary,
                   ),
                 ),
@@ -733,7 +733,7 @@ class _NameSheetState extends State<_NameSheet> {
               'Type an existing name (${existingNames.join(', ')}) to add this '
               'as another spot of that place.',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: LayoutSpec.fontMicro,
                 color: skin.textSecondary,
                 height: 1.4,
               ),
@@ -757,7 +757,7 @@ class _NameSheetState extends State<_NameSheet> {
                         'CANCEL',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: LayoutSpec.fontMicro,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.5,
                           color: skin.textSecondary,
@@ -780,7 +780,7 @@ class _NameSheetState extends State<_NameSheet> {
                         widget.editing ? 'SAVE CHANGES' : 'SAVE',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: LayoutSpec.fontMicro,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.5,
                           color: skin.onAccent,
@@ -809,7 +809,7 @@ class _NameSheetState extends State<_NameSheet> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: LayoutSpec.fontMicro,
             letterSpacing: 2,
             fontWeight: FontWeight.w800,
             color: skin.accent,

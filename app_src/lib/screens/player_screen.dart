@@ -372,7 +372,7 @@ class PlayerScreen extends StatelessWidget {
                     Text(
                       'NOW PLAYING',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: LayoutSpec.fontMicro,
                         letterSpacing: 5,
                         fontWeight: FontWeight.w700,
                         color: pal.accent,
@@ -672,7 +672,7 @@ class PlayerScreen extends StatelessWidget {
                 'OTHER RECORDINGS',
                 style: TextStyle(
                   color: skin.textSecondary,
-                  fontSize: 12,
+                  fontSize: LayoutSpec.fontMicro,
                   letterSpacing: 2.4,
                   fontWeight: FontWeight.w700,
                 ),
@@ -709,7 +709,7 @@ class PlayerScreen extends StatelessWidget {
                                   : variantLabel(v.variantTag!),
                               style: TextStyle(
                                 color: skin.accent,
-                                fontSize: 12,
+                                fontSize: LayoutSpec.fontMicro,
                                 letterSpacing: 1.6,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -807,7 +807,7 @@ class PlayerScreen extends StatelessWidget {
                               Text(
                                 variantLabel(t.variantTag!),
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: LayoutSpec.fontMicro,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 1.6,
                                   color: skin.onAccent,
@@ -1457,7 +1457,7 @@ class PlayerScreen extends StatelessWidget {
                     child: Text(
                       badge,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: LayoutSpec.fontMicro,
                         fontWeight: FontWeight.w900,
                         color: skin.onAccent,
                       ),
@@ -1552,7 +1552,7 @@ class PlayerScreen extends StatelessWidget {
           child: Text(
             nextTitle == null ? 'END OF QUEUE' : 'UP NEXT',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: LayoutSpec.fontMicro,
               letterSpacing: 4,
               fontWeight: FontWeight.w800,
               color: skin.accent,

@@ -88,7 +88,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                 label,
                 style: TextStyle(
                   color: ok ? skin.textSecondary : skin.accent,
-                  fontSize: 12,
+                  fontSize: LayoutSpec.fontMicro,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -98,7 +98,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                 'GRANT',
                 style: TextStyle(
                   color: skin.accent,
-                  fontSize: 12,
+                  fontSize: LayoutSpec.fontMicro,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -156,7 +156,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                       child: Text('CLEAR',
                           style: TextStyle(
                               color: skin.textSecondary,
-                              fontSize: 12,
+                              fontSize: LayoutSpec.fontMicro,
                               letterSpacing: 1.2)),
                     ),
                   ),
@@ -176,7 +176,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                       Text('SPECTRUM',
                           style: TextStyle(
                               color: skin.accent,
-                              fontSize: 12,
+                              fontSize: LayoutSpec.fontMicro,
                               letterSpacing: 1.2)),
                     ]),
                   ),
@@ -194,7 +194,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                       Text('COPY',
                           style: TextStyle(
                               color: skin.accent,
-                              fontSize: 12,
+                              fontSize: LayoutSpec.fontMicro,
                               letterSpacing: 1.2)),
                     ]),
                   ),
@@ -236,13 +236,13 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                           TextSpan(
                             text: '${l.stamp}  ',
                             style: TextStyle(
-                                color: skin.textSecondary, fontSize: 12, height: 1.35),
+                                color: skin.textSecondary, fontSize: LayoutSpec.fontMicro, height: 1.35),
                           ),
                           TextSpan(
                             text: l.text,
                             style: TextStyle(
                               color: l.looksWrong ? skin.accent : skin.textPrimary,
-                              fontSize: 16,
+                              fontSize: LayoutSpec.fontFloor,
                               height: 1.35,
                               fontFamily: 'monospace',
                             ),
@@ -274,7 +274,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
           '$label${count > 0 ? ' $count' : ''}',
           style: TextStyle(
             color: on ? skin.onAccent : skin.textSecondary,
-            fontSize: 12,
+            fontSize: LayoutSpec.fontMicro,
             letterSpacing: 1.1,
             fontWeight: on ? FontWeight.w700 : FontWeight.w500,
           ),

@@ -3,6 +3,8 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../theme/skin.dart';
 import 'package:flutter/services.dart';
 
 class SpectrumProbeScreen extends StatefulWidget {
@@ -79,7 +81,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         foregroundColor: const Color(0xFFE3B84E),
-        title: const Text('SPECTRUM PROBE', style: TextStyle(fontSize: 18, letterSpacing: 2)),
+        title: const Text('SPECTRUM PROBE', style: TextStyle(fontSize: LayoutSpec.fontSmall, letterSpacing: 2)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -96,7 +98,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
                   foregroundColor: Colors.black,
                 ),
                 child: Text(_running ? 'RUNNING…' : 'RUN THE PROBE',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    style: const TextStyle(fontSize: LayoutSpec.fontSmall, fontWeight: FontWeight.w800)),
               ),
             ),
             const SizedBox(height: 16),
@@ -105,7 +107,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
                 child: SelectableText(
                   _lines.isEmpty ? 'Press the button, then send me what appears here.' : _lines.join('\n'),
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: LayoutSpec.fontFloor,
                     height: 1.45,
                     color: Colors.white,
                     fontFamily: 'monospace',

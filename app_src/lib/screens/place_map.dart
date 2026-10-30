@@ -157,7 +157,7 @@ class PlaceMap extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: LayoutSpec.fontMicro,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.5,
               color: skin.textPrimary,
@@ -194,7 +194,7 @@ class MapAttribution extends StatelessWidget {
     return Text(
       'Map data © OpenStreetMap contributors',
       style: TextStyle(
-        fontSize: 12,
+        fontSize: LayoutSpec.fontMicro,
         color: skin.secondary(0.8),
       ),
     );
@@ -220,7 +220,7 @@ class NearestReadout extends StatelessWidget {
       return Text(
 
         'Position not known yet',
-        style: TextStyle(fontSize: 12, color: skin.textSecondary),
+        style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
       );
     }
 
@@ -231,7 +231,7 @@ class NearestReadout extends StatelessWidget {
         'At ${inside.name} · ${d.round()}m from its nearest spot'
         '${pos.accuracyMetres != null ? ' · ±${pos.accuracyMetres!.round()}m' : ''}',
         style: TextStyle(
-          fontSize: 12,
+          fontSize: LayoutSpec.fontMicro,
           fontWeight: FontWeight.w800,
           color: skin.accent,
         ),
@@ -241,7 +241,7 @@ class NearestReadout extends StatelessWidget {
     if (places.isEmpty) {
       return Text(
         'No places saved yet',
-        style: TextStyle(fontSize: 12, color: skin.textSecondary),
+        style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
       );
     }
 
@@ -260,7 +260,7 @@ class NearestReadout extends StatelessWidget {
     return Text(
       'Not in a saved place · nearest is $bestName, '
       '${bestDistance.round()}m away',
-      style: TextStyle(fontSize: 12, color: skin.textSecondary),
+      style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
     );
   }
 }
@@ -311,7 +311,7 @@ class SaveSpotButton extends StatelessWidget {
               _usable ? 'SAVE THIS SPOT' : 'WAITING FOR A GOOD FIX',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: LayoutSpec.fontMicro,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.5,
                 color: _usable ? skin.onAccent : skin.textSecondary,
@@ -326,7 +326,7 @@ class SaveSpotButton extends StatelessWidget {
             'Stand still a moment — the position is only good to '
             '±${here?.accuracyMetres?.round() ?? '?'}m',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: skin.textSecondary),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
       ],

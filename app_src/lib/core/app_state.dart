@@ -1,6 +1,7 @@
 library;
 
 import 'package:flutter/foundation.dart';
+import 'dart:ui' show Color;
 
 import '../art/art_focus.dart';
 import '../art/art_bundle.dart';
@@ -733,6 +734,8 @@ class AppState extends ChangeNotifier {
   /// The skin wearing the accent the personalization asks for. When the source
   /// is the skin this is the skin itself, untouched.
   Skin _accented(Skin base) {
+    final chosen = _personalization.base;
+    if (chosen != null) base = base.withBase(Color(chosen));
     final accent = _personalization.accent;
     if (accent.source == AccentSource.skin || accent.value == null) return base;
     return base.withAccent(accentFor(base.accent, accent));

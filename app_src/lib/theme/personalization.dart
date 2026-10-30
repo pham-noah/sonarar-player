@@ -106,7 +106,11 @@ class Personalization {
     this.surfaces = const {},
     this.bundle,
     this.artSpecs = const {},
+    this.base,
   });
+
+  /// The colour the app sits on. Null means the theme's own.
+  final int? base;
 
   final BackdropSpec backdrop;
 
@@ -180,6 +184,8 @@ class Personalization {
     String? bundle,
     bool clearBundle = false,
     Map<String, ArtSpec>? artSpecs,
+    int? base,
+    bool clearBase = false,
   }) =>
       Personalization(
         backdrop: backdrop ?? this.backdrop,
@@ -189,6 +195,7 @@ class Personalization {
         surfaces: surfaces ?? this.surfaces,
         bundle: clearBundle ? null : (bundle ?? this.bundle),
         artSpecs: artSpecs ?? this.artSpecs,
+        base: clearBase ? null : (base ?? this.base),
       );
 
   /// Writes one place's look, dropping the entry when it says nothing.
@@ -209,6 +216,7 @@ class Personalization {
         'accent': accent.toJson(),
         'home': home.toJson(),
         if (bundle != null) 'bundle': bundle,
+        if (base != null) 'base': base,
         if (artSpecs.isNotEmpty)
           'artSpecs': {
             for (final e in artSpecs.entries) e.key: e.value.toJson(),
@@ -239,6 +247,7 @@ class Personalization {
             ? decoded['bundle'] as String
             : null,
         artSpecs: _artSpecsFrom(decoded['artSpecs']),
+        base: decoded['base'] is int ? decoded['base'] as int : null,
       );
     } catch (_) {
       return defaults;

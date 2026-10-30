@@ -81,6 +81,31 @@ class Skin {
   /// from it, and copying them across would put white glyphs on a pale accent.
   /// Only the three accent slots move — background, panel, text, skew and the
   /// wordmark stay the skin's, which is what keeps it recognisable.
+  /// The same skin on a different base colour. Text, panels and the accent's
+  /// contrast are re-derived, because a base the user picked is not the base the
+  /// palette assumed.
+  Skin withBase(Color base) {
+    final light = base.computeLuminance() > 0.5;
+    Color mix(Color a, Color b, double t) => Color.lerp(a, b, t)!;
+    final ink = light ? const Color(0xFF14110E) : const Color(0xFFF4F1EA);
+    return Skin(
+      id: id,
+      displayName: displayName,
+      background: base,
+      accent: accent,
+      accentDeep: accentDeepFor(accent),
+      textPrimary: ink,
+      textSecondary: mix(ink, base, light ? 0.42 : 0.38),
+      panel: mix(base, light ? Colors.white : Colors.black, light ? 0.22 : 0.30),
+      onAccent: onAccentFor(accent),
+      accentPinned: accentPinned,
+      skewDegrees: skewDegrees,
+      contextLabel: contextLabel,
+      nowPlayingWordmark: nowPlayingWordmark,
+      names: names,
+    );
+  }
+
   Skin withAccent(Color accent) => Skin(
         id: id,
         displayName: displayName,

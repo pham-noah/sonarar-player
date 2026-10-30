@@ -15,6 +15,7 @@ import '../art/art_bundle.dart';
 import '../art/skin_art.dart';
 import '../theme/backdrop_import.dart';
 import '../theme/backdrop_layer.dart';
+import '../library/storage_permission.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import '../widgets/art_scrim.dart';
@@ -986,8 +987,27 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   }
 
   Future<void> _chooseImage() async {
-    final images = candidateImages();
+    var images = candidateImages();
     if (!mounted) return;
+    // An empty list usually means the app is not allowed to look, not that the
+    // phone has no pictures. Ask first, then say what actually happened.
+    if (images.isEmpty && Platform.isAndroid) {
+      final access = await StoragePermission.request();
+      if (!mounted) return;
+      if (access != StorageAccess.denied) images = candidateImages();
+      if (images.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              access == StorageAccess.denied
+                  ? 'Sonarar cannot see your pictures — allow photo access in Settings.'
+                  : 'No pictures found in Pictures, DCIM or Download.',
+            ),
+          ),
+        );
+        return;
+      }
+    }
     if (images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

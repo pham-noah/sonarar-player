@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import '../core/build_info.dart';
 import '../theme/skin.dart';
 import '../widgets/toasts.dart';
+import 'update_feed.dart';
 import 'update_service.dart';
 
 /// The offer to update, as one widget that looks after itself.
@@ -43,12 +44,30 @@ class _UpdateBarState extends State<UpdateBar> {
   @override
   void initState() {
     super.initState();
+    // A manual check can offer an update without the switch being on: that is
+    // the user asking, not the app phoning home. Listen either way.
+    offeredUpdate.addListener(_takeOffer);
+    _takeOffer();
+
     // After the first frame: an update check must never sit in front of the
     // app opening.
     if (!widget.enabled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) unawaited(_check());
     });
+  }
+
+  void _takeOffer() {
+    if (!mounted) return;
+    final offered = offeredUpdate.value;
+    if (offered == null && _update == null) return;
+    setState(() => _update = offered);
+  }
+
+  @override
+  void dispose() {
+    offeredUpdate.removeListener(_takeOffer);
+    super.dispose();
   }
 
   Future<void> _check() async {

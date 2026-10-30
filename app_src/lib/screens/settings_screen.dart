@@ -19,6 +19,7 @@ import '../theme/theme_preset.dart';
 import '../widgets/stagger_in.dart';
 
 import '../theme/slab.dart';
+import '../update/update_feed.dart';
 import '../update/update_service.dart';
 
 
@@ -125,12 +126,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             currentVersion: widget.appVersion ?? '');
     final update = await check();
     if (!mounted) return;
+    // Hand the answer to the banner, whether or not the automatic check is on:
+    // a sentence pointing at a banner that was never built is worse than no
+    // sentence at all.
+    offerUpdate(update);
     setState(() {
       _checking = false;
       _checkResult = update == null
           ? 'You are on the newest build (${widget.appVersion ?? appVersionCode}).'
-          : 'Sonarar ${update.version} is available — the update banner is at '
-              'the top of the app.';
+          : 'Sonarar ${update.version} is available — UPDATE is at the top of '
+              'the app.';
     });
   }
 

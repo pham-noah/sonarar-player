@@ -3,12 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/core/prefs.dart';
 import 'package:sonarar/screens/settings_screen.dart';
+import 'package:sonarar/update/update_feed.dart';
 import 'package:sonarar/update/update_service.dart';
 
 /// The switch is about phoning home uninvited. A person pressing CHECK NOW is
 /// invited, so it runs either way — and it has to say what it found, in place,
 /// instead of flashing a snackbar that leaves with the frame.
 void main() {
+  setUp(() => offerUpdate(null));
+  tearDown(() => offerUpdate(null));
+
   Widget host(Future<AppUpdate?> Function() check) => MaterialApp(
         home: Scaffold(
           body: SettingsScreen(
@@ -66,5 +70,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('0.2.2+22 is available'), findsOneWidget);
+
+    // The sentence points at the banner, so the banner has to have been given
+    // the update — otherwise CHECK NOW promises something that is not there.
+    expect(offeredUpdate.value?.version, '0.2.2+22');
+  });
+
+  testWidgets('nothing newer leaves the banner alone', (tester) async {
+    await tester.pumpWidget(host(() async => null));
+    await openSystemTab(tester);
+
+    await tester.tap(find.text('CHECK NOW'));
+    await tester.pumpAndSettle();
+
+    expect(offeredUpdate.value, isNull);
   });
 }

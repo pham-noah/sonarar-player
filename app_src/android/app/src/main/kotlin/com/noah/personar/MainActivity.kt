@@ -64,13 +64,22 @@ class MainActivity : AudioServiceActivity() {
         return if (canReadLibrary()) "granted" else "denied"
     }
 
+    /// What actually allows reading the library, per Android version. Asking
+    /// for READ_MEDIA_AUDIO and then checking only for all-files access meant a
+    /// phone with the permission granted still reported "denied" for ever.
     private fun canReadLibrary(): Boolean = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> hasAllFilesAccess()
-        else -> ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-        ) == PackageManager.PERMISSION_GRANTED
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
+            granted(Manifest.permission.READ_MEDIA_AUDIO) || hasAllFilesAccess()
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
+            granted(Manifest.permission.READ_EXTERNAL_STORAGE) || hasAllFilesAccess()
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
+            granted(Manifest.permission.READ_EXTERNAL_STORAGE)
+        else -> true
     }
+
+    private fun granted(permission: String): Boolean =
+        ContextCompat.checkSelfPermission(this, permission) ==
+            PackageManager.PERMISSION_GRANTED
 
     private fun hasAllFilesAccess(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&

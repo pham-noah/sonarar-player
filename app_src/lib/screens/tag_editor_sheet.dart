@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../library/tag_overrides.dart';
 import '../library/track.dart';
@@ -103,7 +105,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'FIX THE TAGS',
+              l10nOf(context).panelFixTags,
               style: TextStyle(
                 fontSize: LayoutSpec.fontTitle,
                 fontWeight: FontWeight.w900,
@@ -156,7 +158,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                               color: skin.secondary(0.5)),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text('UNDO ALL'),
+                        child: Text(l10nOf(context).tagsUndoAll),
                       ),
                     ),
                   ),
@@ -170,7 +172,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                         foregroundColor: skin.onAccent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('SAVE'),
+                      child: Text(l10nOf(context).importSave),
                     ),
                   ),
                 ),
@@ -211,7 +213,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                       minimumSize: const Size(0, 34),
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                     ),
-                    child: const Text('REVERT'),
+                    child: Text(l10nOf(context).tagsRevert),
                   ),
                 ),
             ],

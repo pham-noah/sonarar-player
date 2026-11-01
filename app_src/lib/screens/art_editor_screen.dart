@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../art/art_focus.dart';
 import '../art/art_spec.dart';
 import '../theme/skin.dart';
@@ -46,7 +48,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
         backgroundColor: skin.background,
         foregroundColor: skin.textPrimary,
         title: Text(
-          'ADJUST ART',
+          l10nOf(context).artAdjust,
           style: TextStyle(
             fontSize: LayoutSpec.fontFloor,
             fontWeight: FontWeight.w900,
@@ -57,7 +59,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
         actions: [
           TextButton(
             onPressed: () => _update(ArtSpec.none),
-            child: Text('RESET', style: TextStyle(color: skin.textSecondary)),
+            child: Text(l10nOf(context).commonReset, style: TextStyle(color: skin.textSecondary)),
           ),
           TextButton(
             key: const Key('art-save'),
@@ -65,7 +67,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
             // pictures, built-in art keeps it in the look file.
             onPressed: () => Navigator.of(context).pop(_spec),
             child: Text(
-              'SAVE',
+              l10nOf(context).importSave,
               style: TextStyle(color: skin.accent, fontWeight: FontWeight.w900),
             ),
           ),
@@ -122,7 +124,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
               children: [
                 _slider(
                   skin,
-                  'ZOOM',
+                  l10nOf(context).effectZoom,
                   _spec.zoom,
                   ArtSpec.minZoom,
                   ArtSpec.maxZoom,
@@ -131,7 +133,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                 ),
                 _slider(
                   skin,
-                  'ROTATE',
+                  l10nOf(context).artRotate,
                   _spec.rotationDeg,
                   -ArtSpec.maxRotation,
                   ArtSpec.maxRotation,
@@ -140,7 +142,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                 ),
                 _slider(
                   skin,
-                  'FADE',
+                  l10nOf(context).artFade,
                   _spec.fade,
                   0,
                   1,
@@ -158,7 +160,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                         size: 18,
                       ),
                       label: Text(
-                        _spec.flipX ? 'MIRRORED' : 'MIRROR',
+                        _spec.flipX ? l10nOf(context).artMirrored : l10nOf(context).artMirror,
                         style: TextStyle(color: skin.textPrimary),
                       ),
                     ),

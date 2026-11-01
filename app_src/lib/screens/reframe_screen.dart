@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../widgets/kit.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
@@ -60,7 +62,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
               child: Row(
                 children: [
                   Text(
-                    'REFRAME',
+                    l10nOf(context).personalizeReframe,
                     style: TextStyle(
                       color: skin.textPrimary,
                       fontSize: LayoutSpec.fontFloor + 2,
@@ -77,7 +79,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                         ? () => setState(() => _spec = widget.initial)
                         : null,
                     child: Text(
-                      'RESET',
+                      l10nOf(context).commonReset,
                       style: TextStyle(
                         color: _changed
                             ? skin.textSecondary
@@ -88,7 +90,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text(
-                      'CANCEL',
+                      l10nOf(context).libraryCancel,
                       style: TextStyle(color: skin.textSecondary),
                     ),
                   ),
@@ -96,7 +98,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     key: const Key('reframe-done'),
                     onPressed: () => Navigator.of(context).pop(_spec),
                     child: Text(
-                      'DONE',
+                      l10nOf(context).commonDone,
                       style: TextStyle(
                         color: skin.accent,
                         fontWeight: FontWeight.w900,
@@ -171,14 +173,14 @@ class _ReframeScreenState extends State<ReframeScreen> {
                 child: Column(
                   children: [
                     _slider(
-                      'ZOOM',
+                      l10nOf(context).effectZoom,
                       _spec.scale,
                       1.0,
                       BackdropSpec.maxScale,
                       (v) => setState(() => _spec = _spec.copyWith(scale: v)),
                     ),
                     _slider(
-                      'ROTATION',
+                      l10nOf(context).effectRotation,
                       _spec.rotationDeg,
                       -BackdropSpec.maxRotation,
                       BackdropSpec.maxRotation,
@@ -187,7 +189,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                       ),
                     ),
                     _slider(
-                      'DIM',
+                      l10nOf(context).effectDim,
                       _spec.dim,
                       0,
                       BackdropSpec.maxDim,

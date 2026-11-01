@@ -28,6 +28,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
   }
 
   Future<void> _run() async {
+    final l10n = l10nOf(context);
     setState(() {
       _lines.clear();
       _running = true;
@@ -35,8 +36,8 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
 
     _say('Platform: ${Theme.of(context).platform}');
     _say('');
-    _say(l10nOf(context).probeStep1);
-    _say(l10nOf(context).probeStep1Note);
+    _say(l10n.probeStep1);
+    _say(l10n.probeStep1Note);
 
     const channel = MethodChannel('com.noah.personar/spectrum_probe');
     try {
@@ -54,12 +55,12 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
     }
 
     _say('');
-    _say(l10nOf(context).probeStep2);
+    _say(l10n.probeStep2);
     _say('Android Visualizer attaches to a session id. just_audio does not expose it, so the native side has to');
     _say('find the active media session itself.');
 
     _say('');
-    _say(l10nOf(context).probeStep3);
+    _say(l10n.probeStep3);
     try {
       final code = await channel.invokeMethod<int>('attachVisualizer');
       _say('  attachVisualizer -> $code');

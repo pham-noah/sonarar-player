@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../backup/backup_service.dart';
 import '../theme/skin.dart';
 import '../widgets/devices.dart';
@@ -55,7 +57,7 @@ class _BackupSectionState extends State<BackupSection> {
     _say(
       report.ok
           ? 'Saved ${report.files} files to ${report.file!.path}'
-          : (report.error ?? 'Backup failed.'),
+          : (report.error ?? l10nOf(context).backupFailed),
     );
   }
 
@@ -63,7 +65,7 @@ class _BackupSectionState extends State<BackupSection> {
     if (_busy) return;
     final found = BackupService.findBackups(Directory(widget.downloadDirectory));
     if (found.isEmpty) {
-      _say('No backup found in Downloads. Make one first, or move one there.');
+      _say(l10nOf(context).backupNoneFound);
       return;
     }
     final picked = await showDialog<File>(
@@ -71,7 +73,7 @@ class _BackupSectionState extends State<BackupSection> {
       builder: (ctx) => AlertDialog(
         backgroundColor: widget.skin.panel,
         title: Text(
-          'RESTORE',
+          l10nOf(context).backupRestore,
           style: TextStyle(
             color: widget.skin.textPrimary,
             fontWeight: FontWeight.w900,
@@ -120,7 +122,7 @@ class _BackupSectionState extends State<BackupSection> {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              'CANCEL',
+              l10nOf(context).libraryCancel,
               style: TextStyle(color: widget.skin.textSecondary),
             ),
           ),
@@ -134,7 +136,7 @@ class _BackupSectionState extends State<BackupSection> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (!report.ok) {
-      _say(report.error ?? 'Restore failed.');
+      _say(report.error ?? l10nOf(context).backupRestoreFailed);
       return;
     }
     // Stores are opened once at launch and cached, so a restore on screen
@@ -161,9 +163,9 @@ class _BackupSectionState extends State<BackupSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionBand(skin: skin, label: 'YOUR DATA'),
+        SectionBand(skin: skin, label: l10nOf(context).backupYourData),
         widget.row(
-          label: 'BACK UP NOW',
+          label: l10nOf(context).backupNow,
           icon: Icons.save_alt_rounded,
           trailing: _busy
               ? SizedBox(
@@ -182,7 +184,7 @@ class _BackupSectionState extends State<BackupSection> {
           onTap: _busy ? null : _save,
         ),
         widget.row(
-          label: 'RESTORE A BACKUP',
+          label: l10nOf(context).backupRestoreTitle,
           icon: Icons.settings_backup_restore_rounded,
           trailing: Icon(
             Icons.chevron_right_rounded,

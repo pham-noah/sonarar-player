@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../library/bonds.dart';
 import '../library/play_log.dart';
@@ -50,7 +52,7 @@ class BondsScreen extends StatelessWidget {
         if (!inline) ...[
           ScreenTitle(
             skin: skin,
-            text: state.languageSkin.word(WordKey.affinityRoom, 'RANKS'),
+            text: state.languageSkin.word(WordKey.affinityRoom, l10nOf(context).shellRanks),
           ),
           const SizedBox(height: 16),
         ],
@@ -61,8 +63,8 @@ class BondsScreen extends StatelessWidget {
             child: Text(
               board.consideredEvents == 0 &&
                       state.bondState.config.resetAt != null
-                  ? 'Nothing played since the last reset.'
-                  : 'Nothing played yet.',
+                  ? l10nOf(context).bondsNothingSinceReset
+                  : l10nOf(context).bondsNothingYet,
               style: TextStyle(
                 fontSize: LayoutSpec.fontBase,
                 color: skin.textSecondary,
@@ -83,7 +85,7 @@ class BondsScreen extends StatelessWidget {
                 icon: Icon(Icons.restart_alt_rounded,
                     size: 18, color: skin.textSecondary),
                 label: Text(
-                  'START THE RANKS OVER',
+                  l10nOf(context).bondsStartOver,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
                     letterSpacing: 1.5,
@@ -242,7 +244,7 @@ class BondsScreen extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: PresentationScope.uiSkin(context, skin).background,
         title: Text(
-          'Note on this bond',
+          l10nOf(context).bondsNote,
           style: TextStyle(color: skin.textPrimary),
         ),
         content: TextField(
@@ -251,16 +253,16 @@ class BondsScreen extends StatelessWidget {
           maxLines: 3,
           minLines: 1,
           style: TextStyle(color: skin.textPrimary),
-          decoration: const InputDecoration(hintText: 'Why this one matters'),
+          decoration: InputDecoration(hintText: l10nOf(context).bondsWhy),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('CANCEL'),
+            child: Text(l10nOf(context).libraryCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: const Text('SAVE'),
+            child: Text(l10nOf(context).importSave),
           ),
         ],
       ),

@@ -9,6 +9,7 @@ import '../context/location_service.dart';
 import '../context/place_icons.dart';
 import '../context/places.dart';
 import '../context/poi_service.dart';
+import '../context/poi_labels.dart';
 import '../context/poi_types.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
@@ -85,7 +86,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
     if (!mounted) return;
 
     final kind = _lookup?.kind;
-    final nameCtl = TextEditingController(text: kind?.label ?? _lookup?.name ?? '');
+    final nameCtl = TextEditingController(text: kind == null ? (_lookup?.name ?? '') : poiLabel(l10nOf(context), kind));
     final listCtl = TextEditingController(text: kind?.suggestedPlaylist ?? '');
     final radius = ValueNotifier<double>(
       kind != null && kind.mood == PoiMood.focus ? 400 : kDefaultPlaceRadiusM,
@@ -429,7 +430,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                                 color: skin.accentAt(0.6)),
                           ),
                           child: Text(
-                            kind.label.toUpperCase(),
+                            poiLabel(l10nOf(context), kind).toUpperCase(),
                             style: TextStyle(
                               fontSize: LayoutSpec.fontMicro,
                               letterSpacing: 1,
@@ -567,7 +568,7 @@ class _NameSheetState extends State<_NameSheet> {
           Text(
             kind != null
 
-                ? l10nOf(context).placesOsmSays(kind.label.toLowerCase())
+                ? l10nOf(context).placesOsmSays(poiLabel(l10nOf(context), kind).toLowerCase())
                 : l10nOf(context).placesNameYourself,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,

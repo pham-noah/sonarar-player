@@ -1,6 +1,7 @@
 library;
 
 import '../context/location_service.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/skin_policy.dart';
 import 'playlists.dart';
 import 'track.dart';
@@ -16,6 +17,7 @@ Playlist dynamicPlaylist(List<Track> tracks) => Playlist(
     );
 
 String dynamicBlurb({
+  required AppLocalizations l10n,
   required ContextBand band,
   required bool raining,
   required bool snowing,
@@ -27,7 +29,7 @@ String dynamicBlurb({
   final parts = <String>[];
 
   if (mode != null) {
-    parts.add(mode.label);
+    parts.add(manualModeLabel(l10n, mode));
   } else {
     if (placeName != null) {
       parts.add(placeName);

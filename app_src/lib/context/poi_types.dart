@@ -17,15 +17,12 @@ enum PoiMood {
 class PoiKind {
   const PoiKind({
     required this.id,
-    required this.label,
     required this.mood,
     required this.suggestedPlaylist,
     required this.osmTags,
   });
 
   final String id;
-
-  final String label;
 
   final PoiMood mood;
 
@@ -49,7 +46,6 @@ const List<PoiKind> kPoiKinds = [
 
   PoiKind(
     id: 'gym',
-    label: 'Gym',
     mood: PoiMood.energy,
     suggestedPlaylist: 'Gym',
     osmTags: [
@@ -61,14 +57,12 @@ const List<PoiKind> kPoiKinds = [
   ),
   PoiKind(
     id: 'library',
-    label: 'Library',
     mood: PoiMood.focus,
     suggestedPlaylist: 'Study',
     osmTags: ['amenity=library'],
   ),
   PoiKind(
     id: 'university',
-    label: 'University',
     mood: PoiMood.focus,
     suggestedPlaylist: 'Campus',
     osmTags: [
@@ -80,14 +74,12 @@ const List<PoiKind> kPoiKinds = [
   ),
   PoiKind(
     id: 'coworking',
-    label: 'Coworking',
     mood: PoiMood.focus,
     suggestedPlaylist: 'Deep Focus',
     osmTags: ['amenity=coworking_space', 'office=coworking'],
   ),
   PoiKind(
     id: 'cafe_study',
-    label: 'Cafe',
     mood: PoiMood.social,
     suggestedPlaylist: 'Cafe',
     osmTags: ['amenity=cafe'],
@@ -95,21 +87,18 @@ const List<PoiKind> kPoiKinds = [
 
   PoiKind(
     id: 'restaurant',
-    label: 'Restaurant',
     mood: PoiMood.social,
     suggestedPlaylist: 'Dinner',
     osmTags: ['amenity=restaurant', 'amenity=fast_food', 'amenity=food_court'],
   ),
   PoiKind(
     id: 'bar',
-    label: 'Bar',
     mood: PoiMood.social,
     suggestedPlaylist: 'Night Out',
     osmTags: ['amenity=bar', 'amenity=pub', 'amenity=nightclub', 'amenity=biergarten'],
   ),
   PoiKind(
     id: 'mall',
-    label: 'Mall',
     mood: PoiMood.social,
     suggestedPlaylist: 'Wandering',
     osmTags: [
@@ -121,7 +110,6 @@ const List<PoiKind> kPoiKinds = [
   ),
   PoiKind(
     id: 'cinema',
-    label: 'Cinema',
     mood: PoiMood.quiet,
     suggestedPlaylist: 'Silence',
     osmTags: ['amenity=cinema', 'amenity=theatre', 'amenity=arts_centre'],
@@ -129,7 +117,6 @@ const List<PoiKind> kPoiKinds = [
 
   PoiKind(
     id: 'transit',
-    label: 'Transit',
     mood: PoiMood.transit,
     suggestedPlaylist: 'Commute',
     osmTags: [
@@ -143,7 +130,6 @@ const List<PoiKind> kPoiKinds = [
   ),
   PoiKind(
     id: 'parking',
-    label: 'Parking',
     mood: PoiMood.transit,
     suggestedPlaylist: 'Commute',
     osmTags: ['amenity=parking', 'amenity=fuel', 'amenity=charging_station'],
@@ -151,7 +137,6 @@ const List<PoiKind> kPoiKinds = [
 
   PoiKind(
     id: 'place_of_worship',
-    label: 'Place of worship',
     mood: PoiMood.quiet,
     suggestedPlaylist: 'Silence',
     osmTags: [
@@ -163,7 +148,6 @@ const List<PoiKind> kPoiKinds = [
   ),
   PoiKind(
     id: 'hospital',
-    label: 'Hospital',
     mood: PoiMood.quiet,
     suggestedPlaylist: 'Silence',
     osmTags: [
@@ -176,7 +160,6 @@ const List<PoiKind> kPoiKinds = [
 
   PoiKind(
     id: 'park',
-    label: 'Park',
     mood: PoiMood.energy,
     suggestedPlaylist: 'Walk',
     osmTags: [
@@ -189,14 +172,12 @@ const List<PoiKind> kPoiKinds = [
   ),
   PoiKind(
     id: 'stadium',
-    label: 'Stadium',
     mood: PoiMood.energy,
     suggestedPlaylist: 'Gym',
     osmTags: ['leisure=stadium', 'leisure=sports_hall'],
   ),
   PoiKind(
     id: 'swimming',
-    label: 'Pool',
     mood: PoiMood.energy,
     suggestedPlaylist: 'Gym',
     osmTags: ['leisure=swimming_pool', 'leisure=water_park', 'amenity=public_bath'],
@@ -204,7 +185,6 @@ const List<PoiKind> kPoiKinds = [
 
   PoiKind(
     id: 'hotel',
-    label: 'Hotel',
     mood: PoiMood.quiet,
     suggestedPlaylist: 'Night',
     osmTags: ['tourism=hotel', 'tourism=hostel', 'tourism=guest_house', 'tourism=motel'],
@@ -217,12 +197,3 @@ PoiKind? poiKindFor(Map<String, String> tags) {
   }
   return null;
 }
-
-String moodLabel(PoiMood mood) => switch (mood) {
-      PoiMood.focus => 'you are working here',
-      PoiMood.energy => 'you are moving here',
-      PoiMood.social => 'you are around people here',
-      PoiMood.transit => 'you are passing through',
-      PoiMood.quiet => 'somewhere to be quiet',
-      PoiMood.any => 'nothing specific',
-    };

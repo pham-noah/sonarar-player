@@ -2322,6 +2322,7 @@ class _HomeShellState extends State<HomeShell>
 
     final place = _ctx.currentPlaceId == null ? null : _ctx.placeBook.byId(_ctx.currentPlaceId!);
     return dynamicBlurb(
+      l10n: l10nOf(context),
       band: ctx.band,
       raining: ctx.raining,
       snowing: _ctx.weatherReading?.condition == WeatherCondition.snow,

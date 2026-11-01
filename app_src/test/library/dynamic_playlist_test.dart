@@ -1,6 +1,8 @@
 library;
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/l10n/app_localizations.dart';
 import 'package:sonarar/context/location_service.dart';
 import 'package:sonarar/library/dynamic_playlist.dart';
 import 'package:sonarar/library/track.dart';
@@ -16,6 +18,8 @@ Track _t(String id) => Track(
       cover: '',
       gainDb: 0,
     );
+
+final l10n = lookupAppLocalizations(const Locale('en'));
 
 void main() {
   group('built, never stored', () {
@@ -39,6 +43,7 @@ void main() {
   group('the blurb says WHY, in the order that matters', () {
     test('a mode he chose outranks the conditions', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.afternoon,
         raining: true,
         snowing: false,
@@ -52,6 +57,7 @@ void main() {
 
     test('WHERE outranks the clock', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.afternoon,
         raining: false,
         snowing: false,
@@ -63,6 +69,7 @@ void main() {
 
     test('the clock is the fallback when there is no place', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.evening,
         raining: false,
         snowing: false,
@@ -73,6 +80,7 @@ void main() {
 
     test('weather is named only when it is DOING something', () {
       final dry = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.night,
         raining: false,
         snowing: false,
@@ -81,6 +89,7 @@ void main() {
       expect(dry, isNot(contains('rain')));
 
       final wet = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.night,
         raining: true,
         snowing: false,
@@ -91,6 +100,7 @@ void main() {
 
     test('SNOW is named as snow, not as rain', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.night,
         raining: false,
         snowing: true,
@@ -102,6 +112,7 @@ void main() {
 
     test('a place plus weather reads as both', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.afternoon,
         raining: true,
         snowing: false,
@@ -134,6 +145,7 @@ void main() {
 
     test('an imprecise fix is SAID to be approximate', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.afternoon,
         raining: false,
         snowing: false,
@@ -145,6 +157,7 @@ void main() {
 
     test('a precise fix says nothing extra', () {
       final s = dynamicBlurb(
+        l10n: l10n,
         band: ContextBand.afternoon,
         raining: false,
         snowing: false,

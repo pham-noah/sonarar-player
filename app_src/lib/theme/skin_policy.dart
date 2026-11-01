@@ -1,5 +1,7 @@
 library;
 
+import '../l10n/app_localizations.dart';
+
 import '../context/weather_codes.dart';
 import '../theme/skin.dart';
 
@@ -10,19 +12,6 @@ enum ManualMode {
 
   darkHour;
 
-  String get label => switch (this) {
-        ManualMode.battle => 'Energy',
-        ManualMode.darkHour => 'Night Hour',
-      };
-
-  String get blurb => switch (this) {
-        ManualMode.battle =>
-          'One tap into the loudest, most driving music here. '
-              'Reshuffle reorders the queue from scratch.',
-        ManualMode.darkHour =>
-          'The small hours, enterable at any time. The jarring short pieces are '
-              'allowed in — the hour is meant to feel wrong.',
-      };
 
   ContextBand get band => switch (this) {
         ManualMode.battle => ContextBand.afternoon,
@@ -90,14 +79,17 @@ class PlayContext {
       );
 }
 
-String manualModeName(Skin skin, ManualMode mode) => switch (mode) {
-      ManualMode.battle => mode.label,
-      ManualMode.darkHour => mode.label,
+String manualModeLabel(AppLocalizations l10n, ManualMode mode) =>
+    switch (mode) {
+      ManualMode.battle => l10n.modeBattleLabel,
+      ManualMode.darkHour => l10n.modeNightHourLabel,
     };
 
-String manualModeBlurb(Skin skin, ManualMode mode) {
-  return mode.blurb;
-}
+String manualModeBlurb(AppLocalizations l10n, ManualMode mode) =>
+    switch (mode) {
+      ManualMode.battle => l10n.modeBattleBlurb,
+      ManualMode.darkHour => l10n.modeNightHourBlurb,
+    };
 
 class SkinPreference {
   const SkinPreference({this.manualSkin, this.setAt});

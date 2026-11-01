@@ -129,7 +129,7 @@ PlaylistExplanation explainPlaylist({
 
     if (rule != null) {
       context.add(ExplanationLine(
-        l10n.explainRuleMatched(rule.id, rule.describe()),
+        l10n.explainRuleMatched(rule.id, rule.describe(l10n)),
         counts: true,
       ));
       if (rule.playlist != null && ruleTrackCount != null) {

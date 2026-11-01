@@ -2,8 +2,10 @@ library;
 
 import 'dart:convert';
 
+import '../l10n/app_localizations.dart';
+
 import '../theme/skin.dart' show SkinId;
-import '../theme/skin_policy.dart' show ContextBand, ManualMode;
+import '../theme/skin_policy.dart' show ContextBand, ManualMode, manualModeLabel;
 import 'rules_engine.dart' show PlaylistContext;
 
 enum WeatherWant {
@@ -32,12 +34,12 @@ T? _enumByName<T extends Enum>(List<T> values, Object? raw) {
   return null;
 }
 
-String bandLabel(ContextBand band) => switch (band) {
-      ContextBand.darkHour => 'dark hour',
-      ContextBand.morning => 'morning',
-      ContextBand.afternoon => 'afternoon',
-      ContextBand.evening => 'evening',
-      ContextBand.night => 'night',
+String bandLabel(AppLocalizations l10n, ContextBand band) => switch (band) {
+      ContextBand.darkHour => l10n.ruleBandDarkHour,
+      ContextBand.morning => l10n.ruleBandMorning,
+      ContextBand.afternoon => l10n.ruleBandAfternoon,
+      ContextBand.evening => l10n.ruleBandEvening,
+      ContextBand.night => l10n.ruleBandNight,
     };
 
 class ContextRule {
@@ -84,17 +86,27 @@ class ContextRule {
     return true;
   }
 
-  String describe() {
-    final parts = <String>[];
-    if (band != null) parts.add('time is ${bandLabel(band!)}');
-    if (mode != null) parts.add('mode is ${mode!.label}');
-    if (weather == WeatherWant.rain) parts.add('it is raining');
-    if (weather == WeatherWant.snow) parts.add('it is snowing');
-    if (placeId != null) parts.add('you are at $placeId');
-    if (place == PlaceWant.anywhere) parts.add('you are in none of your places');
-    final when = parts.isEmpty ? 'always' : parts.join(' and ');
-    final what = playlist == null ? 'a theme change' : 'the "$playlist" playlist';
-    return '$when → $what';
+  /// The rule as one sentence, in the reader's language.
+  ///
+  /// The clauses are separate keys joined by a localized "and" rather than one
+  /// template with six slots: a language may order them differently, and a rule
+  /// that fires on the hour alone should not leave empty punctuation behind.
+  String describe(AppLocalizations l10n) {
+    final parts = <String>[
+      if (band != null) l10n.ruleWhenTime(bandLabel(l10n, band!)),
+      if (mode != null) l10n.ruleWhenMode(manualModeLabel(l10n, mode!)),
+      if (weather == WeatherWant.rain) l10n.ruleWhenRaining,
+      if (weather == WeatherWant.snow) l10n.ruleWhenSnowing,
+      if (placeId != null) l10n.ruleWhenAtPlace(placeId!),
+      if (place == PlaceWant.anywhere) l10n.ruleWhenNoPlace,
+    ];
+    final when = parts.isEmpty
+        ? l10n.ruleAlways
+        : parts.reduce((a, b) => l10n.ruleJoinAnd(a, b));
+    final then = playlist == null
+        ? l10n.ruleThenTheme
+        : l10n.ruleThenPlaylist(playlist!);
+    return l10n.ruleSentence(when, then);
   }
 
   Map<String, Object?> toJson() => {

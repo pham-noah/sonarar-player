@@ -2,7 +2,9 @@ library;
 
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/l10n/app_localizations.dart';
 import 'package:sonarar/library/bonds.dart';
 import 'package:sonarar/library/fusion.dart';
 import 'package:sonarar/library/maintenance.dart';
@@ -42,6 +44,8 @@ PlayEvent _e(String id, {
       band: band,
       positionMs: positionMs,
       durationMs: durationMs);
+
+final l10n = lookupAppLocalizations(const Locale('en'));
 
 void main() {
   final now = DateTime(2026, 10, 2, 12);
@@ -446,8 +450,8 @@ void main() {
     test('describe() names what it does, for the explanation screen', () {
       const r = ContextRule(
           id: 'x', priority: 1, band: ContextBand.morning, playlist: 'morning-move');
-      expect(r.describe(), contains('morning'));
-      expect(r.describe(), contains('morning-move'));
+      expect(r.describe(l10n), contains('morning'));
+      expect(r.describe(l10n), contains('morning-move'));
     });
   });
 

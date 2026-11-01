@@ -123,7 +123,7 @@ class RulesEditorScreen extends StatelessWidget {
 
               active == null
                   ? l10nOf(context).rulesNothingMatches
-                  : '${active.id}: ${active.describe()}',
+                  : '${active.id}: ${active.describe(l10nOf(context))}',
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textPrimary,
@@ -155,7 +155,7 @@ class RulesEditorScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    r.describe(),
+                    r.describe(l10nOf(context)),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontSmall,
                       fontWeight: FontWeight.w700,
@@ -334,7 +334,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
               ManualMode.values,
               _mode,
               (v) => setState(() => _mode = v),
-              (m) => m.label,
+              (m) => manualModeLabel(l10nOf(context), m),
             ),
 
             const SizedBox(height: 16),

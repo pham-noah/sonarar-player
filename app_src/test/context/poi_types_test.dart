@@ -1,6 +1,9 @@
 library;
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/context/poi_labels.dart';
+import 'package:sonarar/l10n/app_localizations.dart';
 import 'package:sonarar/context/poi_types.dart';
 
 void main() {
@@ -69,7 +72,9 @@ void main() {
     test('every kind suggests something non-empty', () {
       for (final k in kPoiKinds) {
         expect(k.suggestedPlaylist.trim(), isNotEmpty, reason: k.id);
-        expect(k.label.trim(), isNotEmpty, reason: k.id);
+        final word = poiLabel(lookupAppLocalizations(const Locale('en')), k);
+        expect(word.trim(), isNotEmpty, reason: k.id);
+        expect(word, isNot(k.id), reason: '${k.id} has no key of its own');
         expect(k.osmTags, isNotEmpty, reason: '${k.id} can never match');
       }
     });

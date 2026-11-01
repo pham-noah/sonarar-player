@@ -741,5 +741,96 @@
         "type": "int"
       }
     }
-  }
+  },
+  "poiGym": "Gym",
+  "poiLibrary": "Library",
+  "poiUniversity": "University",
+  "poiCoworking": "Coworking",
+  "poiCafe": "Cafe",
+  "poiRestaurant": "Restaurant",
+  "poiBar": "Bar",
+  "poiMall": "Mall",
+  "poiCinema": "Cinema",
+  "poiTransit": "Transit",
+  "poiParking": "Parking",
+  "poiPlaceOfWorship": "Place of worship",
+  "poiHospital": "Hospital",
+  "poiPark": "Park",
+  "poiStadium": "Stadium",
+  "poiPool": "Pool",
+  "poiHotel": "Hotel",
+  "moodFocus": "you are working here",
+  "moodEnergy": "you are moving here",
+  "moodSocial": "you are around people here",
+  "moodTransit": "you are passing through",
+  "moodQuiet": "somewhere to be quiet",
+  "moodAny": "nothing specific",
+  "ruleWhenTime": "time is {band}",
+  "@ruleWhenTime": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenMode": "mode is {mode}",
+  "@ruleWhenMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenRaining": "it is raining",
+  "ruleWhenSnowing": "it is snowing",
+  "ruleWhenAtPlace": "you are at {place}",
+  "@ruleWhenAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenNoPlace": "you are in none of your places",
+  "ruleAlways": "always",
+  "ruleJoinAnd": "{a} and {b}",
+  "@ruleJoinAnd": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleThenTheme": "a theme change",
+  "ruleThenPlaylist": "the \"{playlist}\" playlist",
+  "@ruleThenPlaylist": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleSentence": "{when} → {then}",
+  "@ruleSentence": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "then": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleBandDarkHour": "dark hour",
+  "ruleBandMorning": "morning",
+  "ruleBandAfternoon": "afternoon",
+  "ruleBandEvening": "evening",
+  "ruleBandNight": "night",
+  "modeBattleLabel": "Energy",
+  "modeNightHourLabel": "Night Hour",
+  "modeBattleBlurb": "One tap into the loudest, most driving music here. Reshuffle reorders the queue from scratch.",
+  "modeNightHourBlurb": "The small hours, enterable at any time. The jarring short pieces are allowed in — the hour is meant to feel wrong."
 }

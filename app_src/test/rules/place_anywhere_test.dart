@@ -1,6 +1,8 @@
 library;
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/l10n/app_localizations.dart';
 import 'package:sonarar/rules/context_rules.dart';
 import 'package:sonarar/rules/rules_engine.dart';
 import 'package:sonarar/theme/skin_policy.dart';
@@ -31,6 +33,8 @@ ContextRule _commute() => ContextRule(
       priority: 66,
       place: PlaceWant.anywhere,
       playlist: 'Commuting');
+
+final l10n = lookupAppLocalizations(const Locale('en'));
 
 void main() {
   group('the commuting rule fires only when genuinely between places', () {
@@ -137,7 +141,7 @@ void main() {
     });
 
     test('it describes itself in a way a person can read', () {
-      expect(_commute().describe(), contains('none of your places'));
+      expect(_commute().describe(l10n), contains('none of your places'));
     });
   });
 }

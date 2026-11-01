@@ -1,6 +1,8 @@
 library;
 
 import 'package:flutter/material.dart';
+
+import '../l10n/l10n.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../context/location_service.dart';
@@ -243,7 +245,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           : const EdgeInsets.fromLTRB(20, 18, 20, 24),
       children: [
         if (!widget.inline) ...[
-          ScreenTitle(skin: skin, text: 'PLACES'),
+          ScreenTitle(skin: skin, text: l10nOf(context).settingsPlaces),
           const SizedBox(height: LayoutSpec.gapM),
         ],
 
@@ -293,7 +295,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
         if (_tapped != null) ...[
           const SizedBox(height: 8),
           Text(
-            'Tapped point selected — saving here, not where you stand',
+            l10nOf(context).placesTappedPin,
             style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
           ),
         ],
@@ -334,7 +336,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           const SizedBox(height: 8),
           Text(
 
-            'Asking OpenStreetMap what is here…',
+            l10nOf(context).placesAskingOsm,
             style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
@@ -343,7 +345,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           const SizedBox(height: 8),
           Text(
 
-            'OpenStreetMap has nothing tagged here. Name it yourself.',
+            l10nOf(context).placesOsmNothing,
             style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
@@ -352,7 +354,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           const SizedBox(height: 8),
           Text(
 
-            'Could not reach OpenStreetMap — name it yourself.',
+            l10nOf(context).placesOsmUnreachable,
             style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ],
@@ -361,12 +363,12 @@ class _PlacesScreenState extends State<PlacesScreen> {
 
         SectionLabel(
           skin: skin,
-          text: 'SAVED PLACES',
+          text: l10nOf(context).placesSavedTitle,
           trailing: _book.isEmpty ? null : '${_book.length}',
         ),
         if (_book.isEmpty)
           Text(
-            'Nothing saved yet. Stand somewhere, save a spot, and name it.',
+            l10nOf(context).placesEmpty,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
               color: skin.textSecondary,
@@ -553,7 +555,7 @@ class _NameSheetState extends State<_NameSheet> {
             },
           ),
           Text(
-            widget.editing ? 'EDIT THIS PLACE' : 'NAME THIS SPOT',
+            widget.editing ? l10nOf(context).placesEditTitle : l10nOf(context).placesNameTitle,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
               letterSpacing: 3,
@@ -565,9 +567,8 @@ class _NameSheetState extends State<_NameSheet> {
           Text(
             kind != null
 
-                ? 'OpenStreetMap says this is a ${kind.label.toLowerCase()}. '
-                    'Change anything you like.'
-                : 'Name it yourself — OpenStreetMap had nothing tagged here.',
+                ? l10nOf(context).placesOsmSays(kind.label.toLowerCase())
+                : l10nOf(context).placesNameYourself,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
               color: skin.textSecondary,
@@ -576,13 +577,13 @@ class _NameSheetState extends State<_NameSheet> {
           ),
           const SizedBox(height: 16),
 
-          _field(skin, 'PLACE NAME', nameCtl,
+          _field(skin, l10nOf(context).placesNameLabel, nameCtl,
               hint: 'e.g. University, Gym, Home'),
           const SizedBox(height: 12),
 
           if (existingPlaylists.isNotEmpty) ...[
             Text(
-              'PLAYLIST HERE',
+              l10nOf(context).placesPlaylistHere,
               style: TextStyle(
                 fontSize: LayoutSpec.fontMicro,
                 letterSpacing: 2,
@@ -632,12 +633,12 @@ class _NameSheetState extends State<_NameSheet> {
             const SizedBox(height: 12),
           ],
 
-          _field(skin, 'OR TYPE A NAME', listCtl,
+          _field(skin, l10nOf(context).placesOrTypeName, listCtl,
               hint: kind?.suggestedPlaylist ?? 'e.g. Study'),
           const SizedBox(height: 16),
 
           Text(
-            'ICON',
+            l10nOf(context).placesIcon,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: 2,
@@ -686,13 +687,13 @@ class _NameSheetState extends State<_NameSheet> {
           const SizedBox(height: 6),
           Text(
 
-            'Tap again to clear',
+            l10nOf(context).placesTapToClear,
             style: TextStyle(color: skin.textSecondary, fontSize: LayoutSpec.fontMicro),
           ),
           const SizedBox(height: 16),
 
           Text(
-            'HOW BIG IS THIS SPOT',
+            l10nOf(context).placesSize,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: 2,
@@ -754,7 +755,7 @@ class _NameSheetState extends State<_NameSheet> {
                             color: skin.secondary(0.4)),
                       ),
                       child: Text(
-                        'CANCEL',
+                        l10nOf(context).libraryCancel,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
@@ -777,7 +778,7 @@ class _NameSheetState extends State<_NameSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(color: skin.accent),
                       child: Text(
-                        widget.editing ? 'SAVE CHANGES' : 'SAVE',
+                        widget.editing ? l10nOf(context).placesSaveChanges : l10nOf(context).importSave,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,

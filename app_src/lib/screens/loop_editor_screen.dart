@@ -3,6 +3,8 @@ library;
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../core/time_format.dart';
 import '../library/track.dart';
@@ -88,7 +90,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
           padding: LayoutSpec.screenPadding,
           children: [
             Text(
-              'LOOP',
+              l10nOf(context).loopTitle,
               style: TextStyle(
                 fontSize: LayoutSpec.fontTitle,
                 fontWeight: FontWeight.w900,
@@ -124,28 +126,28 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             const SizedBox(height: 18),
             _markRow(
               skin,
-              'INTRO ENDS',
+              l10nOf(context).loopIntroEnds,
               _introEnd,
               onSet: () => setState(() => _introEnd = _now),
               onClear: () => setState(() => _introEnd = null),
             ),
             _markRow(
               skin,
-              'LOOP START',
+              l10nOf(context).loopStart,
               _loopStart,
               onSet: () => setState(() => _loopStart = _now),
               onClear: () => setState(() => _loopStart = null),
             ),
             _markRow(
               skin,
-              'LOOP END',
+              l10nOf(context).loopEnd,
               _loopEnd,
               onSet: () => setState(() => _loopEnd = _now),
               onClear: () => setState(() => _loopEnd = null),
             ),
 
             const SizedBox(height: 22),
-            SectionLabel(skin: skin, text: 'REPEAT'),
+            SectionLabel(skin: skin, text: l10nOf(context).loopRepeat),
             Row(
               children: [
                 for (final n in [1, 2, 3, 0])
@@ -158,7 +160,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             const SizedBox(height: 6),
             Text(
               _loopCount == 0
-                  ? 'No repeat. The track just plays to its end.'
+                  ? l10nOf(context).loopNoRepeat
                   : 'Repeats $_loopCount time${_loopCount == 1 ? '' : 's'}, then fades.',
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
@@ -172,7 +174,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  'LOOP END is before LOOP START — this will not repeat.',
+                  l10nOf(context).loopEndBeforeStart,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontSmall,
                     color: skin.textPrimary,
@@ -196,7 +198,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
                         side: BorderSide(color: skin.accent),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(_previewing ? 'PAUSE' : 'PLAY'),
+                      child: Text(_previewing ? l10nOf(context).loopPause : l10nOf(context).loopPlay),
                     ),
                   ),
                 ),
@@ -210,7 +212,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
                         backgroundColor: skin.accent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(_saved ? 'SAVED' : 'SAVE'),
+                      child: Text(_saved ? l10nOf(context).loopSaved : l10nOf(context).importSave),
                     ),
                   ),
                 ),
@@ -218,8 +220,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Play the track, tap a marker where you hear the loop, then save. '
-              'A track with no markers plays exactly as it always did.',
+              l10nOf(context).loopHint,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textSecondary,
@@ -252,7 +253,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             ),
           ),
           child: Text(
-            n == 0 ? 'OFF' : 'x$n',
+            n == 0 ? l10nOf(context).settingsOff : 'x$n',
             style: TextStyle(
               fontSize: LayoutSpec.fontBase,
               fontWeight: FontWeight.w800,
@@ -303,7 +304,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
                 side: BorderSide(color: skin.accent),
                 minimumSize: const Size(64, LayoutSpec.tapTarget),
               ),
-              child: const Text('SET'),
+              child: Text(l10nOf(context).loopSet),
             ),
           ),
           if (value != null)

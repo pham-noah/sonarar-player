@@ -5,6 +5,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import 'package:youtube_explode_dart/youtube_explode_dart.dart' hide Playlist;
 
 import '../download/download_manager.dart';
@@ -256,7 +258,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   Future<void> _openImport() async {
     if (!widget.online) {
       setState(() => _error =
-          'Network is off in Settings, so nothing can be searched or downloaded.');
+          l10nOf(context).ytNetworkOff);
       return;
     }
     final dir = await _downloadDir();
@@ -294,7 +296,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         _hits = const [];
         _searching = false;
         _error = local.isEmpty
-            ? 'Network is off in Settings, and nothing in your library matches.'
+            ? l10nOf(context).ytNetworkOffNoMatch
             : null;
       });
       return;
@@ -348,7 +350,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   void _download(SearchHit hit) {
     if (!widget.online) {
       setState(() => _error =
-          'Network is off in Settings, so nothing can be searched or downloaded.');
+          l10nOf(context).ytNetworkOff);
       return;
     }
     if (widget.officialOnly && !hit.isOfficialGiven(_vouched)) {
@@ -399,7 +401,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
                 AppScreenHeader(
                   skin: skin,
-                  title: 'SEARCH',
+                  title: l10nOf(context).librarySearch,
                   mark: widget.headerMark,
                 ),
                 Padding(
@@ -415,7 +417,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     cursorColor: skin.accent,
                     style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary),
                     decoration: InputDecoration(
-                      hintText: 'Search YouTube',
+                      hintText: l10nOf(context).ytSearchHint,
                       hintStyle: TextStyle(color: skin.textSecondary, fontSize: LayoutSpec.fontSmall),
                       filled: true,
                       fillColor: skin.panel,
@@ -458,7 +460,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                           ),
                           child: Tooltip(
                             message: widget.searchOnline
-                                ? 'Searching online — tap to turn off'
+                                ? l10nOf(context).ytSearchingOnline
                                 : 'Turn the network on for SEARCH ONLY '
                                     '(place, time and weather stay off)',
                             child: Icon(
@@ -485,7 +487,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     child: OutlinedButton.icon(
                       onPressed: _openImport,
                       icon: Icon(Icons.playlist_add_rounded, color: skin.accent),
-                      label: Text('IMPORT A PLAYLIST',
+                      label: Text(l10nOf(context).ytImportPlaylist,
                           style: TextStyle(
                               fontSize: LayoutSpec.fontFloor,
                               letterSpacing: 1.2,
@@ -523,7 +525,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         if (i == 0) {
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(20, 4, 20, 6),
-                            child: Text('IN YOUR LIBRARY',
+                            child: Text(l10nOf(context).ytInLibrary,
                                 style: TextStyle(
                                   fontSize: 13,
                                   letterSpacing: 1.4,
@@ -539,7 +541,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         if (k == 0) {
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
-                            child: Text('ON YOUTUBE',
+                            child: Text(l10nOf(context).ytOnYoutube,
                                 style: TextStyle(
                                   fontSize: 13,
                                   letterSpacing: 1.4,
@@ -629,7 +631,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                           ),
                         ),
                         child: Text(
-                          hit.isOfficialGiven(_vouched) ? 'OFFICIAL' : 'NOT OFFICIAL',
+                          hit.isOfficialGiven(_vouched) ? l10nOf(context).ytOfficial : l10nOf(context).ytNotOfficial,
                           style: TextStyle(
                             fontSize: LayoutSpec.fontMicro,
                             fontWeight: FontWeight.w900,
@@ -684,7 +686,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     key: const Key('search-play'),
                     onPressed: () => widget.onPlay!(hit.id),
                     icon: Icon(Icons.play_circle_fill_rounded, color: skin.accent),
-                    tooltip: 'Play this',
+                    tooltip: l10nOf(context).ytPlayThis,
                   )
                 : Icon(Icons.check_circle_rounded, color: skin.accent)
           else if (downloading)
@@ -701,7 +703,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             )
           else if (widget.officialOnly && !hit.isOfficialGiven(_vouched))
             Tooltip(
-              message: 'Not an official release',
+              message: l10nOf(context).ytNotOfficialBadge,
               child: Icon(Icons.block_rounded,
                   color: skin.secondary(0.5)),
             )
@@ -709,7 +711,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             IconButton(
               onPressed: () => _download(hit),
               icon: Icon(Icons.download_rounded, color: skin.accent),
-              tooltip: 'Download to the library',
+              tooltip: l10nOf(context).ytDownload,
             ),
         ],
       ),

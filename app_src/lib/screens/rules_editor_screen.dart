@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../library/playlists.dart';
 import '../rules/context_rules.dart';
@@ -33,7 +35,7 @@ class RulesEditorScreen extends StatelessWidget {
           padding: LayoutSpec.screenPadding,
           children: [
             Text(
-              'CONTEXT RULES',
+              l10nOf(context).rulesTitle,
               style: TextStyle(
                 fontSize: LayoutSpec.fontTitle,
                 fontWeight: FontWeight.w900,
@@ -53,7 +55,7 @@ class RulesEditorScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
 
-            _activeNow(skin, active),
+            _activeNow(context, skin, active),
 
             const SizedBox(height: 22),
             if (rules.isEmpty)
@@ -67,7 +69,7 @@ class RulesEditorScreen extends StatelessWidget {
                 ),
               )
             else
-              for (final r in rules.rules) _ruleRow(skin, r, active),
+              for (final r in rules.rules) _ruleRow(context, skin, r, active),
 
             const SizedBox(height: 20),
             _addButton(context, skin),
@@ -100,7 +102,7 @@ class RulesEditorScreen extends StatelessWidget {
     );
   }
 
-  Widget _activeNow(Skin skin, ContextRule? active) => Container(
+  Widget _activeNow(BuildContext context, Skin skin, ContextRule? active) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
           border: Border.all(
@@ -114,7 +116,7 @@ class RulesEditorScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'ACTING NOW',
+              l10nOf(context).rulesActingNow,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 letterSpacing: 3,
@@ -139,7 +141,7 @@ class RulesEditorScreen extends StatelessWidget {
         ),
       );
 
-  Widget _ruleRow(Skin skin, ContextRule r, ContextRule? active) {
+  Widget _ruleRow(BuildContext context, Skin skin, ContextRule r, ContextRule? active) {
     final isActive = active?.id == r.id;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -185,18 +187,18 @@ class RulesEditorScreen extends StatelessWidget {
               onPressed: () => _adjust(skin, r, 10),
               icon: Icon(Icons.keyboard_arrow_up_rounded,
                   color: skin.textPrimary),
-              tooltip: 'More important',
+              tooltip: l10nOf(context).rulesMoreImportant,
             ),
             IconButton(
               onPressed: () => _adjust(skin, r, -10),
               icon: Icon(Icons.keyboard_arrow_down_rounded,
                   color: skin.textPrimary),
-              tooltip: 'Less important',
+              tooltip: l10nOf(context).rulesLessImportant,
             ),
             IconButton(
               onPressed: () => _delete(skin, r),
               icon: Icon(Icons.delete_outline_rounded, color: skin.accent),
-              tooltip: 'Remove this rule',
+              tooltip: l10nOf(context).rulesRemoveRule,
             ),
           ],
         ),
@@ -212,7 +214,7 @@ class RulesEditorScreen extends StatelessWidget {
             side: BorderSide(color: skin.accent),
             minimumSize: const Size.fromHeight(LayoutSpec.tapTarget),
           ),
-          child: const Text('ADD A RULE'),
+          child: Text(l10nOf(context).rulesAdd),
         ),
       );
 
@@ -304,7 +306,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'NEW RULE',
+              l10nOf(context).rulesNew,
               style: TextStyle(
                 fontSize: LayoutSpec.fontTitle,
                 fontWeight: FontWeight.w900,
@@ -324,7 +326,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
             ),
             const SizedBox(height: 18),
 
-            _label(skin, 'WHEN THE TIME BAND IS'),
+            _label(skin, l10nOf(context).rulesTimeBand),
             _chips<ContextBand>(
               skin,
               ContextBand.values,
@@ -334,7 +336,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
             ),
 
             const SizedBox(height: 16),
-            _label(skin, 'AND THE MANUAL CONTEXT IS'),
+            _label(skin, l10nOf(context).rulesManualContext),
             _chips<ManualMode>(
               skin,
               ManualMode.values,
@@ -344,7 +346,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
             ),
 
             const SizedBox(height: 16),
-            _label(skin, 'AND THE WEATHER'),
+            _label(skin, l10nOf(context).rulesWeather),
             _chips<WeatherWant>(
               skin,
               const [WeatherWant.any, WeatherWant.rain],
@@ -355,11 +357,11 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
             ),
 
             const SizedBox(height: 16),
-            _label(skin, 'PLAY THIS PLAYLIST'),
+            _label(skin, l10nOf(context).rulesPlayPlaylist),
             _playlistChips(skin),
 
             const SizedBox(height: 16),
-            _label(skin, 'AND USE THIS THEME (OPTIONAL)'),
+            _label(skin, l10nOf(context).rulesThemeOptional),
             _chips<String>(
               skin,
               const ['abyss', 'amber', 'crimson'],
@@ -377,7 +379,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
                   foregroundColor: skin.onAccent,
                   minimumSize: const Size.fromHeight(LayoutSpec.tapTarget),
                 ),
-                child: const Text('CREATE THE RULE'),
+                child: Text(l10nOf(context).rulesCreate),
               ),
             ),
           ],

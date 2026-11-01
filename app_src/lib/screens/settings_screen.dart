@@ -19,6 +19,7 @@ import '../theme/theme_preset.dart';
 import '../widgets/stagger_in.dart';
 
 import '../theme/slab.dart';
+import '../l10n/app_localizations.dart';
 import '../update/update_feed.dart';
 import '../update/update_service.dart';
 
@@ -117,16 +118,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Languages name themselves: a Vietnamese speaker looking for their
   /// language looks for "Tiếng Việt", not for the English word for it.
-  static const Map<String, String> _languages = {
-    'system': 'SYSTEM',
-    'en': 'ENGLISH',
-    'vi': 'TIẾNG VIỆT',
-    'ja': '日本語',
-    'zh-Hans': '简体中文',
-    'fi': 'SUOMI',
-  };
+  Map<String, String> get _languages => {
+        'system': l10n.settingsLanguageSystem,
+        // The rest name themselves, in their own script — a Vietnamese speaker
+        // looks for "Tiếng Việt", not for the English word for it.
+        'en': 'ENGLISH',
+        'vi': 'TIẾNG VIỆT',
+        'ja': '日本語',
+        'zh-Hans': '简体中文',
+        'fi': 'SUOMI',
+      };
 
-  String _languageLabel(String? tag) => _languages[tag ?? 'system'] ?? 'SYSTEM';
+  String _languageLabel(String? tag) =>
+      _languages[tag ?? 'system'] ?? l10n.settingsLanguageSystem;
 
   Future<void> _pickLanguage() async {
     final chosen = await showModalBottomSheet<String>(
@@ -182,6 +186,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  /// English when no delegate is above us — a screen rendered on its own (a
+  /// test, an embed) must not crash because nobody installed the localization
+  /// plumbing. The app itself always installs it.
+  AppLocalizations get l10n =>
+      Localizations.of<AppLocalizations>(context, AppLocalizations) ??
+      lookupAppLocalizations(const Locale('en'));
+
   AppState get state => widget.state;
   Skin get skin => state.uiSkin;
   WeatherCondition get weather => widget.weather;
@@ -205,16 +216,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
           ..._withoutLeadingGap([
             if (widget.showTitle) ...[
-              ScreenTitle(skin: skin, text: 'SETTINGS'),
+              ScreenTitle(skin: skin, text: l10n.settingsTitle),
               const SizedBox(height: LayoutSpec.gapM),
             ],
             KitTabs<SettingsTab>(
               skin: skin,
-              labels: const {
-                SettingsTab.look: 'LOOK',
-                SettingsTab.playback: 'PLAYBACK',
-                SettingsTab.library: 'LIBRARY',
-                SettingsTab.system: 'SYSTEM',
+              labels: {
+                SettingsTab.look: l10n.settingsTabLook,
+                SettingsTab.playback: l10n.settingsTabPlayback,
+                SettingsTab.library: l10n.settingsTabLibrary,
+                SettingsTab.system: l10n.settingsTabSystem,
               },
               selected: _tab,
               onSelected: (t) => setState(() => _tab = t),
@@ -227,7 +238,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             if (_tab == SettingsTab.look &&
                 widget._showCustomization &&
                 widget.onOpenPersonalize != null) ...[
-              SectionBand(skin: skin, label: 'LOOK'),
+              SectionBand(skin: skin, label: l10n.settingsTabLook),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: GestureDetector(
@@ -243,7 +254,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('PERSONALIZE',
+                              Text(l10n.settingsPersonalize,
                                   style: TextStyle(
                                     fontSize: LayoutSpec.fontFloor,
                                     fontWeight: FontWeight.w900,
@@ -268,16 +279,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               StaggerIn(
                 index: 3,
                 style: StaggerStyle.stamp,
-                child: SectionBand(skin: skin, label: 'PLAYBACK'),
+                child: SectionBand(skin: skin, label: l10n.settingsTabPlayback),
               ),
-              _toggle(skin, 'RESUME ON OPEN', prefs!.resumeOnLaunch,
+              _toggle(skin, l10n.settingsResumeOnOpen, prefs!.resumeOnLaunch,
                   icon: Icons.play_circle_outline_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(resumeOnLaunch: v))),
               _stepper(
                 skin,
-                'FADE IN',
+                l10n.settingsFadeIn,
                 icon: Icons.multitrack_audio_rounded,
-                prefs!.crossfadeSeconds == 0 ? 'OFF' : '${prefs!.crossfadeSeconds}s',
+                prefs!.crossfadeSeconds == 0 ? l10n.settingsOff : '${prefs!.crossfadeSeconds}s',
                 onLess: prefs!.crossfadeSeconds <= 0
                     ? null
                     : () => onPrefsChanged!(
@@ -289,7 +300,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               _stepper(
                 skin,
-                'SLEEP LENGTH',
+                l10n.settingsSleepLength,
                 icon: Icons.bedtime_rounded,
                 '${prefs!.sleepTimerMinutes} min',
                 onLess: () => onPrefsChanged!(
@@ -301,7 +312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (prefs!.allowNetwork)
                 _stepper(
                   skin,
-                  'WEATHER EVERY',
+                  l10n.settingsWeatherEvery,
                   icon: Icons.cloud_sync_rounded,
                   '${prefs!.weatherRefreshMinutes}m',
                   onLess: () => onPrefsChanged!(
@@ -312,52 +323,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           weatherRefreshMinutes: prefs!.weatherRefreshMinutes + 5)),
                 ),
               if (prefs!.allowNetwork)
-                _toggle(skin, 'OFFICIAL ONLY', prefs!.officialOnly,
+                _toggle(skin, l10n.settingsOfficialOnly, prefs!.officialOnly,
                     icon: Icons.verified_rounded,
                     (v) => onPrefsChanged!(prefs!.copyWith(officialOnly: v))),
-              SectionBand(skin: skin, label: 'CONTEXT'),
-              _toggle(skin, 'OFFLINE', prefs!.allowNetwork,
+              SectionBand(skin: skin, label: l10n.settingsContext),
+              _toggle(skin, l10n.settingsOffline, prefs!.allowNetwork,
                   icon: Icons.wifi_off_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(allowNetwork: v))),
 
-              _toggle(skin, 'TIME OF DAY', prefs!.contextClock,
+              _toggle(skin, l10n.settingsTimeOfDay, prefs!.contextClock,
                   icon: Icons.schedule_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(contextClock: v))),
               if (prefs!.allowNetwork)
-                _toggle(skin, 'WEATHER', prefs!.contextWeather,
+                _toggle(skin, l10n.settingsWeather, prefs!.contextWeather,
                     icon: Icons.wb_cloudy_rounded,
                     (v) => onPrefsChanged!(prefs!.copyWith(contextWeather: v))),
-              _toggle(skin, 'DYNAMIC MIX', prefs!.contextMix,
+              _toggle(skin, l10n.settingsDynamicMix, prefs!.contextMix,
                   icon: Icons.shuffle_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(contextMix: v))),
               if (prefs!.allowNetwork)
-                _toggle(skin, 'PLACES', prefs!.placesEnabled,
+                _toggle(skin, l10n.settingsPlaces, prefs!.placesEnabled,
                     icon: Icons.place_rounded,
                     (v) => onPrefsChanged!(prefs!.copyWith(placesEnabled: v))),
-              _toggle(skin, 'WEATHER VARIANTS', prefs!.weatherVariants,
+              _toggle(skin, l10n.settingsWeatherVariants, prefs!.weatherVariants,
                   icon: Icons.swap_horiz_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(weatherVariants: v))),
-              _toggle(skin, 'AUTO THEME', prefs!.autoSkin,
+              _toggle(skin, l10n.settingsAutoTheme, prefs!.autoSkin,
                   icon: Icons.palette_outlined,
                   (v) => onPrefsChanged!(prefs!.copyWith(autoSkin: v))),
-              SectionBand(skin: skin, label: 'LISTENING MEMORY'),
-              _toggle(skin, 'LEARN FROM SKIPS', prefs!.learnFromSkips,
+              SectionBand(skin: skin, label: l10n.settingsListeningMemory),
+              _toggle(skin, l10n.settingsLearnFromSkips, prefs!.learnFromSkips,
                   icon: Icons.psychology_alt_outlined,
                   (v) => onPrefsChanged!(prefs!.copyWith(learnFromSkips: v))),
-              _toggle(skin, 'PLAY HISTORY', prefs!.recordHistory,
+              _toggle(skin, l10n.settingsPlayHistory, prefs!.recordHistory,
                   icon: Icons.timeline_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(recordHistory: v))),
-              _toggle(skin, 'BONDS', prefs!.personaLayer,
+              _toggle(skin, l10n.settingsBonds, prefs!.personaLayer,
                   icon: Icons.diversity_1_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(personaLayer: v))),
 
               ],
               if (_tab == SettingsTab.library &&
                   widget.onOpenMusicFolder != null) ...[
-                SectionBand(skin: skin, label: 'LIBRARY'),
+                SectionBand(skin: skin, label: l10n.settingsTabLibrary),
                 KitRow(
                   skin: skin,
-                  label: 'MUSIC FOLDER',
+                  label: l10n.settingsMusicFolder,
                   icon: Icons.folder_rounded,
                   onTap: widget.onOpenMusicFolder,
                   trailing: ConstrainedBox(
@@ -376,10 +387,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
               if (_tab == SettingsTab.system) ...[
-              SectionBand(skin: skin, label: 'INTERFACE'),
+              SectionBand(skin: skin, label: l10n.settingsInterface),
               KitRow(
                 skin: skin,
-                label: 'LANGUAGE',
+                label: l10n.settingsLanguage,
                 icon: Icons.translate_rounded,
                 trailing: Text(
                   _languageLabel(prefs!.locale),
@@ -390,16 +401,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 onTap: _pickLanguage,
               ),
-              _toggle(skin, 'FPS COUNTER', prefs!.showFps,
+              _toggle(skin, l10n.settingsFpsCounter, prefs!.showFps,
                   icon: Icons.speed_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(showFps: v))),
-              _toggle(skin, 'CHECK FOR UPDATES', prefs!.checkForUpdates,
+              _toggle(skin, l10n.settingsCheckForUpdates, prefs!.checkForUpdates,
                   icon: Icons.system_update_rounded,
                   (v) =>
                       onPrefsChanged!(prefs!.copyWith(checkForUpdates: v))),
               KitRow(
                 skin: skin,
-                label: _checking ? 'CHECKING…' : 'CHECK NOW',
+                label: _checking ? l10n.settingsChecking : l10n.settingsCheckNow,
                 icon: Icons.refresh_rounded,
                 onTap: _checking ? null : _checkNow,
                 trailing: _checking
@@ -426,15 +437,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-              _toggle(skin, 'ROMAJI', prefs!.showRomaji,
+              _toggle(skin, l10n.settingsRomaji, prefs!.showRomaji,
                   icon: Icons.translate_rounded,
                   (v) => onPrefsChanged?.call(prefs!.copyWith(showRomaji: v))),
 
               if (prefs!.contextMix)
-                _toggle(skin, 'DYNAMIC BY DEFAULT', prefs!.dynamicByDefault,
+                _toggle(skin, l10n.settingsDynamicByDefault, prefs!.dynamicByDefault,
                     icon: Icons.auto_awesome_motion_rounded,
                     (v) => onPrefsChanged!(prefs!.copyWith(dynamicByDefault: v))),
-              _toggle(skin, 'KEEP PLAYING WHEN QUEUE ENDS', prefs!.refillWhenQueueEnds,
+              _toggle(skin, l10n.settingsKeepPlaying, prefs!.refillWhenQueueEnds,
                   icon: Icons.autorenew_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(refillWhenQueueEnds: v))),
               ],
@@ -445,11 +456,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               StaggerIn(
                 index: 4,
                 style: StaggerStyle.stamp,
-                child: SectionBand(skin: skin, label: 'IF SOMETHING IS WRONG'),
+                child: SectionBand(skin: skin, label: l10n.settingsSomethingWrong),
               ),
               KitRow(
                 skin: skin,
-                label: 'DIAGNOSTICS',
+                label: l10n.settingsDiagnostics,
                 icon: Icons.receipt_long_rounded,
 
                 trailing: Icon(Icons.chevron_right_rounded,
@@ -459,18 +470,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
             ],
             if (_tab == SettingsTab.system) ...[
-              SectionBand(skin: skin, label: 'ABOUT'),
+              SectionBand(skin: skin, label: l10n.settingsAbout),
               // The name of the person who made this, and where the code lives.
               // Both are links: a credit you cannot follow is a stamp.
               _aboutRow(
                 skin,
-                label: 'MADE BY NOAH PHAM',
+                label: l10n.settingsMadeBy,
                 icon: Icons.person_rounded,
                 url: Links.author,
               ),
               _aboutRow(
                 skin,
-                label: 'SOURCE ON GITHUB',
+                label: l10n.settingsSourceOnGithub,
                 icon: Icons.code_rounded,
                 url: Links.source,
               ),
@@ -478,7 +489,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // list above, so this page is the whole story in one place.
               KitRow(
                 skin: skin,
-                label: 'LICENSES',
+                label: l10n.settingsLicenses,
                 icon: Icons.article_rounded,
                 trailing: Icon(Icons.chevron_right_rounded,
                     size: 20, color: skin.secondary(0.6)),
@@ -759,12 +770,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ignore: unused_element
-  static String _smoothnessLabel(int percent) {
-    if (percent <= 10) return 'GLIDE';
-    if (percent <= 30) return 'SMOOTH';
-    if (percent <= 55) return 'BALANCED';
-    if (percent <= 80) return 'BRISK';
-    return 'SNAP';
+  String _smoothnessLabel(int percent) {
+    if (percent <= 10) return l10n.settingsSpeedGlide;
+    if (percent <= 30) return l10n.settingsSpeedSmooth;
+    if (percent <= 55) return l10n.settingsSpeedBalanced;
+    if (percent <= 80) return l10n.settingsSpeedBrisk;
+    return l10n.settingsSpeedSnap;
   }
 
 }

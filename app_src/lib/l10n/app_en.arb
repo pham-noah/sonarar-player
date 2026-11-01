@@ -641,5 +641,45 @@
         "type": "int"
       }
     }
+  },
+  "placesSpotCount": "{count, plural, =1{1 spot} other{{count} spots}}",
+  "@placesSpotCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusOneBuilding": "{metres}m — about one building",
+  "@placesRadiusOneBuilding": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusNeighbours": "{metres}m — about a building and its neighbours",
+  "@placesRadiusNeighbours": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusCampus": "{metres}m — about a campus",
+  "@placesRadiusCampus": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesExistingNamesHint": "Type an existing name ({names}) to add this as another spot of that place.",
+  "@placesExistingNamesHint": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
   }
 }

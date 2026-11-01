@@ -444,9 +444,10 @@ class _PlacesScreenState extends State<PlacesScreen> {
                   const SizedBox(height: 3),
                   Text(
 
-                    '${place.anchors.length} '
-                    '${place.anchors.length == 1 ? 'spot' : 'spots'}'
-                    '${place.playlist != null ? ' · ${place.playlist}' : ''}',
+                    [
+                      l10nOf(context).placesSpotCount(place.anchors.length),
+                      if (place.playlist != null) ' · ${place.playlist}',
+                    ].join(),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       color: skin.textSecondary,
@@ -715,8 +716,11 @@ class _NameSheetState extends State<_NameSheet> {
                 ),
                 Text(
 
-                  '${r.round()}m — about '
-                  '${r < 120 ? 'one building' : r < 450 ? 'a building and its neighbours' : 'a campus'}',
+                  r < 120
+                      ? l10nOf(context).placesRadiusOneBuilding(r.round())
+                      : r < 450
+                          ? l10nOf(context).placesRadiusNeighbours(r.round())
+                          : l10nOf(context).placesRadiusCampus(r.round()),
                   style: TextStyle(
                     fontSize: LayoutSpec.fontMicro,
                     color: skin.textSecondary,
@@ -730,8 +734,7 @@ class _NameSheetState extends State<_NameSheet> {
             const SizedBox(height: 12),
             Text(
 
-              'Type an existing name (${existingNames.join(', ')}) to add this '
-              'as another spot of that place.',
+              l10nOf(context).placesExistingNamesHint(existingNames.join(', ')),
               style: TextStyle(
                 fontSize: LayoutSpec.fontMicro,
                 color: skin.textSecondary,

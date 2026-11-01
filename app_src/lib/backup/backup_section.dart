@@ -2,11 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../l10n/l10n.dart';
 
 import '../backup/backup_service.dart';
 import '../theme/skin.dart';
 import '../widgets/devices.dart';
+
+/// What a failed backup or restore says. The service returns a reason, not a
+/// sentence, so the words live here with every other word the app shows.
+String? _problemText(
+  AppLocalizations l10n,
+  BackupProblem? problem,
+  String? detail,
+) => switch (problem) {
+      null => null,
+      BackupProblem.nothingToBackUp => l10n.backupNoState,
+      BackupProblem.notABackup => l10n.backupNotOurs,
+      BackupProblem.unreadableJson => l10n.backupUnreadableJson,
+      BackupProblem.unreadableFile => l10n.backupUnreadableFile(detail ?? ''),
+      BackupProblem.newerVersion => l10n.backupNewerVersion,
+      BackupProblem.noData => l10n.backupNoData,
+      BackupProblem.nothingRestored => l10n.backupNothingRestored,
+      BackupProblem.writeFailed => l10n.backupWriteFailed(detail ?? ''),
+      BackupProblem.restoreFailed => l10n.backupRestoreStopped(detail ?? ''),
+    };
 
 /// BACKUP NOW / RESTORE on the Settings page.
 ///
@@ -57,7 +77,7 @@ class _BackupSectionState extends State<BackupSection> {
     _say(
       report.ok
           ? 'Saved ${report.files} files to ${report.file!.path}'
-          : (report.error ?? l10nOf(context).backupFailed),
+          : _problemText(l10nOf(context), report.problem, report.detail) ?? l10nOf(context).backupFailed,
     );
   }
 
@@ -134,7 +154,7 @@ class _BackupSectionState extends State<BackupSection> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (!report.ok) {
-      _say(report.error ?? l10nOf(context).backupRestoreFailed);
+      _say(_problemText(l10nOf(context), report.problem, report.detail) ?? l10nOf(context).backupRestoreFailed);
       return;
     }
     // Stores are opened once at launch and cached, so a restore on screen

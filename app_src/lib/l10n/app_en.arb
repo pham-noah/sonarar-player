@@ -581,5 +581,35 @@
         "type": "int"
       }
     }
+  },
+  "backupNoState": "There is no state to back up yet.",
+  "backupNotOurs": "That file is not a Sonarar backup.",
+  "backupUnreadableJson": "That file is not readable JSON.",
+  "backupUnreadableFile": "Could not read the backup: {detail}",
+  "@backupUnreadableFile": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNewerVersion": "That backup was made by a newer version of Sonarar.",
+  "backupNoData": "That backup contains no data.",
+  "backupNothingRestored": "Nothing in that backup could be restored.",
+  "backupWriteFailed": "Could not write the backup: {detail}",
+  "@backupWriteFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreStopped": "Restore stopped: {detail}",
+  "@backupRestoreStopped": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
   }
 }

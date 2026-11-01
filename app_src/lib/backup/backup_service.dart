@@ -13,38 +13,56 @@ const int kBackupVersion = 1;
 /// Only the files the app owns and can rebuild its UI from.
 const List<String> _keepSuffixes = ['.json', '.jsonl'];
 
+/// Why a backup or a restore did not happen. The service says what went wrong;
+/// the screen says it in the reader's language.
+enum BackupProblem {
+  nothingToBackUp,
+  notABackup,
+  unreadableJson,
+  unreadableFile,
+  newerVersion,
+  noData,
+  nothingRestored,
+  writeFailed,
+  restoreFailed,
+}
+
 class BackupReport {
   const BackupReport({
     this.file,
     this.files = 0,
-    this.error,
+    this.problem,
+    this.detail,
     this.savedCurrentTo,
     this.skipped = const [],
   });
 
   final File? file;
   final int files;
-  final String? error;
+  final BackupProblem? problem;
+  final String? detail;
   final Directory? savedCurrentTo;
   final List<String> skipped;
 
-  bool get ok => error == null && file != null;
+  bool get ok => problem == null && file != null;
 }
 
 class RestoreReport {
   const RestoreReport({
     this.files = 0,
-    this.error,
+    this.problem,
+    this.detail,
     this.savedCurrentTo,
     this.skipped = const [],
   });
 
   final int files;
-  final String? error;
+  final BackupProblem? problem;
+  final String? detail;
   final Directory? savedCurrentTo;
   final List<String> skipped;
 
-  bool get ok => error == null && files > 0;
+  bool get ok => problem == null && files > 0;
 }
 
 class BackupService {
@@ -61,7 +79,7 @@ class BackupService {
   Future<BackupReport> writeTo(Directory dest, {String? appVersion}) async {
     final files = await _collect();
     if (files.isEmpty) {
-      return const BackupReport(error: 'There is no state to back up yet.');
+      return const BackupReport(problem: BackupProblem.nothingToBackUp);
     }
     final stamp = _stamp(_clock());
     final payload = const JsonEncoder.withIndent('  ').convert({
@@ -77,7 +95,10 @@ class BackupService {
       await target.writeAsString(payload, flush: true);
       return BackupReport(file: target, files: files.length);
     } on FileSystemException catch (e) {
-      return BackupReport(error: 'Could not write the backup: ${e.message}');
+      return BackupReport(
+        problem: BackupProblem.writeFailed,
+        detail: e.message,
+      );
     }
   }
 
@@ -109,27 +130,28 @@ class BackupService {
       final raw = await source.readAsString();
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) {
-        return const RestoreReport(error: 'That file is not a Sonarar backup.');
+        return const RestoreReport(problem: BackupProblem.notABackup);
       }
       payload = decoded;
     } on FormatException {
-      return const RestoreReport(error: 'That file is not readable JSON.');
+      return const RestoreReport(problem: BackupProblem.unreadableJson);
     } on FileSystemException catch (e) {
-      return RestoreReport(error: 'Could not read the backup: ${e.message}');
+      return RestoreReport(
+        problem: BackupProblem.unreadableFile,
+        detail: e.message,
+      );
     }
 
     if (payload['format'] != kBackupFormat) {
-      return const RestoreReport(error: 'That file is not a Sonarar backup.');
+      return const RestoreReport(problem: BackupProblem.notABackup);
     }
     final version = payload['version'];
     if (version is! int || version > kBackupVersion) {
-      return const RestoreReport(
-        error: 'That backup was made by a newer version of Sonarar.',
-      );
+      return const RestoreReport(problem: BackupProblem.newerVersion);
     }
     final files = payload['files'];
     if (files is! Map || files.isEmpty) {
-      return const RestoreReport(error: 'That backup contains no data.');
+      return const RestoreReport(problem: BackupProblem.noData);
     }
 
     final skipped = <String>[];
@@ -159,7 +181,7 @@ class BackupService {
 
     if (writes.isEmpty) {
       return RestoreReport(
-        error: 'Nothing in that backup could be restored.',
+        problem: BackupProblem.nothingRestored,
         skipped: skipped,
       );
     }
@@ -176,7 +198,8 @@ class BackupService {
       }
     } on FileSystemException catch (e) {
       return RestoreReport(
-        error: 'Restore stopped: ${e.message}',
+        problem: BackupProblem.restoreFailed,
+        detail: e.message,
         savedCurrentTo: aside,
         skipped: skipped,
       );

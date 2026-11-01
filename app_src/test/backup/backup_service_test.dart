@@ -78,7 +78,7 @@ void main() {
 
     final report = await BackupService(stateDirectory: state).restore(foreign);
     expect(report.ok, isFalse);
-    expect(report.error, contains('not a Sonarar backup'));
+    expect(report.problem, BackupProblem.notABackup);
     expect(File('${state.path}/prefs.json').readAsStringSync(), before);
   });
 
@@ -106,14 +106,14 @@ void main() {
       }));
     final report = await BackupService(stateDirectory: state).restore(newer);
     expect(report.ok, isFalse);
-    expect(report.error, contains('newer version'));
+    expect(report.problem, BackupProblem.newerVersion);
   });
 
   test('an empty state folder makes no backup rather than an empty one',
       () async {
     final report = await BackupService(stateDirectory: state).writeTo(downloads);
     expect(report.ok, isFalse);
-    expect(report.error, contains('no state'));
+    expect(report.problem, BackupProblem.nothingToBackUp);
   });
 
   test('backups are listed newest first and filtered by name', () async {

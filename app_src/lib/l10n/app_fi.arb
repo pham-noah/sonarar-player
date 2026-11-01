@@ -1,0 +1,836 @@
+{
+  "@@locale": "fi",
+  "appTitle": "Sonarar",
+  "@appTitle": {
+    "description": "The application name. Not translated."
+  },
+  "settingsTitle": "ASETUKSET",
+  "settingsTabLook": "ULKOASU",
+  "settingsTabPlayback": "TOISTO",
+  "settingsTabLibrary": "KIRJASTO",
+  "settingsTabSystem": "JÄRJESTELMÄ",
+  "settingsPersonalize": "MUOKKAA",
+  "settingsResumeOnOpen": "JATKA AVAUTUESSA",
+  "settingsFadeIn": "HÄIVYTYS SISÄÄN",
+  "settingsOff": "POIS",
+  "settingsSleepLength": "UNIAJASTIN",
+  "settingsWeatherEvery": "SÄÄTARKISTUS VÄLEIN",
+  "settingsOfficialOnly": "VAIN VIRALLISET",
+  "settingsContext": "KONTEKSTI",
+  "settingsOffline": "OFFLINE",
+  "settingsTimeOfDay": "VUOROKAUDENAIKA",
+  "settingsWeather": "SÄÄ",
+  "settingsDynamicMix": "DYNAAMINEN SEKOITUS",
+  "settingsPlaces": "PAIKAT",
+  "settingsWeatherVariants": "SÄÄVARIANTIT",
+  "settingsAutoTheme": "AUTOMAATTINEN TEEMA",
+  "settingsListeningMemory": "KUUNTELUMUISTI",
+  "settingsLearnFromSkips": "OPI OHITUKSISTA",
+  "settingsPlayHistory": "TOISTOHISTORIA",
+  "settingsBonds": "SITEET",
+  "settingsMusicFolder": "MUSIIKKIKANSIO",
+  "settingsInterface": "KÄYTTÖLIITTYMÄ",
+  "settingsLanguage": "KIELI",
+  "settingsFpsCounter": "FPS-LASKURI",
+  "settingsCheckForUpdates": "TARKISTA PÄIVITYKSET",
+  "settingsChecking": "TARKISTETAAN…",
+  "settingsCheckNow": "TARKISTA NYT",
+  "settingsRomaji": "ROMAJI",
+  "settingsDynamicByDefault": "OLETUKSENA DYNAAMINEN",
+  "settingsKeepPlaying": "JATKA SOITTOA JONON PÄÄTYTTYÄ",
+  "settingsSomethingWrong": "JOS JOKIN ON VINOSSA",
+  "settingsDiagnostics": "DIAGNOSTIIKKA",
+  "settingsAbout": "TIETOJA",
+  "settingsMadeBy": "TEKIJÄ: NOAH PHAM",
+  "settingsSourceOnGithub": "LÄHDEKOODI GITHUBISSA",
+  "settingsLicenses": "LISENSSIT",
+  "settingsSpeedGlide": "LIU'U",
+  "settingsSpeedSmooth": "TASAINEN",
+  "settingsSpeedBalanced": "TASAPAINOINEN",
+  "settingsSpeedBrisk": "REIPAS",
+  "settingsSpeedSnap": "NAPSAKKA",
+  "settingsLanguageSystem": "JÄRJESTELMÄ",
+  "libraryCopyHint": "Kopioi musiikkia tietokoneelta tuohon kansioon tai aja tools/sync_library.py, joka siirtää sen sieltä.",
+  "librarySearch": "HAKU",
+  "libraryPinned": "KIINNITETYT",
+  "librarySeeded": "SOVELLUKSEN",
+  "libraryCustom": "OMAT",
+  "libraryTitle": "KIRJASTO",
+  "librarySearchHint": "Kappale, artisti, albumi, kansio",
+  "libraryEmptyPlaylist": "Tämä soittolista on tyhjä.\nLisää kappale painamalla sitä pitkään.",
+  "libraryEmptyArtist": "Ei tämän artistin kappaleita.",
+  "libraryRecents": "VIIMEISIMMÄT",
+  "libraryUpdated": "PÄIVITETTY",
+  "libraryNoPlaylists": "Ei vielä soittolistoja.",
+  "libraryNoArtists": "Ei artisteja.",
+  "libraryNewPlaylist": "Uusi soittolista",
+  "libraryPlaylistName": "Nimi",
+  "libraryCancel": "PERUUTA",
+  "libraryCreate": "LUO",
+  "libraryDerivedNote": "Tulee sovelluksen mukana — voit kiinnittää tai nimetä sen uudelleen, mutta et poistaa.",
+  "librarySeededNote": "Sovellus tekee sen kuuntelemastasi — voit kiinnittää sen, mutta et nimetä uudelleen tai poistaa.",
+  "libraryNoLibrary": "Laitteelta ei löytynyt kirjastoa.",
+  "libraryAddToQueue": "Lisää jonoon",
+  "libraryQueue": "JONO",
+  "libraryRemove": "POISTA",
+  "libraryUnlike": "POISTA TYYKKÄYS",
+  "libraryLike": "TYYKKÄÄ",
+  "playerNowPlaying": "SOI NYT",
+  "playerModeDynamicHint": "Dynaaminen — jono täyttyy itsestään kontekstista. Napauta vaihtaaksesi kiinteään.",
+  "playerModeFixedHint": "Kiinteä — vain se mitä jonoitit. Napauta vaihtaaksesi dynaamiseen.",
+  "playerModeDynamic": "Dynaaminen — jono täyttyy itsestään kontekstista.",
+  "playerModeFixed": "Kiinteä — vain se mitä jonoitit.",
+  "playerOtherRecordings": "MUUT TALLEENNUKSET",
+  "playerAlbumVersion": "ALBUMIVERSIO",
+  "playerNothingLoaded": "Ei mitään ladattuna",
+  "playerWhyThisSong": "Miksi tämä kappale",
+  "playerQueue": "Jono",
+  "playerTrackTools": "Tämä kappale — kirjanmerkki, tagit, silmukkakohdat",
+  "playerStopAfterOn": "Pysähtyy tämän kappaleen jälkeen — napauta peruuttaaksesi",
+  "playerStopAfter": "Pysähdy tämän kappaleen jälkeen",
+  "playerSleepOn": "Uniajastin päällä — napauta sammuttaaksesi",
+  "playerSleep": "Uniajastin",
+  "playerFileMissing": "Kappaleen tiedostoa ei löytynyt laitteelta",
+  "playerWhyThisSongTitle": "MIKSI TÄMÄ KAPPALE",
+  "playerQueueTitle": "JONO",
+  "playerAudio": "ÄÄNI",
+  "playerThisTrack": "TÄMÄ KAPPALE",
+  "playerLoopPoints": "SILMUKKAKOHDAT",
+  "playerShrink": "Pienennä",
+  "playerClose": "Sulje",
+  "playerLyrics": "SANAT",
+  "playerEndOfQueue": "JONON LOPPU",
+  "playerUpNext": "SEURAAVAKSI",
+  "playerNothingAfter": "Ei mitään tämän jälkeen",
+  "bandMorning": "AAMU",
+  "bandAfternoon": "ILTAPÄIVÄ",
+  "bandEvening": "ILTA",
+  "bandNight": "YÖ",
+  "bandNightHour": "YÖNTUNTI",
+  "historyNothingPlayed": "Ei vielä soitettu mitään.",
+  "historyTopTracks": "ENITEN KUUNNELLUT",
+  "historyByTimeOfDay": "VUOROKAUDENAJAN MUKAAN",
+  "historyMonth": "KUUKAUSI",
+  "historyTimeListened": "KUUNNELTU AIKA",
+  "importSavedNotWritten": "Tallennettu toistaiseksi, mutta levylle kirjoitus ei onnistunut.",
+  "importNoVideos": "Soittolistalta ei löytynyt videoita — tarkista linkki, tai lista voi olla tyhjä.",
+  "importNewTitle": "UUSI SOITTOLISTA",
+  "importEditTitle": "MUOKKAA SOITTOLISTAA",
+  "importLink": "Soittolistan linkki",
+  "importSave": "TALLENNA",
+  "importNeedsName": "Soittolista tarvitsee nimen",
+  "importNoPlaylistId": "Linkissä ei ole soittolistan tunnistetta",
+  "importFilesStay": "Ladatut tiedostot jäävät — tämä vain unohtaa lähteen.",
+  "importKeep": "PIDÄ",
+  "importListTitle": "TUODUT SOITTOLISTAT",
+  "importHint": "Tuo lista tai päivitä se myöhemmin — vain uudet kappaleet ladataan.",
+  "importEmpty": "Ei vielä soittolistoja. Lisää yksi alle.",
+  "importEditAction": "Muokkaa nimeä ja linkkiä",
+  "importRemoveAction": "Poista",
+  "importRowHint": "Tuo tai päivitä — vain uudet kappaleet ladataan",
+  "homePersonalize": "Muokkaa",
+  "homeNow": "NYT",
+  "homeNoBand": "EI VUOROKAUDENAIKAA",
+  "homeElsewhere": "MUUALLA",
+  "homeNoFix": "EI SIJAINTIA",
+  "homePlayWhatFits": "SOITA SE MIKÄ SOPII NYT",
+  "homeContinue": "JATKA KUUNTELUA",
+  "homeRediscover": "LÖYDÄ UUDELLEEN",
+  "homeJumpBackIn": "HYPPÄÄ TAKAISIN",
+  "homeQuickPick": "PIKAVALINTA",
+  "homeFromLibrary": "OMASTA KIRJASTOSTA",
+  "homeGenre": "GENRE",
+  "homeRecentlyAdded": "ÄSKETTÄIN LISÄTYT",
+  "diagCheckingStorage": "TARKISTETAAN TALLENNUSTILAA…",
+  "diagAllFiles": "KAIKKIEN TIEDOSTOJEN KÄYTTÖ MYÖNNETTY",
+  "diagNoAllFiles": "EI KAIKKIEN TIEDOSTOJEN KÄYTTÖÄ — latauksia ja kansikuvia ei voi kirjoittaa",
+  "diagStorageUnknown": "TALLENNUSTILAN KÄYTTÖ TUNTEMATON",
+  "diagGrant": "MYÖNNÄ",
+  "diagProblems": "ONGELMAT",
+  "diagAll": "KAIKKI",
+  "diagClear": "TYHJENNÄ",
+  "diagSpectrum": "SPEKTRI",
+  "diagCopy": "KOPIOI",
+  "diagNothingWrong": "Tällä käynnillä ei mennyt mikään pieleen.",
+  "diagNothingLogged": "Kirjattu ei vielä mitään.",
+  "folderInternal": "SISÄINEN",
+  "folderMusic": "MUSIIKKI",
+  "folderDownload": "LATAUKSET",
+  "folderSdcard": "MUISTIKORTTI",
+  "folderHoldsManifest": "Tässä kansiossa on library_manifest.json.",
+  "folderNoManifest": "Täällä ei ole library_manifest.json-tiedostoa — sovellus ei voi lukea tätä kirjastona.",
+  "folderUse": "KÄYTÄ TÄTÄ KANSIOTA",
+  "firstRunPitch": "Musiikkia siihen, missä olet ja mitä säällä on meneillään.",
+  "firstRunLayout": "ASETTELU",
+  "firstRunColours": "VÄRIT",
+  "firstRunSongList": "KAPPALELUETTELO",
+  "firstRunGrid": "RUUDUKKO",
+  "firstRunList": "LUETTELO",
+  "firstRunStart": "ALOITA KUUNTELU",
+  "firstRunLater": "Voit muuttaa kaiken tämän myöhemmin asetuksissa.",
+  "shellCannotReadFolder": "Sonarar ei voi lukea musiikkikansiotasi — myönnä käyttöoikeus kohdassa Asetukset → Sovellukset → Sonarar → Käyttöoikeudet",
+  "greetingMorning": "Hyvää huomenta",
+  "greetingAfternoon": "Hyvää iltapäivää",
+  "greetingEvening": "Hyvää iltaa",
+  "greetingNight": "Hyvää yötä",
+  "greetingLateNight": "Myöhäinen yö",
+  "homeNothingFits": "Mikään ei sovi juuri nyt",
+  "shellThisMonth": "TÄSSÄ KUUSSA",
+  "shellOutputSettingsFailed": "Ulostulon asetuksia ei voitu avata",
+  "commonSaved": "Tallennettu",
+  "shellNoForward": "Ei enää eteenpäin",
+  "shellNoEarlierTab": "Ei aiempaa välilehteä",
+  "shellAddToPlaylist": "Lisää soittolistalle",
+  "shellAlreadyInPlaylist": "On jo tällä soittolistalla",
+  "shellAlreadyInQueue": "On jo jonossa",
+  "shellLibraryNotResolved": "Kirjastoa ei vielä ole selvitetty",
+  "shellDeleteDownloadNote": "Tämä poistaa tiedoston puhelimesta. Se on lataus, joten muuta kopiota ei ole.",
+  "shellRemoveFailed": "Sitä ei voitu poistaa",
+  "shellDownloadedNotIndexed": "Ladattu — se ei ole vielä kirjaston tiedostoluettelossa",
+  "shellAddedToLibrary": "Lisätty kirjastoon",
+  "shellHistory": "HISTORIA",
+  "shellMusicFolderSaved": "Musiikkikansio tallennettu",
+  "shellLater": "MYÖHEMMIN",
+  "shellRestartNow": "KÄYNNISTÄ NYT",
+  "shellLibraryTools": "KIRJASTON TYÖKALUT",
+  "shellSaveQueue": "Tallenna jono soittolistaksi",
+  "shellQueueEmptyToSave": "Jonossa ei ole mitään tallennettavaa.",
+  "shellShuffleAllowed": "Sallittu taas satunnaissoitossa",
+  "shellPlaylistNothingPlayable": "Sillä soittolistalla ei ole mitään soitettavaa",
+  "shellRemovedFromLiked": "Poistettu tykätyistä",
+  "shellArchive": "ARKISTO",
+  "shellStoppingAfter": "Pysähtyy tämän kappaleen jälkeen",
+  "shellStopAfterOff": "Pysähdy tämän jälkeen — pois",
+  "commonBack": "Takaisin",
+  "shellCatalogue": "LUETTELO",
+  "shellRanks": "SIJAT",
+  "personalizeMotion": "LIIKE",
+  "personalizeTabAnimation": "VÄLILEHDEN ANIMAATIO",
+  "personalizeSpectrum": "SPEKTRI",
+  "personalizeSmoothness": "PEHMEYS",
+  "personalizeScale": "KOKO",
+  "personalizeBase": "POHJA",
+  "personalizeTheme": "TEEMA",
+  "personalizeAccent": "KOROSTUSVÄRI",
+  "personalizeFromPhoto": "KUVASTA",
+  "personalizePictureFor": "KUVA KOHDASSA",
+  "personalizeNoPicture": "EI KUVAA",
+  "personalizeAddPicture": "LISÄÄ KUVA",
+  "personalizeReframe": "RAJAA UUDELLEEN",
+  "personalizeReframeNoFile": "RAJAA UUDELLEEN — EI KUVAA SIIRRETTÄVÄKSI",
+  "effectBlur": "SUMMENNUS",
+  "effectDim": "HIMMENNYS",
+  "effectZoom": "ZOOM",
+  "effectRotation": "KIERTO",
+  "effectTintAccent": "SÄVYTÄ KOROSTUSVÄRILLÄ",
+  "effectPlayerUsesCover": "SOITIN KÄYTTÄÄ KANSIKUVA",
+  "effectFollowTrack": "SEURAA KAPPALETTA",
+  "effectSaturation": "KYLLÄISYYS",
+  "effectContrast": "KONTRASTI",
+  "effectVignette": "VIGNETTI",
+  "effectGrain": "RAE",
+  "effectBurn": "POLTTO",
+  "baseSolid": "YKSIVÄRINEN",
+  "baseGradient": "LIIUKUVÄRI",
+  "baseSkin": "PINTA",
+  "baseFrom": "LÄHTEESTÄ",
+  "baseColour": "VÄRI",
+  "baseDirection": "SUUNTA",
+  "artFolders": "KUVAKANSIOT",
+  "artRescan": "SKANNAA UUDELLEEN",
+  "scopeHome": "ETUSIVU",
+  "scopeEverywhere": "KAIKKIALLA",
+  "scopePlayer": "SOITIN",
+  "scopeFolder": "KANSIO",
+  "scopePhoto": "KUVA",
+  "themeNew": "UUSI TEEMA",
+  "themeOverride": "OHITA",
+  "photoNoneFound": "Kuvia ei löytynyt kansioista Pictures, DCIM tai Download.",
+  "photoUseEverywhere": "KÄYTÄ KAIKKIALLA",
+  "photoUseHere": "KÄYTÄ TÄÄLLÄ",
+  "photoPutInFolder": "LAITA KANSIOON",
+  "photoFolderHint": "Kansioon mahtuu monta kuvaa, ja se voi seurata kappaletta.",
+  "photoNoneSkinPaints": "EI KUVAA — PINTA MAALAA TÄMÄN",
+  "themeNamePrompt": "Nimeä uusi teema",
+  "themeNoneToOverride": "Yhtään teemaa ei ole yllä, joten ohitettavaa ei ollut.",
+  "layoutSonar": "SONAR",
+  "layoutGlass": "LASI",
+  "themeWorn": "YLLÄ",
+  "themeBuiltIn": "VALMIINA",
+  "themeThemes": "TEEMAT",
+  "themeArt": "KUVA",
+  "commonAdd": "LISÄÄ",
+  "themeRename": "NIMEÄ UUDELLEEN",
+  "themeDelete": "POISTA",
+  "artFolderName": "KANSION NIMI",
+  "photoNoColour": "Kuvaa ei valittu, joten väriä ei otettu.",
+  "photoWeakColour": "Siinä kuvassa ei ole väriä, joka riittäisi korostusväriksi.",
+  "artOnlyPicture": "Tämä on viimeinen kuva — poista kansio.",
+  "photoNoAccess": "Sonarar ei näe kuviasi — salli kuvien käyttö asetuksissa.",
+  "recapTitle": "YHTEENVETO",
+  "placesTappedPin": "Napautettu piste valittu — tallennus tähän, ei siihen missä seisot",
+  "placesAskingOsm": "Kysytään OpenStreetMapilta, mitä täällä on…",
+  "placesOsmNothing": "OpenStreetMapilla ei ole täällä mitään merkittyä. Nimeä se itse.",
+  "placesOsmUnreachable": "OpenStreetMapiin ei saatu yhteyttä — nimeä se itse.",
+  "placesSavedTitle": "TALLENNETUT PAIKAT",
+  "placesEmpty": "Ei vielä tallennettu mitään. Seiso jossain, tallenna piste ja nimeä se.",
+  "placesEditTitle": "MUOKKAA TÄTÄ PAIKKAA",
+  "placesNameTitle": "NIMEÄ TÄMÄ PISTE",
+  "placesNameYourself": "Nimeä se itse — OpenStreetMapilla ei ollut täällä mitään merkittyä.",
+  "placesNameLabel": "PAIKAN NIMI",
+  "placesPlaylistHere": "SOITTOLISTA TÄÄLLÄ",
+  "placesOrTypeName": "TAI KIRJOITA NIMI",
+  "placesIcon": "KUVAKE",
+  "placesTapToClear": "Napauta uudelleen tyhjentääksesi",
+  "placesSize": "KUINKA SUURI TÄMÄ PISTE ON",
+  "placesSaveChanges": "TALLENNA MUUTOKSET",
+  "rulesTitle": "KONTEKSTISÄÄNNÖT",
+  "rulesActingNow": "VOIMASSA NYT",
+  "rulesMoreImportant": "Tärkeämpi",
+  "rulesLessImportant": "Vähemmän tärkeä",
+  "rulesRemoveRule": "Poista tämä sääntö",
+  "rulesAdd": "LISÄÄ SÄÄNTÖ",
+  "rulesNew": "UUSI SÄÄNTÖ",
+  "rulesTimeBand": "KUN VUOROKAUDENAIKA ON",
+  "rulesManualContext": "JA KÄSIN VALITTU KONTEKSTI ON",
+  "rulesWeather": "JA SÄÄ",
+  "rulesPlayPlaylist": "SOITA TÄMÄ SOITTOLISTA",
+  "rulesThemeOptional": "JA KÄYTÄ TÄTÄ TEEMAA (VALINNAINEN)",
+  "rulesCreate": "LUO SÄÄNTÖ",
+  "ytNetworkOff": "Verkko on pois päältä asetuksissa, joten mitään ei voi hakea tai ladata.",
+  "ytNetworkOffNoMatch": "Verkko on pois päältä asetuksissa, eikä kirjastosta löydy mitään vastaavaa.",
+  "ytSearchHint": "Hae YouTubesta",
+  "ytSearchingOnline": "Haetaan verkosta — napauta sammuttaaksesi",
+  "ytImportPlaylist": "TUO SOITTOLISTA",
+  "ytInLibrary": "KIRJASTOSSA",
+  "ytOnYoutube": "YOUTUBESSA",
+  "ytOfficial": "VIRALLINEN",
+  "ytNotOfficial": "EI VIRALLINEN",
+  "ytPlayThis": "Soita tämä",
+  "ytNotOfficialBadge": "Ei virallinen julkaisu",
+  "ytDownload": "Lataa kirjastoon",
+  "loopTitle": "SILMUKKA",
+  "loopIntroEnds": "INTRO PÄÄTTYY",
+  "loopStart": "SILMUKAN ALKU",
+  "loopEnd": "SILMUKAN LOPPU",
+  "loopRepeat": "TOISTA",
+  "loopNoRepeat": "Ei toistoa. Kappale soi loppuun asti.",
+  "loopEndBeforeStart": "SILMUKAN LOPPU on ennen SILMUKAN ALKUA — tämä ei toistu.",
+  "loopPause": "TAUKO",
+  "loopPlay": "SOITA",
+  "loopSaved": "TALLENNETTU",
+  "loopSet": "ASETA",
+  "loopHint": "Soita kappaletta, napauta merkkiä kohdassa, jossa kuulet silmukan, ja tallenna. Kappale ilman merkkejä soi täsmälleen kuten ennenkin.",
+  "placesOsmSays": "OpenStreetMapin mukaan tämä on {kind}. Muuta mitä haluat.",
+  "@placesOsmSays": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "panelPlayNow": "Soita nyt",
+  "panelPlayNext": "Soita seuraavaksi",
+  "panelNeverInShuffle": "Ei koskaan satunnaisessa",
+  "panelFixTags": "Korjaa tagit",
+  "panelClearBookmark": "Poista tämä kirjanmerkki",
+  "panelBookmarkSpot": "Merkitse tämä kohta",
+  "panelRemoveDownload": "Poista lataus",
+  "panelShuffleNote": "Se pysyy kirjastossa — se ei vain koskaan tule soittolistalle.",
+  "panelExcludedNote": "Pois suljetut kappaleet pysyvät kirjastossa; ne pidetään vain poissa soittolistoilta.",
+  "lyricsNoWords": "Tässä ei ole sanoja",
+  "lyricsFollowsSong": "Seuraa kappaletta",
+  "lyricsNoTiming": "Sanat, ei ajoitusta",
+  "lyricsNotFound": "Ei löytynyt",
+  "lyricsTapToLookUp": "Napauta hakeaksesi",
+  "lyricsSync": "SYNKKAUS",
+  "lyricsNoneFound": "Sanoja ei löytynyt",
+  "lyricsInstrumental": "Ei sanoja — tämä on instrumentaali",
+  "probeStep1": "VAIHE 1 — käyttöoikeus",
+  "probeStep1Note": "Ensimmäinen yritys kaatui MYÖNNÄ-vaiheessa, joten kysymys on tässä.",
+  "probeStep2": "VAIHE 2 — ääni-istunto",
+  "probeStep3": "VAIHE 3 — Visualizer",
+  "probeTitle": "SPEKTRIKOE",
+  "probeRunning": "KÄYNNISSÄ…",
+  "probeRun": "AJA KOE",
+  "probeHint": "Paina nappia ja lähetä minulle se, mitä tähän ilmestyy.",
+  "outputBluetooth": "BLUETOOTH",
+  "outputWired": "JOHDOLLA",
+  "outputUsbDac": "USB / DAC",
+  "outputHdmi": "HDMI",
+  "outputThisPhone": "TÄMÄ PUHELIN",
+  "outputVolume": "ÄÄNENVOIMAKKUUS",
+  "outputPlaysThrough": "SOI KAUTTA",
+  "outputChange": "VAIHDA ULOSTULO",
+  "compendiumNotHeard": "Ei vielä kuultu",
+  "compendiumMostHeard": "ENITEN KUULLUT",
+  "compendiumRecent": "VIIMEISIMMÄT",
+  "outputPickerHint": "Avaa puhelimen ulostulovalitsin",
+  "backupFailed": "Varmuuskopiointi epäonnistui.",
+  "backupNoneFound": "Latauksista ei löytynyt varmuuskopiota. Tee ensin yksi tai siirrä sellainen sinne.",
+  "backupRestore": "PALAUTA",
+  "backupRestoreFailed": "Palautus epäonnistui.",
+  "backupYourData": "OMAT TIETOSI",
+  "backupNow": "VARMUUSKOPIOI NYT",
+  "backupRestoreTitle": "PALAUTA VARMUUSKOPIO",
+  "tagsUndoAll": "KUMOA KAIKKI",
+  "tagsRevert": "PALAUTA ENNALLEEN",
+  "bondsNothingSinceReset": "Ei soitettu mitään viimeisen nollauksen jälkeen.",
+  "bondsNothingYet": "Ei vielä soitettu mitään.",
+  "bondsStartOver": "ALOITA SIJAT ALUSTA",
+  "bondsNote": "Muistiinpano tästä siteestä",
+  "bondsWhy": "Miksi tällä on väliä",
+  "artAdjust": "SÄÄDÄ KUVAA",
+  "commonReset": "NOLLAA",
+  "artRotate": "KIERRÄ",
+  "artFade": "HÄIVYTÄ",
+  "artMirrored": "PEILATTU",
+  "artMirror": "PEILAA",
+  "commonDone": "VALMIS",
+  "personalizeFramingNote": "Rajaus kuuluu kuvaan, joten nämä liukusäätimet siirtävät sitä kaikkialla, missä kuvaa käytetään.",
+  "personalizeNoFoldersNote": "Ei vielä kansioita. Kansio on joukko kuvia kansiossa Music/Sonarar/art; paikka pitää yhtä niistä yllään.",
+  "personalizeTapPictureNote": "Napauta kuvaa kansiossa käyttääksesi sitä tässä. Yllä oleva SEURAA KAPPALETTA päättää, kulkeeko kansio mukana kappale kerrallaan.",
+  "personalizeNothingWorn": "Mitään ei ole juuri nyt yllä, joten ohitettavaa teemaa ei ole — valitse ensin yksi ylhäältä tai tee uusi.",
+  "personalizeReframeHint": "Napauta kuvan sitä kohtaa, jolla on väliä. Se pysyy keskellä, olipa näytön muoto mikä tahansa.",
+  "rulesWhenMatches": "Kun konteksti vastaa jotain näistä, sen soittolista tulee jonoksi. Korkeimman prioriteetin vastaava voittaa; jos mikään ei vastaa, soitin valitsee itse kuten ennenkin.",
+  "rulesNone": "Ei sääntöjä. Sekin on toimiva tila — konteksti valitsee yhä musiikin, sillä ei vain ole mitään ylimääräistä sanottavaa.",
+  "rulesJsonNote": "Sääntöjä voi muokata myös tavallisena JSONina tiedostossa rules.json muiden tilatiedostojen vieressä. Sovellus lukee sen käynnistyessään.",
+  "rulesNothingMatches": "Mikään sääntö ei vastaa juuri nyt — soitin valitsee itse. Se on normaalia.",
+  "rulesEveryCondition": "Jokaisen valitsemasi ehdon on oltava voimassa samaan aikaan. Jos et valitse mitään, sääntö vastaa joka hetki — pidä ne alimpana.",
+  "backupRestoreNote": "Tämä korvaa tagit, tykkäykset, soittolistat, teemat ja toistohistorian tiedoston kopiolla. Nykyinen tila tallennetaan ensin sivuun, tiedostoon pre-restore-…",
+  "backupWhatItHolds": "Tagit, tykkäykset, soittolistat, teemat ja toistohistoria — kaikki, mikä ei ole äänitiedostoissa. Tallennetaan Latauksiin.",
+  "tagsNote": "Korjaa sen, mitä soitin näyttää. Äänitiedostoa ei muokata koskaan, joten tämän voi aina kumota.",
+  "tagsPersistNote": "Tallennetut korjaukset säilyvät uudelleenkäynnistyksen yli, eikä kirjaston uudelleenskannaus kirjoita niitä yli.",
+  "shuffleTitle": "EI KOSKAAN SATUNNAISESSA",
+  "shuffleNoneExcluded": "Mitään ei ole suljettu pois. Jokainen kirjaston kappale voi tulla valituksi.",
+  "shuffleAllowAll": "SALLI KAIKKI TAAS",
+  "shuffleAllow": "SALLI",
+  "libraryPlaylists": "SOITTOLISTAT",
+  "libraryArtists": "ARTISTIT",
+  "librarySongs": "KAPPALEET",
+  "libraryLikedSongs": "Tykätyt kappaleet",
+  "mapAttribution": "Karttatiedot © OpenStreetMapin tekijät",
+  "mapNoPosition": "Sijainti ei ole vielä tiedossa",
+  "mapNoPlaces": "Ei vielä tallennettuja paikkoja",
+  "mapSaveSpot": "TALLENNA TÄMÄ PISTE",
+  "mapWaitingFix": "ODOTETAAN HYVÄÄ SIJAINTIA",
+  "explainAtPlace": "Olet paikassa {place}.",
+  "@explainAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainNearPlace": "Olet jossain paikan {place} lähellä.",
+  "@explainNearPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainOnTheMove": "Olet liikkeellä.",
+  "explainBetweenPlaces": "Olet tallennettujen paikkojesi välissä.",
+  "explainSnowingOutside": "Ulkona sataa lunta.",
+  "explainRainingOutside": "Ulkona sataa.",
+  "explainEasierSleeping": "Ja haluat nukahtaa helpommin.",
+  "explainItsBand": "On {band}.",
+  "@explainItsBand": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHand": "Asetit tämän hetken itse.",
+  "explainNoReading": "Odotetaan kontekstilukemaa — mikään ei ole vielä päättänyt mitään.",
+  "explainSleepArmed": "Uniajastin viritetty — instrumentaalit kunnes se pysähtyy.",
+  "explainSnowRule": "Sataa lunta — lumisääntö on voimassa.",
+  "explainRainRule": "Sataa — sadesääntö on voimassa.",
+  "explainCommuteRules": "Olet matkalla — työmatkasäännöt ovat voimassa.",
+  "explainHereAt": "Paikassa {place}.",
+  "@explainHereAt": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHereApprox": "Paikassa {place} (likimääräinen sijainti).",
+  "@explainHereApprox": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHandNamed": "Asetit tämän kontekstin itse ({mode}).",
+  "@explainSetByHandNamed": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHourPicked": "{band} — tunti valitsi tämän.",
+  "@explainHourPicked": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainRuleMatched": "Sääntö \"{id}\" täsmäsi: {summary}.",
+  "@explainRuleMatched": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "explainPlaylistLeads": "\"{playlist}\" sisältää {count} — ne johtavat, muu kirjasto seuraa perässä.",
+  "@explainPlaylistLeads": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainPlaylistQueue": "\"{playlist}\" tuli jonoksi ({count} kappaletta).",
+  "@explainPlaylistQueue": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainFixedQueue": "Kiinteä jono — se soi tässä järjestyksessä. Paina Dynaaminen, jos haluat sovelluksen järjestävän uudelleen tilanteen muuttuessa.",
+  "explainNothingPlaying": "Mitään ei soi.",
+  "explainKeptIt": "Pidit sen {count, plural, =1{kerran} other{{count} kertaa}} tässä vuorokaudenajassa.",
+  "@explainKeptIt": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weatherClear": "SELKEÄÄ",
+  "weatherOvercast": "PILVISTÄ",
+  "weatherFog": "SUMUA",
+  "weatherDrizzle": "TIHKUA",
+  "weatherRain": "SADETTA",
+  "weatherSnow": "LUNTA",
+  "weatherStorm": "MYRSKY",
+  "weatherNoReading": "EI LUKEMAA",
+  "ytNotOfficialSkipped": "Ei virallinen julkaisu, joten sitä ei ladattu. Kytke \"Vain viralliset\" pois asetuksista ottaaksesi minkä tahansa latauksen.",
+  "ytNetworkOnSearchOnly": "Kytke verkko vain HAKUA varten (sijainti, aika ja sää pysyvät pois)",
+  "personalizeAccentTaken": "Korostusväri otettu kuvasta: {hex}",
+  "@personalizeAccentTaken": {
+    "placeholders": {
+      "hex": {
+        "type": "String"
+      }
+    }
+  },
+  "panelBookmarkedAt": "Kirjanmerkki kohdassa {time}",
+  "@panelBookmarkedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "panelTagsCorrected": "Tagit korjattu · {count} {count, plural, =1{kenttä} other{kenttää}}",
+  "@panelTagsCorrected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "panelPlayed": "Soitettu {count, plural, =1{kerran} other{{count} kertaa}}",
+  "@panelPlayed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackNeverPlayed": "Ei koskaan soitettu",
+  "panelShuffleAllowed": "Sallittu satunnaisessa",
+  "loopPointsLabel": "Silmukkakohdat",
+  "panelAddToPlaylist": "Lisää soittolistalle",
+  "panelPlayedThrough": "{count, plural, =1{Soitettu kerran} other{Soitettu {count} kertaa}} · kuunneltu loppuun {through} kertaa",
+  "@panelPlayedThrough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "through": {
+        "type": "int"
+      }
+    }
+  },
+  "backupNoState": "Ei vielä tilaa, josta voisi varmuuskopioida.",
+  "backupNotOurs": "Se tiedosto ei ole Sonararin varmuuskopio.",
+  "backupUnreadableJson": "Se tiedosto ei ole luettavaa JSONia.",
+  "backupUnreadableFile": "Varmuuskopiota ei voitu lukea: {detail}",
+  "@backupUnreadableFile": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNewerVersion": "Sen varmuuskopion on tehnyt uudempi Sonararin versio.",
+  "backupNoData": "Siinä varmuuskopiossa ei ole dataa.",
+  "backupNothingRestored": "Siitä varmuuskopiosta ei voitu palauttaa mitään.",
+  "backupWriteFailed": "Varmuuskopiota ei voitu kirjoittaa: {detail}",
+  "@backupWriteFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreStopped": "Palautus pysähtyi: {detail}",
+  "@backupRestoreStopped": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "placesDuplicateName": "Sinulla on jo tämänniminen paikka — tallennus lisää tämän pisteen siihen sen sijaan, että tekisi uuden.",
+  "placesNameHint": "esim. Yliopisto, Kuntosali, Koti",
+  "settingsOnNewest": "Käytössäsi on uusin versio ({version}).",
+  "@settingsOnNewest": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailable": "Sonarar {version} on saatavilla — PÄIVITÄ on sovelluksen yläreunassa.",
+  "@settingsUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "rulesNotOffered": "Ei tarjolla tässä: paikkasäännöt ja \"kuiva\" sääehto — sovellus ilmoittaa tuntemattoman sään sateettomana, joten kuiva sääntö laukeaisi juuri sinä päivänä, jolloin se tietää vähiten.",
+  "compendiumEmptyBody": "Mitään ei ole vielä kuultu, joten hakemisto on tyhjä. Se täyttyy sitä mukaa kun kuuntelet.",
+  "compendiumHeardCount": "{heard} / {total} kuultu",
+  "@compendiumHeardCount": {
+    "placeholders": {
+      "heard": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placesSpotCount": "{count, plural, =1{1 piste} other{{count} pistettä}}",
+  "@placesSpotCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusOneBuilding": "{metres} m — suunnilleen yksi rakennus",
+  "@placesRadiusOneBuilding": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusNeighbours": "{metres} m — suunnilleen rakennus ja sen naapurit",
+  "@placesRadiusNeighbours": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusCampus": "{metres} m — suunnilleen yksi kampus",
+  "@placesRadiusCampus": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesExistingNamesHint": "Kirjoita olemassa oleva nimi ({names}) lisätäksesi tämän pisteeksi siihen paikkaan.",
+  "@placesExistingNamesHint": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeard": "viimeksi {when}",
+  "@compendiumLastHeard": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeardThrough": "viimeksi {when} · kuunneltu loppuun {count} kertaa",
+  "@compendiumLastHeardThrough": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compendiumNeverHeard": "ei koskaan kuultu",
+  "historyThinSample": "{count, plural, =1{Vasta 1 soitto} other{Vasta {count} soittoa}} — alla olevat muodot ovat aitoja, vain pieniä.",
+  "@historyThinSample": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDayStats": "{length} · {plays, plural, =1{1 soitto} other{{plays} soittoa}} · kuunneltu loppuun {completions} kertaa",
+  "@historyDayStats": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "plays": {
+        "type": "int"
+      },
+      "completions": {
+        "type": "int"
+      }
+    }
+  },
+  "commonToday": "tänään",
+  "commonYesterday": "eilen",
+  "agoDays": "{count, plural, =1{1 päivä sitten} other{{count} päivää sitten}}",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoMonths": "{count, plural, =1{kuukausi sitten} other{{count} kuukautta sitten}}",
+  "@agoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "poiGym": "Kuntosali",
+  "poiLibrary": "Kirjasto",
+  "poiUniversity": "Yliopisto",
+  "poiCoworking": "Yhteistyötila",
+  "poiCafe": "Kahvila",
+  "poiRestaurant": "Ravintola",
+  "poiBar": "Baari",
+  "poiMall": "Kauppakeskus",
+  "poiCinema": "Elokuvateatteri",
+  "poiTransit": "Liikenneasema",
+  "poiParking": "Pysäköinti",
+  "poiPlaceOfWorship": "Jumalanpalveluspaikka",
+  "poiHospital": "Sairaala",
+  "poiPark": "Puisto",
+  "poiStadium": "Stadion",
+  "poiPool": "Uima-allas",
+  "poiHotel": "Hotelli",
+  "moodFocus": "teet töitä täällä",
+  "moodEnergy": "liikut täällä",
+  "moodSocial": "olet ihmisten ympäröimänä",
+  "moodTransit": "olet kulkemassa läpi",
+  "moodQuiet": "jossain rauhallisessa",
+  "moodAny": "ei mitään erityistä",
+  "ruleWhenTime": "kello on {band}",
+  "@ruleWhenTime": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenMode": "tila on {mode}",
+  "@ruleWhenMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenRaining": "sataa",
+  "ruleWhenSnowing": "sataa lunta",
+  "ruleWhenAtPlace": "olet paikassa {place}",
+  "@ruleWhenAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenNoPlace": "et ole yhdessäkään tallennetuista paikoistasi",
+  "ruleAlways": "aina",
+  "ruleJoinAnd": "{a} ja {b}",
+  "@ruleJoinAnd": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleThenTheme": "teeman vaihto",
+  "ruleThenPlaylist": "soittolista \"{playlist}\"",
+  "@ruleThenPlaylist": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleSentence": "{when} → {then}",
+  "@ruleSentence": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "then": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleBandDarkHour": "yöntunti",
+  "ruleBandMorning": "aamu",
+  "ruleBandAfternoon": "iltapäivä",
+  "ruleBandEvening": "ilta",
+  "ruleBandNight": "yö",
+  "modeBattleLabel": "Energia",
+  "modeNightHourLabel": "Yöntunti",
+  "modeBattleBlurb": "Yksi napautus kovimpaan, menevämpään musiikkiin täällä. Uudelleensekoitus järjestää jonon alusta asti.",
+  "modeNightHourBlurb": "Pienet tunnit, joihin voi astua milloin tahansa. Riitasointuiset lyhyet kappaleet päästetään sisään — tämän tunnin kuuluu tuntua väärältä."
+}

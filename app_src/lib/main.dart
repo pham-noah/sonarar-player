@@ -22,6 +22,7 @@ import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
 import 'core/legal.dart';
+import 'l10n/app_localizations.dart';
 import 'core/latest_load.dart';
 import 'core/prefs_decode.dart' as decode;
 import 'core/shortcuts.dart';
@@ -227,7 +228,9 @@ class _SonararAppState extends State<SonararApp> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: _state.skinListenable,
+      listenable: Listenable.merge(
+        [_state.skinListenable, _state.localeListenable],
+      ),
       builder: (context, _) {
         final skin = _state.skin;
         final layoutId = _state.layoutId;
@@ -242,9 +245,12 @@ class _SonararAppState extends State<SonararApp> {
         }
 
         return MaterialApp(
-        title: 'Sonarar',
+        onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
         debugShowCheckedModeBanner: false,
         theme: _theme!,
+        locale: _state.locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: HomeShell(state: _state),
       );
       },
@@ -396,11 +402,31 @@ class _HomeShellState extends State<HomeShell>
     );
   }
 
+  /// The stored tag as a Locale. `zh-Hans` is a language with a script, not a
+  /// language code with a hyphen in it.
+  void _applyLocale(AppPrefs prefs) {
+    final tag = prefs.locale;
+    widget.state.setLocale(
+      tag == null ? null : Locale.fromSubtags(languageCode: _langOf(tag), scriptCode: _scriptOf(tag)),
+    );
+  }
+
+  static String _langOf(String tag) {
+    final parts = tag.split('-');
+    return parts.first;
+  }
+
+  static String? _scriptOf(String tag) {
+    final parts = tag.split('-');
+    return parts.length > 1 ? parts[1] : null;
+  }
+
   void _setPrefs(AppPrefs next) {
     final visualiserWasOff = !_prefs.showVisualiser;
     final weatherWasOff = !_prefs.contextWeather;
     final placesWasOff = !_prefs.placesEnabled;
     _shellChanged(() => _prefs = next);
+    _applyLocale(next);
     // ignore: discarded_futures
     _stores.savePrefs(next);
     _applyPrefs();
@@ -1180,6 +1206,7 @@ class _HomeShellState extends State<HomeShell>
     _needsSetup = !File('${_stores.directory}/prefs.json').existsSync();
 
     _prefs = await _stores.prefs.load();
+    _applyLocale(_prefs);
 
     widget.state.setPersonalization(await _stores.personalization.load());
     widget.state.onPersonalizationChanged = _stores.personalization.save;

@@ -1,5 +1,6 @@
 library;
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -146,6 +147,33 @@ void main() {
     test('off stays off across a save and a reload', () {
       final p = const AppPrefs().copyWith(checkForUpdates: false);
       expect(AppPrefs.fromJson(p.toJson()).checkForUpdates, isFalse);
+    });
+  });
+
+  group('the language', () {
+    test('is absent by default, which means follow the phone', () {
+      expect(AppPrefs.initial.locale, isNull);
+    });
+
+    test('survives a round trip through JSON', () {
+      final saved = AppPrefs.initial.copyWith(locale: 'ja');
+      expect(AppPrefs.fromJson(jsonDecode(jsonEncode(saved.toJson()))).locale,
+          'ja');
+    });
+
+    test('a tag this build does not speak falls back to the system', () {
+      final raw = Map<String, Object?>.from(AppPrefs.initial.toJson());
+      raw['locale'] = 'th';
+      expect(AppPrefs.fromJson(raw).locale, isNull,
+          reason: 'a newer build may write a tag this one cannot render');
+    });
+
+    test('clearing it goes back to the system', () {
+      final pref = AppPrefs.initial.copyWith(locale: 'fi');
+      expect(pref.copyWith(locale: null).locale, 'fi',
+          reason: 'copyWith(null) means "unchanged", not "clear"');
+      expect(pref.copyWith(clearLocale: true).locale, isNull,
+          reason: 'and this is how you actually clear it');
     });
   });
 }

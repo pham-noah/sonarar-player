@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Sonarar",
+  "@appTitle": {
+    "description": "The application name. Not translated."
+  }
+}

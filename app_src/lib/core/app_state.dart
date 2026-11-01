@@ -1,6 +1,7 @@
 library;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show Locale;
 import 'dart:ui' show Color;
 
 import '../art/art_focus.dart';
@@ -746,6 +747,20 @@ class AppState extends ChangeNotifier {
   Skin get uiSkin => _accented(presentation.asSkin(_skin));
 
   final ValueNotifier<Skin> skinListenable = ValueNotifier<Skin>(kSkinAbyss);
+
+  /// The language the UI speaks, or null to follow the phone.
+  ///
+  /// Its own notifier rather than [notifyListeners], because only the MaterialApp
+  /// needs to know: a language change must not repaint every widget that happens
+  /// to be listening to playback state.
+  final ValueNotifier<Locale?> localeListenable = ValueNotifier<Locale?>(null);
+
+  Locale? get locale => localeListenable.value;
+
+  void setLocale(Locale? value) {
+    if (localeListenable.value == value) return;
+    localeListenable.value = value;
+  }
 
   set _skinValue(Skin next) {
     _skin = next;

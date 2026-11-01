@@ -13,6 +13,7 @@ class AppPrefs {
     this.tabAnimation = true,
     this.showFps = false,
     this.checkForUpdates = true,
+    this.locale,
     this.weatherRefreshMinutes = 30,
     this.allowNetwork = true,
     this.contextWeather = false,
@@ -62,6 +63,12 @@ class AppPrefs {
   /// Asking GitHub for a newer build. Off means the app never phones home
   /// about itself; the check is a courtesy, so it can be declined.
   final bool checkForUpdates;
+
+  /// BCP-47 language tag the UI speaks, or null to follow the phone.
+  ///
+  /// Stored as the tag rather than as an index into a list: a list that gains a
+  /// language must not silently change what an older build means by "3".
+  final String? locale;
 
   final int weatherRefreshMinutes;
 
@@ -147,6 +154,10 @@ class AppPrefs {
     bool? officialOnly,
     bool? tabAnimation,
     bool? showFps,
+    String? locale,
+    // null means "unchanged" for every other field, so clearing a value that is
+    // legitimately null needs a word of its own.
+    bool clearLocale = false,
     bool? checkForUpdates,
     int? weatherRefreshMinutes,
     bool? allowNetwork,
@@ -191,6 +202,7 @@ class AppPrefs {
         officialOnly: officialOnly ?? this.officialOnly,
         tabAnimation: tabAnimation ?? this.tabAnimation,
         showFps: showFps ?? this.showFps,
+        locale: clearLocale ? null : (locale ?? this.locale),
         checkForUpdates: checkForUpdates ?? this.checkForUpdates,
         weatherRefreshMinutes:
             (weatherRefreshMinutes ?? this.weatherRefreshMinutes).clamp(5, 180),
@@ -244,6 +256,7 @@ class AppPrefs {
         'official_only': officialOnly,
         'tab_animation': tabAnimation,
         'show_fps': showFps,
+        if (locale != null) 'locale': locale,
         'check_for_updates': checkForUpdates,
         'weather_refresh_minutes': weatherRefreshMinutes,
         'allow_network': allowNetwork,
@@ -295,6 +308,7 @@ class AppPrefs {
 
       tabAnimation: raw['tab_animation'] != false,
       showFps: raw['show_fps'] == true,
+      locale: _languageTag(raw['locale']),
       checkForUpdates: raw['check_for_updates'] != false,
       weatherRefreshMinutes:
           _int(raw['weather_refresh_minutes']) ?? initial.weatherRefreshMinutes,
@@ -356,6 +370,20 @@ class AppPrefs {
   static String? _str(Object? v) =>
       (v is String && v.trim().isNotEmpty) ? v.trim() : null;
   static int? _int(Object? v) => v is num ? v.toInt() : null;
+
+  /// Only tags this build actually speaks. A tag from a newer build (or a
+  /// hand-edited file) must fall back to the system rather than leave the UI
+  /// hunting for a localization that does not exist.
+  static const Set<String> supportedLanguages = {
+    'en',
+    'vi',
+    'ja',
+    'zh-Hans',
+    'fi',
+  };
+
+  static String? _languageTag(Object? v) =>
+      (v is String && supportedLanguages.contains(v)) ? v : null;
 }
 
 class PrefsStore {

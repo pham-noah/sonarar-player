@@ -115,6 +115,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// stays put instead of sliding away with a snackbar.
   String? _checkResult;
 
+  /// Languages name themselves: a Vietnamese speaker looking for their
+  /// language looks for "Tiếng Việt", not for the English word for it.
+  static const Map<String, String> _languages = {
+    'system': 'SYSTEM',
+    'en': 'ENGLISH',
+    'vi': 'TIẾNG VIỆT',
+    'ja': '日本語',
+    'zh-Hans': '简体中文',
+    'fi': 'SUOMI',
+  };
+
+  String _languageLabel(String? tag) => _languages[tag ?? 'system'] ?? 'SYSTEM';
+
+  Future<void> _pickLanguage() async {
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: skin.panel,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final entry in _languages.entries)
+              KitRow(
+                skin: skin,
+                label: entry.value,
+                dense: true,
+                onTap: () => Navigator.of(context).pop(entry.key),
+                trailing: entry.key == (prefs!.locale ?? 'system')
+                    ? Icon(Icons.check_rounded, size: 18, color: skin.accent)
+                    : null,
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (chosen == null || !mounted) return;
+    final system = chosen == 'system';
+    onPrefsChanged?.call(
+      prefs!.copyWith(locale: system ? null : chosen, clearLocale: system),
+    );
+  }
+
   Future<void> _checkNow() async {
     if (_checking) return;
     setState(() {
@@ -334,6 +377,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
               if (_tab == SettingsTab.system) ...[
               SectionBand(skin: skin, label: 'INTERFACE'),
+              KitRow(
+                skin: skin,
+                label: 'LANGUAGE',
+                icon: Icons.translate_rounded,
+                trailing: Text(
+                  _languageLabel(prefs!.locale),
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontMicro,
+                    color: skin.secondary(0.8),
+                  ),
+                ),
+                onTap: _pickLanguage,
+              ),
               _toggle(skin, 'FPS COUNTER', prefs!.showFps,
                   icon: Icons.speed_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(showFps: v))),

@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 
 import '../core/app_state.dart';
 import '../library/tag_overrides.dart';
@@ -193,7 +194,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
             children: [
               Expanded(
                 child: Text(
-                  tagFieldLabel(f).toUpperCase(),
+                  capsFor(context, tagFieldLabel(f)),
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
                     letterSpacing: 3,

@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 
 import '../core/constants.dart';
 import '../core/prefs.dart';
@@ -94,7 +95,7 @@ class FirstRunScreen extends StatelessWidget {
                 for (final (i, entry) in palettes.indexed)
                   SkinChip(
                     skin: skin,
-                    label: entry.name.toUpperCase(),
+                    label: capsFor(context, entry.name),
                     selected: i == 0,
                     onTap: () {},
                   ),

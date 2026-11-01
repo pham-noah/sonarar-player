@@ -23,6 +23,7 @@ import 'core/music_root.dart';
 import 'core/diag_log.dart';
 import 'core/legal.dart';
 import 'l10n/app_localizations.dart';
+import 'l10n/script.dart';
 import 'l10n/l10n.dart';
 import 'core/latest_load.dart';
 import 'core/prefs_decode.dart' as decode;
@@ -731,7 +732,7 @@ class _HomeShellState extends State<HomeShell>
   }
 
   void _openPlaylistPage(Playlist p) {
-    _openPage(p.name.toUpperCase(), (_) => _playlistPageBody(p));
+    _openPage(capsFor(context, p.name), (_) => _playlistPageBody(p));
   }
 
   Widget _playlistPageBody(Playlist p) {
@@ -757,7 +758,7 @@ class _HomeShellState extends State<HomeShell>
   }
 
   void _addSongsToPlaylist(Playlist playlist) {
-    _openPage('ADD TO ${playlist.name.toUpperCase()}', (_) => LibraryScreen(
+    _openPage('ADD TO ${capsFor(context, playlist.name)}', (_) => LibraryScreen(
           tracks: _repo.tracks,
           playlists: null,
           skin: widget.state.uiSkin,

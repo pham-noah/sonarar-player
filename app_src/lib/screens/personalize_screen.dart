@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/script.dart';
 import '../l10n/l10n.dart';
 
 import '../core/app_state.dart';
@@ -689,7 +690,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       widget.state.preset == null
                           ? '${widget.state.allPresets.length} BUILT IN · NONE WORN'
                           : '${widget.state.allPresets.length} AVAILABLE · WEARING '
-                                '${widget.state.preset!.name.toUpperCase()}',
+                                '${capsFor(context, widget.state.preset!.name)}',
                       style: TextStyle(
                         fontSize: LayoutSpec.fontFloor - 4,
                         fontWeight: FontWeight.w800,
@@ -1766,7 +1767,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             children: [
               Expanded(
                 child: Text(
-                  '${folder.name.toUpperCase()}  ·  '
+                  '${capsFor(context, folder.name)}  ·  '
                   '${folder.set.pieces.length}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -1999,7 +2000,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
         title: Text(
-          'DELETE ${folder.name.toUpperCase()}?',
+          'DELETE ${capsFor(context, folder.name)}?',
           style: TextStyle(
             color: _skin.textPrimary,
             fontSize: LayoutSpec.fontFloor,

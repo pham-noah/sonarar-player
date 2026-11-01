@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 
 import '../core/track_labels.dart';
 import '../context/context_icons.dart';
@@ -191,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                 hasFix
                     ? ((placeName == null || placeName!.trim().isEmpty)
                         ? l10nOf(context).homeElsewhere
-                        : placeName!.toUpperCase())
+                        : capsFor(context, placeName!))
                     : l10nOf(context).homeNoFix,
                 dim: !hasFix || placeName == null || placeName!.trim().isEmpty,
               ),
@@ -511,7 +512,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _recapSection(BuildContext context) {
     if (recapTracks.isEmpty) return const [];
     return [
-      _bandText('RECAP — ${recapLabel.toUpperCase()}'),
+      _bandText('RECAP — ${capsFor(context, recapLabel)}'),
       _recapCard(context),
       const SizedBox(height: 22),
     ];
@@ -548,7 +549,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'RECAP — ${recapLabel.toUpperCase()}',
+                    'RECAP — ${capsFor(context, recapLabel)}',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

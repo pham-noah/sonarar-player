@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 
 import '../core/app_state.dart';
 import '../library/playlists.dart';
@@ -359,7 +360,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
               const ['abyss', 'amber', 'crimson'],
               _theme,
               (v) => setState(() => _theme = v),
-              (t) => t.toUpperCase(),
+              (t) => capsFor(context, t),
             ),
 
             const SizedBox(height: 22),

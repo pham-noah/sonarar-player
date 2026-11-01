@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 
 import '../library/playlists.dart';
 import '../library/track.dart';
@@ -96,7 +97,7 @@ class LibraryBrowserBar extends StatelessWidget {
                     border: Border.all(color: skin.accent),
                   ),
                   child: Text(
-                    filterLabel!.toUpperCase(),
+                    capsFor(context, filterLabel!),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,

@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../context/location_service.dart';
@@ -430,7 +431,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                                 color: skin.accentAt(0.6)),
                           ),
                           child: Text(
-                            poiLabel(l10nOf(context), kind).toUpperCase(),
+                            capsFor(context, poiLabel(l10nOf(context), kind)),
                             style: TextStyle(
                               fontSize: LayoutSpec.fontMicro,
                               letterSpacing: 1,

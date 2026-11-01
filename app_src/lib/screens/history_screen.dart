@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 
 import '../library/history.dart';
 import '../library/play_log.dart';
@@ -152,7 +153,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             }),
             const SizedBox(width: 4),
             Text(
-              '${_monthName(_month.month)} ${h.month.year}'.toUpperCase(),
+              capsFor(context, '${_monthName(_month.month)} ${h.month.year}'),
               style: TextStyle(
                 fontSize: LayoutSpec.fontFloor - 1,
                 fontWeight: FontWeight.w900,
@@ -602,7 +603,7 @@ String _bandName(BuildContext context, String band) => switch (band) {
       'evening' => l10nOf(context).bandEvening,
       'night' => l10nOf(context).bandNight,
       'darkHour' => l10nOf(context).bandNightHour,
-      _ => band.toUpperCase(),
+      _ => capsFor(context, band),
     };
 
 String _monthName(int m) => const [

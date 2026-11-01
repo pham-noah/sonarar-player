@@ -109,13 +109,11 @@ void main() {
 
     test('persona draws the personality layer the plain layouts do not', () {
       final p = LayoutKind.sonar.kit.chrome;
-      expect(p.wordmark, isTrue);
       expect(p.hemisphereScrim, isTrue);
       expect(p.transportTilt, isNot(0));
       expect(p.upNextStrip, isFalse);
 
       final plain = LayoutKind.solid.kit.chrome;
-      expect(plain.wordmark, isFalse);
       expect(plain.hemisphereScrim, isFalse);
       expect(plain.transportTilt, 0);
       expect(plain.upNextStrip, isTrue);

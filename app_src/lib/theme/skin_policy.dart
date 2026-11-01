@@ -91,8 +91,8 @@ class PlayContext {
 }
 
 String manualModeName(Skin skin, ManualMode mode) => switch (mode) {
-      ManualMode.battle => skin.word(WordKey.modeBattle, mode.label),
-      ManualMode.darkHour => skin.word(WordKey.modeDeepNight, mode.label),
+      ManualMode.battle => mode.label,
+      ManualMode.darkHour => mode.label,
     };
 
 String manualModeBlurb(Skin skin, ManualMode mode) {

@@ -156,7 +156,6 @@ class ChromeKit {
     required this.shellFrame,
     required this.titleForm,
 
-    required this.wordmark,
     required this.hemisphereScrim,
     required this.alfrescoCharacterArt,
 
@@ -177,7 +176,6 @@ class ChromeKit {
 
     titleForm: TitleForm.stacked,
     shellFrame: ShellFrame.docked,
-    wordmark: true,
     hemisphereScrim: true,
     alfrescoCharacterArt: true,
     artByDefault: true,
@@ -197,7 +195,6 @@ class ChromeKit {
 
     titleForm: TitleForm.beside,
     shellFrame: ShellFrame.floating,
-    wordmark: false,
     hemisphereScrim: false,
     alfrescoCharacterArt: false,
     artByDefault: false,
@@ -218,8 +215,6 @@ class ChromeKit {
   final HeaderForm libraryHeader;
   final TitleForm titleForm;
   final ShellFrame shellFrame;
-
-  final bool wordmark;
 
   final bool hemisphereScrim;
 
@@ -250,7 +245,6 @@ class ChromeKit {
           libraryHeader == other.libraryHeader &&
           titleForm == other.titleForm &&
           shellFrame == other.shellFrame &&
-          wordmark == other.wordmark &&
           hemisphereScrim == other.hemisphereScrim &&
           alfrescoCharacterArt == other.alfrescoCharacterArt &&
           artByDefault == other.artByDefault &&
@@ -269,7 +263,6 @@ class ChromeKit {
         libraryHeader,
         titleForm,
         shellFrame,
-        wordmark,
         hemisphereScrim,
         alfrescoCharacterArt,
         artByDefault,

@@ -755,14 +755,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   // ---- preview -------------------------------------------------------------
 
-  /// A miniature of the app, not a colour swatch. It shows the wordmark, the
+  /// A miniature of the app, not a colour swatch. It shows the chrome, the
   /// shape the panels take in this layout, the picture the screen actually
   /// wears, the scrim over it, and the accent where it lands — so a choice can
   /// be judged here instead of by walking back to Home to look.
   Widget _preview(Skin skin) {
     final root = _root;
     final kind = widget.state.layoutId;
-    final chrome = widget.state.presentation.kit.chrome;
     final art = widget.state.art;
     final glass = kind == LayoutKind.glass;
     final sonar = kind == LayoutKind.sonar;
@@ -868,16 +867,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (chrome.wordmark)
-                              Text(
-                                'SONARAR',
-                                style: TextStyle(
-                                  fontSize: LayoutSpec.fontFloor - 2,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: sonar ? 5 : 2,
-                                  color: skin.textPrimary,
-                                ),
-                              ),
                             const SizedBox(height: 3),
                           ],
                         ),

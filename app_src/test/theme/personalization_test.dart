@@ -188,7 +188,6 @@ void main() {
       expect(skinned.background, kSkinCrimson.background);
       expect(skinned.panel, kSkinCrimson.panel);
       expect(skinned.skewDegrees, kSkinCrimson.skewDegrees);
-      expect(skinned.word('nowPlaying', 'x'), kSkinCrimson.word('nowPlaying', 'x'));
     });
   });
 

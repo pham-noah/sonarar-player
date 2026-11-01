@@ -2548,7 +2548,7 @@ class _HomeShellState extends State<HomeShell>
 
   void _openArchivePage() {
     _openPage(
-      widget.state.languageSkin.word(WordKey.libraryRoom, l10nOf(context).shellLibraryTools),
+      l10nOf(context).shellLibraryTools,
       (_) => ArchiveScreen(
         state: widget.state,
         onOpenTagEditor: _openTagEditor,
@@ -2765,7 +2765,7 @@ class _HomeShellState extends State<HomeShell>
       onNeverInShuffle: () {
         widget.state.toggleExclusion(t.id);
         _toast(widget.state.exclusions.contains(t.id)
-            ? 'Never in shuffle — the full list is in ${widget.state.languageSkin.word(WordKey.libraryRoom, 'library tools')}'
+            ? 'Never in shuffle — the full list is in ${'library tools'}'
             : l10nOf(context).shellShuffleAllowed);
       },
     );
@@ -3394,7 +3394,7 @@ class _HomeShellState extends State<HomeShell>
   }
 
   /// Nothing to look at on purpose. The app opens on the skin's own colour and
-  /// then the shell; a wordmark and a progress bar on every launch is an intro
+  /// then the shell; a logo and a progress bar on every launch is an intro
   /// nobody asked for, and it only exists because art used to be decoded first.
   // No boot splash: Noah's rule, and it is right — a logo held up in front of
   // the shell is an intro, not a loading state. The app paints its own shell
@@ -3805,7 +3805,7 @@ children: [
       ),
     ),
     _InlineDoor.velvetRoom: (
-      title: (skin) => skin.word(WordKey.libraryRoom, l10nOf(context).shellLibraryTools),
+      title: (skin) => l10nOf(context).shellLibraryTools,
       build: (skin) => ArchiveScreen(
         state: widget.state,
         inline: true,
@@ -3849,7 +3849,7 @@ children: [
       ),
     ),
     _InlineDoor.bonds: (
-      title: (skin) => skin.word(WordKey.affinityRoom, l10nOf(context).shellRanks),
+      title: (skin) => l10nOf(context).shellRanks,
       build: (skin) => BondsScreen(
         state: widget.state,
         events: _lastEvents,

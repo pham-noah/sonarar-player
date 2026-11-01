@@ -29,9 +29,6 @@ class Skin {
     required this.panel,
     required this.onAccent,
     required this.skewDegrees,
-    required this.contextLabel,
-    required this.nowPlayingWordmark,
-    this.names = const {},
     this.accentPinned = false,
   });
 
@@ -74,22 +71,15 @@ class Skin {
 
   final double skewDegrees;
 
-  final String contextLabel;
-
-  final String nowPlayingWordmark;
-
-  final Map<String, String> names;
 
   final bool accentPinned;
-
-  String word(String key, String fallback) => names[key] ?? fallback;
 
   /// The same skin wearing a different accent.
   ///
   /// A skin's accent is not one colour: `accentDeep` and `onAccent` are derived
   /// from it, and copying them across would put white glyphs on a pale accent.
   /// Only the three accent slots move — background, panel, text, skew and the
-  /// wordmark stay the skin's, which is what keeps it recognisable.
+  /// rest of the skin's identity stay put, which is what keeps it recognisable.
   /// The same skin on a different base colour. Text, panels and the accent's
   /// contrast are re-derived, because a base the user picked is not the base the
   /// palette assumed.
@@ -109,9 +99,6 @@ class Skin {
       onAccent: onAccentFor(accent),
       accentPinned: accentPinned,
       skewDegrees: skewDegrees,
-      contextLabel: contextLabel,
-      nowPlayingWordmark: nowPlayingWordmark,
-      names: names,
     );
   }
 
@@ -127,28 +114,7 @@ class Skin {
         onAccent: onAccentFor(accent),
         accentPinned: true,
         skewDegrees: skewDegrees,
-        contextLabel: contextLabel,
-        nowPlayingWordmark: nowPlayingWordmark,
-        names: names,
       );
-}
-
-abstract final class WordKey {
-  static const String libraryRoom = 'room.library';
-
-  static const String affinityRoom = 'room.affinity';
-
-  static const String modeBattle = 'mode.battle';
-
-  static const String modeDeepNight = 'mode.deepNight';
-
-  static const String bandDeepNight = 'band.deepNight';
-
-  static const String catalogue = 'room.catalogue';
-
-  static const String merge = 'room.merge';
-
-  static const String tools = 'room.tools';
 }
 
 const Skin kSkinAbyss = Skin(
@@ -162,18 +128,6 @@ const Skin kSkinAbyss = Skin(
   panel: Color(0x2616EBFF),
   onAccent: Color(0xFF03121E),
   skewDegrees: 15.0,
-  contextLabel: 'DEEP NIGHT',
-  nowPlayingWordmark: 'THE DEEP',
-  names: {
-    WordKey.libraryRoom: 'THE ARCHIVE',
-    WordKey.catalogue: 'CATALOGUE',
-    WordKey.merge: 'MERGE',
-    WordKey.tools: 'TOOLS',
-    WordKey.affinityRoom: 'AFFINITY',
-    WordKey.modeBattle: 'NIGHTFALL',
-    WordKey.modeDeepNight: 'DEEP NIGHT',
-    WordKey.bandDeepNight: 'DEEP NIGHT',
-  },
 );
 
 const Skin kSkinAmber = Skin(
@@ -187,18 +141,6 @@ const Skin kSkinAmber = Skin(
   panel: Color(0x29F3DF0C),
   onAccent: Color(0xFF0A0A0A),
   skewDegrees: 12.0,
-  contextLabel: 'LATE AFTERNOON',
-  nowPlayingWordmark: 'ON AIR',
-  names: {
-    WordKey.libraryRoom: 'THE ARCHIVE',
-    WordKey.catalogue: 'CATALOGUE',
-    WordKey.merge: 'MERGE',
-    WordKey.tools: 'TOOLS',
-    WordKey.affinityRoom: 'AFFINITY',
-    WordKey.modeBattle: 'LATE SHOW',
-    WordKey.modeDeepNight: 'STATIC',
-    WordKey.bandDeepNight: 'STATIC',
-  },
 );
 
 const Skin kSkinCrimson = Skin(
@@ -213,18 +155,6 @@ const Skin kSkinCrimson = Skin(
   panel: Color(0xFF1C1C22),
   onAccent: Color(0xFFFFFFFF),
   skewDegrees: 15.0,
-  contextLabel: 'SANCTUM',
-  nowPlayingWordmark: 'TURN IT UP',
-  names: {
-    WordKey.libraryRoom: 'THE ARCHIVE',
-    WordKey.catalogue: 'CATALOGUE',
-    WordKey.merge: 'MERGE',
-    WordKey.tools: 'TOOLS',
-    WordKey.affinityRoom: 'AFFINITY',
-    WordKey.modeBattle: 'SANCTUM',
-    WordKey.modeDeepNight: 'BACKSTAGE',
-    WordKey.bandDeepNight: 'BACKSTAGE',
-  },
 );
 
 const Skin kSkinMinimal = Skin(
@@ -240,8 +170,6 @@ const Skin kSkinMinimal = Skin(
 
   onAccent: Color(0xFF2B2A28),
   skewDegrees: 0.0,
-  contextLabel: 'AT HOME',
-  nowPlayingWordmark: 'NOW',
 );
 
 const Skin kSkinMono = Skin(
@@ -255,8 +183,6 @@ const Skin kSkinMono = Skin(
   panel: Color(0xFF1E1E20),
   onAccent: Color(0xFF121213),
   skewDegrees: 0.0,
-  contextLabel: 'PLAIN',
-  nowPlayingWordmark: 'NOW PLAYING',
 );
 
 const Skin kSkinBloom = Skin(
@@ -273,8 +199,6 @@ const Skin kSkinBloom = Skin(
 
   onAccent: Color(0xFF33272B),
   skewDegrees: 8.0,
-  contextLabel: 'SOFT HOUR',
-  nowPlayingWordmark: 'BLOOM',
 );
 
 const List<Skin> kAllSkins = [

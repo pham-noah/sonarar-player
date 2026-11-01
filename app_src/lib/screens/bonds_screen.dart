@@ -52,7 +52,7 @@ class BondsScreen extends StatelessWidget {
         if (!inline) ...[
           ScreenTitle(
             skin: skin,
-            text: state.languageSkin.word(WordKey.affinityRoom, l10nOf(context).shellRanks),
+            text: l10nOf(context).shellRanks,
           ),
           const SizedBox(height: 16),
         ],

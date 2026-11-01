@@ -9,7 +9,7 @@ import '../art/art_spec.dart';
 
 /// Everything the PERSONALIZE screen owns, in one record.
 ///
-/// The skin still decides the room — background, panel, text, skew, wordmark.
+/// The skin still decides the room — background, panel, text, skew.
 /// This decides only three things: what is painted behind the room, where the
 /// accent comes from, and which Home sections show in which order. Keeping it
 /// one document is what stops a fourth pref key being invented per widget.

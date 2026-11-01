@@ -256,9 +256,6 @@ class Presentation {
       onAccent: base.accentPinned ? base.onAccent : palette.onAccent,
       accentPinned: base.accentPinned,
       skewDegrees: skewDegrees,
-      contextLabel: base.contextLabel,
-      nowPlayingWordmark: base.nowPlayingWordmark,
-      names: base.names,
     );
   }
 }

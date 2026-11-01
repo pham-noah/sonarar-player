@@ -1,7 +1,6 @@
 library;
 
 import 'dart:io';
-import 'dart:ui' show Color;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/library/bonds.dart';
@@ -518,55 +517,6 @@ void main() {
     });
   });
 
-  group('theme vocabulary — Persona words are a theme, not a feature', () {
-    test('the general build has a name for every themed word', () {
-      const general = Skin(
-        id: SkinId.abyss,
-        displayName: 'General',
-        background: Color(0xFF000000),
-        accent: Color(0xFFFFFFFF),
-        accentDeep: Color(0xFF888888),
-        textPrimary: Color(0xFFFFFFFF),
-        textSecondary: Color(0xFFCCCCCC),
-        panel: Color(0xFF222222),
-        onAccent: Color(0xFF000000),
-        skewDegrees: 0,
-        contextLabel: 'NOW',
-        nowPlayingWordmark: 'PLAYING');
-      expect(general.word(WordKey.libraryRoom, 'Library tools'), 'Library tools');
-      expect(general.word(WordKey.modeBattle, 'Energy'), 'Energy');
-    });
-
-    test('every GAME skin names the rooms and modes it uses', () {
-      for (final s in [kSkinAbyss, kSkinAmber, kSkinCrimson]) {
-        expect(s.word(WordKey.libraryRoom, ''), isNotEmpty);
-        expect(s.word(WordKey.affinityRoom, ''), isNotEmpty);
-        expect(s.word(WordKey.modeBattle, ''), isNotEmpty);
-        expect(s.word(WordKey.modeDeepNight, ''), isNotEmpty);
-      }
-    });
-
-    test('a skin that names nothing falls back to neutral wording', () {
-      for (final s in [kSkinMinimal, kSkinMono, kSkinBloom]) {
-        expect(s.names, isEmpty, reason: '${s.displayName} should name nothing');
-        expect(s.word(WordKey.libraryRoom, 'Library tools'), 'Library tools');
-        expect(s.word(WordKey.modeBattle, 'Energy'), 'Energy');
-      }
-    });
-
-    test('the plain mode names carry no Persona vocabulary', () {
-      expect(ManualMode.battle.label, 'Energy');
-      expect(ManualMode.darkHour.label, 'Night Hour');
-      expect(ManualMode.battle.blurb.contains('All-Out'), isFalse);
-    });
-
-    test('the themed name is what the skin supplies', () {
-      expect(manualModeName(kSkinAbyss, ManualMode.battle), 'NIGHTFALL');
-      expect(manualModeName(kSkinCrimson, ManualMode.darkHour), 'BACKSTAGE');
-
-      expect(manualModeBlurb(kSkinAbyss, ManualMode.battle), ManualMode.battle.blurb);
-    });
-  });
 
   group('manual contexts', () {
     test('battle borrows the high-energy band rather than inventing one', () {

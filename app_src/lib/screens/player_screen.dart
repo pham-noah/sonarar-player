@@ -368,10 +368,7 @@ class PlayerScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (chrome.wordmark) ...[
-                    _wordmark(skin, skew, pal),
-                    const SizedBox(height: 4),
-                    Text(
+                  Text(
                       l10nOf(context).playerNowPlaying,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
@@ -380,7 +377,6 @@ class PlayerScreen extends StatelessWidget {
                         color: pal.accent,
                       ),
                     ),
-                  ],
                   if (state.arrangement.contextPlateExists) ...[
                     const SizedBox(height: 13),
                     _contextBadge(context, skin, skew, pal),
@@ -459,47 +455,6 @@ class PlayerScreen extends StatelessWidget {
           ),
 
         if (panel != PlayerPanel.none) _panelOverlay(context, skin),
-      ],
-    );
-  }
-
-  Widget _wordmark(Skin skin, double skew, LayoutPalette pal) {
-    return Row(
-      children: [
-        Text(
-          'SONA',
-          style: TextStyle(
-            fontSize: 21,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 3.5,
-            color: pal.textPrimary,
-          ),
-        ),
-        Transform(
-          transform: Matrix4.skewX(-skew),
-          alignment: Alignment.center,
-          child: Container(
-            color: pal.textPrimary,
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Text(
-              'R',
-              style: TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.w900,
-                color: pal.background,
-              ),
-            ),
-          ),
-        ),
-        Text(
-          'A R',
-          style: TextStyle(
-            fontSize: 21,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 3.5,
-            color: pal.textPrimary,
-          ),
-        ),
       ],
     );
   }
@@ -642,11 +597,14 @@ class PlayerScreen extends StatelessWidget {
     return out;
   }
 
+  /// The band the queue was built for. The label comes from the app's words,
+  /// not from the theme: a theme that renames the evening is a theme that lies
+  /// about what the app is doing.
   String _contextLabel(BuildContext context, Skin skin) {
     final ctx = state.playlistContext;
-    if (ctx == null) return skin.contextLabel;
+    if (ctx == null) return l10nOf(context).homeNoBand;
     return switch (ctx.band) {
-      ContextBand.darkHour => skin.word(WordKey.bandDeepNight, l10nOf(context).bandNightHour),
+      ContextBand.darkHour => l10nOf(context).bandNightHour,
       ContextBand.night => l10nOf(context).bandNight,
       ContextBand.evening => l10nOf(context).bandEvening,
       ContextBand.afternoon => l10nOf(context).bandAfternoon,
@@ -1043,12 +1001,6 @@ class PlayerScreen extends StatelessWidget {
         if (scrubberFirst) ...[
           _progressBar(skin, skew),
           const SizedBox(height: 6),
-          _times(skin, skew),
-          const SizedBox(height: 14),
-        ],
-        if (chrome.wordmark) ...[
-          _progressBar(skin, skew),
-          const SizedBox(height: 10),
           _times(skin, skew),
           const SizedBox(height: 14),
         ],

@@ -1277,12 +1277,14 @@ class _HomeShellState extends State<HomeShell>
       }
     }
     if (_prefs.activePresetId == null) {
+      if (!mounted) return;
+      final savedLabel = l10nOf(context).commonSaved;
       final savedSkin = decode.skinFromPrefs(_prefs.skinId);
       final savedWords = decode.skinFromPrefs(_prefs.languageSkinId);
       if (savedSkin != null || savedWords != null) {
         widget.state.applyPreset(ThemePreset(
           id: 'saved_look',
-          name: l10nOf(context).commonSaved,
+          name: savedLabel,
 
           skinId: savedSkin ?? widget.state.skin.id,
 
@@ -2191,7 +2193,7 @@ class _HomeShellState extends State<HomeShell>
                 if (!ctx.mounted) return;
                 Navigator.of(ctx).pop();
                 _toast(freed == null
-                    ? l10nOf(context).shellRemoveFailed
+                    ? l10nOf(ctx).shellRemoveFailed
                     : 'Removed — ${(freed / 1048576).toStringAsFixed(1)} MB freed');
                 unawaited(_reloadLibraryAfterDownload());
               }

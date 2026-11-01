@@ -5,6 +5,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
@@ -138,7 +141,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                       ),
                       Text(
-                        'PERSONALIZE',
+                        l10nOf(context).settingsPersonalize,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontBase,
                           fontWeight: FontWeight.w900,
@@ -168,7 +171,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   ],
 
                   if (_tab == PersonalizeTab.look) ...[
-                    SectionBand(skin: skin, label: 'LAYOUT'),
+                    SectionBand(skin: skin, label: l10nOf(context).firstRunLayout),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -187,20 +190,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     const SizedBox(height: 18),
 
-                    SectionBand(skin: skin, label: 'SONG LIST'),
+                    SectionBand(skin: skin, label: l10nOf(context).firstRunSongList),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         _chip(
                           skin,
-                          'GRID',
+                          l10nOf(context).firstRunGrid,
                           widget.prefs?.libraryIsGrid == true,
                           () => _setGrid(true),
                         ),
                         const SizedBox(width: 8),
                         _chip(
                           skin,
-                          'LIST',
+                          l10nOf(context).firstRunList,
                           widget.prefs?.libraryIsGrid != true,
                           () => _setGrid(false),
                         ),
@@ -208,23 +211,23 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     const SizedBox(height: 18),
 
-                    SectionBand(skin: skin, label: 'MOTION'),
+                    SectionBand(skin: skin, label: l10nOf(context).personalizeMotion),
                     _toggleRow(
                       skin,
-                      'TAB ANIMATION',
+                      l10nOf(context).personalizeTabAnimation,
                       widget.prefs?.tabAnimation ?? true,
                       (v) => _prefs((p) => p.copyWith(tabAnimation: v)),
                     ),
                     _toggleRow(
                       skin,
-                      'SPECTRUM',
+                      l10nOf(context).personalizeSpectrum,
                       widget.prefs?.showVisualiser ?? false,
                       (v) => _prefs((p) => p.copyWith(showVisualiser: v)),
                     ),
                     if (widget.prefs?.showVisualiser ?? false) ...[
                       _slider(
                         skin,
-                        'SMOOTHNESS',
+                        l10nOf(context).personalizeSmoothness,
                         (widget.prefs?.spectrumSmoothness ?? 60).toDouble(),
                         0,
                         100,
@@ -234,7 +237,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'SCALE',
+                        l10nOf(context).personalizeScale,
                         widget.prefs?.spectrumScalePercent.toDouble() ?? 100,
                         40,
                         220,
@@ -266,7 +269,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ],
                     const SizedBox(height: 18),
 
-                    SectionBand(skin: skin, label: 'BASE'),
+                    SectionBand(skin: skin, label: l10nOf(context).personalizeBase),
                     SizedBox(
                       height: 46,
                       child: ListView.separated(
@@ -293,7 +296,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  'THEME',
+                                  l10nOf(context).personalizeTheme,
                                   style: TextStyle(
                                     color: onTheme
                                         ? skin.accent
@@ -329,10 +332,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    SectionBand(skin: skin, label: 'ACCENT'),
+                    SectionBand(skin: skin, label: l10nOf(context).personalizeAccent),
                     _chip(
                       skin,
-                      'FROM PHOTO',
+                      l10nOf(context).personalizeFromPhoto,
                       _p.accent.source == AccentSource.image,
                       _accentFromPhoto,
                     ),
@@ -366,7 +369,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  'THEME',
+                                  l10nOf(context).personalizeTheme,
                                   style: TextStyle(
                                     color: onTheme
                                         ? skin.accent
@@ -411,7 +414,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 18),
                   ],
                   if (_tab == PersonalizeTab.art) ...[
-                    SectionBand(skin: skin, label: 'PICTURE FOR'),
+                    SectionBand(skin: skin, label: l10nOf(context).personalizePictureFor),
                     _picturePreview(skin),
                     const SizedBox(height: 10),
                     _scopeStrip(skin),
@@ -422,7 +425,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         Expanded(
                           child: _button(
                             skin,
-                            'NO PICTURE',
+                            l10nOf(context).personalizeNoPicture,
                             () => _setBackdrop(const BackdropSpec()),
                             quiet: !_b.isSet,
                           ),
@@ -431,7 +434,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         Expanded(
                           child: _button(
                             skin,
-                            'ADD PICTURE',
+                            l10nOf(context).personalizeAddPicture,
                             _chooseImage,
                             quiet: _b.isSet,
                           ),
@@ -442,14 +445,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       const SizedBox(height: 14),
                       _button(
                         skin,
-                        _canReframe ? 'REFRAME' : 'REFRAME — NO FILE TO MOVE',
+                        _canReframe ? l10nOf(context).personalizeReframe : l10nOf(context).personalizeReframeNoFile,
                         _reframe,
                         quiet: !_canReframe,
                       ),
                       const SizedBox(height: 6),
                       _slider(
                         skin,
-                        'BLUR',
+                        l10nOf(context).effectBlur,
                         _b.blur,
                         0,
                         24,
@@ -457,7 +460,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'DIM',
+                        l10nOf(context).effectDim,
                         _b.dim,
                         0,
                         BackdropSpec.maxDim,
@@ -465,7 +468,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'ZOOM',
+                        l10nOf(context).effectZoom,
                         _b.scale,
                         1,
                         BackdropSpec.maxScale,
@@ -473,7 +476,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'ROTATION',
+                        l10nOf(context).effectRotation,
                         _b.rotationDeg,
                         -BackdropSpec.maxRotation,
                         BackdropSpec.maxRotation,
@@ -481,26 +484,26 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _toggle(
                         skin,
-                        'TINT WITH ACCENT',
+                        l10nOf(context).effectTintAccent,
                         _b.tint,
                         (v) => _setBackdrop(_b.copyWith(tint: v)),
                       ),
                       _toggle(
                         skin,
-                        'PLAYER USES THE COVER',
+                        l10nOf(context).effectPlayerUsesCover,
                         _b.coverOnPlayer,
                         (v) => _setBackdrop(_b.copyWith(coverOnPlayer: v)),
                       ),
                       if (_b.fromArt)
                         _toggle(
                           skin,
-                          'FOLLOW TRACK',
+                          l10nOf(context).effectFollowTrack,
                           _b.followTrack,
                           (v) => _setBackdrop(_b.copyWith(followTrack: v)),
                         ),
                       _slider(
                         skin,
-                        'SATURATION',
+                        l10nOf(context).effectSaturation,
                         _b.saturation,
                         0,
                         2,
@@ -509,7 +512,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'CONTRAST',
+                        l10nOf(context).effectContrast,
                         _b.contrast,
                         0.5,
                         2,
@@ -518,7 +521,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'VIGNETTE',
+                        l10nOf(context).effectVignette,
                         _b.vignette,
                         0,
                         1,
@@ -526,7 +529,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'GRAIN',
+                        l10nOf(context).effectGrain,
                         _b.grain,
                         0,
                         1,
@@ -534,7 +537,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       _slider(
                         skin,
-                        'BURN',
+                        l10nOf(context).effectBurn,
                         _b.burn,
                         0,
                         1,
@@ -556,7 +559,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         children: [
                           _chip(
                             skin,
-                            'SOLID',
+                            l10nOf(context).baseSolid,
                             _p.fill.isSet && !_p.fill.isGradient,
                             () => _setFill(
                               _p.fill.isSet
@@ -567,7 +570,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           const SizedBox(width: 8),
                           _chip(
                             skin,
-                            'GRADIENT',
+                            l10nOf(context).baseGradient,
                             _p.fill.isGradient,
                             () => _setFill(
                               BackdropFill(
@@ -580,7 +583,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           const SizedBox(width: 8),
                           _chip(
                             skin,
-                            'SKIN',
+                            l10nOf(context).baseSkin,
                             !_p.fill.isSet,
                             () => _setFill(BackdropFill.none),
                           ),
@@ -589,7 +592,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       if (_p.fill.isSet) ...[
                         const SizedBox(height: 12),
                         Text(
-                          _p.fill.isGradient ? 'FROM' : 'COLOUR',
+                          _p.fill.isGradient ? l10nOf(context).baseFrom : l10nOf(context).baseColour,
                           style: TextStyle(
                             fontSize: LayoutSpec.fontFloor,
                             fontWeight: FontWeight.w800,
@@ -620,7 +623,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           ),
                           _slider(
                             skin,
-                            'DIRECTION',
+                            l10nOf(context).baseDirection,
                             _p.fill.angle,
                             0,
                             360,
@@ -632,20 +635,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 18),
                   ],
                   if (_tab == PersonalizeTab.art) ...[
-                    SectionBand(skin: skin, label: 'ART FOLDERS'),
+                    SectionBand(skin: skin, label: l10nOf(context).artFolders),
                     Row(
                       children: [
                         Expanded(
                           child: _button(
                             skin,
-                            'RESCAN',
+                            l10nOf(context).artRescan,
                             _rescanArt,
                             quiet: true,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: _button(skin, 'ADD PICTURE', _chooseImage),
+                          child: _button(skin, l10nOf(context).personalizeAddPicture, _chooseImage),
                         ),
                       ],
                     ),
@@ -669,7 +672,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 18),
                   ],
                   if (_tab == PersonalizeTab.home) ...[
-                    SectionBand(skin: skin, label: 'HOME'),
+                    SectionBand(skin: skin, label: l10nOf(context).scopeHome),
                     Text(
                       'NOW stays at the top — it is the page header, not a section.',
                       style: TextStyle(
@@ -706,13 +709,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: _button(skin, 'NEW THEME', _saveTheme),
+                            child: _button(skin, l10nOf(context).themeNew, _saveTheme),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: _button(
                               skin,
-                              'OVERRIDE',
+                              l10nOf(context).themeOverride,
                               _overrideTheme,
                               quiet: true,
                             ),
@@ -949,7 +952,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final images = candidateImages();
     if (!mounted) return null;
     if (images.isEmpty) {
-      toast(context, 'No pictures found in Pictures, DCIM or Download.');
+      toast(context, l10nOf(context).photoNoneFound);
       return null;
     }
     return showModalBottomSheet<File>(
@@ -988,12 +991,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       if (!mounted) return;
       if (access != StorageAccess.denied) images = candidateImages();
       if (images.isEmpty) {
-        toast(context, noPicturesMessage(access));
+        toast(context, noPicturesMessage(access, l10nOf(context)));
         return;
       }
     }
     if (images.isEmpty) {
-      toast(context, 'No pictures found in Pictures, DCIM or Download.');
+      toast(context, l10nOf(context).photoNoneFound);
       return;
     }
     final picked = await showModalBottomSheet<File>(
@@ -1034,7 +1037,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ListTile(
               leading: Icon(Icons.wallpaper_rounded, color: _skin.accent),
               title: Text(
-                _surface == null ? 'USE IT EVERYWHERE' : 'USE IT HERE',
+                _surface == null ? l10nOf(context).photoUseEverywhere : l10nOf(context).photoUseHere,
                 style: TextStyle(color: _skin.textPrimary),
               ),
               onTap: () => Navigator.of(ctx).pop('here'),
@@ -1042,11 +1045,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ListTile(
               leading: Icon(Icons.folder_outlined, color: _skin.accent),
               title: Text(
-                'PUT IT IN A FOLDER',
+                l10nOf(context).photoPutInFolder,
                 style: TextStyle(color: _skin.textPrimary),
               ),
               subtitle: Text(
-                'Folders hold many pictures and can follow the track.',
+                l10nOf(context).photoFolderHint,
                 style: TextStyle(color: _skin.textSecondary),
               ),
               onTap: () => Navigator.of(ctx).pop('folder'),
@@ -1087,13 +1090,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _scopeTile(skin, 'EVERYWHERE', null),
+          _scopeTile(skin, l10nOf(context).scopeEverywhere, null),
           for (final surface in SurfaceId.values)
             _scopeTile(skin, switch (surface) {
-              SurfaceId.home => 'HOME',
-              SurfaceId.library => 'LIBRARY',
-              SurfaceId.search => 'SEARCH',
-              SurfaceId.player => 'PLAYER',
+              SurfaceId.home => l10nOf(context).scopeHome,
+              SurfaceId.library => l10nOf(context).libraryTitle,
+              SurfaceId.search => l10nOf(context).librarySearch,
+              SurfaceId.player => l10nOf(context).scopePlayer,
             }, surface),
         ],
       ),
@@ -1167,7 +1170,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           border: Border.all(color: skin.secondary(0.22)),
         ),
         child: Text(
-          'NO PICTURE — THE SKIN PAINTS THIS',
+          l10nOf(context).photoNoneSkinPaints,
           style: TextStyle(
             color: skin.textSecondary,
             fontSize: LayoutSpec.fontMicro,
@@ -1215,7 +1218,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       color: Colors.black.withValues(alpha: 0.55),
                       child: Text(
-                        _b.fromArt ? 'FOLDER' : 'PHOTO',
+                        _b.fromArt ? l10nOf(context).scopeFolder : l10nOf(context).scopePhoto,
                         style: TextStyle(
                           color: skin.accent,
                           fontSize: LayoutSpec.fontMicro,
@@ -1389,14 +1392,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   ];
 
   String _sectionName(HomeSection s) => switch (s) {
-    HomeSection.now => 'NOW',
-    HomeSection.continueListening => 'CONTINUE LISTENING',
-    HomeSection.recentlyAdded => 'RECENTLY ADDED',
-    HomeSection.rediscover => 'REDISCOVER',
-    HomeSection.jumpBackIn => 'JUMP BACK IN',
-    HomeSection.quickPick => 'QUICK PICK',
-    HomeSection.fromLibrary => 'FROM YOUR LIBRARY',
-    HomeSection.recap => 'RECAP',
+    HomeSection.now => l10nOf(context).homeNow,
+    HomeSection.continueListening => l10nOf(context).homeContinue,
+    HomeSection.recentlyAdded => l10nOf(context).homeRecentlyAdded,
+    HomeSection.rediscover => l10nOf(context).homeRediscover,
+    HomeSection.jumpBackIn => l10nOf(context).homeJumpBackIn,
+    HomeSection.quickPick => l10nOf(context).homeQuickPick,
+    HomeSection.fromLibrary => l10nOf(context).homeFromLibrary,
+    HomeSection.recap => l10nOf(context).recapTitle,
   };
 
   Widget _sectionRow(Skin skin, HomeSection section) {
@@ -1459,7 +1462,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
         title: Text(
-          'Name the new theme',
+          l10nOf(context).themeNamePrompt,
           style: TextStyle(color: _skin.textPrimary),
         ),
         content: TextField(
@@ -1471,11 +1474,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('CANCEL'),
+            child: Text(l10nOf(context).libraryCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
-            child: const Text('CREATE'),
+            child: Text(l10nOf(context).libraryCreate),
           ),
         ],
       ),
@@ -1490,7 +1493,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     setState(() {});
     toast(context, done
               ? 'Saved into "$name".'
-              : 'No theme is worn, so there was nothing to override.');
+              : l10nOf(context).themeNoneToOverride);
   }
 
   void _setFill(BackdropFill fill) => _apply(_p.copyWith(fill: fill));
@@ -1580,9 +1583,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             const SizedBox(height: 6),
             Text(
               switch (kind) {
-                LayoutKind.sonar => 'SONAR',
-                LayoutKind.solid => 'SOLID',
-                LayoutKind.glass => 'GLASS',
+                LayoutKind.sonar => l10nOf(context).layoutSonar,
+                LayoutKind.solid => l10nOf(context).baseSolid,
+                LayoutKind.glass => l10nOf(context).layoutGlass,
               },
               style: TextStyle(
                 fontSize: LayoutSpec.fontFloor,
@@ -1654,7 +1657,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
             if (active)
               Text(
-                'WORN',
+                l10nOf(context).themeWorn,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontFloor,
                   fontWeight: FontWeight.w900,
@@ -1664,7 +1667,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               )
             else if (preset.builtIn)
               Text(
-                'BUILT IN',
+                l10nOf(context).themeBuiltIn,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontFloor,
                   color: skin.textSecondary,
@@ -1692,11 +1695,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// bottom and you can see what you have already set.
   Widget _tabs(Skin skin) => KitTabs<PersonalizeTab>(
     skin: skin,
-    labels: const {
-      PersonalizeTab.themes: 'THEMES',
-      PersonalizeTab.look: 'LOOK',
-      PersonalizeTab.art: 'ART',
-      PersonalizeTab.home: 'HOME',
+    labels: {
+      PersonalizeTab.themes: l10nOf(context).themeThemes,
+      PersonalizeTab.look: l10nOf(context).settingsTabLook,
+      PersonalizeTab.art: l10nOf(context).themeArt,
+      PersonalizeTab.home: l10nOf(context).scopeHome,
     },
     selected: _tab,
     onSelected: (t) => setState(() => _tab = t),
@@ -1794,19 +1797,19 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               _miniAction(
                 skin,
                 Icons.add_photo_alternate_outlined,
-                'ADD',
+                l10nOf(context).commonAdd,
                 () => _addToFolder(folder),
               ),
               _miniAction(
                 skin,
                 Icons.drive_file_rename_outline,
-                'RENAME',
+                l10nOf(context).themeRename,
                 () => _renameFolder(folder),
               ),
               _miniAction(
                 skin,
                 Icons.delete_outline,
-                'DELETE',
+                l10nOf(context).themeDelete,
                 () => _deleteFolder(folder),
               ),
             ],
@@ -1917,7 +1920,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
         title: Text(
-          'FOLDER NAME',
+          l10nOf(context).artFolderName,
           style: TextStyle(
             color: _skin.textPrimary,
             fontSize: LayoutSpec.fontFloor,
@@ -1939,12 +1942,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('CANCEL', style: TextStyle(color: _skin.textSecondary)),
+            child: Text(l10nOf(context).libraryCancel, style: TextStyle(color: _skin.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
             child: Text(
-              'SAVE',
+              l10nOf(context).importSave,
               style: TextStyle(
                 color: _skin.accent,
                 fontWeight: FontWeight.w900,
@@ -1970,13 +1973,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       file = backdropFile(root, _b);
     }
     if (file == null) {
-      toast(context, 'No photo chosen, so no colour taken.');
+      toast(context, l10nOf(context).photoNoColour);
       return;
     }
     final colour = await accentFromImage(file);
     if (!mounted) return;
     if (colour == null) {
-      toast(context, 'That picture has no colour strong enough to be an accent.');
+      toast(context, l10nOf(context).photoWeakColour);
       return;
     }
     final argb = colour.toARGB32();
@@ -2031,12 +2034,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('KEEP', style: TextStyle(color: _skin.textSecondary)),
+            child: Text(l10nOf(context).importKeep, style: TextStyle(color: _skin.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
-              'DELETE',
+              l10nOf(context).themeDelete,
               style: TextStyle(
                 color: _skin.accent,
                 fontWeight: FontWeight.w900,
@@ -2056,7 +2059,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final root = _root;
     if (root == null) return;
     if (folder.set.pieces.length == 1) {
-      toast(context, 'That is the only picture left — delete the folder.');
+      toast(context, l10nOf(context).artOnlyPicture);
       return;
     }
     removeFromFolder(
@@ -2137,6 +2140,5 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 /// What to say when the picker has nothing to show. A denial and an empty
 /// phone are different problems, and telling a person the wrong one sends
 /// them looking in the wrong place.
-String noPicturesMessage(StorageAccess access) => access == StorageAccess.denied
-    ? 'Sonarar cannot see your pictures — allow photo access in Settings.'
-    : 'No pictures found in Pictures, DCIM or Download.';
+String noPicturesMessage(StorageAccess access, AppLocalizations l10n) =>
+    access == StorageAccess.denied ? l10n.photoNoAccess : l10n.photoNoneFound;

@@ -129,14 +129,14 @@ PlaylistExplanation explainPlaylist({
 
     if (rule != null) {
       context.add(ExplanationLine(
-        'Rule "${rule.id}" matched: ${rule.describe()}.',
+        l10n.explainRuleMatched(rule.id, rule.describe()),
         counts: true,
       ));
       if (rule.playlist != null && ruleTrackCount != null) {
         context.add(ExplanationLine(
           ruleTrackCount < 3
-              ? '"${rule.playlist}" holds $ruleTrackCount — those lead, the rest of the library follows.'
-              : '"${rule.playlist}" became the queue ($ruleTrackCount tracks).',
+              ? l10n.explainPlaylistLeads(rule.playlist!, ruleTrackCount)
+              : l10n.explainPlaylistQueue(rule.playlist!, ruleTrackCount),
           counts: true,
         ));
       }

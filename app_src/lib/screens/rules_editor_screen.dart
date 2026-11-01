@@ -82,9 +82,7 @@ class RulesEditorScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Not offered here: place rules, and a "dry" weather condition — '
-              'the app reports unknown weather as not-raining, so a dry rule '
-              'would fire on the day it knows least.',
+              l10nOf(context).rulesNotOffered,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 color: skin.secondary(0.7),

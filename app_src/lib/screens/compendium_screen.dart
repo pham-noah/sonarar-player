@@ -193,8 +193,8 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
       Padding(
         padding: EdgeInsets.fromLTRB(20, widget.inline ? 10 : 2, 20, 12),
         child: Text(
-          '${widget.entries.length - neverHeard} of '
-          '${widget.entries.length} heard',
+          l10nOf(context).compendiumHeardCount(
+              widget.entries.length - neverHeard, widget.entries.length),
           style: TextStyle(
             fontSize: LayoutSpec.fontSmall,
             color: skin.textSecondary,
@@ -239,8 +239,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
         Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Nothing has been heard yet, so the compendium is empty. '
-            'It fills itself as you listen.',
+            l10nOf(context).compendiumEmptyBody,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: LayoutSpec.fontBase,

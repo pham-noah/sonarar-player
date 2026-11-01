@@ -542,7 +542,6 @@
       }
     }
   },
-  "personalizeNowIsHeader": "NOW stays at the top — it is the page header, not a section.",
   "panelBookmarkedAt": "Bookmarked at {time}",
   "@panelBookmarkedAt": {
     "placeholders": {
@@ -613,5 +612,34 @@
     }
   },
   "placesDuplicateName": "You already have a place by this name — saving adds this spot to it rather than making a new one.",
-  "placesNameHint": "e.g. University, Gym, Home"
+  "placesNameHint": "e.g. University, Gym, Home",
+  "settingsOnNewest": "You are on the newest build ({version}).",
+  "@settingsOnNewest": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailable": "Sonarar {version} is available — UPDATE is at the top of the app.",
+  "@settingsUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "rulesNotOffered": "Not offered here: place rules, and a \"dry\" weather condition — the app reports unknown weather as not-raining, so a dry rule would fire on the day it knows least.",
+  "compendiumEmptyBody": "Nothing has been heard yet, so the compendium is empty. It fills itself as you listen.",
+  "compendiumHeardCount": "{heard} of {total} heard",
+  "@compendiumHeardCount": {
+    "placeholders": {
+      "heard": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

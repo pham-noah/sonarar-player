@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../widgets/pressable.dart';
 import '../widgets/toasts.dart';
 import '../widgets/devices.dart';
@@ -180,9 +182,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _checking = false;
       _checkResult = update == null
-          ? 'You are on the newest build (${widget.appVersion ?? appVersionCode}).'
-          : 'Sonarar ${update.version} is available — UPDATE is at the top of '
-              'the app.';
+          ? l10nOf(context).settingsOnNewest((widget.appVersion ?? appVersionCode).toString())
+          : l10nOf(context).settingsUpdateAvailable(update.version.toString());
     });
   }
 

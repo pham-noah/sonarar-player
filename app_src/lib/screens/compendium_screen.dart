@@ -328,9 +328,13 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
                   Text(
 
                     dim
-                        ? 'never heard'
-                        : 'last ${_ago(e.lastPlayedAt!, DateTime.now())}'
-                            '${e.completions > 0 ? ' · ${e.completions} through' : ''}',
+                        ? l10nOf(context).compendiumNeverHeard
+                        : e.completions > 0
+                            ? l10nOf(context).compendiumLastHeardThrough(
+                                _ago(context, e.lastPlayedAt!, DateTime.now()),
+                                e.completions)
+                            : l10nOf(context).compendiumLastHeard(
+                                _ago(context, e.lastPlayedAt!, DateTime.now())),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       color: playing
@@ -353,13 +357,18 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
   }
 }
 
-String _ago(DateTime then, DateTime now) {
+/// "today", "yesterday", "3 days ago" — with the reader's own plural rules,
+/// which the hand-written "day${days == 1 ? '' : 's'}" could not carry.
+///
+/// The 30-day month is a deliberate approximation: this line is a rough hint
+/// under a track title, not a date.
+String _ago(BuildContext context, DateTime then, DateTime now) {
+  final l10n = l10nOf(context);
   final days = DateTime(now.year, now.month, now.day)
       .difference(DateTime(then.year, then.month, then.day))
       .inDays;
-  if (days <= 0) return 'today';
-  if (days == 1) return 'yesterday';
-  if (days < 30) return '$days days ago';
-  final months = days ~/ 30;
-  return months == 1 ? 'a month ago' : '$months months ago';
+  if (days <= 0) return l10n.commonToday;
+  if (days == 1) return l10n.commonYesterday;
+  if (days < 30) return l10n.agoDays(days);
+  return l10n.agoMonths(days ~/ 30);
 }

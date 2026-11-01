@@ -681,5 +681,65 @@
         "type": "String"
       }
     }
+  },
+  "compendiumLastHeard": "last {when}",
+  "@compendiumLastHeard": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeardThrough": "last {when} · {count} through",
+  "@compendiumLastHeardThrough": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compendiumNeverHeard": "never heard",
+  "historyThinSample": "{count, plural, =1{Only 1 play so far} other{Only {count} plays so far}} — the shapes below are real, just small.",
+  "@historyThinSample": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDayStats": "{length} · {plays, plural, =1{1 play} other{{plays} plays}} · {completions} through",
+  "@historyDayStats": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "plays": {
+        "type": "int"
+      },
+      "completions": {
+        "type": "int"
+      }
+    }
+  },
+  "commonToday": "today",
+  "commonYesterday": "yesterday",
+  "agoDays": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoMonths": "{count, plural, =1{a month ago} other{{count} months ago}}",
+  "@agoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -95,8 +95,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 14),
                   child: Text(
-                    'Only ${h.totalPlays} play${h.totalPlays == 1 ? '' : 's'} so '
-                    'far — the shapes below are real, just small.',
+                    l10nOf(context).historyThinSample(h.totalPlays),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       color: skin.accent,
@@ -357,9 +356,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           const SizedBox(height: 2),
           Text(
-            '${_shortDuration(day.listenedMs)} · '
-            '${day.plays} play${day.plays == 1 ? '' : 's'} · '
-            '${day.completions} through',
+            l10nOf(context).historyDayStats(
+                _shortDuration(day.listenedMs), day.plays, day.completions),
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
               color: skin.textSecondary,

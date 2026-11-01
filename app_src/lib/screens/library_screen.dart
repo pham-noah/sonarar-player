@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../l10n/l10n.dart';
+
 import '../library/dynamic_playlist.dart';
 import '../library/playlists.dart';
 import '../library/rediscovery.dart';
@@ -379,7 +381,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
                   _header(
                     skin,
-                    title: 'SEARCH',
+                    title: l10nOf(context).librarySearch,
                     countLabel: '${_visible.length} found',
                   ),
                   _searchField(skin),
@@ -483,7 +485,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'PINNED',
+                      l10nOf(context).libraryPinned,
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
@@ -637,9 +639,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
               besidePlaylists: !_kindChoicesOpen
                   ? const []
                   : [
-                      _kindChip(skin, 'SEEDED', _PlaylistKind.seeded),
+                      _kindChip(skin, l10nOf(context).librarySeeded, _PlaylistKind.seeded),
                       const SizedBox(width: 5),
-                      _kindChip(skin, 'CUSTOM', _PlaylistKind.custom),
+                      _kindChip(skin, l10nOf(context).libraryCustom, _PlaylistKind.custom),
                     ],
               pickedView: _pickedView,
               filterLabel: _playlistFilter?.name,
@@ -703,7 +705,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Widget _header(
     Skin skin, {
-    String title = 'LIBRARY',
+    String? title,
     String? countLabel,
 
     VoidCallback? onNewPlaylist,
@@ -711,6 +713,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     IconData newPlaylistIcon = Icons.add_rounded,
   }) {
     final presentation = PresentationScope.of(context, fallback: skin);
+    final heading = title ?? l10nOf(context).libraryTitle;
 
     Widget? plus(Color color) => onNewPlaylist == null
         ? null
@@ -733,7 +736,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (presentation.kit.chrome.libraryHeader == HeaderForm.appHeader) {
       return AppScreenHeader(
         skin: skin,
-        title: title,
+        title: heading,
         mark: widget.headerMark,
         trailing: plus(skin.accent),
       );
@@ -748,7 +751,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           Expanded(
             child: SectionBand(
               skin: skin,
-              label: title,
+              label: heading,
 
               trailing: plus(skin.accent),
             ),
@@ -790,7 +793,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 _applyFilter();
               },
               decoration: InputDecoration(
-                hintText: 'Title, artist, album, folder',
+                hintText: l10nOf(context).librarySearchHint,
                 hintStyle: TextStyle(
                   fontSize: LayoutSpec.fontBase,
                   color: skin.primaryText(0.66),
@@ -869,8 +872,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     padding: const EdgeInsets.all(20),
                     child: Text(
                       _openPlaylist != null
-                          ? 'This playlist is empty.\nLong-press a track to add it.'
-                          : 'No tracks by this artist.',
+                          ? l10nOf(context).libraryEmptyPlaylist
+                          : l10nOf(context).libraryEmptyArtist,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontBase,
@@ -968,9 +971,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
           child: Row(
             children: [
-              _sortSegment(skin, 'RECENTS', 'recents'),
+              _sortSegment(skin, l10nOf(context).libraryRecents, 'recents'),
               const SizedBox(width: 6),
-              _sortSegment(skin, 'UPDATED', 'updated'),
+              _sortSegment(skin, l10nOf(context).libraryUpdated, 'updated'),
               const SizedBox(width: 6),
               _sortSegment(skin, 'A–Z', 'alpha'),
               const Spacer(),
@@ -1033,7 +1036,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Text(
-              'No playlists yet.',
+              l10nOf(context).libraryNoPlaylists,
               style: TextStyle(
                 fontSize: LayoutSpec.fontBase,
                 color: skin.textSecondary,
@@ -1108,7 +1111,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (names.isEmpty) {
       return Center(
         child: Text(
-          'No artists.',
+          l10nOf(context).libraryNoArtists,
           style: TextStyle(fontSize: LayoutSpec.fontBase, color: skin.textSecondary),
         ),
       );
@@ -1164,23 +1167,23 @@ class _LibraryScreenState extends State<LibraryScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: PresentationScope.uiSkin(context, widget.skin).background,
-        title: Text('New playlist',
+        title: Text(l10nOf(context).libraryNewPlaylist,
             style: TextStyle(color: widget.skin.textPrimary)),
         content: TextField(
           controller: controller,
           autofocus: true,
           style: TextStyle(color: widget.skin.textPrimary),
-          decoration: const InputDecoration(hintText: 'Name'),
+          decoration: InputDecoration(hintText: l10nOf(context).libraryPlaylistName),
           onSubmitted: (v) => Navigator.of(ctx).pop(v),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('CANCEL'),
+            child: Text(l10nOf(context).libraryCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: const Text('CREATE'),
+            child: Text(l10nOf(context).libraryCreate),
           ),
         ],
       ),
@@ -1235,8 +1238,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 child: Text(
 
                   isDerivedPlaylistId(p.id)
-                      ? 'Made by the app from what you listen to — pin it, but it cannot be renamed or deleted.'
-                      : 'Shipped with the app — pin or rename it, but it cannot be deleted.',
+                      ? l10nOf(context).librarySeededNote
+                      : l10nOf(context).libraryDerivedNote,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
                     color: widget.skin.textSecondary,
@@ -1268,7 +1271,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   size: 64, color: skin.textSecondary),
               const SizedBox(height: 20),
               Text(
-                'No library found on this device.',
+                l10nOf(context).libraryNoLibrary,
                 style: TextStyle(fontSize: LayoutSpec.fontTitle, color: skin.textPrimary),
                 textAlign: TextAlign.center,
               ),
@@ -1280,8 +1283,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Copy music into that folder from a PC, or run\n'
-                'tools/sync_library.py to push it from there.',
+                l10nOf(context).libraryCopyHint,
                 style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
@@ -1447,7 +1449,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           skin: skin,
           label: t.title,
           coverPath: widget.coverPathFor(t),
-
+          addLabel: l10nOf(context).libraryAddToQueue,
           size: 56,
         ),
         childWhenDragging: Opacity(opacity: 0.3, child: coverBox),
@@ -1592,7 +1594,7 @@ return Stack(
               side: SwipeSide.left,
               progress: _dx / kQueueThreshold,
               icon: Icons.playlist_add_rounded,
-              label: 'QUEUE',
+              label: l10nOf(context).libraryQueue,
               skin: skin,
             ),
           ),
@@ -1604,7 +1606,7 @@ return Stack(
               icon: inPlaylist
                   ? Icons.remove_circle_outline_rounded
                   : (isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded),
-              label: inPlaylist ? 'REMOVE' : (isLiked ? 'UNLIKE' : 'LIKE'),
+              label: inPlaylist ? l10nOf(context).libraryRemove : (isLiked ? l10nOf(context).libraryUnlike : l10nOf(context).libraryLike),
               skin: skin,
             ),
           ),
@@ -1774,6 +1776,7 @@ return Stack(
     required Skin skin,
     required String label,
     required String? coverPath,
+    required String addLabel,
     required double size,
   }) {
     final path = coverPath;
@@ -1821,7 +1824,7 @@ return Stack(
                     ),
                   ),
                   Text(
-                    'Add to queue',
+                    addLabel,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       color: skin.accent,
@@ -1840,6 +1843,7 @@ return Stack(
         skin: skin,
         label: dragLabel,
         coverPath: coverPath,
+        addLabel: l10nOf(context).libraryAddToQueue,
         size: size,
       );
 

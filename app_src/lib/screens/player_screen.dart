@@ -3,6 +3,8 @@ library;
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart' hide RepeatMode;
 
+import '../l10n/l10n.dart';
+
 import '../theme/ambient_backdrop.dart';
 import '../widgets/art_scrim.dart';
 import '../widgets/cover_button.dart';
@@ -370,7 +372,7 @@ class PlayerScreen extends StatelessWidget {
                     _wordmark(skin, skew, pal),
                     const SizedBox(height: 4),
                     Text(
-                      'NOW PLAYING',
+                      l10nOf(context).playerNowPlaying,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
                         letterSpacing: 5,
@@ -381,7 +383,7 @@ class PlayerScreen extends StatelessWidget {
                   ],
                   if (state.arrangement.contextPlateExists) ...[
                     const SizedBox(height: 13),
-                    _contextBadge(skin, skew, pal),
+                    _contextBadge(context, skin, skew, pal),
                     const SizedBox(height: 9),
                   ] else
                     const SizedBox(height: 9),
@@ -395,7 +397,7 @@ class PlayerScreen extends StatelessWidget {
                       chrome: chrome,
                     ),
                   if (chrome.titleForm == TitleForm.beside) ...[
-                    _upNext(skin, skew, showSourceLine: true),
+                    _upNext(context, skin, skew, showSourceLine: true),
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -509,7 +511,7 @@ class PlayerScreen extends StatelessWidget {
   static const secondaryKey = Key('player-secondary');
   static const playButtonKey = Key('player-play');
 
-  Widget _contextBadge(Skin skin, double skew, LayoutPalette pal) {
+  Widget _contextBadge(BuildContext context, Skin skin, double skew, LayoutPalette pal) {
     return Transform(
       key: contextBadgeKey,
       transform: Matrix4.skewX(-skew),
@@ -549,7 +551,7 @@ class PlayerScreen extends StatelessWidget {
                   const SizedBox(width: 9),
                   Flexible(
                     child: Text(
-                      _contextLabel(skin),
+                      _contextLabel(context, skin),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 15,
@@ -572,11 +574,11 @@ class PlayerScreen extends StatelessWidget {
                     Tooltip(
                       message: state.contextEnabled
                           ? (state.mode == QueueMode.dynamic
-                                ? 'Dynamic — the queue fills itself from the context. Tap for Fixed.'
-                                : 'Fixed — only what you queued. Tap for Dynamic.')
+                                ? l10nOf(context).playerModeDynamicHint
+                                : l10nOf(context).playerModeFixedHint)
                           : (state.mode == QueueMode.dynamic
-                                ? 'Dynamic — the queue fills itself from the context.'
-                                : 'Fixed — only what you queued.'),
+                                ? l10nOf(context).playerModeDynamic
+                                : l10nOf(context).playerModeFixed),
                       child: _factChip(
                         skin,
                         skew,
@@ -640,15 +642,15 @@ class PlayerScreen extends StatelessWidget {
     return out;
   }
 
-  String _contextLabel(Skin skin) {
+  String _contextLabel(BuildContext context, Skin skin) {
     final ctx = state.playlistContext;
     if (ctx == null) return skin.contextLabel;
     return switch (ctx.band) {
-      ContextBand.darkHour => skin.word(WordKey.bandDeepNight, 'NIGHT HOUR'),
-      ContextBand.night => 'NIGHT',
-      ContextBand.evening => 'EVENING',
-      ContextBand.afternoon => 'AFTERNOON',
-      ContextBand.morning => 'MORNING',
+      ContextBand.darkHour => skin.word(WordKey.bandDeepNight, l10nOf(context).playerNightHour),
+      ContextBand.night => l10nOf(context).playerNight,
+      ContextBand.evening => l10nOf(context).playerEvening,
+      ContextBand.afternoon => l10nOf(context).playerAfternoon,
+      ContextBand.morning => l10nOf(context).playerMorning,
     };
   }
 
@@ -669,7 +671,7 @@ class PlayerScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
               child: Text(
-                'OTHER RECORDINGS',
+                l10nOf(context).playerOtherRecordings,
                 style: TextStyle(
                   color: skin.textSecondary,
                   fontSize: LayoutSpec.fontMicro,
@@ -705,7 +707,7 @@ class PlayerScreen extends StatelessWidget {
                             const SizedBox(height: 3),
                             Text(
                               v.variantTag == null
-                                  ? 'ALBUM VERSION'
+                                  ? l10nOf(context).playerAlbumVersion
                                   : variantLabel(v.variantTag!),
                               style: TextStyle(
                                 color: skin.accent,
@@ -760,7 +762,7 @@ class PlayerScreen extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      t?.title ?? 'Nothing loaded',
+                      t?.title ?? l10nOf(context).playerNothingLoaded,
 
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -909,7 +911,7 @@ class PlayerScreen extends StatelessWidget {
                   ),
                 if (titleBeside) ...[
                   const SizedBox(width: 14),
-                  Flexible(child: _titleBeside(skin, t)),
+                  Flexible(child: _titleBeside(context, skin, t)),
                 ],
               ],
             ),
@@ -919,12 +921,12 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget _titleBeside(Skin skin, Track? t) => Column(
+  Widget _titleBeside(BuildContext context, Skin skin, Track? t) => Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        t?.title ?? 'Nothing loaded',
+        t?.title ?? l10nOf(context).playerNothingLoaded,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -1075,7 +1077,7 @@ class PlayerScreen extends StatelessWidget {
                 _iconAction(
                   skin,
                   Icons.help_outline_rounded,
-                  'Why this song',
+                  l10nOf(context).playerWhyThisSong,
                   () => onPanel?.call(
                     panel == PlayerPanel.why
                         ? PlayerPanel.none
@@ -1087,7 +1089,7 @@ class PlayerScreen extends StatelessWidget {
                 _iconAction(
                   skin,
                   Icons.queue_music_rounded,
-                  upNextCount == 0 ? 'Queue' : 'Queue ($upNextCount)',
+                  upNextCount == 0 ? l10nOf(context).playerQueue : 'Queue ($upNextCount)',
                   () => onPanel?.call(
                     panel == PlayerPanel.queue
                         ? PlayerPanel.none
@@ -1101,7 +1103,7 @@ class PlayerScreen extends StatelessWidget {
                 _iconAction(
                   skin,
                   Icons.tune_rounded,
-                  'This track — bookmark, tags, loop points',
+                  l10nOf(context).playerTrackTools,
                   () => onPanel?.call(
                     panel == PlayerPanel.track
                         ? PlayerPanel.none
@@ -1116,8 +1118,8 @@ class PlayerScreen extends StatelessWidget {
                       ? Icons.stop_circle_rounded
                       : Icons.stop_circle_outlined,
                   stopAfterTrack
-                      ? 'Stopping after this track — tap to cancel'
-                      : 'Stop after this track',
+                      ? l10nOf(context).playerStopAfterOn
+                      : l10nOf(context).playerStopAfter,
                   () => onStopAfterTrack!(!stopAfterTrack),
                   active: stopAfterTrack,
                 ),
@@ -1126,8 +1128,8 @@ class PlayerScreen extends StatelessWidget {
                   skin,
                   sleepRunning ? Icons.bedtime_rounded : Icons.bedtime_outlined,
                   sleepRunning
-                      ? 'Sleep timer on — tap to turn off'
-                      : 'Sleep timer',
+                      ? l10nOf(context).playerSleepOn
+                      : l10nOf(context).playerSleep,
                   () => onSleep!(sleepRunning ? null : sleepTimer),
                   active: sleepRunning,
                 ),
@@ -1177,11 +1179,11 @@ class PlayerScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (onLyrics != null) ...[
-                _lyricsButton(skin),
+                _lyricsButton(context, skin),
                 const SizedBox(width: 12),
               ],
               Expanded(
-                child: _upNext(skin, skew, showSourceLine: chrome.upNextStrip),
+                child: _upNext(context, skin, skew, showSourceLine: chrome.upNextStrip),
               ),
             ],
           ),
@@ -1190,7 +1192,7 @@ class PlayerScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Text(
-              'Track file not found on this device',
+              l10nOf(context).playerFileMissing,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
@@ -1264,11 +1266,11 @@ class PlayerScreen extends StatelessWidget {
     if (content == null) return const SizedBox.shrink();
 
     final title = switch (panel) {
-      PlayerPanel.why => 'WHY THIS SONG',
-      PlayerPanel.queue => 'QUEUE',
-      PlayerPanel.audio => 'AUDIO',
-      PlayerPanel.track => 'THIS TRACK',
-      PlayerPanel.loop => 'LOOP POINTS',
+      PlayerPanel.why => l10nOf(context).playerWhyThisSongTitle,
+      PlayerPanel.queue => l10nOf(context).playerQueueTitle,
+      PlayerPanel.audio => l10nOf(context).playerAudio,
+      PlayerPanel.track => l10nOf(context).playerThisTrack,
+      PlayerPanel.loop => l10nOf(context).playerLoopPoints,
       PlayerPanel.none => '',
     };
 
@@ -1361,7 +1363,7 @@ class PlayerScreen extends StatelessWidget {
                                   color: skin.textPrimary,
                                   size: 26,
                                 ),
-                                tooltip: 'Shrink',
+                                tooltip: l10nOf(context).playerShrink,
                               ),
                             IconButton(
                               onPressed: () => onPanel?.call(PlayerPanel.none),
@@ -1370,7 +1372,7 @@ class PlayerScreen extends StatelessWidget {
                                 color: skin.textPrimary,
                                 size: 28,
                               ),
-                              tooltip: 'Close',
+                              tooltip: l10nOf(context).playerClose,
                             ),
                           ],
                         ),
@@ -1471,7 +1473,7 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget _lyricsButton(Skin skin) {
+  Widget _lyricsButton(BuildContext context, Skin skin) {
     final active = lyricsMode;
     return Pressable(
       child: GestureDetector(
@@ -1497,7 +1499,7 @@ class PlayerScreen extends StatelessWidget {
               ),
               const SizedBox(width: 7),
               Text(
-                'LYRICS',
+                l10nOf(context).playerLyrics,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontLabel,
                   fontWeight: FontWeight.w900,
@@ -1512,7 +1514,7 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget _upNext(Skin skin, double skew, {bool showSourceLine = false}) {
+  Widget _upNext(BuildContext context, Skin skin, double skew, {bool showSourceLine = false}) {
     final q = state.queue;
     final upcoming = q?.upcoming ?? const [];
     final nextTitle = upcoming.isEmpty ? null : upcoming.first.title;
@@ -1550,7 +1552,7 @@ class PlayerScreen extends StatelessWidget {
           transform: Matrix4.skewX(-skew),
           alignment: Alignment.centerLeft,
           child: Text(
-            nextTitle == null ? 'END OF QUEUE' : 'UP NEXT',
+            nextTitle == null ? l10nOf(context).playerEndOfQueue : l10nOf(context).playerUpNext,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: 4,
@@ -1561,7 +1563,7 @@ class PlayerScreen extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         Text(
-          nextTitle ?? 'Nothing after this',
+          nextTitle ?? l10nOf(context).playerNothingAfter,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(

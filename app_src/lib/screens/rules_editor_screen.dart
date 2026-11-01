@@ -44,9 +44,7 @@ class RulesEditorScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'When the context matches one of these, its playlist becomes the '
-              'queue. Highest priority that matches wins; if nothing matches, '
-              'the player picks by itself as it always has.',
+              l10nOf(context).rulesWhenMatches,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textSecondary,
@@ -60,8 +58,7 @@ class RulesEditorScreen extends StatelessWidget {
             const SizedBox(height: 22),
             if (rules.isEmpty)
               Text(
-                'No rules. That is a working state — the context still picks '
-                'music, it just has nothing extra to say about it.',
+                l10nOf(context).rulesNone,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontSmall,
                   color: skin.textSecondary,
@@ -76,8 +73,7 @@ class RulesEditorScreen extends StatelessWidget {
 
             const SizedBox(height: 18),
             Text(
-              'Rules can also be edited as plain JSON in rules.json beside the '
-              'other state files. The app reads that file at launch.',
+              l10nOf(context).rulesJsonNote,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 color: skin.secondary(0.85),
@@ -128,8 +124,7 @@ class RulesEditorScreen extends StatelessWidget {
             Text(
 
               active == null
-                  ? 'No rule matches right now — the player is choosing on its '
-                      'own. That is the normal case.'
+                  ? l10nOf(context).rulesNothingMatches
                   : '${active.id}: ${active.describe()}',
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
@@ -316,8 +311,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
             const SizedBox(height: 6),
             Text(
 
-              'Every condition you pick has to hold at once. Pick none and the '
-              'rule matches every moment — put those at the bottom.',
+              l10nOf(context).rulesEveryCondition,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textSecondary,

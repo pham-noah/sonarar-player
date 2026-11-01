@@ -88,9 +88,7 @@ class _BackupSectionState extends State<BackupSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'This replaces tags, likes, playlists, themes and play history '
-                'with the copy in the file. The current state is saved aside '
-                'first, in pre-restore-…',
+                l10nOf(context).backupRestoreNote,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontMicro,
                   height: 1.35,
@@ -196,8 +194,7 @@ class _BackupSectionState extends State<BackupSection> {
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 4),
           child: Text(
-            'Tags, likes, playlists, themes and play history — everything that '
-            'is not in the audio files. Saved to Downloads.',
+            l10nOf(context).backupWhatItHolds,
             style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),
         ),

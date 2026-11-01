@@ -388,5 +388,19 @@
   "artFade": "FADE",
   "artMirrored": "MIRRORED",
   "artMirror": "MIRROR",
-  "commonDone": "DONE"
+  "commonDone": "DONE",
+  "personalizeFramingNote": "Framing belongs to the picture, so these sliders move it everywhere that picture is used.",
+  "personalizeNoFoldersNote": "No folders yet. A folder is a set of pictures in Music/Sonarar/art; a place wears one of them.",
+  "personalizeTapPictureNote": "Tap a picture in a folder to wear it here. FOLLOW TRACK above decides whether the folder walks on with each song.",
+  "personalizeNothingWorn": "Nothing is worn right now, so there is no theme to override — pick one above first, or make a new one.",
+  "personalizeReframeHint": "Tap the part of the picture that matters. It stays centred whatever shape the screen is.",
+  "rulesWhenMatches": "When the context matches one of these, its playlist becomes the queue. Highest priority that matches wins; if nothing matches, the player picks by itself as it always has.",
+  "rulesNone": "No rules. That is a working state — the context still picks music, it just has nothing extra to say about it.",
+  "rulesJsonNote": "Rules can also be edited as plain JSON in rules.json beside the other state files. The app reads that file at launch.",
+  "rulesNothingMatches": "No rule matches right now — the player is choosing on its own. That is the normal case.",
+  "rulesEveryCondition": "Every condition you pick has to hold at once. Pick none and the rule matches every moment — put those at the bottom.",
+  "backupRestoreNote": "This replaces tags, likes, playlists, themes and play history with the copy in the file. The current state is saved aside first, in pre-restore-…",
+  "backupWhatItHolds": "Tags, likes, playlists, themes and play history — everything that is not in the audio files. Saved to Downloads.",
+  "tagsNote": "Corrects what the player shows. The audio file is never modified, so this can always be undone.",
+  "tagsPersistNote": "Saved corrections survive a restart and are not overwritten by re-scanning the library."
 }

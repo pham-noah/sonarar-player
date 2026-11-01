@@ -545,8 +545,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       if (_surface != null)
                         Text(
-                          'Framing belongs to the picture, so these sliders move it '
-                          'everywhere that picture is used.',
+                          l10nOf(context).personalizeFramingNote,
                           style: TextStyle(
                             color: skin.textSecondary,
                             fontSize: LayoutSpec.fontFloor - 4,
@@ -659,10 +658,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       widget.state.bundles.isEmpty
-                          ? 'No folders yet. A folder is a set of pictures in '
-                                'Music/Sonarar/art; a place wears one of them.'
-                          : 'Tap a picture in a folder to wear it here. FOLLOW TRACK '
-                                'above decides whether the folder walks on with each song.',
+                          ? l10nOf(context).personalizeNoFoldersNote
+                          : l10nOf(context).personalizeTapPictureNote,
                       style: TextStyle(
                         color: skin.textSecondary,
                         fontSize: LayoutSpec.fontFloor - 4,
@@ -738,8 +735,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     if (widget.state.preset == null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Nothing is worn right now, so there is no theme to override — '
-                        'pick one above first, or make a new one.',
+                        l10nOf(context).personalizeNothingWorn,
                         style: TextStyle(
                           color: skin.textSecondary,
                           fontSize: LayoutSpec.fontFloor - 4,
@@ -1342,8 +1338,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Tap the part of the picture that matters. It stays centred whatever '
-              'shape the screen is.',
+              l10nOf(context).personalizeReframeHint,
               style: TextStyle(
                 fontSize: LayoutSpec.fontFloor,
                 color: skin.textSecondary,

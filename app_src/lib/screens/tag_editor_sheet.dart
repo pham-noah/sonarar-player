@@ -114,8 +114,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Corrects what the player shows. The audio file is never '
-              'modified, so this can always be undone.',
+              l10nOf(context).tagsNote,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textSecondary,
@@ -128,8 +127,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
 
             const SizedBox(height: 6),
             Text(
-              'Saved corrections survive a restart and are not overwritten by '
-              're-scanning the library.',
+              l10nOf(context).tagsPersistNote,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 color: skin.secondary(0.8),

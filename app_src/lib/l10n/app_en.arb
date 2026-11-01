@@ -542,5 +542,44 @@
       }
     }
   },
-  "personalizeNowIsHeader": "NOW stays at the top — it is the page header, not a section."
+  "personalizeNowIsHeader": "NOW stays at the top — it is the page header, not a section.",
+  "panelBookmarkedAt": "Bookmarked at {time}",
+  "@panelBookmarkedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "panelTagsCorrected": "Tags corrected · {count} {count, plural, =1{field} other{fields}}",
+  "@panelTagsCorrected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "panelPlayed": "Played {count, plural, =1{once} other{{count} times}}",
+  "@panelPlayed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackNeverPlayed": "Never played",
+  "panelShuffleAllowed": "Allowed in shuffle",
+  "loopPointsLabel": "Loop points",
+  "panelAddToPlaylist": "Add to a playlist",
+  "panelPlayedThrough": "{count, plural, =1{Played once} other{Played {count} times}} · {through} through",
+  "@panelPlayedThrough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "through": {
+        "type": "int"
+      }
+    }
+  }
 }

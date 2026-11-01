@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../core/time_format.dart';
 import '../library/track.dart';
@@ -40,6 +42,7 @@ class TrackPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final skin = state.uiSkin;
+    final l10n = l10nOf(context);
     final bookmarked = state.bookmarks.has(track.id);
     final excluded = state.exclusions.contains(track.id);
     final fixCount = state.tagOverrides.forTrack(track.id).length;
@@ -77,8 +80,9 @@ class TrackPanel extends StatelessWidget {
             bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
 
             bookmarked
-                ? 'Bookmarked at ${_mmss(state.bookmarks.at(track.id) ?? Duration.zero)}'
-                : 'Bookmark this spot',
+                ? l10n.panelBookmarkedAt(
+                    _mmss(state.bookmarks.at(track.id) ?? Duration.zero))
+                : l10n.panelBookmarkSpot,
             onToggleBookmark,
             active: bookmarked,
             trailing: bookmarked ? _mmss(position) : null,
@@ -88,8 +92,8 @@ class TrackPanel extends StatelessWidget {
             skin,
             Icons.edit_note_rounded,
             fixCount == 0
-                ? 'Fix the tags'
-                : 'Tags corrected · $fixCount field${fixCount == 1 ? '' : 's'}',
+                ? l10n.panelFixTags
+                : l10n.panelTagsCorrected(fixCount),
             onFixTags,
             active: fixCount > 0,
           ),
@@ -97,21 +101,21 @@ class TrackPanel extends StatelessWidget {
           _row(
             skin,
             Icons.repeat_rounded,
-            'Loop points',
+            l10n.loopPointsLabel,
             onLoopPoints,
           ),
 
           _row(
             skin,
             Icons.playlist_add_rounded,
-            'Add to a playlist',
+            l10n.panelAddToPlaylist,
             onAddToPlaylist,
           ),
 
           _row(
             skin,
             excluded ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-            excluded ? 'Allowed in shuffle' : 'Never in shuffle',
+            excluded ? l10n.panelShuffleAllowed : l10n.panelNeverInShuffle,
             onNeverInShuffle,
             active: excluded,
           ),
@@ -132,10 +136,10 @@ class TrackPanel extends StatelessWidget {
                   Expanded(
                     child: Text(
                       playCount == 0
-                          ? 'Never played'
-                          : 'Played $playCount time${playCount == 1 ? '' : 's'}'
-                              '${completionCount == null ? '' : ' · '
-                                  '$completionCount through'}',
+                          ? l10n.trackNeverPlayed
+                          : completionCount == null
+                              ? l10n.panelPlayed(playCount!)
+                              : l10n.panelPlayedThrough(playCount!, completionCount!),
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
                         fontWeight: FontWeight.w700,

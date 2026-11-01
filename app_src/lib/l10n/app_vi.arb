@@ -1,0 +1,836 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Sonarar",
+  "@appTitle": {
+    "description": "The application name. Not translated."
+  },
+  "settingsTitle": "CÀI ĐẶT",
+  "settingsTabLook": "GIAO DIỆN",
+  "settingsTabPlayback": "PHÁT NHẠC",
+  "settingsTabLibrary": "THƯ VIỆN",
+  "settingsTabSystem": "HỆ THỐNG",
+  "settingsPersonalize": "CÁ NHÂN HOÁ",
+  "settingsResumeOnOpen": "TIẾP TỤC KHI MỞ",
+  "settingsFadeIn": "TĂNG DẦN ÂM LƯỢNG",
+  "settingsOff": "TẮT",
+  "settingsSleepLength": "THỜI LƯỢNG NGỦ",
+  "settingsWeatherEvery": "KIỂM TRA THỜI TIẾT MỖI",
+  "settingsOfficialOnly": "CHỈ BẢN CHÍNH THỨC",
+  "settingsContext": "BỐI CẢNH",
+  "settingsOffline": "NGOẠI TUYẾN",
+  "settingsTimeOfDay": "THỜI ĐIỂM",
+  "settingsWeather": "THỜI TIẾT",
+  "settingsDynamicMix": "TRỘN ĐỘNG",
+  "settingsPlaces": "ĐỊA ĐIỂM",
+  "settingsWeatherVariants": "BIẾN THỂ THỜI TIẾT",
+  "settingsAutoTheme": "TỰ ĐỔI CHỦ ĐỀ",
+  "settingsListeningMemory": "BỘ NHỚ NGHE",
+  "settingsLearnFromSkips": "HỌC TỪ LẦN BỎ QUA",
+  "settingsPlayHistory": "LỊCH SỬ PHÁT",
+  "settingsBonds": "GẮN KẾT",
+  "settingsMusicFolder": "THƯ MỤC NHẠC",
+  "settingsInterface": "GIAO DIỆN",
+  "settingsLanguage": "NGÔN NGỮ",
+  "settingsFpsCounter": "BỘ ĐẾM FPS",
+  "settingsCheckForUpdates": "KIỂM TRA CẬP NHẬT",
+  "settingsChecking": "ĐANG KIỂM TRA…",
+  "settingsCheckNow": "KIỂM TRA NGAY",
+  "settingsRomaji": "ROMAJI",
+  "settingsDynamicByDefault": "MẶC ĐỊNH ĐỘNG",
+  "settingsKeepPlaying": "TIẾP TỤC PHÁT KHI HẾT HÀNG ĐỢI",
+  "settingsSomethingWrong": "NẾU CÓ TRỤC TRẶC",
+  "settingsDiagnostics": "CHẨN ĐOÁN",
+  "settingsAbout": "GIỚI THIỆU",
+  "settingsMadeBy": "TẠO BỞI NOAH PHAM",
+  "settingsSourceOnGithub": "MÃ NGUỒN TRÊN GITHUB",
+  "settingsLicenses": "GIẤY PHÉP",
+  "settingsSpeedGlide": "LƯỚT",
+  "settingsSpeedSmooth": "MƯỢT",
+  "settingsSpeedBalanced": "CÂN BẰNG",
+  "settingsSpeedBrisk": "NHANH",
+  "settingsSpeedSnap": "TỨC THÌ",
+  "settingsLanguageSystem": "HỆ THỐNG",
+  "libraryCopyHint": "Chép nhạc vào thư mục đó từ máy tính, hoặc chạy tools/sync_library.py để đẩy từ đó sang.",
+  "librarySearch": "TÌM KIẾM",
+  "libraryPinned": "GHIM",
+  "librarySeeded": "TỰ TẠO",
+  "libraryCustom": "CỦA BẠN",
+  "libraryTitle": "THƯ VIỆN",
+  "librarySearchHint": "Tên bài, ca sĩ, album, thư mục",
+  "libraryEmptyPlaylist": "Danh sách này trống.\nNhấn giữ một bài để thêm vào.",
+  "libraryEmptyArtist": "Không có bài nào của ca sĩ này.",
+  "libraryRecents": "GẦN ĐÂY",
+  "libraryUpdated": "VỪA CẬP NHẬT",
+  "libraryNoPlaylists": "Chưa có danh sách phát nào.",
+  "libraryNoArtists": "Chưa có ca sĩ nào.",
+  "libraryNewPlaylist": "Danh sách mới",
+  "libraryPlaylistName": "Tên",
+  "libraryCancel": "HUỶ",
+  "libraryCreate": "TẠO",
+  "libraryDerivedNote": "Có sẵn trong ứng dụng — bạn ghim hay đổi tên được, nhưng không xoá được.",
+  "librarySeededNote": "Ứng dụng tự tạo từ những gì bạn nghe — ghim được, nhưng không đổi tên hay xoá được.",
+  "libraryNoLibrary": "Không tìm thấy thư viện nhạc trên máy này.",
+  "libraryAddToQueue": "Thêm vào hàng đợi",
+  "libraryQueue": "HÀNG ĐỢI",
+  "libraryRemove": "XOÁ KHỎI",
+  "libraryUnlike": "BỎ THÍCH",
+  "libraryLike": "THÍCH",
+  "playerNowPlaying": "ĐANG PHÁT",
+  "playerModeDynamicHint": "Động — hàng đợi tự chọn theo bối cảnh. Chạm để chuyển sang Cố định.",
+  "playerModeFixedHint": "Cố định — chỉ phát những gì bạn xếp. Chạm để chuyển sang Động.",
+  "playerModeDynamic": "Động — hàng đợi tự chọn theo bối cảnh.",
+  "playerModeFixed": "Cố định — chỉ phát những gì bạn xếp.",
+  "playerOtherRecordings": "BẢN THU KHÁC",
+  "playerAlbumVersion": "BẢN TRONG ALBUM",
+  "playerNothingLoaded": "Chưa nạp gì",
+  "playerWhyThisSong": "Vì sao bài này",
+  "playerQueue": "Hàng đợi",
+  "playerTrackTools": "Bài này — đánh dấu, thẻ, điểm lặp",
+  "playerStopAfterOn": "Sẽ dừng sau bài này — chạm để huỷ",
+  "playerStopAfter": "Dừng sau bài này",
+  "playerSleepOn": "Hẹn giờ ngủ đang bật — chạm để tắt",
+  "playerSleep": "Hẹn giờ ngủ",
+  "playerFileMissing": "Không tìm thấy tệp của bài này trên máy",
+  "playerWhyThisSongTitle": "VÌ SAO BÀI NÀY",
+  "playerQueueTitle": "HÀNG ĐỢI",
+  "playerAudio": "ÂM THANH",
+  "playerThisTrack": "BÀI NÀY",
+  "playerLoopPoints": "ĐIỂM LẶP",
+  "playerShrink": "Thu nhỏ",
+  "playerClose": "Đóng",
+  "playerLyrics": "LỜI BÀI HÁT",
+  "playerEndOfQueue": "HẾT HÀNG ĐỢI",
+  "playerUpNext": "TIẾP THEO",
+  "playerNothingAfter": "Không còn gì sau bài này",
+  "bandMorning": "BUỔI SÁNG",
+  "bandAfternoon": "BUỔI CHIỀU",
+  "bandEvening": "BUỔI TỐI",
+  "bandNight": "BAN ĐÊM",
+  "bandNightHour": "GIỜ KHUYA",
+  "historyNothingPlayed": "Chưa phát gì cả.",
+  "historyTopTracks": "NGHE NHIỀU NHẤT",
+  "historyByTimeOfDay": "THEO THỜI ĐIỂM",
+  "historyMonth": "THÁNG",
+  "historyTimeListened": "THỜI GIAN ĐÃ NGHE",
+  "importSavedNotWritten": "Đã lưu tạm, nhưng chưa ghi được xuống đĩa.",
+  "importNoVideos": "Không đọc được video nào từ danh sách đó — kiểm tra lại liên kết, hoặc danh sách có thể đang trống.",
+  "importNewTitle": "DANH SÁCH MỚI",
+  "importEditTitle": "SỬA DANH SÁCH",
+  "importLink": "Liên kết danh sách phát",
+  "importSave": "LƯU",
+  "importNeedsName": "Danh sách phát cần có tên",
+  "importNoPlaylistId": "Liên kết đó không có mã danh sách phát",
+  "importFilesStay": "Các tệp đã tải vẫn còn — thao tác này chỉ quên nguồn.",
+  "importKeep": "GIỮ",
+  "importListTitle": "DANH SÁCH ĐÃ NHẬP",
+  "importHint": "Nhập một danh sách, hoặc cập nhật sau — chỉ những bài mới được tải về.",
+  "importEmpty": "Chưa có danh sách nào. Thêm một cái ở dưới.",
+  "importEditAction": "Sửa tên và liên kết",
+  "importRemoveAction": "Xoá",
+  "importRowHint": "Nhập hoặc cập nhật — chỉ tải những bài mới",
+  "homePersonalize": "Cá nhân hoá",
+  "homeNow": "BÂY GIỜ",
+  "homeNoBand": "KHÔNG RÕ BUỔI",
+  "homeElsewhere": "NƠI KHÁC",
+  "homeNoFix": "KHÔNG CÓ VỊ TRÍ",
+  "homePlayWhatFits": "PHÁT NHỮNG GÌ HỢP LÚC NÀY",
+  "homeContinue": "NGHE TIẾP",
+  "homeRediscover": "KHÁM PHÁ LẠI",
+  "homeJumpBackIn": "QUAY LẠI NGHE",
+  "homeQuickPick": "CHỌN NHANH",
+  "homeFromLibrary": "TỪ THƯ VIỆN CỦA BẠN",
+  "homeGenre": "THỂ LOẠI",
+  "homeRecentlyAdded": "MỚI THÊM",
+  "diagCheckingStorage": "ĐANG KIỂM TRA QUYỀN TRUY CẬP BỘ NHỚ…",
+  "diagAllFiles": "ĐÃ CẤP QUYỀN TRUY CẬP MỌI TỆP",
+  "diagNoAllFiles": "CHƯA CÓ QUYỀN TRUY CẬP MỌI TỆP — không ghi được bản tải về và ảnh bìa",
+  "diagStorageUnknown": "CHƯA RÕ QUYỀN TRUY CẬP BỘ NHỚ",
+  "diagGrant": "CẤP QUYỀN",
+  "diagProblems": "LỖI",
+  "diagAll": "TẤT CẢ",
+  "diagClear": "XOÁ HẾT",
+  "diagSpectrum": "PHỔ ÂM",
+  "diagCopy": "SAO CHÉP",
+  "diagNothingWrong": "Lần chạy này không có gì trục trặc.",
+  "diagNothingLogged": "Chưa ghi nhận gì cả.",
+  "folderInternal": "BỘ NHỚ TRONG",
+  "folderMusic": "NHẠC",
+  "folderDownload": "TẢI VỀ",
+  "folderSdcard": "THẺ NHỚ",
+  "folderHoldsManifest": "Thư mục này có library_manifest.json.",
+  "folderNoManifest": "Không có library_manifest.json ở đây — ứng dụng không đọc được thư mục này như một thư viện.",
+  "folderUse": "DÙNG THƯ MỤC NÀY",
+  "firstRunPitch": "Nhạc cho nơi bạn đang ở và thời tiết lúc này.",
+  "firstRunLayout": "BỐ CỤC",
+  "firstRunColours": "MÀU SẮC",
+  "firstRunSongList": "DANH SÁCH BÀI",
+  "firstRunGrid": "LƯỚI",
+  "firstRunList": "DANH SÁCH",
+  "firstRunStart": "BẮT ĐẦU NGHE",
+  "firstRunLater": "Bạn đổi được tất cả những thứ này sau, trong Cài đặt.",
+  "shellCannotReadFolder": "Sonarar không đọc được thư mục nhạc của bạn — cấp quyền trong Cài đặt → Ứng dụng → Sonarar → Quyền",
+  "greetingMorning": "Chào buổi sáng",
+  "greetingAfternoon": "Chào buổi chiều",
+  "greetingEvening": "Chào buổi tối",
+  "greetingNight": "Chúc ngủ ngon",
+  "greetingLateNight": "Đêm muộn rồi",
+  "homeNothingFits": "Lúc này không có gì hợp cả",
+  "shellThisMonth": "THÁNG NÀY",
+  "shellOutputSettingsFailed": "Không mở được phần cài đặt đầu ra",
+  "commonSaved": "Đã lưu",
+  "shellNoForward": "Không tiến thêm được",
+  "shellNoEarlierTab": "Không có tab trước đó",
+  "shellAddToPlaylist": "Thêm vào danh sách phát",
+  "shellAlreadyInPlaylist": "Đã có trong danh sách này",
+  "shellAlreadyInQueue": "Đã có trong hàng đợi",
+  "shellLibraryNotResolved": "Thư viện chưa được nạp xong",
+  "shellDeleteDownloadNote": "Thao tác này xoá tệp khỏi điện thoại. Đây là bản tải về, nên không còn bản sao nào khác.",
+  "shellRemoveFailed": "Không xoá được",
+  "shellDownloadedNotIndexed": "Đã tải về — nhưng chưa có trong manifest của thư viện",
+  "shellAddedToLibrary": "Đã thêm vào thư viện",
+  "shellHistory": "LỊCH SỬ",
+  "shellMusicFolderSaved": "Đã lưu thư mục nhạc",
+  "shellLater": "ĐỂ SAU",
+  "shellRestartNow": "KHỞI ĐỘNG LẠI",
+  "shellLibraryTools": "CÔNG CỤ THƯ VIỆN",
+  "shellSaveQueue": "Lưu hàng đợi thành danh sách phát",
+  "shellQueueEmptyToSave": "Hàng đợi trống, không có gì để lưu.",
+  "shellShuffleAllowed": "Đã cho phép phát ngẫu nhiên trở lại",
+  "shellPlaylistNothingPlayable": "Danh sách đó không có bài nào phát được",
+  "shellRemovedFromLiked": "Đã bỏ khỏi Bài đã thích",
+  "shellArchive": "KHO LƯU TRỮ",
+  "shellStoppingAfter": "Sẽ dừng sau bài này",
+  "shellStopAfterOff": "Dừng sau bài này — đang tắt",
+  "commonBack": "Quay lại",
+  "shellCatalogue": "DANH MỤC",
+  "shellRanks": "XẾP HẠNG",
+  "personalizeMotion": "CHUYỂN ĐỘNG",
+  "personalizeTabAnimation": "HIỆU ỨNG TAB",
+  "personalizeSpectrum": "PHỔ ÂM",
+  "personalizeSmoothness": "ĐỘ MƯỢT",
+  "personalizeScale": "TỈ LỆ",
+  "personalizeBase": "NỀN",
+  "personalizeTheme": "CHỦ ĐỀ",
+  "personalizeAccent": "MÀU NHẤN",
+  "personalizeFromPhoto": "TỪ ẢNH",
+  "personalizePictureFor": "ẢNH CHO",
+  "personalizeNoPicture": "KHÔNG CÓ ẢNH",
+  "personalizeAddPicture": "THÊM ẢNH",
+  "personalizeReframe": "CẮT LẠI KHUNG",
+  "personalizeReframeNoFile": "CẮT LẠI KHUNG — KHÔNG CÓ ẢNH ĐỂ DI CHUYỂN",
+  "effectBlur": "LÀM MỜ",
+  "effectDim": "LÀM TỐI",
+  "effectZoom": "PHÓNG TO",
+  "effectRotation": "XOAY",
+  "effectTintAccent": "NHUỘM MÀU NHẤN",
+  "effectPlayerUsesCover": "TRÌNH PHÁT DÙNG ẢNH BÌA",
+  "effectFollowTrack": "THEO BÀI HÁT",
+  "effectSaturation": "ĐỘ BÃO HOÀ",
+  "effectContrast": "ĐỘ TƯƠNG PHẢN",
+  "effectVignette": "VIỀN TỐI",
+  "effectGrain": "HẠT NHIỄU",
+  "effectBurn": "CHÁY SÁNG",
+  "baseSolid": "ĐƠN SẮC",
+  "baseGradient": "CHUYỂN MÀU",
+  "baseSkin": "DA",
+  "baseFrom": "TỪ",
+  "baseColour": "MÀU",
+  "baseDirection": "HƯỚNG",
+  "artFolders": "THƯ MỤC ẢNH",
+  "artRescan": "QUÉT LẠI",
+  "scopeHome": "TRANG CHỦ",
+  "scopeEverywhere": "MỌI NƠI",
+  "scopePlayer": "TRÌNH PHÁT",
+  "scopeFolder": "THƯ MỤC",
+  "scopePhoto": "ẢNH",
+  "themeNew": "CHỦ ĐỀ MỚI",
+  "themeOverride": "GHI ĐÈ",
+  "photoNoneFound": "Không thấy ảnh nào trong Pictures, DCIM hay Download.",
+  "photoUseEverywhere": "DÙNG Ở MỌI NƠI",
+  "photoUseHere": "DÙNG Ở ĐÂY",
+  "photoPutInFolder": "ĐƯA VÀO MỘT THƯ MỤC",
+  "photoFolderHint": "Thư mục chứa nhiều ảnh và có thể đi theo bài hát.",
+  "photoNoneSkinPaints": "KHÔNG CÓ ẢNH — DA TỰ VẼ NỀN NÀY",
+  "themeNamePrompt": "Đặt tên cho chủ đề mới",
+  "themeNoneToOverride": "Chưa dùng chủ đề nào, nên không có gì để ghi đè.",
+  "layoutSonar": "SONAR",
+  "layoutGlass": "KÍNH",
+  "themeWorn": "ĐANG DÙNG",
+  "themeBuiltIn": "CÓ SẴN",
+  "themeThemes": "CHỦ ĐỀ",
+  "themeArt": "ẢNH",
+  "commonAdd": "THÊM",
+  "themeRename": "ĐỔI TÊN",
+  "themeDelete": "XOÁ",
+  "artFolderName": "TÊN THƯ MỤC",
+  "photoNoColour": "Chưa chọn ảnh, nên không lấy được màu.",
+  "photoWeakColour": "Ảnh đó không có màu nào đủ mạnh để làm màu nhấn.",
+  "artOnlyPicture": "Đây là ảnh cuối cùng còn lại — hãy xoá cả thư mục.",
+  "photoNoAccess": "Sonarar không xem được ảnh của bạn — cho phép truy cập ảnh trong Cài đặt.",
+  "recapTitle": "TỔNG KẾT",
+  "placesTappedPin": "Đã chọn điểm vừa chạm — lưu ở đó, không phải chỗ bạn đang đứng",
+  "placesAskingOsm": "Đang hỏi OpenStreetMap xem chỗ này là gì…",
+  "placesOsmNothing": "OpenStreetMap không có dữ liệu cho chỗ này. Bạn tự đặt tên nhé.",
+  "placesOsmUnreachable": "Không liên lạc được với OpenStreetMap — bạn tự đặt tên nhé.",
+  "placesSavedTitle": "ĐỊA ĐIỂM ĐÃ LƯU",
+  "placesEmpty": "Chưa lưu gì. Đứng ở đâu đó, lưu một điểm, rồi đặt tên.",
+  "placesEditTitle": "SỬA ĐỊA ĐIỂM NÀY",
+  "placesNameTitle": "ĐẶT TÊN ĐIỂM NÀY",
+  "placesNameYourself": "Bạn tự đặt tên nhé — OpenStreetMap không có dữ liệu cho chỗ này.",
+  "placesNameLabel": "TÊN ĐỊA ĐIỂM",
+  "placesPlaylistHere": "DANH SÁCH PHÁT Ở ĐÂY",
+  "placesOrTypeName": "HOẶC GÕ MỘT CÁI TÊN",
+  "placesIcon": "BIỂU TƯỢNG",
+  "placesTapToClear": "Chạm lần nữa để xoá",
+  "placesSize": "ĐIỂM NÀY RỘNG BAO NHIÊU",
+  "placesSaveChanges": "LƯU THAY ĐỔI",
+  "rulesTitle": "QUY TẮC BỐI CẢNH",
+  "rulesActingNow": "ĐANG ÁP DỤNG",
+  "rulesMoreImportant": "Quan trọng hơn",
+  "rulesLessImportant": "Ít quan trọng hơn",
+  "rulesRemoveRule": "Xoá quy tắc này",
+  "rulesAdd": "THÊM MỘT QUY TẮC",
+  "rulesNew": "QUY TẮC MỚI",
+  "rulesTimeBand": "KHI BUỔI LÀ",
+  "rulesManualContext": "VÀ BỐI CẢNH CHỌN TAY LÀ",
+  "rulesWeather": "VÀ THỜI TIẾT",
+  "rulesPlayPlaylist": "PHÁT DANH SÁCH NÀY",
+  "rulesThemeOptional": "VÀ DÙNG CHỦ ĐỀ NÀY (KHÔNG BẮT BUỘC)",
+  "rulesCreate": "TẠO QUY TẮC",
+  "ytNetworkOff": "Mạng đang tắt trong Cài đặt, nên không tìm hay tải được gì.",
+  "ytNetworkOffNoMatch": "Mạng đang tắt trong Cài đặt, và không có gì trong thư viện khớp cả.",
+  "ytSearchHint": "Tìm trên YouTube",
+  "ytSearchingOnline": "Đang tìm trên mạng — chạm để tắt",
+  "ytImportPlaylist": "NHẬP MỘT DANH SÁCH PHÁT",
+  "ytInLibrary": "CÓ TRONG THƯ VIỆN",
+  "ytOnYoutube": "TRÊN YOUTUBE",
+  "ytOfficial": "CHÍNH THỨC",
+  "ytNotOfficial": "KHÔNG CHÍNH THỨC",
+  "ytPlayThis": "Phát bài này",
+  "ytNotOfficialBadge": "Không phải bản chính thức",
+  "ytDownload": "Tải về thư viện",
+  "loopTitle": "LẶP",
+  "loopIntroEnds": "HẾT ĐOẠN MỞ ĐẦU",
+  "loopStart": "BẮT ĐẦU LẶP",
+  "loopEnd": "KẾT THÚC LẶP",
+  "loopRepeat": "LẶP LẠI",
+  "loopNoRepeat": "Không lặp. Bài hát phát đến hết như bình thường.",
+  "loopEndBeforeStart": "KẾT THÚC LẶP đứng trước BẮT ĐẦU LẶP — sẽ không lặp được.",
+  "loopPause": "TẠM DỪNG",
+  "loopPlay": "PHÁT",
+  "loopSaved": "ĐÃ LƯU",
+  "loopSet": "ĐẶT",
+  "loopHint": "Phát bài hát, chạm vào điểm đánh dấu ở chỗ bạn nghe thấy vòng lặp, rồi lưu. Bài không có điểm đánh dấu vẫn phát y như cũ.",
+  "placesOsmSays": "OpenStreetMap ghi chỗ này là {kind}. Bạn đổi gì cũng được.",
+  "@placesOsmSays": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "panelPlayNow": "Phát ngay",
+  "panelPlayNext": "Phát tiếp theo",
+  "panelNeverInShuffle": "Không bao giờ phát ngẫu nhiên",
+  "panelFixTags": "Sửa thẻ",
+  "panelClearBookmark": "Xoá điểm đánh dấu này",
+  "panelBookmarkSpot": "Đánh dấu chỗ này",
+  "panelRemoveDownload": "Xoá bản tải về",
+  "panelShuffleNote": "Bài vẫn ở trong thư viện — chỉ là không bao giờ xuất hiện trong danh sách phát.",
+  "panelExcludedNote": "Bài bị loại vẫn ở trong thư viện; chỉ bị giữ ngoài các danh sách phát.",
+  "lyricsNoWords": "Bài này không có lời",
+  "lyricsFollowsSong": "Chạy theo bài hát",
+  "lyricsNoTiming": "Có lời, chưa có mốc thời gian",
+  "lyricsNotFound": "Không tìm thấy",
+  "lyricsTapToLookUp": "Chạm để tìm lời",
+  "lyricsSync": "ĐỒNG BỘ",
+  "lyricsNoneFound": "Không tìm thấy lời bài hát",
+  "lyricsInstrumental": "Không có lời — bài này là nhạc không lời",
+  "probeStep1": "BƯỚC 1 — quyền truy cập",
+  "probeStep1Note": "Lần thử đầu hỏng ngay ở bước CẤP QUYỀN, nên câu hỏi là chỗ này.",
+  "probeStep2": "BƯỚC 2 — phiên âm thanh",
+  "probeStep3": "BƯỚC 3 — Visualizer",
+  "probeTitle": "DÒ PHỔ ÂM",
+  "probeRunning": "ĐANG CHẠY…",
+  "probeRun": "CHẠY DÒ",
+  "probeHint": "Bấm nút, rồi gửi cho tôi những gì hiện ra ở đây.",
+  "outputBluetooth": "BLUETOOTH",
+  "outputWired": "TAI NGHE CÓ DÂY",
+  "outputUsbDac": "USB / DAC",
+  "outputHdmi": "HDMI",
+  "outputThisPhone": "ĐIỆN THOẠI NÀY",
+  "outputVolume": "ÂM LƯỢNG",
+  "outputPlaysThrough": "PHÁT QUA",
+  "outputChange": "ĐỔI ĐẦU RA",
+  "compendiumNotHeard": "Chưa nghe",
+  "compendiumMostHeard": "NGHE NHIỀU NHẤT",
+  "compendiumRecent": "GẦN ĐÂY",
+  "outputPickerHint": "Mở bảng chọn đầu ra của điện thoại",
+  "backupFailed": "Sao lưu thất bại.",
+  "backupNoneFound": "Không thấy bản sao lưu nào trong Download. Hãy tạo một bản trước, hoặc chuyển một bản vào đó.",
+  "backupRestore": "PHỤC HỒI",
+  "backupRestoreFailed": "Phục hồi thất bại.",
+  "backupYourData": "DỮ LIỆU CỦA BẠN",
+  "backupNow": "SAO LƯU NGAY",
+  "backupRestoreTitle": "PHỤC HỒI TỪ BẢN SAO LƯU",
+  "tagsUndoAll": "HOÀN TÁC TẤT CẢ",
+  "tagsRevert": "TRẢ LẠI",
+  "bondsNothingSinceReset": "Chưa phát gì kể từ lần đặt lại trước.",
+  "bondsNothingYet": "Chưa phát gì cả.",
+  "bondsStartOver": "BẮT ĐẦU LẠI XẾP HẠNG",
+  "bondsNote": "Ghi chú về mối gắn kết này",
+  "bondsWhy": "Vì sao bài này quan trọng",
+  "artAdjust": "CHỈNH ẢNH",
+  "commonReset": "ĐẶT LẠI",
+  "artRotate": "XOAY",
+  "artFade": "MỜ DẦN",
+  "artMirrored": "ĐÃ LẬT",
+  "artMirror": "LẬT",
+  "commonDone": "XONG",
+  "personalizeFramingNote": "Khung hình thuộc về tấm ảnh, nên mấy thanh trượt này dời nó ở mọi nơi dùng tấm ảnh đó.",
+  "personalizeNoFoldersNote": "Chưa có thư mục nào. Một thư mục là một bộ ảnh trong Music/Sonarar/art; mỗi địa điểm dùng một bộ trong đó.",
+  "personalizeTapPictureNote": "Chạm vào một tấm ảnh trong thư mục để dùng nó ở đây. Mục THEO BÀI HÁT ở trên quyết định thư mục có đi theo từng bài hay không.",
+  "personalizeNothingWorn": "Hiện không dùng chủ đề nào, nên không có gì để ghi đè — hãy chọn một cái ở trên trước, hoặc tạo cái mới.",
+  "personalizeReframeHint": "Chạm vào phần quan trọng của tấm ảnh. Phần đó luôn nằm giữa, dù màn hình có hình dạng nào.",
+  "rulesWhenMatches": "Khi bối cảnh khớp một trong các quy tắc này, danh sách phát của nó thành hàng đợi. Quy tắc có độ ưu tiên cao nhất mà khớp sẽ thắng; nếu không cái nào khớp, trình phát tự chọn như vẫn thế.",
+  "rulesNone": "Chưa có quy tắc nào. Như vậy vẫn chạy được — bối cảnh vẫn chọn nhạc, chỉ là không có gì thêm để nói.",
+  "rulesJsonNote": "Quy tắc cũng sửa được dưới dạng JSON thuần trong rules.json, nằm cạnh các tệp trạng thái khác. Ứng dụng đọc tệp đó khi khởi động.",
+  "rulesNothingMatches": "Lúc này không quy tắc nào khớp — trình phát tự chọn. Đó là chuyện bình thường.",
+  "rulesEveryCondition": "Mọi điều kiện bạn chọn đều phải cùng đúng một lúc. Không chọn điều kiện nào thì quy tắc khớp mọi lúc — hãy để những cái đó ở dưới cùng.",
+  "backupRestoreNote": "Thao tác này thay thẻ, mục thích, danh sách phát, chủ đề và lịch sử nghe bằng bản trong tệp. Trạng thái hiện tại được cất riêng trước, trong pre-restore-…",
+  "backupWhatItHolds": "Thẻ, mục thích, danh sách phát, chủ đề và lịch sử nghe — mọi thứ không nằm trong tệp âm thanh. Lưu vào Download.",
+  "tagsNote": "Sửa lại những gì trình phát hiển thị. Tệp âm thanh không bao giờ bị đụng tới, nên lúc nào cũng hoàn tác được.",
+  "tagsPersistNote": "Các chỉnh sửa đã lưu vẫn còn sau khi khởi động lại và không bị quét lại thư viện ghi đè.",
+  "shuffleTitle": "KHÔNG BAO GIỜ PHÁT NGẪU NHIÊN",
+  "shuffleNoneExcluded": "Không loại bài nào. Mọi bài trong thư viện đều có thể được chọn.",
+  "shuffleAllowAll": "CHO PHÉP TẤT CẢ TRỞ LẠI",
+  "shuffleAllow": "CHO PHÉP",
+  "libraryPlaylists": "DANH SÁCH PHÁT",
+  "libraryArtists": "CA SĨ",
+  "librarySongs": "BÀI HÁT",
+  "libraryLikedSongs": "Bài đã thích",
+  "mapAttribution": "Dữ liệu bản đồ © những người đóng góp OpenStreetMap",
+  "mapNoPosition": "Chưa biết vị trí",
+  "mapNoPlaces": "Chưa lưu địa điểm nào",
+  "mapSaveSpot": "LƯU ĐIỂM NÀY",
+  "mapWaitingFix": "ĐANG CHỜ VỊ TRÍ CHÍNH XÁC",
+  "explainAtPlace": "Bạn đang ở {place}.",
+  "@explainAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainNearPlace": "Bạn đang ở đâu đó gần {place}.",
+  "@explainNearPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainOnTheMove": "Bạn đang di chuyển.",
+  "explainBetweenPlaces": "Bạn đang ở giữa các địa điểm đã lưu.",
+  "explainSnowingOutside": "Ngoài trời đang có tuyết.",
+  "explainRainingOutside": "Ngoài trời đang mưa.",
+  "explainEasierSleeping": "Và bạn muốn dễ ngủ hơn.",
+  "explainItsBand": "Đang là {band}.",
+  "@explainItsBand": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHand": "Bạn tự đặt bối cảnh này.",
+  "explainNoReading": "Đang chờ đọc bối cảnh — chưa có gì quyết định cả.",
+  "explainSleepArmed": "Hẹn giờ ngủ đã bật — nhạc không lời cho đến khi hết giờ.",
+  "explainSnowRule": "Đang có tuyết — quy tắc tuyết đang áp dụng.",
+  "explainRainRule": "Đang mưa — quy tắc mưa đang áp dụng.",
+  "explainCommuteRules": "Đang đi đường — các quy tắc đi lại đang áp dụng.",
+  "explainHereAt": "Ở {place}.",
+  "@explainHereAt": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHereApprox": "Ở {place} (vị trí gần đúng).",
+  "@explainHereApprox": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHandNamed": "Bạn tự đặt bối cảnh này ({mode}).",
+  "@explainSetByHandNamed": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHourPicked": "{band} — giờ này chọn ra nó.",
+  "@explainHourPicked": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainRuleMatched": "Quy tắc \"{id}\" khớp: {summary}.",
+  "@explainRuleMatched": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "explainPlaylistLeads": "\"{playlist}\" có {count} bài — số đó dẫn trước, phần còn lại của thư viện theo sau.",
+  "@explainPlaylistLeads": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainPlaylistQueue": "\"{playlist}\" đã thành hàng đợi ({count} bài).",
+  "@explainPlaylistQueue": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainFixedQueue": "Hàng đợi cố định — phát đúng thứ tự này. Bấm Động để ứng dụng tự xếp lại khi mọi thứ thay đổi.",
+  "explainNothingPlaying": "Không có gì đang phát.",
+  "explainKeptIt": "Bạn đã giữ nó {count, plural, =1{một lần} other{{count} lần}} trong buổi này.",
+  "@explainKeptIt": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weatherClear": "TRỜI TRONG",
+  "weatherOvercast": "NHIỀU MÂY",
+  "weatherFog": "SƯƠNG MÙ",
+  "weatherDrizzle": "MƯA PHÙN",
+  "weatherRain": "MƯA",
+  "weatherSnow": "TUYẾT",
+  "weatherStorm": "DÔNG",
+  "weatherNoReading": "CHƯA ĐỌC ĐƯỢC",
+  "ytNotOfficialSkipped": "Không phải bản chính thức, nên không tải về. Tắt \"Chỉ bản chính thức\" trong Cài đặt để nhận mọi bản tải lên.",
+  "ytNetworkOnSearchOnly": "Bật mạng CHỈ ĐỂ TÌM (vị trí, giờ và thời tiết vẫn tắt)",
+  "personalizeAccentTaken": "Màu nhấn lấy từ ảnh: {hex}",
+  "@personalizeAccentTaken": {
+    "placeholders": {
+      "hex": {
+        "type": "String"
+      }
+    }
+  },
+  "panelBookmarkedAt": "Đánh dấu ở {time}",
+  "@panelBookmarkedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "panelTagsCorrected": "Đã sửa thẻ · {count} {count, plural, =1{trường} other{trường}}",
+  "@panelTagsCorrected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "panelPlayed": "Đã phát {count, plural, =1{một lần} other{{count} lần}}",
+  "@panelPlayed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackNeverPlayed": "Chưa từng phát",
+  "panelShuffleAllowed": "Được phát ngẫu nhiên",
+  "loopPointsLabel": "Điểm lặp",
+  "panelAddToPlaylist": "Thêm vào danh sách phát",
+  "panelPlayedThrough": "{count, plural, =1{Đã phát một lần} other{Đã phát {count} lần}} · nghe hết {through} lần",
+  "@panelPlayedThrough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "through": {
+        "type": "int"
+      }
+    }
+  },
+  "backupNoState": "Chưa có dữ liệu nào để sao lưu.",
+  "backupNotOurs": "Tệp đó không phải bản sao lưu của Sonarar.",
+  "backupUnreadableJson": "Tệp đó không phải JSON đọc được.",
+  "backupUnreadableFile": "Không đọc được bản sao lưu: {detail}",
+  "@backupUnreadableFile": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNewerVersion": "Bản sao lưu đó do phiên bản Sonarar mới hơn tạo ra.",
+  "backupNoData": "Bản sao lưu đó không có dữ liệu nào.",
+  "backupNothingRestored": "Không có gì trong bản sao lưu đó phục hồi được.",
+  "backupWriteFailed": "Không ghi được bản sao lưu: {detail}",
+  "@backupWriteFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreStopped": "Phục hồi dừng lại: {detail}",
+  "@backupRestoreStopped": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "placesDuplicateName": "Bạn đã có một địa điểm mang tên này — lưu sẽ thêm điểm này vào đó chứ không tạo cái mới.",
+  "placesNameHint": "ví dụ: Trường đại học, Phòng gym, Nhà",
+  "settingsOnNewest": "Bạn đang dùng bản mới nhất ({version}).",
+  "@settingsOnNewest": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailable": "Đã có Sonarar {version} — nút CẬP NHẬT nằm ở đầu ứng dụng.",
+  "@settingsUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "rulesNotOffered": "Chưa hỗ trợ ở đây: quy tắc theo địa điểm, và điều kiện thời tiết \"khô\" — ứng dụng coi thời tiết chưa rõ là không mưa, nên quy tắc khô sẽ chạy đúng vào ngày nó biết ít nhất.",
+  "compendiumEmptyBody": "Chưa nghe được bài nào nên danh mục còn trống. Nó tự đầy lên khi bạn nghe.",
+  "compendiumHeardCount": "Đã nghe {heard} trên {total}",
+  "@compendiumHeardCount": {
+    "placeholders": {
+      "heard": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placesSpotCount": "{count, plural, =1{1 điểm} other{{count} điểm}}",
+  "@placesSpotCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusOneBuilding": "{metres}m — cỡ một toà nhà",
+  "@placesRadiusOneBuilding": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusNeighbours": "{metres}m — cỡ một toà nhà và hàng xóm quanh nó",
+  "@placesRadiusNeighbours": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusCampus": "{metres}m — cỡ một khuôn viên",
+  "@placesRadiusCampus": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesExistingNamesHint": "Gõ một tên đã có ({names}) để thêm chỗ này thành một điểm nữa của địa điểm đó.",
+  "@placesExistingNamesHint": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeard": "lần cuối {when}",
+  "@compendiumLastHeard": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeardThrough": "lần cuối {when} · nghe hết {count} lần",
+  "@compendiumLastHeardThrough": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compendiumNeverHeard": "chưa từng nghe",
+  "historyThinSample": "{count, plural, =1{Mới có 1 lần phát} other{Mới có {count} lần phát}} — các hình bên dưới là thật, chỉ là còn ít.",
+  "@historyThinSample": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDayStats": "{length} · {plays, plural, =1{1 lần phát} other{{plays} lần phát}} · nghe hết {completions} lần",
+  "@historyDayStats": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "plays": {
+        "type": "int"
+      },
+      "completions": {
+        "type": "int"
+      }
+    }
+  },
+  "commonToday": "hôm nay",
+  "commonYesterday": "hôm qua",
+  "agoDays": "{count, plural, =1{1 ngày trước} other{{count} ngày trước}}",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoMonths": "{count, plural, =1{một tháng trước} other{{count} tháng trước}}",
+  "@agoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "poiGym": "Phòng gym",
+  "poiLibrary": "Thư viện",
+  "poiUniversity": "Trường đại học",
+  "poiCoworking": "Chỗ làm chung",
+  "poiCafe": "Quán cà phê",
+  "poiRestaurant": "Nhà hàng",
+  "poiBar": "Quán bar",
+  "poiMall": "Trung tâm thương mại",
+  "poiCinema": "Rạp chiếu phim",
+  "poiTransit": "Trạm giao thông",
+  "poiParking": "Bãi đỗ xe",
+  "poiPlaceOfWorship": "Nơi thờ tự",
+  "poiHospital": "Bệnh viện",
+  "poiPark": "Công viên",
+  "poiStadium": "Sân vận động",
+  "poiPool": "Bể bơi",
+  "poiHotel": "Khách sạn",
+  "moodFocus": "bạn đang làm việc ở đây",
+  "moodEnergy": "bạn đang vận động ở đây",
+  "moodSocial": "bạn đang ở giữa mọi người",
+  "moodTransit": "bạn đang đi ngang qua",
+  "moodQuiet": "một chỗ để yên tĩnh",
+  "moodAny": "không cụ thể",
+  "ruleWhenTime": "lúc là {band}",
+  "@ruleWhenTime": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenMode": "chế độ là {mode}",
+  "@ruleWhenMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenRaining": "trời đang mưa",
+  "ruleWhenSnowing": "trời đang có tuyết",
+  "ruleWhenAtPlace": "bạn đang ở {place}",
+  "@ruleWhenAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenNoPlace": "bạn không ở địa điểm nào đã lưu",
+  "ruleAlways": "luôn luôn",
+  "ruleJoinAnd": "{a} và {b}",
+  "@ruleJoinAnd": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleThenTheme": "đổi chủ đề",
+  "ruleThenPlaylist": "danh sách phát \"{playlist}\"",
+  "@ruleThenPlaylist": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleSentence": "{when} → {then}",
+  "@ruleSentence": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "then": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleBandDarkHour": "giờ khuya",
+  "ruleBandMorning": "buổi sáng",
+  "ruleBandAfternoon": "buổi chiều",
+  "ruleBandEvening": "buổi tối",
+  "ruleBandNight": "ban đêm",
+  "modeBattleLabel": "Sôi động",
+  "modeNightHourLabel": "Giờ khuya",
+  "modeBattleBlurb": "Một chạm là vào những bài to nhất, dồn dập nhất ở đây. Xáo lại sẽ xếp lại hàng đợi từ đầu.",
+  "modeNightHourBlurb": "Những giờ khuya, vào lúc nào cũng được. Mấy đoạn ngắn chói tai vẫn được lọt vào — giờ này vốn dĩ phải thấy sai sai."
+}

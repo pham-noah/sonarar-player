@@ -120,19 +120,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Languages name themselves: a Vietnamese speaker looking for their
   /// language looks for "Tiếng Việt", not for the English word for it.
-  Map<String, String> get _languages => {
-        'system': l10n.settingsLanguageSystem,
-        // The rest name themselves, in their own script — a Vietnamese speaker
-        // looks for "Tiếng Việt", not for the English word for it.
-        'en': 'ENGLISH',
-        'vi': 'TIẾNG VIỆT',
-        'ja': '日本語',
-        'zh-Hans': '简体中文',
-        'fi': 'SUOMI',
-      };
+  /// Languages name themselves: a speaker looking for their own language looks
+  /// for its own script, not for the English word for it.
+  static const Map<String, String> _languageNames = {
+    'en': 'ENGLISH',
+    'vi': 'TIẾNG VIỆT',
+    'ja': '日本語',
+    'zh-Hans': '简体中文',
+    'fi': 'SUOMI',
+  };
 
-  String _languageLabel(String? tag) =>
-      _languages[tag ?? 'system'] ?? l10n.settingsLanguageSystem;
+  /// What can be picked. Derived from supportedLocales, so the picker can never
+  /// offer a language that would quietly answer in English.
+  Map<String, String> get _languages {
+    final spoken = AppLocalizations.supportedLocales
+        .map((l) => l.toLanguageTag())
+        .toSet();
+    return {
+      'system': l10n.settingsLanguageSystem,
+      for (final entry in _languageNames.entries)
+        if (spoken.contains(entry.key)) entry.key: entry.value,
+    };
+  }
+
+  /// A stored tag is shown in its own words even if this build cannot speak it:
+  /// the preference is real, and renaming it "SYSTEM" would be a lie.
+  String _languageLabel(String? tag) => tag == null
+      ? l10n.settingsLanguageSystem
+      : _languageNames[tag] ?? l10n.settingsLanguageSystem;
 
   Future<void> _pickLanguage() async {
     final chosen = await showModalBottomSheet<String>(

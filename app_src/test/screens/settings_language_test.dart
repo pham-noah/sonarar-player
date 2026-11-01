@@ -56,8 +56,10 @@ void main() {
     await tester.tap(find.text('LANGUAGE'));
     await tester.pumpAndSettle();
     expect(find.text('TIẾNG VIỆT'), findsOneWidget);
-    expect(find.text('简体中文'), findsOneWidget);
-    expect(find.text('SUOMI'), findsOneWidget);
+    // Offered only if the build speaks it: a language with no ARB would answer
+    // in English and look finished.
+    expect(find.text('简体中文'), findsNothing,
+        reason: 'zh-Hans has no ARB yet, so it must not be offered');
 
     await tester.tap(find.text('TIẾNG VIỆT'));
     await tester.pumpAndSettle();

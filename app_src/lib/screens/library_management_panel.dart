@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../library/playlists.dart';
 import '../library/track.dart';
@@ -68,39 +70,39 @@ class LibraryManagementPanel extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          _row(skin, Icons.play_arrow_rounded, 'Play now', onPlayNow),
-          _row(skin, Icons.queue_music_rounded, 'Play next', onPlayNext),
+          _row(skin, Icons.play_arrow_rounded, l10nOf(context).panelPlayNow, onPlayNow),
+          _row(skin, Icons.queue_music_rounded, l10nOf(context).panelPlayNext, onPlayNext),
 
           _row(
             skin,
             Icons.playlist_add_rounded,
-            playlists.isEmpty ? 'New playlist' : 'Add to playlist',
+            playlists.isEmpty ? l10nOf(context).libraryNewPlaylist : l10nOf(context).shellAddToPlaylist,
             onAddToPlaylist,
           ),
           _row(
             skin,
             excluded ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-            excluded ? 'Allow in shuffle again' : 'Never in shuffle',
+            excluded ? l10nOf(context).shellShuffleAllowed : l10nOf(context).panelNeverInShuffle,
             () => state.toggleExclusion(track.id),
           ),
 
           _row(
             skin,
             Icons.edit_note_rounded,
-            fixCount == 0 ? 'Fix the tags' : 'Fix the tags ($fixCount)',
+            fixCount == 0 ? l10nOf(context).panelFixTags : 'Fix the tags ($fixCount)',
             onFixTags,
           ),
           _row(
             skin,
             bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-            bookmarked ? 'Clear this bookmark' : 'Bookmark this spot',
+            bookmarked ? l10nOf(context).panelClearBookmark : l10nOf(context).panelBookmarkSpot,
             () => state.toggleBookmark(track, Duration.zero),
           ),
 
           if (onRemoveDownload != null) ...[
             const SizedBox(height: 6),
             Divider(color: skin.secondary(0.25)),
-            _row(skin, Icons.delete_forever_rounded, 'Remove download', onRemoveDownload),
+            _row(skin, Icons.delete_forever_rounded, l10nOf(context).panelRemoveDownload, onRemoveDownload),
             Text(
               'Deletes the file from this phone. It is a download, so nothing else has it — the next library '
               'push will not bring it back.',
@@ -115,8 +117,8 @@ class LibraryManagementPanel extends StatelessWidget {
           Text(
 
             excluded
-                ? 'It stays in the library — it just never comes up in a playlist.'
-                : 'Excluded tracks stay in the library; they are only kept out of playlists.',
+                ? l10nOf(context).panelShuffleNote
+                : l10nOf(context).panelExcludedNote,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
               color: skin.textSecondary,

@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../library/compendium.dart';
 import '../library/track.dart';
 import '../theme/layout.dart';
@@ -91,6 +93,7 @@ List<Widget> compendiumSliverList({
             index: i,
             style: StaggerStyle.drop,
             child: compendiumRow(
+              context: context,
               skin: skin,
               entry: rows[i],
               playing: rows[i].track.id == playingTrackId,
@@ -105,6 +108,7 @@ List<Widget> compendiumSliverList({
     ];
 
 Widget compendiumRow({
+  required BuildContext context,
   required Skin skin,
   required CompendiumEntry entry,
   required bool playing,
@@ -112,6 +116,7 @@ Widget compendiumRow({
   Presentation? presentation,
   bool showNote = true,
 }) {
+  final l10n = l10nOf(context);
   final t = entry.track;
   final at = entry.lastPlayedAt;
   final when = at == null
@@ -142,7 +147,7 @@ Widget compendiumRow({
                 if (showNote) ...[
                   const SizedBox(height: 2),
                   Text(
-                    entry.neverHeard ? 'Not heard yet' : '${entry.plays}x$when',
+                    entry.neverHeard ? l10n.compendiumNotHeard : '${entry.plays}x$when',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -158,7 +163,7 @@ Widget compendiumRow({
             IconButton(
               onPressed: () => onSummon(t),
               icon: Icon(Icons.add_circle_outline_rounded, color: skin.accent, size: 22),
-              tooltip: 'Add to queue',
+              tooltip: l10n.libraryAddToQueue,
             ),
         ],
       ),
@@ -182,7 +187,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
       if (!widget.inline)
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 4),
-          child: ScreenTitle(skin: skin, text: 'CATALOGUE'),
+          child: ScreenTitle(skin: skin, text: l10nOf(context).shellCatalogue),
         ),
 
       Padding(
@@ -204,7 +209,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
             Expanded(
               child: SkinChip(
                 skin: skin,
-                label: 'MOST HEARD',
+                label: l10nOf(context).compendiumMostHeard,
                 selected: _order == _Order.heard,
                 onTap: () => setState(() => _order = _Order.heard),
               ),
@@ -213,7 +218,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
             Expanded(
               child: SkinChip(
                 skin: skin,
-                label: 'RECENT',
+                label: l10nOf(context).compendiumRecent,
                 selected: _order == _Order.recent,
                 onTap: () => setState(() => _order = _Order.recent),
               ),

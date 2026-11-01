@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../theme/skin.dart';
 import 'package:flutter/services.dart';
 
@@ -33,8 +35,8 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
 
     _say('Platform: ${Theme.of(context).platform}');
     _say('');
-    _say('STEP 1 — the permission');
-    _say('The first attempt failed at the GRANT, so this is the question.');
+    _say(l10nOf(context).probeStep1);
+    _say(l10nOf(context).probeStep1Note);
 
     const channel = MethodChannel('com.noah.personar/spectrum_probe');
     try {
@@ -52,12 +54,12 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
     }
 
     _say('');
-    _say('STEP 2 — the audio session');
+    _say(l10nOf(context).probeStep2);
     _say('Android Visualizer attaches to a session id. just_audio does not expose it, so the native side has to');
     _say('find the active media session itself.');
 
     _say('');
-    _say('STEP 3 — the Visualizer');
+    _say(l10nOf(context).probeStep3);
     try {
       final code = await channel.invokeMethod<int>('attachVisualizer');
       _say('  attachVisualizer -> $code');
@@ -81,7 +83,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         foregroundColor: const Color(0xFFE3B84E),
-        title: const Text('SPECTRUM PROBE', style: TextStyle(fontSize: LayoutSpec.fontSmall, letterSpacing: 2)),
+        title: Text(l10nOf(context).probeTitle, style: TextStyle(fontSize: LayoutSpec.fontSmall, letterSpacing: 2)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -97,7 +99,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
                   backgroundColor: const Color(0xFFE3B84E),
                   foregroundColor: Colors.black,
                 ),
-                child: Text(_running ? 'RUNNING…' : 'RUN THE PROBE',
+                child: Text(_running ? l10nOf(context).probeRunning : l10nOf(context).probeRun,
                     style: const TextStyle(fontSize: LayoutSpec.fontSmall, fontWeight: FontWeight.w800)),
               ),
             ),
@@ -105,7 +107,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child: SelectableText(
-                  _lines.isEmpty ? 'Press the button, then send me what appears here.' : _lines.join('\n'),
+                  _lines.isEmpty ? l10nOf(context).probeHint : _lines.join('\n'),
                   style: const TextStyle(
                     fontSize: LayoutSpec.fontFloor,
                     height: 1.45,

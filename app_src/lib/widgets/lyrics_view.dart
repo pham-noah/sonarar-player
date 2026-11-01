@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../library/lyrics.dart';
 import '../theme/skin.dart';
 
@@ -25,11 +27,11 @@ class LyricsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subtitle = switch (known) {
-      Lyrics(instrumental: true) => 'This one has no words',
-      Lyrics(lines: final l) when l.isNotEmpty => 'Follows the song',
-      Lyrics(plain: final p) when p != null && p.isNotEmpty => 'Words, no timing',
-      Lyrics() => 'Not found',
-      null => 'Tap to look up',
+      Lyrics(instrumental: true) => l10nOf(context).lyricsNoWords,
+      Lyrics(lines: final l) when l.isNotEmpty => l10nOf(context).lyricsFollowsSong,
+      Lyrics(plain: final p) when p != null && p.isNotEmpty => l10nOf(context).lyricsNoTiming,
+      Lyrics() => l10nOf(context).lyricsNotFound,
+      null => l10nOf(context).lyricsTapToLookUp,
     };
 
     return GestureDetector(
@@ -53,7 +55,7 @@ class LyricsRow extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'LYRICS',
+                    l10nOf(context).playerLyrics,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       fontWeight: FontWeight.w800,
@@ -207,7 +209,7 @@ class _LyricsViewState extends State<LyricsView> {
                       Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: skin.accent),
                       const SizedBox(width: 6),
                       Text(
-                        'PLAYER',
+                        l10nOf(context).scopePlayer,
 
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -245,7 +247,7 @@ class _LyricsViewState extends State<LyricsView> {
                         Icon(Icons.my_location_rounded, size: 16, color: skin.accent),
                         const SizedBox(width: 8),
                         Text(
-                          'SYNC',
+                          l10nOf(context).lyricsSync,
                           style: TextStyle(
                             fontSize: LayoutSpec.fontLabel,
                             fontWeight: FontWeight.w900,
@@ -267,9 +269,9 @@ class _LyricsViewState extends State<LyricsView> {
   Widget _empty(BuildContext context) {
     final skin = widget.skin;
     final reason = switch (widget.lyrics) {
-      null => 'No lyrics found',
-      Lyrics(instrumental: true) => 'No lyrics — this is an instrumental',
-      _ => 'No lyrics found',
+      null => l10nOf(context).lyricsNoneFound,
+      Lyrics(instrumental: true) => l10nOf(context).lyricsInstrumental,
+      _ => l10nOf(context).lyricsNoneFound,
     };
     return Center(
       child: Padding(

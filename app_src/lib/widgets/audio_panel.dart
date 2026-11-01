@@ -2,15 +2,18 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+import '../l10n/l10n.dart';
+
 import '../player/audio_route.dart';
 import '../theme/skin.dart';
 
-String _kindLabel(String kind) => switch (kind) {
-      'bluetooth' => 'BLUETOOTH',
-      'headphones' => 'WIRED',
-      'usb' => 'USB / DAC',
-      'hdmi' => 'HDMI',
-      _ => 'THIS PHONE',
+String _kindLabel(AppLocalizations l10n, String kind) => switch (kind) {
+      'bluetooth' => l10n.outputBluetooth,
+      'headphones' => l10n.outputWired,
+      'usb' => l10n.outputUsbDac,
+      'hdmi' => l10n.outputHdmi,
+      _ => l10n.outputThisPhone,
     };
 
 class AudioPanel extends StatelessWidget {
@@ -37,10 +40,11 @@ class AudioPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = l10nOf(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
       children: [
-        _SectionLabel(skin: skin, text: 'VOLUME'),
+        _SectionLabel(skin: skin, text: l10n.outputVolume),
         Row(
           children: [
 
@@ -85,12 +89,12 @@ class AudioPanel extends StatelessWidget {
 
         if (outputs.isNotEmpty) ...[
           const SizedBox(height: 6),
-          _SectionLabel(skin: skin, text: 'PLAYS THROUGH'),
+          _SectionLabel(skin: skin, text: l10n.outputPlaysThrough),
           _PanelRow(
             skin: skin,
             icon: Icons.swap_horiz_rounded,
-            label: 'CHANGE OUTPUT',
-            blurb: 'Opens your phone\'s output picker',
+            label: l10n.outputChange,
+            blurb: l10n.outputPickerHint,
             onTap: onPickOutput,
           ),
           const SizedBox(height: 4),
@@ -100,7 +104,7 @@ class AudioPanel extends StatelessWidget {
               icon: o.icon,
               label: o.name,
 
-              blurb: _kindLabel(o.kind),
+              blurb: _kindLabel(l10nOf(context), o.kind),
 
               trailing: o.active
                   ? Icon(Icons.check_rounded, color: skin.accent, size: 20)

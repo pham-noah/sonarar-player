@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/app_localizations.dart';
 import '../library/track.dart';
 import 'context_rules.dart';
 import 'rules_engine.dart';
@@ -30,6 +31,7 @@ class PlaylistExplanation {
 }
 
 String? momentSentence({
+  required AppLocalizations l10n,
   String? placeName,
   bool preciseFix = true,
   bool betweenPlaces = false,
@@ -43,34 +45,35 @@ String? momentSentence({
   final parts = <String>[];
 
   if (placeName != null && placeName.trim().isNotEmpty) {
-    parts.add(preciseFix ? 'You are at $placeName.' : 'You are somewhere near $placeName.');
+    parts.add(preciseFix ? l10n.explainAtPlace(placeName) : l10n.explainNearPlace(placeName));
   } else if (commuting) {
-    parts.add('You are on the move.');
+    parts.add(l10n.explainOnTheMove);
   } else if (betweenPlaces) {
-    parts.add('You are between your saved places.');
+    parts.add(l10n.explainBetweenPlaces);
   }
 
   if (snowing) {
-    parts.add("It's snowing outside.");
+    parts.add(l10n.explainSnowingOutside);
   } else if (raining) {
-    parts.add("It's raining outside.");
+    parts.add(l10n.explainRainingOutside);
   }
 
   if (sleeping) {
-    parts.add('And you wanna have easier time when sleeping.');
+    parts.add(l10n.explainEasierSleeping);
   }
 
   if (parts.isEmpty && bandName != null && bandName.isNotEmpty) {
-    parts.add("It's $bandName.");
+    parts.add(l10n.explainItsBand(bandName));
   }
   if (parts.isEmpty && manualMode) {
-    parts.add('You set this moment by hand.');
+    parts.add(l10n.explainSetByHand);
   }
 
   return parts.isEmpty ? null : parts.join(' ');
 }
 
 PlaylistExplanation explainPlaylist({
+  required AppLocalizations l10n,
   required Track? current,
   required List<Track> library,
   required PlaylistContext? ctx,
@@ -79,6 +82,9 @@ PlaylistExplanation explainPlaylist({
   required String preferredOrigin,
   ContextRule? rule,
   int? ruleTrackCount,
+
+  /// The band's word from the app's own words, not the enum's name.
+  String? bandName,
 
   String? placeName,
 
@@ -93,36 +99,30 @@ PlaylistExplanation explainPlaylist({
   final context = <ExplanationLine>[];
 
   if (ctx == null) {
-    context.add(const ExplanationLine(
-      'Waiting for a context reading — nothing has decided anything yet.',
-      counts: false,
-    ));
+    context.add(ExplanationLine(l10n.explainNoReading, counts: false));
   }
   if (ctx != null) {
     if (sleeping) {
-      context.add(const ExplanationLine(
-        'Sleep timer armed — instrumentals until it stops.',
-        counts: true,
-      ));
+      context.add(ExplanationLine(l10n.explainSleepArmed));
     } else if (situationTag == 'snow') {
-      context.add(const ExplanationLine('Snowing — the snow rule is active.', counts: true));
+      context.add(ExplanationLine(l10n.explainSnowRule));
     } else if (situationTag == 'rain') {
-      context.add(const ExplanationLine('Raining — the rain rule is active.', counts: true));
+      context.add(ExplanationLine(l10n.explainRainRule));
     } else if (ctx.commuting) {
-      context.add(const ExplanationLine('Travelling — the commute rules are active.', counts: true));
+      context.add(ExplanationLine(l10n.explainCommuteRules));
     } else if (placeName != null) {
       context.add(ExplanationLine(
-        preciseFix ? 'At $placeName.' : 'At $placeName (approximate fix).',
+        preciseFix ? l10n.explainHereAt(placeName) : l10n.explainHereApprox(placeName),
         counts: true,
       ));
     } else if (ctx.mode != null) {
       context.add(ExplanationLine(
-        'You set this context by hand (${ctx.mode!.name}).',
+        l10n.explainSetByHandNamed(ctx.mode!.name),
         counts: true,
       ));
     } else {
       context.add(ExplanationLine(
-        '${ctx.band.name[0].toUpperCase()}${ctx.band.name.substring(1)} — the hour picked this.',
+        l10n.explainHourPicked(bandName ?? ctx.band.name),
         counts: true,
       ));
     }
@@ -144,21 +144,16 @@ PlaylistExplanation explainPlaylist({
   }
 
   if (!isLive && ctx != null) {
-    context.add(const ExplanationLine(
-      'Fixed queue — it plays in this order. Press Dynamic to let the app re-rank as things change.',
-      counts: false,
-    ));
+    context.add(ExplanationLine(l10n.explainFixedQueue, counts: false));
   }
 
   final playing = <ExplanationLine>[];
   if (current == null) {
-    playing.add(const ExplanationLine('Nothing is playing.'));
+    playing.add(ExplanationLine(l10n.explainNothingPlaying));
   } else if (ctx != null && library.isNotEmpty) {
     final net = memory.score(current.id, ctx.band);
     if (net > 0) {
-      playing.add(ExplanationLine(
-        'You kept it $net time${net == 1 ? '' : 's'} in this band.',
-      ));
+      playing.add(ExplanationLine(l10n.explainKeptIt(net)));
     }
   }
 
@@ -169,6 +164,7 @@ PlaylistExplanation explainPlaylist({
     playing: playing,
     excluded: excluded,
     moment: momentSentence(
+      l10n: l10n,
       placeName: placeName,
       preciseFix: preciseFix,
       betweenPlaces: ctx?.hasPlaceReading == true,
@@ -177,7 +173,7 @@ PlaylistExplanation explainPlaylist({
       snowing: ctx?.snowing ?? false,
       sleeping: sleeping,
       manualMode: ctx?.mode != null,
-      bandName: ctx?.band.name,
+      bandName: bandName,
     ),
   );
 }

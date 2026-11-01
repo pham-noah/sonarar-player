@@ -413,5 +413,115 @@
   "mapNoPosition": "Position not known yet",
   "mapNoPlaces": "No places saved yet",
   "mapSaveSpot": "SAVE THIS SPOT",
-  "mapWaitingFix": "WAITING FOR A GOOD FIX"
+  "mapWaitingFix": "WAITING FOR A GOOD FIX",
+  "explainAtPlace": "You are at {place}.",
+  "@explainAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainNearPlace": "You are somewhere near {place}.",
+  "@explainNearPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainOnTheMove": "You are on the move.",
+  "explainBetweenPlaces": "You are between your saved places.",
+  "explainSnowingOutside": "It's snowing outside.",
+  "explainRainingOutside": "It's raining outside.",
+  "explainEasierSleeping": "And you wanna have easier time when sleeping.",
+  "explainItsBand": "It's {band}.",
+  "@explainItsBand": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHand": "You set this moment by hand.",
+  "explainNoReading": "Waiting for a context reading — nothing has decided anything yet.",
+  "explainSleepArmed": "Sleep timer armed — instrumentals until it stops.",
+  "explainSnowRule": "Snowing — the snow rule is active.",
+  "explainRainRule": "Raining — the rain rule is active.",
+  "explainCommuteRules": "Travelling — the commute rules are active.",
+  "explainHereAt": "At {place}.",
+  "@explainHereAt": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHereApprox": "At {place} (approximate fix).",
+  "@explainHereApprox": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHandNamed": "You set this context by hand ({mode}).",
+  "@explainSetByHandNamed": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHourPicked": "{band} — the hour picked this.",
+  "@explainHourPicked": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainRuleMatched": "Rule \"{id}\" matched: {summary}.",
+  "@explainRuleMatched": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "explainPlaylistLeads": "\"{playlist}\" holds {count} — those lead, the rest of the library follows.",
+  "@explainPlaylistLeads": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainPlaylistQueue": "\"{playlist}\" became the queue ({count} tracks).",
+  "@explainPlaylistQueue": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainFixedQueue": "Fixed queue — it plays in this order. Press Dynamic to let the app re-rank as things change.",
+  "explainNothingPlaying": "Nothing is playing.",
+  "explainKeptIt": "You kept it {count, plural, =1{once} other{{count} times}} in this band.",
+  "@explainKeptIt": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

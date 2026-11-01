@@ -1,6 +1,8 @@
 library;
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/l10n/app_localizations.dart';
 import 'package:sonarar/library/track.dart';
 import 'package:sonarar/rules/playlist_explanation.dart';
 import 'package:sonarar/rules/context_rules.dart';
@@ -48,6 +50,7 @@ PlaylistExplanation _run({
   int? ruleTrackCount,
 }) =>
     explainPlaylist(
+      l10n: lookupAppLocalizations(const Locale('en')),
       current: current,
       library: library ?? [_t('a')],
       ctx: noContext ? null : (ctx ?? _ctx()),

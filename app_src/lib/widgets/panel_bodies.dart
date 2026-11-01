@@ -13,6 +13,19 @@ import '../screens/loop_editor_screen.dart';
 import '../screens/queue_screen.dart';
 import '../screens/track_panel.dart';
 import '../screens/why_screen.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/l10n.dart';
+import '../theme/skin_policy.dart';
+
+/// The band as the app words it. The enum's name is not a word anyone reads.
+String _bandName(AppLocalizations l10n, ContextBand? band) => switch (band) {
+      ContextBand.morning => l10n.bandMorning,
+      ContextBand.afternoon => l10n.bandAfternoon,
+      ContextBand.evening => l10n.bandEvening,
+      ContextBand.night => l10n.bandNight,
+      ContextBand.darkHour => l10n.bandNightHour,
+      null => '',
+    };
 
 class WhyBody extends StatelessWidget {
   const WhyBody({
@@ -43,6 +56,8 @@ class WhyBody extends StatelessWidget {
           WhyPanel(
             state: state,
             explanation: explainPlaylist(
+              l10n: l10nOf(context),
+              bandName: _bandName(l10nOf(context), ctx.band),
               current: current,
               library: state.library,
               ctx: ctx,

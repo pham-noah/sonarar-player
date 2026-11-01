@@ -611,5 +611,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "placesDuplicateName": "You already have a place by this name — saving adds this spot to it rather than making a new one.",
+  "placesNameHint": "e.g. University, Gym, Home"
 }

@@ -547,8 +547,7 @@ class _NameSheetState extends State<_NameSheet> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
-                  'You already have a place by this name — saving adds this spot to it rather than '
-                  'making a new one.',
+                  l10nOf(context).placesDuplicateName,
                   style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
                 ),
               );
@@ -578,7 +577,7 @@ class _NameSheetState extends State<_NameSheet> {
           const SizedBox(height: 16),
 
           _field(skin, l10nOf(context).placesNameLabel, nameCtl,
-              hint: 'e.g. University, Gym, Home'),
+              hint: l10nOf(context).placesNameHint),
           const SizedBox(height: 12),
 
           if (existingPlaylists.isNotEmpty) ...[

@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../library/playlists.dart';
 import '../library/track.dart';
 import '../theme/skin.dart';
@@ -71,9 +73,9 @@ class LibraryBrowserBar extends StatelessWidget {
 
             _segment(
               switch (current) {
-                LibraryView.playlists => 'PLAYLISTS',
-                LibraryView.artists => 'ARTISTS',
-                LibraryView.songs => 'SONGS',
+                LibraryView.playlists => l10nOf(context).libraryPlaylists,
+                LibraryView.artists => l10nOf(context).libraryArtists,
+                LibraryView.songs => l10nOf(context).librarySongs,
               },
               current,
 
@@ -111,12 +113,12 @@ class LibraryBrowserBar extends StatelessWidget {
             ],
           ] else ...[
 
-            _segment('PLAYLISTS', LibraryView.playlists),
+            _segment(l10nOf(context).libraryPlaylists, LibraryView.playlists),
             const SizedBox(width: 8),
-            _segment('ARTISTS', LibraryView.artists),
+            _segment(l10nOf(context).libraryArtists, LibraryView.artists),
             const SizedBox(width: 8),
 
-            _segment('SONGS', LibraryView.songs),
+            _segment(l10nOf(context).librarySongs, LibraryView.songs),
           ],
         ],
       ),
@@ -322,7 +324,7 @@ class PlaylistRow extends StatelessWidget {
 
 Playlist likedAsPlaylist({
   required List<String> orderedIds,
-  String name = 'Liked Songs',
+  required String name,
 }) =>
     Playlist(
 

@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/app_state.dart';
 import '../library/track.dart';
 import '../theme/layout.dart';
@@ -33,7 +35,7 @@ class NeverInShuffleScreen extends StatelessWidget {
           padding: LayoutSpec.screenPadding,
           children: [
             Text(
-              'NEVER IN SHUFFLE',
+              l10nOf(context).shuffleTitle,
               style: TextStyle(
                 fontSize: LayoutSpec.fontTitle,
                 fontWeight: FontWeight.w900,
@@ -54,7 +56,7 @@ class NeverInShuffleScreen extends StatelessWidget {
 
             if (ids.isEmpty)
               Text(
-                'Nothing excluded. Every track in the library is eligible.',
+                l10nOf(context).shuffleNoneExcluded,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontBase,
                   color: skin.textPrimary,
@@ -62,7 +64,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                 ),
               )
             else
-              for (final id in ids) _row(skin, id, byId[id]),
+              for (final id in ids) _row(context, skin, id, byId[id]),
 
             if (ids.isNotEmpty) ...[
               const SizedBox(height: 24),
@@ -78,7 +80,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                     side: BorderSide(color: skin.secondary(0.5)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('ALLOW EVERYTHING AGAIN'),
+                  child: Text(l10nOf(context).shuffleAllowAll),
                 ),
               ),
             ],
@@ -89,7 +91,8 @@ class NeverInShuffleScreen extends StatelessWidget {
     );
   }
 
-  Widget _row(Skin skin, String id, Track? track) {
+  Widget _row(BuildContext context, Skin skin, String id, Track? track) {
+    final l10n = l10nOf(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
@@ -137,7 +140,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                   side: BorderSide(color: skin.accent),
                   minimumSize: const Size(80, LayoutSpec.tapTarget),
                 ),
-                child: const Text('ALLOW'),
+                child: Text(l10n.shuffleAllow),
               ),
             ),
           ],

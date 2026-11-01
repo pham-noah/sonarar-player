@@ -954,7 +954,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       return [...isPinned, ...rest];
     }
 
-    final liked = likedAsPlaylist(orderedIds: widget.likedOrder);
+    final liked = likedAsPlaylist(orderedIds: widget.likedOrder, name: l10nOf(context).libraryLikedSongs);
 
     final lists = arrange(switch (_playlistFilter) {
       _PlaylistKind.seeded => seeded,

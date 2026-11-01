@@ -1,6 +1,8 @@
 library;
 
 import 'package:flutter/material.dart';
+
+import '../l10n/l10n.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -192,7 +194,7 @@ class MapAttribution extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Map data © OpenStreetMap contributors',
+      l10nOf(context).mapAttribution,
       style: TextStyle(
         fontSize: LayoutSpec.fontMicro,
         color: skin.secondary(0.8),
@@ -219,7 +221,7 @@ class NearestReadout extends StatelessWidget {
     if (pos == null) {
       return Text(
 
-        'Position not known yet',
+        l10nOf(context).mapNoPosition,
         style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
       );
     }
@@ -240,7 +242,7 @@ class NearestReadout extends StatelessWidget {
 
     if (places.isEmpty) {
       return Text(
-        'No places saved yet',
+        l10nOf(context).mapNoPlaces,
         style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
       );
     }
@@ -308,7 +310,7 @@ class SaveSpotButton extends StatelessWidget {
               ),
             ),
             child: Text(
-              _usable ? 'SAVE THIS SPOT' : 'WAITING FOR A GOOD FIX',
+              _usable ? l10nOf(context).mapSaveSpot : l10nOf(context).mapWaitingFix,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: LayoutSpec.fontMicro,

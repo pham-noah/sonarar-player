@@ -400,5 +400,18 @@
   "backupRestoreNote": "This replaces tags, likes, playlists, themes and play history with the copy in the file. The current state is saved aside first, in pre-restore-…",
   "backupWhatItHolds": "Tags, likes, playlists, themes and play history — everything that is not in the audio files. Saved to Downloads.",
   "tagsNote": "Corrects what the player shows. The audio file is never modified, so this can always be undone.",
-  "tagsPersistNote": "Saved corrections survive a restart and are not overwritten by re-scanning the library."
+  "tagsPersistNote": "Saved corrections survive a restart and are not overwritten by re-scanning the library.",
+  "shuffleTitle": "NEVER IN SHUFFLE",
+  "shuffleNoneExcluded": "Nothing excluded. Every track in the library is eligible.",
+  "shuffleAllowAll": "ALLOW EVERYTHING AGAIN",
+  "shuffleAllow": "ALLOW",
+  "libraryPlaylists": "PLAYLISTS",
+  "libraryArtists": "ARTISTS",
+  "librarySongs": "SONGS",
+  "libraryLikedSongs": "Liked Songs",
+  "mapAttribution": "Map data © OpenStreetMap contributors",
+  "mapNoPosition": "Position not known yet",
+  "mapNoPlaces": "No places saved yet",
+  "mapSaveSpot": "SAVE THIS SPOT",
+  "mapWaitingFix": "WAITING FOR A GOOD FIX"
 }

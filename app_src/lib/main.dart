@@ -23,6 +23,7 @@ import 'core/music_root.dart';
 import 'core/diag_log.dart';
 import 'core/legal.dart';
 import 'l10n/app_localizations.dart';
+import 'l10n/l10n.dart';
 import 'core/latest_load.dart';
 import 'core/prefs_decode.dart' as decode;
 import 'core/shortcuts.dart';
@@ -355,7 +356,7 @@ class _HomeShellState extends State<HomeShell>
     // ignore: discarded_futures
     openAppPage(
       context,
-      title: 'REDISCOVER',
+      title: l10nOf(context).homeRediscover,
       skin: widget.state.uiSkin,
       presentation: widget.state.presentation,
       rebuildOn: _routeListenable,
@@ -613,11 +614,11 @@ class _HomeShellState extends State<HomeShell>
   List<Track> _heavyRotation = const [];
 
   String? get _homeGreeting => switch (_ctxForHome?.band) {
-        ContextBand.morning => 'Good morning',
-        ContextBand.afternoon => 'Good afternoon',
-        ContextBand.evening => 'Good evening',
-        ContextBand.night => 'Good night',
-        ContextBand.darkHour => 'Late night',
+        ContextBand.morning => l10nOf(context).greetingMorning,
+        ContextBand.afternoon => l10nOf(context).greetingAfternoon,
+        ContextBand.evening => l10nOf(context).greetingEvening,
+        ContextBand.night => l10nOf(context).greetingNight,
+        ContextBand.darkHour => l10nOf(context).greetingLateNight,
         null => null,
       };
 
@@ -647,7 +648,7 @@ class _HomeShellState extends State<HomeShell>
   void _playNowMix() {
     final mix = widget.state.dynamicMix();
     if (mix == null) {
-      _toast('Nothing fits right now');
+      _toast(l10nOf(context).homeNothingFits);
       return;
     }
     widget.state.playPlaylist(mix);
@@ -782,7 +783,7 @@ class _HomeShellState extends State<HomeShell>
 
   List<Track> _recapTracks = const [];
 
-  static const String _recapLabel = 'THIS MONTH';
+  String get _recapLabel => l10nOf(context).shellThisMonth;
 
   int _libraryEntry = 0;
 
@@ -814,7 +815,7 @@ class _HomeShellState extends State<HomeShell>
     final ok = await _audioRoute.openSwitcher();
     if (!mounted) return;
 
-    if (!ok) _toast('Could not open the output settings');
+    if (!ok) _toast(l10nOf(context).shellOutputSettingsFailed);
   }
   bool _loading = true;
 
@@ -1281,7 +1282,7 @@ class _HomeShellState extends State<HomeShell>
       if (savedSkin != null || savedWords != null) {
         widget.state.applyPreset(ThemePreset(
           id: 'saved_look',
-          name: 'Saved',
+          name: l10nOf(context).commonSaved,
 
           skinId: savedSkin ?? widget.state.skin.id,
 
@@ -1454,8 +1455,7 @@ class _HomeShellState extends State<HomeShell>
     if (_askedStorage && _storageAccess == StorageAccess.denied) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          _toast('Sonarar cannot read your music folder — '
-              'grant access in Settings → Apps → Sonarar → Permissions');
+          _toast(l10nOf(context).shellCannotReadFolder);
         }
       });
     }
@@ -1975,7 +1975,7 @@ class _HomeShellState extends State<HomeShell>
   void _navigateHistory(bool forward) {
     final next = _historyAt + (forward ? 1 : -1);
     if (next < 0 || next >= _history.length) {
-      _toast(forward ? 'No further forward' : 'No earlier tab');
+      _toast(forward ? l10nOf(context).shellNoForward : l10nOf(context).shellNoEarlierTab);
       return;
     }
     _historyAt = next;
@@ -1996,7 +1996,7 @@ class _HomeShellState extends State<HomeShell>
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
                 child: Text(
-                  'Add to playlist',
+                  l10nOf(context).shellAddToPlaylist,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontSmall,
                     fontWeight: FontWeight.w900,
@@ -2012,7 +2012,7 @@ class _HomeShellState extends State<HomeShell>
                   ),
 
                   subtitle: Text(
-                    p.contains(track.id) ? 'Already in this playlist'
+                    p.contains(track.id) ? l10nOf(context).shellAlreadyInPlaylist
                         : '${p.length} tracks',
                     style: TextStyle(color: widget.state.skin.textSecondary),
                   ),
@@ -2020,7 +2020,7 @@ class _HomeShellState extends State<HomeShell>
                 ),
               ListTile(
                 leading: Icon(Icons.add_rounded, color: widget.state.skin.accent),
-                title: Text('New playlist',
+                title: Text(l10nOf(context).libraryNewPlaylist,
                     style: TextStyle(color: widget.state.skin.accent)),
                 onTap: () => Navigator.of(ctx).pop('__new__'),
               ),
@@ -2056,8 +2056,8 @@ class _HomeShellState extends State<HomeShell>
   Future<String?> _askPlaylistName() => askForName(
         context,
         widget.state.uiSkin,
-        title: 'New playlist',
-        confirm: 'CREATE',
+        title: l10nOf(context).libraryNewPlaylist,
+        confirm: l10nOf(context).libraryCreate,
       );
 
   late final ThemeSession _themeSession =
@@ -2079,7 +2079,7 @@ class _HomeShellState extends State<HomeShell>
       return;
     }
     final ok = widget.state.addToQueue(track);
-    _toast(ok ? 'Added to queue — ${track.title}' : 'Already in the queue');
+    _toast(ok ? 'Added to queue — ${track.title}' : l10nOf(context).shellAlreadyInQueue);
   }
 
   void _toastUndo(String message, VoidCallback undo) {
@@ -2100,7 +2100,7 @@ class _HomeShellState extends State<HomeShell>
     }
     if (error == _shownDownloadError) return;
     _shownDownloadError = error;
-    _toastAction(error, 'SETTINGS', () {
+    _toastAction(error, l10nOf(context).settingsTitle, () {
       unawaited(StoragePermission.request());
       _downloads.clearError();
       _shownDownloadError = null;
@@ -2152,7 +2152,7 @@ class _HomeShellState extends State<HomeShell>
             ? () async {
                 final root = _repo.libraryRoot;
                 if (root == null) {
-                  _toast('The library is not resolved yet');
+                  _toast(l10nOf(context).shellLibraryNotResolved);
                   return;
                 }
                 final ok = await showDialog<bool>(
@@ -2162,17 +2162,17 @@ class _HomeShellState extends State<HomeShell>
                     title: Text('REMOVE "${track.title}"?',
                         style: TextStyle(fontSize: LayoutSpec.fontSmall, color: widget.state.skin.textPrimary)),
                     content: Text(
-                      'This deletes the file from the phone. It is a download, so nothing else has a copy.',
+                      l10nOf(context).shellDeleteDownloadNote,
                       style: TextStyle(fontSize: LayoutSpec.fontFloor, color: widget.state.skin.textSecondary),
                     ),
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.of(d).pop(false),
-                          child: Text('KEEP',
+                          child: Text(l10nOf(context).importKeep,
                               style: TextStyle(color: widget.state.skin.accent))),
                       TextButton(
                           onPressed: () => Navigator.of(d).pop(true),
-                          child: Text('REMOVE',
+                          child: Text(l10nOf(context).libraryRemove,
                               style: TextStyle(color: widget.state.skin.textSecondary))),
                     ],
                   ),
@@ -2191,7 +2191,7 @@ class _HomeShellState extends State<HomeShell>
                 if (!ctx.mounted) return;
                 Navigator.of(ctx).pop();
                 _toast(freed == null
-                    ? 'Could not remove it'
+                    ? l10nOf(context).shellRemoveFailed
                     : 'Removed — ${(freed / 1048576).toStringAsFixed(1)} MB freed');
                 unawaited(_reloadLibraryAfterDownload());
               }
@@ -2286,8 +2286,8 @@ class _HomeShellState extends State<HomeShell>
     if (!mounted) return;
     final after = widget.state.library.length;
     _toast(after == before
-        ? 'Downloaded — it is not in the library manifest yet'
-        : 'Added to the library');
+        ? l10nOf(context).shellDownloadedNotIndexed
+        : l10nOf(context).shellAddedToLibrary);
   }
 
   void _openHistory() {
@@ -2296,7 +2296,7 @@ class _HomeShellState extends State<HomeShell>
     log.read().then((events) {
       if (!mounted) return;
       setState(() => _lastEvents = events);
-      _openPage('HISTORY', (_) => _historyPage(widget.state.uiSkin));
+      _openPage(l10nOf(context).shellHistory, (_) => _historyPage(widget.state.uiSkin));
     });
   }
 
@@ -2406,7 +2406,7 @@ class _HomeShellState extends State<HomeShell>
 
   void _openSettingsPage() {
     _openPage(
-      'SETTINGS',
+      l10nOf(context).settingsTitle,
       (_) => SettingsScreen(
         state: widget.state,
         section: SettingsSection.behaviour,
@@ -2458,7 +2458,7 @@ class _HomeShellState extends State<HomeShell>
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: widget.state.uiSkin.panel,
-        title: Text('Music folder saved',
+        title: Text(l10nOf(context).shellMusicFolderSaved,
             style: TextStyle(color: widget.state.uiSkin.textPrimary)),
         content: Text(
           'Sonarar reads the library once at launch, so it will load $chosen '
@@ -2468,11 +2468,11 @@ class _HomeShellState extends State<HomeShell>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('LATER'),
+            child: Text(l10nOf(context).shellLater),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('RESTART NOW'),
+            child: Text(l10nOf(context).shellRestartNow),
           ),
         ],
       ),
@@ -2538,7 +2538,7 @@ class _HomeShellState extends State<HomeShell>
 
   void _openDiagnosticsPage() {
     _openPage(
-      'DIAGNOSTICS',
+      l10nOf(context).settingsDiagnostics,
 
       (_) => _doors[_InlineDoor.diagnostics]!.build(widget.state.uiSkin),
     );
@@ -2546,7 +2546,7 @@ class _HomeShellState extends State<HomeShell>
 
   void _openArchivePage() {
     _openPage(
-      widget.state.languageSkin.word(WordKey.libraryRoom, 'LIBRARY TOOLS'),
+      widget.state.languageSkin.word(WordKey.libraryRoom, l10nOf(context).shellLibraryTools),
       (_) => ArchiveScreen(
         state: widget.state,
         onOpenTagEditor: _openTagEditor,
@@ -2568,7 +2568,7 @@ class _HomeShellState extends State<HomeShell>
   void _openArchive() => _openArchivePage();
 
   void _openPlacesPage() {
-    _openPage('PLACES', (_) => _placesBody(widget.state.uiSkin));
+    _openPage(l10nOf(context).settingsPlaces, (_) => _placesBody(widget.state.uiSkin));
   }
 
   Widget _placesBody(Skin skin, {bool inline = false}) => PlacesScreen(
@@ -2655,12 +2655,12 @@ class _HomeShellState extends State<HomeShell>
     final name = await askForName(
       context,
       widget.state.uiSkin,
-      title: 'Save queue as playlist',
+      title: l10nOf(context).shellSaveQueue,
     );
     if (!mounted || name == null) return;
     final made = widget.state.saveQueueAsPlaylist(name);
     if (made == null) {
-      _toast('There is nothing in the queue to save.');
+      _toast(l10nOf(context).shellQueueEmptyToSave);
       return;
     }
     _persistListsNow();
@@ -2764,7 +2764,7 @@ class _HomeShellState extends State<HomeShell>
         widget.state.toggleExclusion(t.id);
         _toast(widget.state.exclusions.contains(t.id)
             ? 'Never in shuffle — the full list is in ${widget.state.languageSkin.word(WordKey.libraryRoom, 'library tools')}'
-            : 'Allowed in shuffle again');
+            : l10nOf(context).shellShuffleAllowed);
       },
     );
   }
@@ -2963,7 +2963,7 @@ class _HomeShellState extends State<HomeShell>
           } else {
             // ignore: avoid_print
             print('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
-            _toast('That playlist has nothing playable');
+            _toast(l10nOf(context).shellPlaylistNothingPlayable);
           }
         },
 
@@ -2996,14 +2996,14 @@ class _HomeShellState extends State<HomeShell>
 
         onQueue: (t) {
           final ok = widget.state.addToQueue(t);
-          _toast(ok ? 'Added to queue — ${t.title}' : 'Already in the queue');
+          _toast(ok ? 'Added to queue — ${t.title}' : l10nOf(context).shellAlreadyInQueue);
           return ok ? SwipeOutcome.queued : SwipeOutcome.alreadyQueued;
         },
 
         onLike: (t) {
           final liked = widget.state.toggleFavorite(t.id);
           _persistLists();
-          _toast(liked ? 'Liked — ${t.title}' : 'Removed from Liked');
+          _toast(liked ? 'Liked — ${t.title}' : l10nOf(context).shellRemovedFromLiked);
           return liked ? SwipeOutcome.liked : SwipeOutcome.unliked;
         },
 
@@ -3463,19 +3463,19 @@ class _HomeShellState extends State<HomeShell>
         entries: [
           if (_prefs.recordHistory)
             SidebarEntry(
-              label: 'HISTORY',
+              label: l10nOf(context).shellHistory,
               icon: Icons.insights_rounded,
               onTap: _openHistory,
             ),
           if (!_prefs.allowNetwork)
             SidebarEntry(
-              label: 'PLACES',
+              label: l10nOf(context).settingsPlaces,
               icon: Icons.location_on_rounded,
               onTap: _openPlacesPage,
             ),
           if (_prefs.recordHistory)
             SidebarEntry(
-              label: 'THE ARCHIVE',
+              label: l10nOf(context).shellArchive,
               icon: Icons.meeting_room_rounded,
               onTap: _openArchive,
             ),
@@ -3485,7 +3485,7 @@ class _HomeShellState extends State<HomeShell>
             onTap: _openPersonalizePage,
           ),
           SidebarEntry(
-            label: 'SETTINGS',
+            label: l10nOf(context).settingsTitle,
             icon: Icons.settings_rounded,
 
             onTap: _openSettingsPage,
@@ -3701,8 +3701,8 @@ children: [
                       // repaint it. _shellChanged bumps the tick it listens to.
                       _shellChanged(() => _stopAfterTrack = v);
                       _toast(v
-                          ? 'Stopping after this track'
-                          : 'Stop after this track — off');
+                          ? l10nOf(context).shellStoppingAfter
+                          : l10nOf(context).shellStopAfterOff);
                     },
                     sleepRunning: _sleep.isRunning,
                     sleepTimer: _prefs.sleepTimer,
@@ -3717,7 +3717,7 @@ children: [
       icon: const Icon(Icons.keyboard_arrow_down_rounded),
       color: skin.textPrimary,
       iconSize: 32,
-      tooltip: 'Back',
+      tooltip: l10nOf(context).commonBack,
     ),
   ),
 
@@ -3784,7 +3784,7 @@ children: [
   late final Map<_InlineDoor, ({String Function(Skin) title, Widget Function(Skin) build})>
       _doors = {
     _InlineDoor.history: (
-      title: (_) => 'HISTORY',
+      title: (_) => l10nOf(context).shellHistory,
       build: (skin) => HistoryScreen(
         contextEnabled: _prefs.allowNetwork,
         skin: skin,
@@ -3803,7 +3803,7 @@ children: [
       ),
     ),
     _InlineDoor.velvetRoom: (
-      title: (skin) => skin.word(WordKey.libraryRoom, 'LIBRARY TOOLS'),
+      title: (skin) => skin.word(WordKey.libraryRoom, l10nOf(context).shellLibraryTools),
       build: (skin) => ArchiveScreen(
         state: widget.state,
         inline: true,
@@ -3831,7 +3831,7 @@ children: [
       ),
     ),
     _InlineDoor.compendium: (
-      title: (_) => 'CATALOGUE',
+      title: (_) => l10nOf(context).shellCatalogue,
       build: (skin) => CompendiumScreen(
         skin: skin,
         entries: buildCompendium(
@@ -3847,7 +3847,7 @@ children: [
       ),
     ),
     _InlineDoor.bonds: (
-      title: (skin) => skin.word(WordKey.affinityRoom, 'RANKS'),
+      title: (skin) => skin.word(WordKey.affinityRoom, l10nOf(context).shellRanks),
       build: (skin) => BondsScreen(
         state: widget.state,
         events: _lastEvents,
@@ -3859,11 +3859,11 @@ children: [
     ),
 
     _InlineDoor.diagnostics: (
-      title: (_) => 'DIAGNOSTICS',
+      title: (_) => l10nOf(context).settingsDiagnostics,
       build: (skin) => DiagnosticsPanel(skin: skin, log: diagLog),
     ),
     _InlineDoor.places: (
-      title: (_) => 'PLACES',
+      title: (_) => l10nOf(context).settingsPlaces,
 
       build: (skin) => _placesBody(skin, inline: true),
     ),

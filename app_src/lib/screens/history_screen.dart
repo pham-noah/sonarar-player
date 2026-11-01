@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../library/history.dart';
 import '../library/play_log.dart';
 import '../library/track.dart';
@@ -72,7 +74,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
             if (h.totalPlays == 0 && h.month.isEmpty)
               Text(
-                'Nothing played yet.',
+                l10nOf(context).historyNothingPlayed,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontBase,
                   color: skin.textPrimary,
@@ -108,13 +110,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
               _listened(skin, h),
 
               const SizedBox(height: 22),
-              SectionLabel(skin: skin, text: 'TOP TRACKS'),
+              SectionLabel(skin: skin, text: l10nOf(context).historyTopTracks),
               _topTracks(skin, h, byId),
 
               const SizedBox(height: 22),
 
               if (widget.contextEnabled) ...[
-                SectionLabel(skin: skin, text: 'BY TIME OF DAY'),
+                SectionLabel(skin: skin, text: l10nOf(context).historyByTimeOfDay),
                 _bandChart(skin, h.byBand, msByBand: h.msByBand),
               ],
 
@@ -138,7 +140,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _monthBar(Skin skin, HistoryShape h) => KitRow(
         skin: skin,
-        label: 'MONTH',
+        label: l10nOf(context).historyMonth,
         icon: Icons.calendar_month_rounded,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -383,7 +385,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionLabel(skin: skin, text: 'TIME LISTENED'),
+        SectionLabel(skin: skin, text: l10nOf(context).historyTimeListened),
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
@@ -546,7 +548,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           SizedBox(
             width: compact ? 74 : 84,
             child: Text(
-              _bandName(band),
+              _bandName(context, band),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -596,12 +598,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 }
 
-String _bandName(String band) => switch (band) {
-      'morning' => 'MORNING',
-      'afternoon' => 'AFTERNOON',
-      'evening' => 'EVENING',
-      'night' => 'NIGHT',
-      'darkHour' => 'NIGHT HOUR',
+String _bandName(BuildContext context, String band) => switch (band) {
+      'morning' => l10nOf(context).bandMorning,
+      'afternoon' => l10nOf(context).bandAfternoon,
+      'evening' => l10nOf(context).bandEvening,
+      'night' => l10nOf(context).bandNight,
+      'darkHour' => l10nOf(context).bandNightHour,
       _ => band.toUpperCase(),
     };
 

@@ -646,11 +646,11 @@ class PlayerScreen extends StatelessWidget {
     final ctx = state.playlistContext;
     if (ctx == null) return skin.contextLabel;
     return switch (ctx.band) {
-      ContextBand.darkHour => skin.word(WordKey.bandDeepNight, l10nOf(context).playerNightHour),
-      ContextBand.night => l10nOf(context).playerNight,
-      ContextBand.evening => l10nOf(context).playerEvening,
-      ContextBand.afternoon => l10nOf(context).playerAfternoon,
-      ContextBand.morning => l10nOf(context).playerMorning,
+      ContextBand.darkHour => skin.word(WordKey.bandDeepNight, l10nOf(context).bandNightHour),
+      ContextBand.night => l10nOf(context).bandNight,
+      ContextBand.evening => l10nOf(context).bandEvening,
+      ContextBand.afternoon => l10nOf(context).bandAfternoon,
+      ContextBand.morning => l10nOf(context).bandMorning,
     };
   }
 

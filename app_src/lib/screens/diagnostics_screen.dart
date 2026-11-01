@@ -3,6 +3,8 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../l10n/l10n.dart';
 import 'package:flutter/services.dart';
 
 import '../core/diag_log.dart';
@@ -64,11 +66,11 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
     final a = _access;
     final ok = a == StorageAccess.granted;
     final label = switch (a) {
-      null => 'CHECKING STORAGE ACCESS…',
-      StorageAccess.granted => 'ALL FILES ACCESS GRANTED',
+      null => l10nOf(context).diagCheckingStorage,
+      StorageAccess.granted => l10nOf(context).diagAllFiles,
       StorageAccess.denied =>
-        'NO ALL-FILES ACCESS — downloads and covers cannot be written',
-      StorageAccess.unknown => 'STORAGE ACCESS UNKNOWN',
+        l10nOf(context).diagNoAllFiles,
+      StorageAccess.unknown => l10nOf(context).diagStorageUnknown,
     };
 
     return InkWell(
@@ -95,7 +97,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
             ),
             if (!ok && a != null)
               Text(
-                'GRANT',
+                l10nOf(context).diagGrant,
                 style: TextStyle(
                   color: skin.accent,
                   fontSize: LayoutSpec.fontMicro,
@@ -140,10 +142,10 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
 
           Row(
             children: [
-              _seg(skin, 'PROBLEMS', widget.log.problems.length, _problemsOnly,
+              _seg(skin, l10nOf(context).diagProblems, widget.log.problems.length, _problemsOnly,
                   () => setState(() => _problemsOnly = true)),
               const SizedBox(width: 8),
-              _seg(skin, 'ALL', widget.log.length, !_problemsOnly,
+              _seg(skin, l10nOf(context).diagAll, widget.log.length, !_problemsOnly,
                   () => setState(() => _problemsOnly = false)),
               const Spacer(),
               if (widget.log.length > 0)
@@ -153,7 +155,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                     child: Padding(
                       padding:
                           const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      child: Text('CLEAR',
+                      child: Text(l10nOf(context).diagClear,
                           style: TextStyle(
                               color: skin.textSecondary,
                               fontSize: LayoutSpec.fontMicro,
@@ -173,7 +175,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                     child: Row(children: [
                       Icon(Icons.graphic_eq_rounded, size: 15, color: skin.accent),
                       const SizedBox(width: 6),
-                      Text('SPECTRUM',
+                      Text(l10nOf(context).diagSpectrum,
                           style: TextStyle(
                               color: skin.accent,
                               fontSize: LayoutSpec.fontMicro,
@@ -191,7 +193,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                     child: Row(children: [
                       Icon(Icons.copy_rounded, size: 15, color: skin.accent),
                       const SizedBox(width: 6),
-                      Text('COPY',
+                      Text(l10nOf(context).diagCopy,
                           style: TextStyle(
                               color: skin.accent,
                               fontSize: LayoutSpec.fontMicro,
@@ -210,8 +212,8 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
               child: Center(
                 child: Text(
                   _problemsOnly
-                      ? 'Nothing has gone wrong this run.'
-                      : 'Nothing has been logged yet.',
+                      ? l10nOf(context).diagNothingWrong
+                      : l10nOf(context).diagNothingLogged,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: skin.textSecondary, fontSize: 15),
                 ),

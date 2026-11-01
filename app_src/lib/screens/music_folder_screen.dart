@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/music_root.dart';
 import '../theme/skin.dart';
 
@@ -80,11 +82,11 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
     return parts.isEmpty ? path : parts.last;
   }
 
-  static String _jumpLabel(String path) => switch (path) {
-        '/storage/emulated/0' => 'INTERNAL',
-        '/storage/emulated/0/Music' => 'MUSIC',
-        '/storage/emulated/0/Download' => 'DOWNLOAD',
-        '/sdcard' => 'SDCARD',
+  String _jumpLabel(String path) => switch (path) {
+        '/storage/emulated/0' => l10nOf(context).folderInternal,
+        '/storage/emulated/0/Music' => l10nOf(context).folderMusic,
+        '/storage/emulated/0/Download' => l10nOf(context).folderDownload,
+        '/sdcard' => l10nOf(context).folderSdcard,
         _ => path.split('/').last,
       };
 
@@ -103,7 +105,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
         backgroundColor: skin.background,
         foregroundColor: skin.textPrimary,
         title: Text(
-          'MUSIC FOLDER',
+          l10nOf(context).settingsMusicFolder,
           style: TextStyle(
             fontSize: 13,
             letterSpacing: 2,
@@ -221,8 +223,8 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                 children: [
                   Text(
                     _isLibrary
-                        ? 'This folder holds library_manifest.json.'
-                        : 'No library_manifest.json here — the app cannot read it as a library.',
+                        ? l10nOf(context).folderHoldsManifest
+                        : l10nOf(context).folderNoManifest,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontMicro,
@@ -246,8 +248,8 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(3)),
                       ),
-                      child: const Text(
-                        'USE THIS FOLDER',
+                      child: Text(
+                        l10nOf(context).folderUse,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
                           letterSpacing: 2,

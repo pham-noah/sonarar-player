@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/constants.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
@@ -50,7 +52,7 @@ class FirstRunScreen extends StatelessWidget {
             ScreenTitle(skin: skin, text: kAppName),
             const SizedBox(height: 8),
             Text(
-              'Music for where you are and what the weather is doing.',
+              l10nOf(context).firstRunPitch,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: pal.textSecondary,
@@ -58,7 +60,7 @@ class FirstRunScreen extends StatelessWidget {
             ),
             const SizedBox(height: 28),
 
-            SectionBand(skin: skin, label: 'LAYOUT'),
+            SectionBand(skin: skin, label: l10nOf(context).firstRunLayout),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -82,7 +84,7 @@ class FirstRunScreen extends StatelessWidget {
             ),
             const SizedBox(height: 26),
 
-            SectionBand(skin: skin, label: 'COLOURS'),
+            SectionBand(skin: skin, label: l10nOf(context).firstRunColours),
             const SizedBox(height: 12),
 
             Wrap(
@@ -100,7 +102,7 @@ class FirstRunScreen extends StatelessWidget {
             ),
             const SizedBox(height: 26),
 
-            SectionBand(skin: skin, label: 'SONG LIST'),
+            SectionBand(skin: skin, label: l10nOf(context).firstRunSongList),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -108,7 +110,7 @@ class FirstRunScreen extends StatelessWidget {
               children: [
                 SkinChip(
                   skin: skin,
-                  label: 'GRID',
+                  label: l10nOf(context).firstRunGrid,
                   icon: Icons.grid_view_rounded,
 
                   selected: prefs.libraryIsGrid ?? (layoutId != LayoutKind.sonar),
@@ -116,7 +118,7 @@ class FirstRunScreen extends StatelessWidget {
                 ),
                 SkinChip(
                   skin: skin,
-                  label: 'LIST',
+                  label: l10nOf(context).firstRunList,
                   icon: Icons.view_list_rounded,
                   selected: !(prefs.libraryIsGrid ??
                       (layoutId != LayoutKind.sonar)),
@@ -136,7 +138,7 @@ class FirstRunScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Center(
                   child: Text(
-                    'START LISTENING',
+                    l10nOf(context).firstRunStart,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontBase,
                       fontWeight: FontWeight.w900,
@@ -149,7 +151,7 @@ class FirstRunScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'You can change all of this later in Settings.',
+              l10nOf(context).firstRunLater,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,

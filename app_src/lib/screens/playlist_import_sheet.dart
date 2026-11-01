@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+
+import '../l10n/l10n.dart';
 import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart' hide Playlist;
 
@@ -193,7 +195,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     setState(() => _sources = next);
     final ok = await widget.store.save(next);
     if (!ok && mounted) {
-      _say('Saved for now, but it could not be written to disk.');
+      _say(l10nOf(context).importSavedNotWritten);
     }
   }
 
@@ -260,7 +262,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
       if (videos.isEmpty) {
         if (mounted) {
           setState(() => _status[key] =
-              'Could not read any videos from that playlist — check the link, or the playlist may be empty.');
+              l10nOf(context).importNoVideos);
         }
         return;
       }
@@ -385,7 +387,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
       builder: (ctx) => AlertDialog(
         backgroundColor: skin.background,
         title: Text(
-          existing == null ? 'NEW PLAYLIST' : 'EDIT PLAYLIST',
+          existing == null ? l10nOf(context).importNewTitle : l10nOf(context).importEditTitle,
           style: TextStyle(
             fontSize: LayoutSpec.fontSmall,
             letterSpacing: 2,
@@ -400,7 +402,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
               controller: labelCtl,
               style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Name',
+                labelText: l10nOf(context).libraryPlaylistName,
                 labelStyle: TextStyle(color: skin.textSecondary),
               ),
             ),
@@ -409,7 +411,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
               controller: linkCtl,
               style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Playlist link',
+                labelText: l10nOf(context).importLink,
                 labelStyle: TextStyle(color: skin.textSecondary),
               ),
             ),
@@ -418,11 +420,11 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('CANCEL', style: TextStyle(color: skin.textSecondary)),
+            child: Text(l10nOf(context).libraryCancel, style: TextStyle(color: skin.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('SAVE', style: TextStyle(color: skin.accent)),
+            child: Text(l10nOf(context).importSave, style: TextStyle(color: skin.accent)),
           ),
         ],
       ),
@@ -433,7 +435,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     final id = playlistIdFrom(linkCtl.text);
 
     if (label.isEmpty || id == null) {
-      _say(label.isEmpty ? 'A playlist needs a name' : 'That link has no playlist id in it');
+      _say(label.isEmpty ? l10nOf(context).importNeedsName : l10nOf(context).importNoPlaylistId);
       return;
     }
 
@@ -472,18 +474,18 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: PresentationScope.uiSkin(context, widget.skin).textPrimary)),
-        content: Text('The downloaded files stay — this only forgets the source.',
+        content: Text(l10nOf(context).importFilesStay,
             style: TextStyle(
                 fontSize: LayoutSpec.fontFloor,
                 color: PresentationScope.uiSkin(context, widget.skin).textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('KEEP', style: TextStyle(color: widget.skin.accent)),
+            child: Text(l10nOf(context).importKeep, style: TextStyle(color: widget.skin.accent)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('REMOVE', style: TextStyle(color: widget.skin.textSecondary)),
+            child: Text(l10nOf(context).libraryRemove, style: TextStyle(color: widget.skin.textSecondary)),
           ),
         ],
       ),
@@ -520,7 +522,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('IMPORTED PLAYLISTS',
+          Text(l10nOf(context).importListTitle,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 letterSpacing: 2,
@@ -528,7 +530,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                 color: skin.accent,
               )),
           const SizedBox(height: 4),
-          Text('Import one, or update it later — only the new songs are fetched.',
+          Text(l10nOf(context).importHint,
               style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
           if (_notice != null) ...[
             const SizedBox(height: 10),
@@ -549,7 +551,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           else if (_sources.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 18),
-              child: Text('No playlists yet. Add one below.',
+              child: Text(l10nOf(context).importEmpty,
                   style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
             )
           else
@@ -567,7 +569,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             child: OutlinedButton.icon(
               onPressed: () => _edit(),
               icon: Icon(Icons.add_rounded, color: skin.accent),
-              label: Text('NEW PLAYLIST',
+              label: Text(l10nOf(context).importNewTitle,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontFloor,
                     letterSpacing: 1.2,
@@ -611,12 +613,12 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
               IconButton(
                 onPressed: busy ? null : () => _edit(existing: src),
                 icon: Icon(Icons.edit_outlined, size: 20, color: skin.textSecondary),
-                tooltip: 'Edit name and link',
+                tooltip: l10nOf(context).importEditAction,
               ),
               IconButton(
                 onPressed: busy ? null : () => _remove(src),
                 icon: Icon(Icons.delete_outline_rounded, size: 20, color: skin.textSecondary),
-                tooltip: 'Remove',
+                tooltip: l10nOf(context).importRemoveAction,
               ),
 
               IconButton(
@@ -625,7 +627,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                     ? const SizedBox(
                         width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                     : Icon(Icons.download_rounded, color: skin.accent),
-                tooltip: 'Import or update — only new songs are fetched',
+                tooltip: l10nOf(context).importRowHint,
               ),
             ],
           ),

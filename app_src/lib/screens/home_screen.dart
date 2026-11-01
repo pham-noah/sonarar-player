@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../core/track_labels.dart';
 import '../context/context_icons.dart';
 import 'app_header.dart';
@@ -159,18 +161,18 @@ class HomeScreen extends StatelessWidget {
                       key: const Key('open-personalize'),
                       onPressed: onOpenPersonalize,
                       icon: Icon(Icons.tune_rounded, color: skin.accent),
-                      tooltip: 'Personalize',
+                      tooltip: l10nOf(context).homePersonalize,
                     ),
             ),
 
         if (contextEnabled) ...[
-          _bandText('NOW'),
+          _bandText(l10nOf(context).homeNow),
           Row(
             children: [
               _stateTile(
                 context,
                 _bandIcon(band),
-                band ?? 'NO BAND',
+                band ?? l10nOf(context).homeNoBand,
                 dim: band == null,
               ),
               const SizedBox(width: 8),
@@ -188,9 +190,9 @@ class HomeScreen extends StatelessWidget {
                     : Icons.location_searching_rounded,
                 hasFix
                     ? ((placeName == null || placeName!.trim().isEmpty)
-                        ? 'ELSEWHERE'
+                        ? l10nOf(context).homeElsewhere
                         : placeName!.toUpperCase())
-                    : 'NO FIX',
+                    : l10nOf(context).homeNoFix,
                 dim: !hasFix || placeName == null || placeName!.trim().isEmpty,
               ),
             ],
@@ -214,7 +216,7 @@ class HomeScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         nowMixName == null
-                            ? 'PLAY WHAT FITS NOW'
+                            ? l10nOf(context).homePlayWhatFits
                             : 'PLAY WHAT FITS NOW — $nowMixName',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -276,7 +278,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _continueSection(BuildContext context) {
     if (continueTrack == null) return const [];
     return [
-      _bandText('CONTINUE LISTENING'),
+      _bandText(l10nOf(context).homeContinue),
       _continueRow(context, continueTrack!),
       const SizedBox(height: 22),
     ];
@@ -287,7 +289,7 @@ class HomeScreen extends StatelessWidget {
     return [
       GestureDetector(
         onTap: onOpenRediscover,
-        child: _bandText('REDISCOVER'),
+        child: _bandText(l10nOf(context).homeRediscover),
       ),
       _coverRail(context, rediscover),
       const SizedBox(height: 22),
@@ -297,7 +299,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _jumpBackInSection(BuildContext context) {
     if (jumpBackIn.isEmpty) return const [];
     return [
-      _bandText('JUMP BACK IN'),
+      _bandText(l10nOf(context).homeJumpBackIn),
       _coverRail(context, jumpBackIn),
       const SizedBox(height: 22),
     ];
@@ -313,7 +315,7 @@ class HomeScreen extends StatelessWidget {
     ];
     if (pool.isEmpty) return const [];
     return [
-      _bandText('QUICK PICK'),
+      _bandText(l10nOf(context).homeQuickPick),
       _QuickPickPager(
         skin: skin,
         pool: pool,
@@ -327,7 +329,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _fromLibrarySection(BuildContext context) {
     if (libraryPlaylists.isEmpty) return const [];
     return [
-      _bandText('FROM YOUR LIBRARY'),
+      _bandText(l10nOf(context).homeFromLibrary),
       _playlistRail(context, libraryPlaylists),
       const SizedBox(height: 22),
     ];
@@ -414,7 +416,7 @@ class HomeScreen extends StatelessWidget {
     ];
     if (withTracks.isEmpty) return const [];
     return [
-      _bandText('GENRE'),
+      _bandText(l10nOf(context).homeGenre),
       for (final p in withTracks) ...[
         Padding(
           padding: const EdgeInsets.only(bottom: 6),
@@ -437,7 +439,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _recentSection(BuildContext context) {
     if (recent.isEmpty) return const [];
     return [
-      _bandText('RECENTLY ADDED'),
+      _bandText(l10nOf(context).homeRecentlyAdded),
       SizedBox(
         height: 104 + 6 + 2 * 20 + 10,
         child: ListView.separated(

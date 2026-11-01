@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import 'weather_codes.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/skin_policy.dart';
 
 IconData bandIcon(ContextBand? band) => switch (band) {
@@ -25,13 +26,14 @@ IconData? weatherIcon(WeatherCondition condition) => switch (condition) {
       WeatherCondition.unknown => null,
     };
 
-String weatherName(WeatherCondition condition) => switch (condition) {
-      WeatherCondition.clear => 'CLEAR',
-      WeatherCondition.clouds => 'OVERCAST',
-      WeatherCondition.fog => 'FOG',
-      WeatherCondition.drizzle => 'DRIZZLE',
-      WeatherCondition.rain => 'RAIN',
-      WeatherCondition.snow => 'SNOW',
-      WeatherCondition.thunder => 'STORM',
-      WeatherCondition.unknown => 'NO READING',
+String weatherName(AppLocalizations l10n, WeatherCondition condition) =>
+    switch (condition) {
+      WeatherCondition.clear => l10n.weatherClear,
+      WeatherCondition.clouds => l10n.weatherOvercast,
+      WeatherCondition.fog => l10n.weatherFog,
+      WeatherCondition.drizzle => l10n.weatherDrizzle,
+      WeatherCondition.rain => l10n.weatherRain,
+      WeatherCondition.snow => l10n.weatherSnow,
+      WeatherCondition.thunder => l10n.weatherStorm,
+      WeatherCondition.unknown => l10n.weatherNoReading,
     };

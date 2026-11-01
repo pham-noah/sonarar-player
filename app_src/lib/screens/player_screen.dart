@@ -546,7 +546,7 @@ class PlayerScreen extends StatelessWidget {
 
                     if (state.mode == QueueMode.dynamic) ...[
                       const SizedBox(width: 5),
-                      for (final fact in _contextFacts(skin))
+                      for (final fact in _contextFacts(context, skin))
                         Padding(
                           padding: const EdgeInsets.only(right: 5),
                           child: Tooltip(
@@ -585,11 +585,11 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  List<({IconData icon, String label})> _contextFacts(Skin skin) {
+  List<({IconData icon, String label})> _contextFacts(BuildContext context, Skin skin) {
     final out = <({IconData icon, String label})>[];
 
     final sky = weatherIcon(weather);
-    if (sky != null) out.add((icon: sky, label: weatherName(weather)));
+    if (sky != null) out.add((icon: sky, label: weatherName(l10nOf(context), weather)));
 
     if (placeName != null && placeName!.trim().isNotEmpty) {
       out.add((icon: placeIcon ?? kDefaultPlaceIcon, label: placeName!));

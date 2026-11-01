@@ -179,7 +179,7 @@ class HomeScreen extends StatelessWidget {
               _stateTile(
                 context,
                 weatherIcon(weather) ?? Icons.help_outline_rounded,
-                weatherName(weather),
+                weatherName(l10nOf(context), weather),
                 dim: weather == WeatherCondition.unknown,
               ),
               const SizedBox(width: 8),

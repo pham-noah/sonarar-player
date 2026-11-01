@@ -523,5 +523,24 @@
         "type": "int"
       }
     }
-  }
+  },
+  "weatherClear": "CLEAR",
+  "weatherOvercast": "OVERCAST",
+  "weatherFog": "FOG",
+  "weatherDrizzle": "DRIZZLE",
+  "weatherRain": "RAIN",
+  "weatherSnow": "SNOW",
+  "weatherStorm": "STORM",
+  "weatherNoReading": "NO READING",
+  "ytNotOfficialSkipped": "Not an official release, so it was not downloaded. Turn off \"Official only\" in Settings to take any upload.",
+  "ytNetworkOnSearchOnly": "Turn the network on for SEARCH ONLY (place, time and weather stay off)",
+  "personalizeAccentTaken": "Accent taken from the photo: {hex}",
+  "@personalizeAccentTaken": {
+    "placeholders": {
+      "hex": {
+        "type": "String"
+      }
+    }
+  },
+  "personalizeNowIsHeader": "NOW stays at the top — it is the page header, not a section."
 }

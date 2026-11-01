@@ -1973,8 +1973,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
     if (!mounted) return;
-    toast(context, 'Accent taken from the photo: '
-          '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}');
+    final hex = '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+    toast(context, l10nOf(context).personalizeAccentTaken(hex));
   }
 
   Future<void> _renameFolder(ArtBundle folder) async {

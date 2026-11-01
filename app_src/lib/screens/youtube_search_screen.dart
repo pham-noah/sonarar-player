@@ -355,8 +355,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     }
     if (widget.officialOnly && !hit.isOfficialGiven(_vouched)) {
       setState(() => _error =
-          'Not an official release, so it was not downloaded. Turn off "Official only" '
-          'in Settings to take any upload.');
+          l10nOf(context).ytNotOfficialSkipped);
       return;
     }
     widget.downloads.enqueue(DownloadJob(
@@ -461,8 +460,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                           child: Tooltip(
                             message: widget.searchOnline
                                 ? l10nOf(context).ytSearchingOnline
-                                : 'Turn the network on for SEARCH ONLY '
-                                    '(place, time and weather stay off)',
+                                : l10nOf(context).ytNetworkOnSearchOnly,
                             child: Icon(
                               widget.searchOnline
                                   ? Icons.wifi_rounded

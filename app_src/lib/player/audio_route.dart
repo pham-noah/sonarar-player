@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' show IconData, Icons;
 import 'package:flutter/services.dart';
 
 const MethodChannel kAudioRouteChannel =
-    MethodChannel('com.noah.personar/audio_route');
+    MethodChannel('com.noah.sonarar/audio_route');
 
 class AudioOutput {
   const AudioOutput({

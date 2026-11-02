@@ -10,7 +10,7 @@ const String kAndroidLibraryRoot = '/storage/emulated/0/Music/Sonarar';
 
 const String kManifestFileName = 'library_manifest.json';
 
-String kCoverHeroTag(String trackId) => 'personar/cover/$trackId';
+String kCoverHeroTag(String trackId) => 'sonarar/cover/$trackId';
 
 const double kTargetLufs = -16.0;
 

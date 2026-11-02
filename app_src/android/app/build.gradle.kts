@@ -14,7 +14,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.noah.personar"
+    namespace = "com.noah.sonarar"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

@@ -43,18 +43,18 @@ void _fakePlatform() {
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   for (final name in const [
-    'personar/storage',
+    'sonarar/storage',
     'plugins.flutter.io/path_provider',
     'dev.fluttercommunity.plus/wakelock',
     'com.ryanheise.just_audio_background',
-    'personar/location',
+    'sonarar/location',
   ]) {
     messenger.setMockMethodCallHandler(MethodChannel(name), (call) async {
       if (name == 'plugins.flutter.io/path_provider' &&
           call.method.startsWith('get')) {
         return _sandbox.path;
       }
-      if (name == 'personar/storage') return 'granted';
+      if (name == 'sonarar/storage') return 'granted';
       return null;
     });
   }
@@ -85,7 +85,7 @@ Future<AppState> _pumpShell(WidgetTester tester, {int tracks = 30}) async {
 
 void main() {
   setUp(() {
-    _sandbox = Directory.systemTemp.createTempSync('personar-fixture-');
+    _sandbox = Directory.systemTemp.createTempSync('sonarar-fixture-');
     _fakePlatform();
   });
   tearDown(() {

@@ -8,7 +8,7 @@ import 'package:sonarar/main.dart';
 
 import 'shell_probe.dart';
 
-const _storage = MethodChannel('personar/storage');
+const _storage = MethodChannel('sonarar/storage');
 
 late Directory _sandbox;
 
@@ -39,7 +39,7 @@ void _fakePlatform() {
   for (final name in const [
     'dev.fluttercommunity.plus/wakelock',
     'com.ryanheise.just_audio_background',
-    'personar/location',
+    'sonarar/location',
   ]) {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(MethodChannel(name), (call) async {
@@ -61,7 +61,7 @@ Future<void> _boot(WidgetTester tester) async {
 
 void main() {
   setUp(() {
-    _sandbox = Directory.systemTemp.createTempSync('personar-harness-');
+    _sandbox = Directory.systemTemp.createTempSync('sonarar-harness-');
     _fakePlatform();
   });
   tearDown(() {

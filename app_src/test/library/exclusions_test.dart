@@ -69,7 +69,7 @@ void main() {
 
   group('both survive a round trip through one JSON file', () {
     late Directory dir;
-    setUp(() => dir = Directory.systemTemp.createTempSync('personar-lists'));
+    setUp(() => dir = Directory.systemTemp.createTempSync('sonarar-lists'));
     tearDown(() => dir.deleteSync(recursive: true));
 
     test('an exclusion list comes back as it was', () async {

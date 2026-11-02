@@ -5,7 +5,7 @@ keeps drawing the old mark; this one draws the new one into the SAME files. Run 
 
 THE MARK. An aurora-blue squircle tile with four white rounded bars forming a P — a tall stem, then three bars that
 trace the bowl, like an equalizer. The geometry below is the logo's own 100-unit grid, copied from the SVG, so the
-PNGs here are the same drawing as `personar-logo.svg` and cannot drift from it.
+PNGs here are the same drawing as `sonarar-logo.svg` and cannot drift from it.
 
 ONE RULE, EVERY ASSET: THE BARS ARE ALWAYS 60% OF THE TILE THEY SIT ON. What differs per asset is only how big
 that tile is on the canvas:

@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 enum StorageAccess { granted, denied, unknown }
 
 class StoragePermission {
-  static const MethodChannel _channel = MethodChannel('personar/storage');
+  static const MethodChannel _channel = MethodChannel('sonarar/storage');
 
   static Future<StorageAccess> status() async {
     if (!Platform.isAndroid) return StorageAccess.unknown;

@@ -10,7 +10,7 @@ void main() {
   tearDown(clearCoverCache);
 
   test('a path is stat-ed ONCE, not once per call', () {
-    final dir = Directory.systemTemp.createTempSync('personar-cover-');
+    final dir = Directory.systemTemp.createTempSync('sonarar-cover-');
     addTearDown(() => dir.deleteSync(recursive: true));
     final present = File('${dir.path}/cover.png')..writeAsBytesSync(const [1, 2, 3]);
     final missing = '${dir.path}/nope.png';
@@ -27,7 +27,7 @@ void main() {
   });
 
   test('a present cover resolves, a missing one returns null', () {
-    final dir = Directory.systemTemp.createTempSync('personar-cover-');
+    final dir = Directory.systemTemp.createTempSync('sonarar-cover-');
     addTearDown(() => dir.deleteSync(recursive: true));
     final present = File('${dir.path}/cover.png')..writeAsBytesSync(const [1, 2, 3]);
 
@@ -41,7 +41,7 @@ void main() {
   });
 
   test('the SECOND lookup does not stat again — the same path, cached', () {
-    final dir = Directory.systemTemp.createTempSync('personar-cover-');
+    final dir = Directory.systemTemp.createTempSync('sonarar-cover-');
     addTearDown(() => dir.deleteSync(recursive: true));
     final present = File('${dir.path}/cover.png')..writeAsBytesSync(const [1, 2, 3]);
 

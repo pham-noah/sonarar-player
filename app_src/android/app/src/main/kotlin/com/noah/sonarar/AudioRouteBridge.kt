@@ -1,4 +1,4 @@
-package com.noah.personar
+package com.noah.sonarar
 
 import android.content.Context
 import android.content.Intent
@@ -182,6 +182,6 @@ class AudioRouteBridge(private val context: Context) {
     }
 
     companion object {
-        private const val CHANNEL = "com.noah.personar/audio_route"
+        private const val CHANNEL = "com.noah.sonarar/audio_route"
     }
 }

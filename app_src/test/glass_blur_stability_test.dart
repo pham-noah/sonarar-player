@@ -15,7 +15,7 @@ import 'package:sonarar/theme/surface.dart';
 
 import 'shell_probe.dart';
 
-const _storage = MethodChannel('personar/storage');
+const _storage = MethodChannel('sonarar/storage');
 late Directory _sandbox;
 
 void _fakePlatform() {
@@ -39,7 +39,7 @@ void _fakePlatform() {
     'dev.fluttercommunity.plus/wakelock',
     'com.lykone.location',
     'com.ryanheise.just_audio_background',
-    'personar/geofence',
+    'sonarar/geofence',
   ]) {
     messenger.setMockMethodCallHandler(MethodChannel(name),
         (call) async => null);
@@ -62,7 +62,7 @@ int _filters(WidgetTester tester) =>
 
 void main() {
   setUp(() {
-    _sandbox = Directory.systemTemp.createTempSync('personar-glass-hold-');
+    _sandbox = Directory.systemTemp.createTempSync('sonarar-glass-hold-');
     _fakePlatform();
   });
   tearDown(() {

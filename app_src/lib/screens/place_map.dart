@@ -82,7 +82,7 @@ class PlaceMap extends StatelessWidget {
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 
-              userAgentPackageName: 'com.noah.personar',
+              userAgentPackageName: 'com.noah.sonarar',
 
               maxNativeZoom: 19,
             ),

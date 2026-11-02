@@ -40,7 +40,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
     _say(l10n.probeStep1);
     _say(l10n.probeStep1Note);
 
-    const channel = MethodChannel('com.noah.personar/spectrum_probe');
+    const channel = MethodChannel('com.noah.sonarar/spectrum_probe');
     try {
       final has = await channel.invokeMethod<bool>('hasRecordAudio');
       _say('  hasRecordAudio -> $has');

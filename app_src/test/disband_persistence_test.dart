@@ -35,7 +35,7 @@ void main() {
   late SnapshotStore store;
 
   setUp(() {
-    tmp = Directory.systemTemp.createTempSync('personar_disband');
+    tmp = Directory.systemTemp.createTempSync('sonarar_disband');
     store = SnapshotStore(directory: tmp.path);
   });
 

@@ -1,4 +1,4 @@
-package com.noah.personar
+package com.noah.sonarar
 
 import android.media.MediaCodec
 import android.media.MediaExtractor
@@ -326,7 +326,7 @@ class SpectrumBridge {
 
     companion object {
         private const val TAG = "Sonarar"
-        private const val CHANNEL = "com.noah.personar/spectrum"
+        private const val CHANNEL = "com.noah.sonarar/spectrum"
         private const val TARGET_RATE = 8000
         private const val FFT_SIZE = 1024
         private const val FRAMES_PER_SECOND = 20

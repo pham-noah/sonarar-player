@@ -57,7 +57,7 @@ void main() {
     for (final name in const [
       'dev.fluttercommunity.plus/wakelock',
       'com.ryanheise.just_audio_background',
-      'personar/location',
+      'sonarar/location',
     ]) {
       messenger.setMockMethodCallHandler(MethodChannel(name), (call) async => null);
     }

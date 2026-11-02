@@ -20,7 +20,7 @@ void main() {
   late PlayLog log;
 
   setUp(() async {
-    dir = await Directory.systemTemp.createTemp('personar_playlog_');
+    dir = await Directory.systemTemp.createTemp('sonarar_playlog_');
     log = PlayLog(File('${dir.path}/plays.jsonl'));
   });
 

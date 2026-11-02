@@ -1,4 +1,4 @@
-package com.noah.personar
+package com.noah.sonarar
 
 import android.Manifest
 import android.app.Activity
@@ -185,7 +185,7 @@ class LocationBridge(private val activity: Activity) {
     }
 
     companion object {
-        private const val CHANNEL = "personar/location"
+        private const val CHANNEL = "sonarar/location"
 
         private const val REQUEST_CODE = 4714
 

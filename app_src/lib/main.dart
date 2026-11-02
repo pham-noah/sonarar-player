@@ -1378,7 +1378,7 @@ class _HomeShellState extends State<HomeShell>
     final loaded =
         await _loadCurrentTrack(startAt: resumeAt, autoPlay: autoStart);
 
-    if (const bool.fromEnvironment('personar_audiotest')) {
+    if (const bool.fromEnvironment('sonarar_audiotest')) {
       final engine = _audio;
       final t = widget.state.currentTrack;
       // ignore: avoid_print

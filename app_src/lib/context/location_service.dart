@@ -51,7 +51,7 @@ class LocationService {
 
   static const String _ipUrl = 'https://ipapi.co/json/';
 
-  static const MethodChannel _location = MethodChannel('personar/location');
+  static const MethodChannel _location = MethodChannel('sonarar/location');
 
   PlaceReading? _last;
 

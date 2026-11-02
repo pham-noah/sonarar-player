@@ -49,7 +49,7 @@ void main() {
 
   group('append and read back', () {
     late Directory dir;
-    setUp(() => dir = Directory.systemTemp.createTempSync('personar-log'));
+    setUp(() => dir = Directory.systemTemp.createTempSync('sonarar-log'));
     tearDown(() => dir.deleteSync(recursive: true));
 
     test('events come back in the order they were written', () async {

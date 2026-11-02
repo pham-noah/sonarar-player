@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 const MethodChannel kSpectrumChannel =
-    MethodChannel('com.noah.personar/spectrum');
+    MethodChannel('com.noah.sonarar/spectrum');
 
 class SpectrumBuilder {
   SpectrumBuilder({

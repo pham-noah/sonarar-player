@@ -14,7 +14,7 @@ class Links {
 Future<bool> openExternal(String url) async {
   if (!Platform.isAndroid) return false;
   try {
-    final opened = await const MethodChannel('personar/links')
+    final opened = await const MethodChannel('sonarar/links')
         .invokeMethod<bool>('open', {'url': url});
     return opened ?? false;
   } on PlatformException {

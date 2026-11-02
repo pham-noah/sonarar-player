@@ -10,7 +10,7 @@ void main() {
   late SnapshotStore store;
 
   setUp(() {
-    tmp = Directory.systemTemp.createTempSync('personar_snap');
+    tmp = Directory.systemTemp.createTempSync('sonarar_snap');
     store = SnapshotStore(directory: tmp.path);
   });
 

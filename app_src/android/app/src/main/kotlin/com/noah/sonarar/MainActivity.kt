@@ -1,4 +1,4 @@
-package com.noah.personar
+package com.noah.sonarar
 
 import android.Manifest
 import android.content.Intent
@@ -264,12 +264,12 @@ class MainActivity : AudioServiceActivity() {
     }
 
     companion object {
-        private const val CHANNEL = "personar/storage"
+        private const val CHANNEL = "sonarar/storage"
         private const val REQUEST_CODE = 4711
         private const val REQUEST_CODE_NOTIF = 4712
         private const val REQUEST_CODE_RECORD = 4713
-        private const val LINKS_CHANNEL = "personar/links"
+        private const val LINKS_CHANNEL = "sonarar/links"
 
-        private const val PROBE_CHANNEL = "com.noah.personar/spectrum_probe"
+        private const val PROBE_CHANNEL = "com.noah.sonarar/spectrum_probe"
     }
 }

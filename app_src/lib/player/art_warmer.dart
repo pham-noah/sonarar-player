@@ -7,9 +7,8 @@ import 'boot_warm.dart';
 
 /// Decodes the art the screens are about to want.
 ///
-/// This used to run inside the boot sequence, which meant the app showed
-/// nothing until the pictures were warm and dressed the wait up as a splash.
-/// It runs after the shell is on screen now; it owns no state of its own.
+/// Runs after the shell is on screen — warming pictures first would be a
+/// splash screen. It owns no state of its own.
 class ArtWarmer {
   const ArtWarmer({required this.context, required this.state, this.cover});
 

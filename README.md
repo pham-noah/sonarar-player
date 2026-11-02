@@ -26,7 +26,7 @@ The library pictured is twelve generated tracks — the real one is your own mus
 
 Take the latest APK from [Releases](../../releases) and open it on the device.
 
-**0.2.0** (versionCode 20) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+**0.2.5** (versionCode 25) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
 Every release here is signed with the same project key, so they install over each other. A 32-bit
 phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed
@@ -78,11 +78,7 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
   picture, the art bundle and its framing. Editing anything edits the theme you are wearing, so
   switching away and back returns your version; the theme file is written once the hand stops
   moving, not on every tick.
-- **Updates** — checked once per launch after the first frame, so they never delay startup. The
-  APK is held to the `sha256` published in the release notes and deleted on a mismatch; the
-  F-Droid build compiles the updater out with `--dart-define=SONARAR_SELF_UPDATE=false`.
-- **Recently added** — downloaded music lands on Home in RECENTLY ADDED, newest first. It used to
-  live only in Library, because every other Home rail needs play history or a playlist.
+- **Recently added** — downloaded music lands on Home in RECENTLY ADDED, newest first.
 - **Art folders** — drop a folder of pictures into `Music/Sonarar/art/` and it becomes a bundle: each
   picture is a frame of that art. RESCAN picks up folders added while the app is open. Open ADJUST to
   drag, zoom, rotate, mirror or fade any picture; the framing is saved beside the pictures, or in the
@@ -127,9 +123,10 @@ default build packages two more ABIs that no phone runs and that make up most of
 
 ## Updates
 
-Sonarar can check GitHub for a newer release and offer it: it downloads the APK and hands it to the
-system installer. Nothing is installed silently, and no release is fetched on your behalf beyond that
-check. F-Droid builds have the checker compiled out — the store updates the app.
+Checked once per launch after the first frame, so it never delays startup. Sonarar downloads the APK,
+holds it to the `sha256` published in the release notes, deletes it on a mismatch, and hands it to the
+system installer — nothing installs silently. F-Droid builds compile the checker out with
+`--dart-define=SONARAR_SELF_UPDATE=false`; the store updates the app.
 
 ## Privacy
 

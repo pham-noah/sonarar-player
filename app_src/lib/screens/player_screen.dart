@@ -219,9 +219,8 @@ class PlayerScreen extends StatelessWidget {
     }
   }
 
-  /// Swiping the player up opens the queue; down puts it away. Changing the
-  /// theme used to live here, which meant a careless swipe rewrote the theme
-  /// you were wearing with no way to see it coming.
+  /// Swiping up opens the queue; down puts it away. Swipes do nothing else —
+  /// a careless swipe must not rewrite the theme you are wearing.
   void _swipeVertical(DragEndDetails d) {
     final v = d.primaryVelocity ?? 0;
     if (v < -220) {
@@ -1734,7 +1733,7 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
     if (dur == null || dur.inMilliseconds <= 0 || width <= 0) return;
     final f = (dx / width).clamp(0.0, 1.0);
 
-    // Only a drag pins the bar; a tap used to pin it and nothing cleared it.
+    // Only a drag moves the bar. A tap must not pin it: nothing would clear it.
     if (remember) {
       setState(() => _dragFrac = f);
     }

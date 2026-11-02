@@ -90,7 +90,7 @@ class SettingsScreen extends StatefulWidget {
 
   final VoidCallback? onContextsChanged;
 
-  /// The one door to PERSONALIZE; Settings itself no longer edits appearance.
+  /// The one door to PERSONALIZE: Settings does not edit appearance.
   final VoidCallback? onOpenPersonalize;
 
   final VoidCallback? onOpenDiagnostics;
@@ -119,10 +119,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// stays put instead of sliding away with a snackbar.
   String? _checkResult;
 
-  /// Languages name themselves: a Vietnamese speaker looking for their
-  /// language looks for "Tiếng Việt", not for the English word for it.
-  /// Languages name themselves: a speaker looking for their own language looks
-  /// for its own script, not for the English word for it.
+  /// Languages name themselves: a speaker looking for their own language
+  /// looks for its own script, not for the English word for it.
   static const Map<String, String> _languageNames = {
     'en': 'ENGLISH',
     'vi': 'TIẾNG VIỆT',

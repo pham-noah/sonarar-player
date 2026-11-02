@@ -33,8 +33,8 @@ class LibraryScan {
     return LibraryScan._(root, files, byName, scannedAt);
   }
 
-  /// An empty scan for a root that could not be read. Resolution falls back to
-  /// the stored path, which is what every build before this one did anyway.
+  /// An empty scan for a root that could not be read; resolution falls back to
+  /// the stored path.
   const LibraryScan.unreadable(this.root)
       : _files = const {},
         _byName = const {},

@@ -63,8 +63,7 @@ class HomeScreen extends StatelessWidget {
 
   final Skin skin;
 
-  /// The picture this place wears, if it wears one. Home was the one place with
-  /// no art at all, so choosing a picture for HOME did nothing.
+  /// The picture this place wears, if it wears one.
   final Widget? headerArt;
 
   /// What arrived in the library last, newest first. Without this, downloaded

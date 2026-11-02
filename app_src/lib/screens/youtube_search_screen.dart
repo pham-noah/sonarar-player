@@ -572,8 +572,8 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     final p = job?.fraction;
     final downloading = job != null;
     final done = _libraryIds.contains(hit.id);
-    // A download that died used to vanish without a word: the ring simply
-    // stopped. The reason is kept per video so the row can say it.
+    // The reason a download died is kept per video, so the row can say it
+    // instead of the ring simply stopping.
     final failure = done || downloading ? null : widget.downloads.errorFor(hit.id);
     return Container(
       // The row IS the progress. A separate queue above the list made the same

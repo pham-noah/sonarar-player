@@ -2342,10 +2342,9 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _appendThenRefresh(PlayEvent event) async {
     await _stores.playLog.append(event);
     if (!mounted) return;
-    // The event just landed on disk. Everything downstream of the play log —
-    // Archive, History, the Home rails that count plays — reads this snapshot,
-    // and it used to be refreshed only when History was opened, so a song
-    // played this session was invisible to them until you opened History once.
+    // The event just landed on disk, and Archive, History and the Home rails
+    // all read this snapshot. Re-read it on every write, not when a screen
+    // opens, or a song played now is invisible until you open History.
     final events = await _stores.playLog.read();
     if (!mounted) return;
     setState(() => _lastEvents = events);
@@ -3403,12 +3402,8 @@ class _HomeShellState extends State<HomeShell>
     });
   }
 
-  /// Nothing to look at on purpose. The app opens on the skin's own colour and
-  /// then the shell; a logo and a progress bar on every launch is an intro
-  /// nobody asked for, and it only exists because art used to be decoded first.
-  // No boot splash: Noah's rule, and it is right — a logo held up in front of
-  // the shell is an intro, not a loading state. The app paints its own shell
-  // and fills sections in as they arrive.
+  /// The app opens on the skin's own colour, then the shell. No logo and no
+  /// progress bar: that is an intro, not a loading state.
   Widget _splash(Skin skin) => ColoredBox(color: skin.background);
 
   /// Decoding art takes long enough to be seen. It happens once the shell is on

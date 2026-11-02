@@ -1011,8 +1011,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
     final root = _root;
     if (picked == null || root == null || !mounted) return;
-    // One picker, then a decision. Choosing a picture and starting a folder
-    // used to be two buttons that both opened the same grid.
     final where = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: _skin.panel,
@@ -1365,9 +1363,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       HSLColor.fromAHSL(1, 0, 0, light).toColor(),
   ];
 
-  /// Choosing FROM PHOTO takes the colour straight away. It used to only
-  /// declare the source and then wait for a second button, which reads as a
-  /// chip that does nothing.
+  /// Choosing FROM PHOTO takes the colour straight away; nothing waits for a
+  /// second button that reads as a chip doing nothing.
 
   // ---- home ----------------------------------------------------------------
 

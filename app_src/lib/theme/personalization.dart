@@ -9,13 +9,11 @@ import '../art/art_spec.dart';
 
 /// Everything the PERSONALIZE screen owns, in one record.
 ///
-/// The skin still decides the room — background, panel, text, skew.
-/// This decides only three things: what is painted behind the room, where the
-/// accent comes from, and which Home sections show in which order. Keeping it
-/// one document is what stops a fourth pref key being invented per widget.
-/// The app has four places you look at. Each may hang its own picture; the
-/// accent does not travel with them, because four accents is an app arguing
-/// with itself.
+/// The skin still decides the room — background, panel, text, skew. This decides
+/// what is painted behind it, where the accent comes from, and which Home sections
+/// show in which order. One document, so there is no per-widget pref key.
+/// The four places you look at may each hang a picture; the accent does not travel
+/// with them, because four accents is an app arguing with itself.
 enum SurfaceId { home, library, search, player }
 
 /// What one surface shows behind and around it. Null means "whatever the
@@ -368,10 +366,9 @@ class BackdropSpec {
   /// saved picture every restart.
   static const maxScale = 6.0;
 
-  /// The most the picture can be turned, either way. The editor's slider, the
-  /// clamp and the loader share it: a 30 degree picture opening in an editor
-  /// that ends at 15 threw, because a slider value outside its range is a
-  /// framework assertion, not a harmless overflow.
+  /// The most the picture can be turned, either way. The editor's slider, the clamp
+  /// and the loader share it: a slider value outside its own range is a framework
+  /// assertion, not a harmless overflow.
   static const maxRotation = 45.0;
 
   /// The most the picture can be dimmed. The layer paints 85% of the value, so

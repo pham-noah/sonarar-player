@@ -3,10 +3,8 @@ import 'dart:io';
 
 /// What a backup is: the `.state` folder, verbatim, in one file.
 ///
-/// Everything that is expensive to rebuild by hand lives there — tags, likes,
-/// playlists, bonds, theme presets, play history, bookmarks — and none of it
-/// can be recovered from the audio files once the folder is gone. A reinstall
-/// or a wipe of the music folder takes it, so it gets a copy the user can move.
+/// Tags, likes, playlists, bonds, theme presets and bookmarks live there and cannot
+/// be recovered from the audio files, so they get a copy the user can move.
 const String kBackupFormat = 'sonarar-state';
 const int kBackupVersion = 1;
 

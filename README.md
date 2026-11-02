@@ -20,7 +20,8 @@ No account, no cloud, no upload, no analytics, no tracking, no advertising.
   <img src="docs/shots/settings.png" width="230" alt="Settings: every automatic behaviour is a switch">
 </p>
 
-The library pictured is twelve generated tracks — the real one is your own music.
+Pictured with a generated library. A new install is empty, and stays empty until you point it at
+music.
 
 ## Install
 
@@ -28,13 +29,12 @@ Take the latest APK from [Releases](../../releases) and open it on the device.
 
 **0.3.0** (versionCode 30) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
-Every release here is signed with the same project key, so they install over each other. A 32-bit
-phone cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is for a store-signed
-build — that signature is not this one, so it cannot upgrade over a GitHub build (uninstall first).
+Every release is signed with the same project key, so they install over each other. A 32-bit phone
+cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is a store-signed build — that
+signature is not this one, so it cannot upgrade over a GitHub build.
 
-If the file will not install, check its size before blaming the APK: a 97 MB download that stops
-halfway gives the same "could not parse the package" message as a bad build. The published assets are
-hash-checked against the local build at release time.
+If a download will not install, check its size first: a 65 MB file that stopped halfway gives the same
+"could not parse the package" message as a bad build.
 
 ## Getting music onto the phone
 
@@ -56,35 +56,29 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
 ## Features
 
 - **Playback** — local files through Android's media session with lock-screen and notification
-  controls, gapless through one engine queue, a fade-in of up to 12s on each new track, a fading sleep
-  timer, stop-after-this-track, per-track bookmarks and loop points.
-- **Queue** — reorder by dragging, swipe to remove with an undo, clear everything upcoming, save the
-  queue as a playlist, "play next" that does not disturb the current track.
-- **Library** — playlists you build, Fusion to merge two, browsing by playlist, artist and song, search
-  and swipe actions, a compendium of everything with how much you have heard, listening history by day
-  and hour, and lyrics with romaji readings: full for Korean, kana-only for Japanese (kanji are shown
-  as written, since reading them aloud would mean shipping a 32 MB dictionary).
+  controls, gapless through one engine queue, a fade-in of up to 12s per track, a fading sleep timer,
+  stop-after-this-track, bookmarks and per-track loop points.
+- **Queue** — drag to reorder, swipe to remove with an undo, clear upcoming, save the queue as a
+  playlist, and play-next that leaves the current track alone.
+- **Library** — playlists, Fusion to merge two, browsing by playlist, artist and song, search and swipe
+  actions, a compendium that counts what you have heard, history by day and hour, and lyrics with
+  romaji readings: full for Korean, kana-only for Japanese, since reading kanji aloud would mean
+  shipping a 32 MB dictionary.
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Sonar,
-  Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
-  library folder. Tracks without a spectrum file simply show no bars.
+  Solid, Glass), and a visualiser drawn from per-track spectrum data kept beside the audio. A track
+  with no spectrum file shows no bars.
 - **Languages** — English, Tiếng Việt, Suomi, 简体中文 and 日本語, chosen in Settings or followed from
-  the phone. Caps and letter-spacing are per-script: a caseless script is neither shouted nor tracked.
-  Adding one is a single ARB file; [docs/localization.md](docs/localization.md) has the steps.
-- **Personalize** — THEMES first, then LOOK (layout, song list shape, accent, motion: tab
-  animation and the visualiser with its smoothness, scale and shape), PICTURES (per-place pictures
-  and framing, or a solid or gradient fill when there is no picture), ART (folders on disk) and
-  HOME (section order). Your accent reaches every surface, including the sidebar.
-- **Themes own the whole look** — skin, layout, accent, backdrop, Home order, every per-place
-  picture, the art bundle and its framing. Editing anything edits the theme you are wearing, so
-  switching away and back returns your version; the theme file is written once the hand stops
-  moving, not on every tick.
-- **Recently added** — downloaded music lands on Home in RECENTLY ADDED, newest first.
-- **Art folders** — drop a folder of pictures into `Music/Sonarar/art/` and it becomes a bundle: each
-  picture is a frame of that art. RESCAN picks up folders added while the app is open. Open ADJUST to
-  drag, zoom, rotate, mirror or fade any picture; the framing is saved beside the pictures, or in the
-  look file for the shipped art, and it follows the picture everywhere.
-- **Per-place pictures** — every place (Home, Library, Search, Player) can wear its own picture, or
-  share the one set everywhere.
+  the phone. Caps and letter-spacing follow the script, so a caseless language is neither shouted nor
+  tracked. Adding one is a single ARB file; [docs/localization.md](docs/localization.md) has the steps.
+- **Personalize** — one screen for the whole look: themes, layout, song-list shape, accent, motion,
+  the picture behind each place and its framing, art folders, and Home section order. Settings keeps
+  behaviour only.
+- **Themes own the look** — skin, layout, accent, backdrop, Home order, every per-place picture, the art
+  bundle and its framing. Editing anything edits the theme you are wearing, so switching away and back
+  returns your version. The file is written once the hand stops moving, not on every tick.
+- **Art folders** — a folder of pictures in `Music/Sonarar/art/` becomes a bundle, each picture a frame.
+  RESCAN picks up folders added while the app is open; ADJUST drags, zooms, rotates, mirrors or fades
+  any picture, and the framing follows that picture everywhere.
 - **Optional network** — weather from Open-Meteo, nearby places from Overpass, and YouTube playlist
   downloads through yt-dlp into the same library format.
 
@@ -108,7 +102,7 @@ downloads included.
 
 ## Build from source
 
-Flutter **3.47.6**, Dart **3.13.5**.
+Flutter **3.47.6**.
 
 ```bash
 cd app_src
@@ -132,9 +126,9 @@ system installer — nothing installs silently. F-Droid builds compile the check
 
 No permission is requested at launch, and declining any of them leaves the app working. Media access
 is asked for when the library opens, notifications on the first play. Location is asked for only when
-Places is switched on, and with Places off the GPS is never touched. The microphone permission exists
-for one thing: the spectrum probe attaches a system `Visualizer`, which Android gates behind it. It is
-asked for from that probe screen, never at launch, and playback does not use it.
+Places is switched on; with Places off the GPS is never touched. The microphone permission exists for
+one thing: the spectrum probe attaches a system `Visualizer`, which Android gates behind it. It is
+asked for from that probe screen, and playback does not use it.
 
 The build contains no analytics, tracking or advertising. Its only network calls are weather
 (`api.open-meteo.com`), a coarse position fallback (`ipapi.co`), nearby places (Overpass), and YouTube

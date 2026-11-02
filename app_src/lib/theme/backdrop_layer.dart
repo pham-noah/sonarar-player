@@ -21,16 +21,12 @@ File? backdropFile(Directory? root, BackdropSpec spec) {
   return f.existsSync() ? f : null;
 }
 
-/// The photo layer.
+/// The photo layer, under everything the skin paints.
 ///
-/// Sits UNDER everything the skin paints, so it never competes with the palette:
-/// the focus point is carried by [BoxFit.cover]'s alignment, zoom and rotation
-/// ride on top of that, and the scrim is black rather than a skin colour so a
-/// warm photo cannot wash a cool skin off its own background.
-///
-/// Blur is [ImageFiltered] rather than a `BackdropFilter`: the latter samples
-/// whatever is beneath it every frame, which is exactly what a background
-/// behind a scrolling list must not do.
+/// The focus point is [BoxFit.cover]'s alignment, and the scrim is black rather
+/// than a skin colour so a warm photo cannot wash a cool skin off its background.
+/// Blur is [ImageFiltered], not `BackdropFilter`: the latter samples what is beneath
+/// it every frame, which a background behind a scrolling list must not do.
 class PersonalBackdrop extends StatelessWidget {
   const PersonalBackdrop({
     super.key,

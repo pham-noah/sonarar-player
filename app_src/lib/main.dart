@@ -511,12 +511,10 @@ class _HomeShellState extends State<HomeShell>
   late final Listenable _routeListenable =
       Listenable.merge([widget.state, _shellTick]);
 
-  /// Every shell mutation goes through here so pushed routes repaint.
-  ///
-  /// setState alone only rebuilds the shell's own subtree; the player lives on
-  /// its own route and reads the shell's captured values, so a change stayed
-  /// invisible until something else moved. Rather than remember to call
-  /// [_shellChanged] at each call site, the bump rides on setState itself.
+  /// Every shell mutation goes through here so pushed routes repaint: setState only
+  /// rebuilds the shell's own subtree, while the player lives on its own route and
+  /// reads the shell's captured values. The bump rides on setState, so no call site
+  /// has to remember [_shellChanged].
   @override
   void setState(VoidCallback fn) {
     super.setState(fn);

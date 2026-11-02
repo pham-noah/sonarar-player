@@ -4,14 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
 
-/// Asks for a name, and answers with one or with null.
-///
-/// The shell had two of these — new playlist, save queue — identical down to the
-/// hint text and differing only in the title and the button word. One of them
-/// never disposed its controller. Both go through here now.
-///
-/// An empty or whitespace-only answer is null, so no caller has to remember to
-/// trim before deciding what an empty name means.
+/// Asks for a name, and answers with one or with null. An empty or whitespace-only
+/// answer is null, so no caller has to decide what an empty name means.
 Future<String?> askForName(
   BuildContext context,
   Skin skin, {

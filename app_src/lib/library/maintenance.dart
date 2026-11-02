@@ -45,8 +45,7 @@ class DuplicateGroup {
 
 const String _kVersionWords =
     'ver|version|remaster|remastered|remix|live|reload|reincarnation|'
-    'instrumental|off vocal|offvocal|tv size|tvsize|short|'
-    'p3r|p4r|p5r|p3|p4|p5';
+    'instrumental|off vocal|offvocal|tv size|tvsize|short';
 
 final RegExp _bracketedSuffix =
     RegExp('\\([^)]*\\b(?:$_kVersionWords)\\b[^)]*\\)\$|\\[[^\\]]*\\b(?:$_kVersionWords)\\b[^\\]]*\\]\$');

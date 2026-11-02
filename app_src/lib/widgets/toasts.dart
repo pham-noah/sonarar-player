@@ -9,21 +9,10 @@ import '../theme/skin.dart';
 
 /// Snackbars, raised where they can be seen.
 ///
-/// A `ScaffoldMessenger` puts its bar inside the nearest `Scaffold`, and a modal
-/// sheet is a route painted *over* that scaffold. Measured in
-/// `test/shots/toast_over_sheet_shot.dart`: a bar raised from inside a sheet sat
-/// at y 697–780 while the sheet covered 559–844 — present in the tree, invisible
-/// on screen, so the sheet looked like it had ignored the tap.
-///
-/// One entry point, two exits:
-///
-///  * On a normal screen the messenger does it, so the bar sits above the mini
-///    player exactly as it always has.
-///  * Inside a popup route — sheet, dialog — the bar goes into the root
-///    navigator's overlay last, which is above every route. Same Material
-///    geometry, drawn by hand.
-///
-/// The look does not change; only the places where a bar could be buried do.
+/// The messenger draws inside the nearest `Scaffold`, and a sheet is a route over
+/// it, so a bar raised from a sheet lands behind the sheet and looks like a tap
+/// that did nothing. On a normal screen the messenger keeps its place above the
+/// mini player; inside a popup the bar goes into the root overlay instead.
 void _raise(
   BuildContext context, {
   required String message,

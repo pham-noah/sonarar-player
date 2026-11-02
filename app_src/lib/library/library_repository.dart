@@ -116,12 +116,10 @@ class LibraryRepository {
     }
   }
 
-  /// Where the file actually is, asked of the disk before the manifest.
-  ///
-  /// The scan answers when it can — a moved or renamed file still plays, and a
-  /// file it cannot find is reported missing instead of being handed to the
-  /// player to fail on. When the walk failed (no permission, no such folder)
-  /// this behaves exactly as it did before there was a scan.
+  /// Where the file actually is, asked of the disk before the manifest: a moved or
+  /// renamed file still plays, and one the scan cannot find is reported missing
+  /// rather than handed to the player to fail on. With no walk to ask, the manifest
+  /// answers alone.
   String? absoluteFor(Track track) {
     if (_libraryRoot == null) return null;
     final resolved = _scan?.resolve(track.file);

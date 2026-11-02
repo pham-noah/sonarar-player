@@ -74,15 +74,11 @@ class Skin {
 
   final bool accentPinned;
 
-  /// The same skin wearing a different accent.
-  ///
-  /// A skin's accent is not one colour: `accentDeep` and `onAccent` are derived
-  /// from it, and copying them across would put white glyphs on a pale accent.
-  /// Only the three accent slots move — background, panel, text, skew and the
-  /// rest of the skin's identity stay put, which is what keeps it recognisable.
-  /// The same skin on a different base colour. Text, panels and the accent's
-  /// contrast are re-derived, because a base the user picked is not the base the
-  /// palette assumed.
+  /// The same skin wearing a different accent: the three accent slots move, and
+  /// `accentDeep` and `onAccent` are re-derived rather than copied — a white glyph
+  /// on a pale accent is the failure that avoids.
+  /// The same skin on a different base colour, with text, panels and the accent's
+  /// contrast re-derived: a base the user picked is not the base the palette assumed.
   Skin withBase(Color base) {
     final light = base.computeLuminance() > 0.5;
     Color mix(Color a, Color b, double t) => Color.lerp(a, b, t)!;

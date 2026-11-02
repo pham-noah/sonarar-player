@@ -2,12 +2,10 @@ library;
 
 import 'package:flutter/material.dart';
 
-/// The darkening the player lays over its picture, in one place.
-///
-/// Light falls from the right; the left third carries the title and the
-/// title, so the picture is pushed back there. The editor draws this too — a
-/// picture framed against a clean image looks different once the player dims
-/// half of it, and framing should be judged on what you will actually see.
+/// The darkening the player lays over its picture, in one place: light falls from
+/// the right, so the left third carries the title and the picture is pushed back
+/// there. The framing editor draws it too, because a picture must be judged on what
+/// the player will actually show.
 class ArtScrim extends StatelessWidget {
   const ArtScrim({super.key, required this.color});
 

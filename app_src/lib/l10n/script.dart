@@ -4,11 +4,9 @@ import 'package:flutter/widgets.dart';
 
 /// Caps and letter-spacing are Latin-only styling.
 ///
-/// Japanese, Chinese, Korean and Thai have no upper case — `toUpperCase()` is a
-/// silent no-op there, so a label that was shouted in English simply sits at
-/// normal weight in Tokyo, and wide tracking stretches characters that were
-/// designed to sit on a grid. These helpers are the one place the app decides
-/// which script it is drawing in.
+/// Japanese, Chinese, Korean and Thai have no upper case, so `toUpperCase()` is a
+/// silent no-op there, and wide tracking stretches characters designed to sit on a
+/// grid. These helpers are the one place the app decides which script it draws in.
 const Set<String> _caseless = {'ja', 'zh', 'ko', 'th', 'lo', 'my'};
 
 /// True when the language has no upper case and wants no tracking.

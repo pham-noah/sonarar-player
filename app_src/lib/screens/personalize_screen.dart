@@ -28,14 +28,11 @@ import '../widgets/art_scrim.dart';
 import '../widgets/devices.dart';
 import '../widgets/framed_art.dart';
 
-/// PERSONALIZE — the one place the app's look is decided.
-///
-/// Everything about the look lives here: the layout, the songs' shape, what is
-/// painted behind each tab, where the accent comes from, and which Home
-/// sections show in which order. Settings keeps behaviour only, so there is one
-/// place to look instead of two that half-overlap.
-/// The parts of the look, one at a time. Seven sections in a single scroll is
-/// a scavenger hunt; five tabs is a page you can finish.
+/// PERSONALIZE — the one place the app's look is decided: layout, the songs' shape,
+/// what is painted behind each tab, the accent, and which Home sections show in
+/// which order. Settings keeps behaviour only, so the two cannot half-overlap.
+/// The parts of the look, one at a time: seven sections in one scroll is a scavenger
+/// hunt, five tabs is a page you can finish.
 enum PersonalizeTab { themes, look, art, home }
 
 class PersonalizeScreen extends StatefulWidget {
@@ -754,8 +751,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
   }
 
-  // ---- preview -------------------------------------------------------------
-
   /// A miniature of the app, not a colour swatch. It shows the chrome, the
   /// shape the panels take in this layout, the picture the screen actually
   /// wears, the scrim over it, and the accent where it lands — so a choice can
@@ -919,8 +914,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
   }
-
-  // ---- backdrop ------------------------------------------------------------
 
   /// Re-reads the art folders. Pictures dropped in from a file manager while
   /// the app is open are otherwise invisible until the next launch.
@@ -1339,8 +1332,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     );
   }
 
-  // ---- accent --------------------------------------------------------------
-
   /// Base colours: four darks, a mid grey, then light stock.
   static final List<Color> _bases = [
     for (final c in const [
@@ -1366,8 +1357,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   /// Choosing FROM PHOTO takes the colour straight away; nothing waits for a
   /// second button that reads as a chip doing nothing.
-
-  // ---- home ----------------------------------------------------------------
 
   List<HomeSection> _orderedSections() => [
     for (final s in _p.home.all)
@@ -1435,8 +1424,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
   }
-
-  // ---- themes --------------------------------------------------------------
 
   Future<void> _saveTheme() async {
     final controller = TextEditingController();
@@ -1520,8 +1507,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ],
     );
   }
-
-  // ---- bits ----------------------------------------------------------------
 
   void _prefs(AppPrefs Function(AppPrefs) edit) {
     final prefs = widget.prefs;
@@ -1730,18 +1715,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     ),
   );
 
-  /// [marked] shows a place that has its own picture even while you are
-  /// looking at another one, so the selector answers "where is custom?".
-  /// One picture in the picker: the picture itself, its name underneath, and
-  /// a ring when it is the one being worn.
-  /// Copies a picture into `art/` and wears it here.
-  ///
-  /// A folder holds a set — that is what makes FOLLOW TRACK possible — so this
-  /// asks whether the picture starts a new folder or joins one already there,
-  /// instead of making a folder of one every time.
-  /// One row per art folder: its pictures, and the three things you do to a
-  /// folder — add to it, rename it, delete it. A folder is a set, so removing a
-  /// picture happens on the picture, not in a menu.
+  /// One row per art folder: its pictures, and the three things you do to a folder —
+  /// add to it, rename it, delete it. A folder is a set, so removing a picture
+  /// happens on the picture, not in a menu.
   Widget _folderCard(Skin skin, ArtBundle folder) {
     final worn = folder.set.pieces.any((p) => p.key == _b.artKey);
     return Container(

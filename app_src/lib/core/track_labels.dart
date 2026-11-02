@@ -1,9 +1,9 @@
-/// Titles that carry their own artist — "[Artist] - [Title]" — spend a whole
-/// line naming the artist a second time, and the line that identifies the track
-/// is the one that gets cut. Where the artist has its own line, drop the prefix.
+/// A title that carries its own artist — "[Artist] - [Title]" — spends a line naming
+/// the artist twice, and the line that identifies the track is the one that gets
+/// cut. Where the artist has its own line, drop the prefix.
 ///
-/// The artist line is often longer than the name in the title ("ヨルシカ /
-/// n-buna Official" vs "ヨルシカ"), so the head only has to be part of it.
+/// The artist line is often longer than the name in the title, so the head only has
+/// to be part of it.
 String titleWithoutArtist(String title, String artist) {
   final by = artist.toLowerCase();
   for (final sep in const [' - ', ' – ', ' — ']) {

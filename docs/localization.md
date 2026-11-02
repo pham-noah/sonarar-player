@@ -41,17 +41,16 @@ lie.
 
 ## Still English
 
-The UI is localised; the services behind it are not, in a few places. They hold their English in
-`library/` and `rules/`, where a widget cannot reach:
+Two strings still reach the screen in English, both of them facts rather than prose:
 
-- `library/maintenance.dart` — the library report prose
-- `rules/rules_engine.dart` — the three "this theme has no P3R tracks" messages
-- the import sheet's live status line and `download_manager`'s permission error
-- `tag_editor`'s "File says:", YouTube's "FAILED —"
-- `Unknown Artist`, which lives in the `Track` model as a fallback
+- `tag_editor_sheet` — "File says: …", the tag as the file currently holds it
+- `Unknown Artist`, the fallback in the `Track` model for a file with no artist tag
 
-These want the shape the rule explanations already have: the service returns facts, the widget that
-renders them supplies the words.
+Everything else that used to be listed here has moved: the download errors are a
+kind the screens translate, the import sheet's status line comes from `importSummary`,
+and the YouTube row builds its failure from the same keys. The rule is the same one
+the context explanations follow — the service returns facts, the widget supplies the
+words — and these two are the last places a service still owns the copy.
 
 ## Why the gate exists
 

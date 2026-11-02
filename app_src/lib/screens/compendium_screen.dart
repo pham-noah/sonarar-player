@@ -357,11 +357,10 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
   }
 }
 
-/// "today", "yesterday", "3 days ago" — with the reader's own plural rules,
-/// which the hand-written "day${days == 1 ? '' : 's'}" could not carry.
+/// "today", "yesterday", "3 days ago", with the reader's own plural rules.
 ///
-/// The 30-day month is a deliberate approximation: this line is a rough hint
-/// under a track title, not a date.
+/// The 30-day month is a deliberate approximation: this line is a rough hint under a
+/// track title, not a date.
 String _ago(BuildContext context, DateTime then, DateTime now) {
   final l10n = l10nOf(context);
   final days = DateTime(now.year, now.month, now.day)

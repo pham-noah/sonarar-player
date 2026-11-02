@@ -2,19 +2,12 @@ library;
 
 import 'dart:io';
 
-/// What is actually on the disk under the library root, kept as a cache.
+/// What is on the disk under the library root, kept as a cache.
 ///
-/// The manifest names files; the disk decides whether they are there. Trusting
-/// the manifest alone means a renamed or moved file stays in the library as a
-/// row that plays nothing, and a file dropped in by a downloader does not exist
-/// until something rewrites the manifest.
-///
-/// So: walk the root once, keep the result, and let callers ask *this* where a
-/// track really is. The cache is cheap to rebuild — names and sizes, no tags,
-/// no hashing — and it is thrown away rather than patched, so it cannot drift.
-///
-/// Modelled on Mihon's `DownloadCache`: the filesystem is the authority, and
-/// stored links are hints to be resolved, not truths to be trusted.
+/// The manifest names files; the disk decides whether they are there. Walking the
+/// root once and letting callers ask *this* where a track is keeps a renamed file
+/// playable and a downloaded one visible. Cheap to rebuild, thrown away rather than
+/// patched, so it cannot drift from the disk.
 class LibraryScan {
   LibraryScan._(this.root, this._files, this._byName, this.scannedAt);
 

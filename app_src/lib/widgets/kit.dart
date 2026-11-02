@@ -5,13 +5,10 @@ import '../theme/skin.dart';
 import 'devices.dart';
 import 'pressable.dart';
 
-/// The one row shape for anything that reads as a setting.
-///
-/// A slab in the panel colour with an accent spine down its left edge, an icon,
-/// a label and whatever control the row carries. Settings and Personalize both
-/// draw from here so a toggle looks the same wherever it is met, and Archive
-/// and History can borrow the spine for their own controls without growing a
-/// second dialect.
+/// The one row shape for anything that reads as a setting: a panel-coloured slab
+/// with an accent spine, an icon, a label and the row's own control. Settings,
+/// Personalize, Archive and History all draw from here, so a toggle looks the same
+/// wherever it is met.
 class KitRow extends StatelessWidget {
   const KitRow({
     super.key,

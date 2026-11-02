@@ -1,3 +1,4 @@
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
@@ -75,7 +76,7 @@ class KitRow extends StatelessWidget {
                       style: TextStyle(
                         fontSize: LayoutSpec.fontFloor,
                         fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
+                        letterSpacing: trackingFor(context, 1),
                         color: skin.textPrimary,
                       ),
                     ),
@@ -277,7 +278,7 @@ class KitTabs<T> extends StatelessWidget {
                             : skin.textSecondary,
                         fontSize: LayoutSpec.fontMicro,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 0.8,
+                        letterSpacing: trackingFor(context, 0.8),
                       ),
                     ),
                   ),
@@ -338,7 +339,7 @@ class KitSegment<T> extends StatelessWidget {
                     style: TextStyle(
                       fontSize: LayoutSpec.fontFloor - 1,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 0.6,
+                      letterSpacing: trackingFor(context, 0.6),
                       color: entry.key == selected
                           ? skin.onAccent
                           : skin.textSecondary,

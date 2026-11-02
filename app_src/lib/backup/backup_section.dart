@@ -1,3 +1,4 @@
+import '../l10n/script.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -97,7 +98,7 @@ class _BackupSectionState extends State<BackupSection> {
           style: TextStyle(
             color: widget.skin.textPrimary,
             fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
+            letterSpacing: trackingFor(context, 1.5),
             fontSize: 14,
           ),
         ),

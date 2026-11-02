@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -91,7 +92,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                 style: TextStyle(
                   color: ok ? skin.textSecondary : skin.accent,
                   fontSize: LayoutSpec.fontMicro,
-                  letterSpacing: 0.5,
+                  letterSpacing: trackingFor(context, 0.5),
                 ),
               ),
             ),
@@ -101,7 +102,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                 style: TextStyle(
                   color: skin.accent,
                   fontSize: LayoutSpec.fontMicro,
-                  letterSpacing: 1.2,
+                  letterSpacing: trackingFor(context, 1.2),
                 ),
               ),
           ],
@@ -159,7 +160,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                           style: TextStyle(
                               color: skin.textSecondary,
                               fontSize: LayoutSpec.fontMicro,
-                              letterSpacing: 1.2)),
+                              letterSpacing: trackingFor(context, 1.2))),
                     ),
                   ),
                 ),
@@ -179,7 +180,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                           style: TextStyle(
                               color: skin.accent,
                               fontSize: LayoutSpec.fontMicro,
-                              letterSpacing: 1.2)),
+                              letterSpacing: trackingFor(context, 1.2))),
                     ]),
                   ),
                 ),
@@ -197,7 +198,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                           style: TextStyle(
                               color: skin.accent,
                               fontSize: LayoutSpec.fontMicro,
-                              letterSpacing: 1.2)),
+                              letterSpacing: trackingFor(context, 1.2))),
                     ]),
                   ),
                 ),
@@ -277,7 +278,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
           style: TextStyle(
             color: on ? skin.onAccent : skin.textSecondary,
             fontSize: LayoutSpec.fontMicro,
-            letterSpacing: 1.1,
+            letterSpacing: trackingFor(context, 1.1),
             fontWeight: on ? FontWeight.w700 : FontWeight.w500,
           ),
           ),

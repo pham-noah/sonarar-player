@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -52,7 +53,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
           style: TextStyle(
             fontSize: LayoutSpec.fontFloor,
             fontWeight: FontWeight.w900,
-            letterSpacing: 1.6,
+            letterSpacing: trackingFor(context, 1.6),
             color: skin.textPrimary,
           ),
         ),
@@ -192,7 +193,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
             color: skin.textSecondary,
             fontSize: LayoutSpec.fontFloor - 4,
             fontWeight: FontWeight.w800,
-            letterSpacing: 1.2,
+            letterSpacing: trackingFor(context, 1.2),
           ),
         ),
       ),

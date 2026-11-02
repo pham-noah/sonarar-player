@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
@@ -95,7 +96,7 @@ class QueuePanel extends StatelessWidget {
                               'SAVE AS PLAYLIST',
                               style: TextStyle(
                                 fontSize: LayoutSpec.fontLabel,
-                                letterSpacing: 1.5,
+                                letterSpacing: trackingFor(context, 1.5),
                                 fontWeight: FontWeight.w800,
                                 color: skin.accent,
                               ),
@@ -118,7 +119,7 @@ class QueuePanel extends StatelessWidget {
                                 'CLEAR UPCOMING',
                                 style: TextStyle(
                                   fontSize: LayoutSpec.fontLabel,
-                                  letterSpacing: 1.5,
+                                  letterSpacing: trackingFor(context, 1.5),
                                   fontWeight: FontWeight.w800,
                                   color: skin.textSecondary,
                                 ),

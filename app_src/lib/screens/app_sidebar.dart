@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/layout.dart';
@@ -65,7 +66,7 @@ class AppSidebar extends StatelessWidget {
                         'SONARAR',
                         style: TextStyle(
                           fontSize: LayoutSpec.fontFloor,
-                          letterSpacing: 3,
+                          letterSpacing: trackingFor(context, 3),
                           fontWeight: FontWeight.w900,
                           color: panelSkin.textPrimary,
                         ),
@@ -112,7 +113,7 @@ class AppSidebar extends StatelessWidget {
                 e.label,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontFloor,
-                  letterSpacing: 1.4,
+                  letterSpacing: trackingFor(context, 1.4),
                   fontWeight: FontWeight.w800,
                   color: panelSkin.textPrimary,
                 ),

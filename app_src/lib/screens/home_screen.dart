@@ -167,7 +167,7 @@ class HomeScreen extends StatelessWidget {
             ),
 
         if (contextEnabled) ...[
-          _bandText(l10nOf(context).homeNow),
+          _bandText(context, l10nOf(context).homeNow),
           Row(
             children: [
               _stateTile(
@@ -223,7 +223,7 @@ class HomeScreen extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontFloor,
-                          letterSpacing: 1.4,
+                          letterSpacing: trackingFor(context, 1.4),
                           fontWeight: FontWeight.w900,
                           color: skin.onAccent,
                         ),
@@ -279,7 +279,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _continueSection(BuildContext context) {
     if (continueTrack == null) return const [];
     return [
-      _bandText(l10nOf(context).homeContinue),
+      _bandText(context, l10nOf(context).homeContinue),
       _continueRow(context, continueTrack!),
       const SizedBox(height: 22),
     ];
@@ -290,7 +290,7 @@ class HomeScreen extends StatelessWidget {
     return [
       GestureDetector(
         onTap: onOpenRediscover,
-        child: _bandText(l10nOf(context).homeRediscover),
+        child: _bandText(context, l10nOf(context).homeRediscover),
       ),
       _coverRail(context, rediscover),
       const SizedBox(height: 22),
@@ -300,7 +300,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _jumpBackInSection(BuildContext context) {
     if (jumpBackIn.isEmpty) return const [];
     return [
-      _bandText(l10nOf(context).homeJumpBackIn),
+      _bandText(context, l10nOf(context).homeJumpBackIn),
       _coverRail(context, jumpBackIn),
       const SizedBox(height: 22),
     ];
@@ -316,7 +316,7 @@ class HomeScreen extends StatelessWidget {
     ];
     if (pool.isEmpty) return const [];
     return [
-      _bandText(l10nOf(context).homeQuickPick),
+      _bandText(context, l10nOf(context).homeQuickPick),
       _QuickPickPager(
         skin: skin,
         pool: pool,
@@ -330,7 +330,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _fromLibrarySection(BuildContext context) {
     if (libraryPlaylists.isEmpty) return const [];
     return [
-      _bandText(l10nOf(context).homeFromLibrary),
+      _bandText(context, l10nOf(context).homeFromLibrary),
       _playlistRail(context, libraryPlaylists),
       const SizedBox(height: 22),
     ];
@@ -417,7 +417,7 @@ class HomeScreen extends StatelessWidget {
     ];
     if (withTracks.isEmpty) return const [];
     return [
-      _bandText(l10nOf(context).homeGenre),
+      _bandText(context, l10nOf(context).homeGenre),
       for (final p in withTracks) ...[
         Padding(
           padding: const EdgeInsets.only(bottom: 6),
@@ -440,7 +440,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _recentSection(BuildContext context) {
     if (recent.isEmpty) return const [];
     return [
-      _bandText(l10nOf(context).homeRecentlyAdded),
+      _bandText(context, l10nOf(context).homeRecentlyAdded),
       SizedBox(
         height: 104 + 6 + 2 * 20 + 10,
         child: ListView.separated(
@@ -512,7 +512,7 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _recapSection(BuildContext context) {
     if (recapTracks.isEmpty) return const [];
     return [
-      _bandText('RECAP — ${capsFor(context, recapLabel)}'),
+      _bandText(context, 'RECAP — ${capsFor(context, recapLabel)}'),
       _recapCard(context),
       const SizedBox(height: 22),
     ];
@@ -582,13 +582,13 @@ class HomeScreen extends StatelessWidget {
     ];
   }
 
-  Widget _bandText(String label) => Padding(
+  Widget _bandText(BuildContext context, String label) => Padding(
         padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
         child: Text(
           label,
           style: TextStyle(
             fontSize: LayoutSpec.fontFloor,
-            letterSpacing: 2.2,
+            letterSpacing: trackingFor(context, 2.2),
             fontWeight: FontWeight.w900,
             color: skin.accent,
             // The band sits on artwork, so it needs a shadow of its own.
@@ -741,7 +741,7 @@ class HomeScreen extends StatelessWidget {
                 maxLines: 1,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontFloor,
-                  letterSpacing: 1,
+                  letterSpacing: trackingFor(context, 1),
                   fontWeight: FontWeight.w900,
                   color: dim ? pal.textSecondary : pal.textPrimary,
                 ),

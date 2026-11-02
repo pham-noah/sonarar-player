@@ -434,7 +434,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                             capsFor(context, poiLabel(l10nOf(context), kind)),
                             style: TextStyle(
                               fontSize: LayoutSpec.fontMicro,
-                              letterSpacing: 1,
+                              letterSpacing: trackingFor(context, 1),
                               fontWeight: FontWeight.w900,
                               color: skin.accent,
                             ),
@@ -560,7 +560,7 @@ class _NameSheetState extends State<_NameSheet> {
             widget.editing ? l10nOf(context).placesEditTitle : l10nOf(context).placesNameTitle,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
-              letterSpacing: 3,
+              letterSpacing: trackingFor(context, 3),
               fontWeight: FontWeight.w800,
               color: skin.accent,
             ),
@@ -588,7 +588,7 @@ class _NameSheetState extends State<_NameSheet> {
               l10nOf(context).placesPlaylistHere,
               style: TextStyle(
                 fontSize: LayoutSpec.fontMicro,
-                letterSpacing: 2,
+                letterSpacing: trackingFor(context, 2),
                 fontWeight: FontWeight.w800,
                 color: skin.accent,
               ),
@@ -643,7 +643,7 @@ class _NameSheetState extends State<_NameSheet> {
             l10nOf(context).placesIcon,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
-              letterSpacing: 2,
+              letterSpacing: trackingFor(context, 2),
               fontWeight: FontWeight.w800,
               color: skin.accent,
             ),
@@ -698,7 +698,7 @@ class _NameSheetState extends State<_NameSheet> {
             l10nOf(context).placesSize,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
-              letterSpacing: 2,
+              letterSpacing: trackingFor(context, 2),
               fontWeight: FontWeight.w800,
               color: skin.accent,
             ),
@@ -764,7 +764,7 @@ class _NameSheetState extends State<_NameSheet> {
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
+                          letterSpacing: trackingFor(context, 1.5),
                           color: skin.textSecondary,
                         ),
                       ),
@@ -787,7 +787,7 @@ class _NameSheetState extends State<_NameSheet> {
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
+                          letterSpacing: trackingFor(context, 1.5),
                           color: skin.onAccent,
                         ),
                       ),
@@ -815,7 +815,7 @@ class _NameSheetState extends State<_NameSheet> {
           label,
           style: TextStyle(
             fontSize: LayoutSpec.fontMicro,
-            letterSpacing: 2,
+            letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
             color: skin.accent,
           ),

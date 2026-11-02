@@ -1,6 +1,7 @@
 library;
 
 import 'package:flutter/foundation.dart' show ValueListenable;
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -281,7 +282,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
               label,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
-                letterSpacing: 2,
+                letterSpacing: trackingFor(context, 2),
                 fontWeight: FontWeight.w800,
                 color: skin.textPrimary,
               ),

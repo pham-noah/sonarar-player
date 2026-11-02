@@ -1,3 +1,4 @@
+import '../l10n/script.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                       color: skin.textPrimary,
                       fontSize: LayoutSpec.fontFloor + 2,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
+                      letterSpacing: trackingFor(context, 2),
                     ),
                   ),
                   const Spacer(),

@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
@@ -135,7 +136,7 @@ class _InlinePanelSheetState extends State<InlinePanelSheet> {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: LayoutSpec.fontLabel,
-                                letterSpacing: 4,
+                                letterSpacing: trackingFor(context, 4),
                                 fontWeight: FontWeight.w800,
                                 color: skin.accent,
                               ),

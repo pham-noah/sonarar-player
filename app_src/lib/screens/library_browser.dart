@@ -72,7 +72,7 @@ class LibraryBrowserBar extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            _segment(
+            _segment(context, 
               switch (current) {
                 LibraryView.playlists => l10nOf(context).libraryPlaylists,
                 LibraryView.artists => l10nOf(context).libraryArtists,
@@ -104,7 +104,7 @@ class LibraryBrowserBar extends StatelessWidget {
                     style: TextStyle(
 
                       fontSize: kBrowserChipFont,
-                      letterSpacing: 0.2,
+                      letterSpacing: trackingFor(context, 0.2),
                       fontWeight: FontWeight.w900,
                       color: skin.accent,
                     ),
@@ -114,12 +114,12 @@ class LibraryBrowserBar extends StatelessWidget {
             ],
           ] else ...[
 
-            _segment(l10nOf(context).libraryPlaylists, LibraryView.playlists),
+            _segment(context, l10nOf(context).libraryPlaylists, LibraryView.playlists),
             const SizedBox(width: 8),
-            _segment(l10nOf(context).libraryArtists, LibraryView.artists),
+            _segment(context, l10nOf(context).libraryArtists, LibraryView.artists),
             const SizedBox(width: 8),
 
-            _segment(l10nOf(context).librarySongs, LibraryView.songs),
+            _segment(context, l10nOf(context).librarySongs, LibraryView.songs),
           ],
         ],
       ),
@@ -127,7 +127,7 @@ class LibraryBrowserBar extends StatelessWidget {
     );
   }
 
-  Widget _segment(String label, LibraryView view, {bool flexible = true}) {
+  Widget _segment(BuildContext context, String label, LibraryView view, {bool flexible = true}) {
     // Two different things wear two different marks. The fill means a filter is
     // applied — filling the view you happen to be on made it read as a default
     // filter. The view you are on gets an underline instead, so the strip
@@ -177,7 +177,7 @@ class LibraryBrowserBar extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: kBrowserChipFont,
-                    letterSpacing: 0.2,
+                    letterSpacing: trackingFor(context, 0.2),
                     fontWeight: FontWeight.w900,
 
                     color: active

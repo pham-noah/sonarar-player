@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -434,7 +435,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           label,
           style: TextStyle(
             fontSize: kBrowserChipFont,
-            letterSpacing: 0.3,
+            letterSpacing: trackingFor(context, 0.3),
             fontWeight: FontWeight.w900,
             color: on ? skin.onAccent : skin.textPrimary,
           ),
@@ -489,7 +490,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
-                        letterSpacing: 1.4,
+                        letterSpacing: trackingFor(context, 1.4),
                         fontWeight: FontWeight.w900,
                         color: skin.accent,
                       ),
@@ -567,7 +568,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           style: TextStyle(
 
             fontSize: kBrowserChipFont,
-            letterSpacing: 0.3,
+            letterSpacing: trackingFor(context, 0.3),
             fontWeight: FontWeight.w900,
             color: on ? skin.onAccent : skin.textPrimary,
           ),

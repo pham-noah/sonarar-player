@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/pressable.dart';
@@ -46,7 +47,7 @@ class TabBarView2 extends StatelessWidget {
                 presentation: p,
                 role: SurfaceRole.bar,
                 radius: 32,
-                child: _row(pal),
+                child: _row(context, pal),
               ),
             )
           : DecoratedBox(
@@ -56,7 +57,7 @@ class TabBarView2 extends StatelessWidget {
                   top: BorderSide(color: pal.accent.withValues(alpha: 0.24)),
                 ),
               ),
-              child: _row(pal),
+              child: _row(context, pal),
             ),
     );
 
@@ -65,19 +66,19 @@ class TabBarView2 extends StatelessWidget {
         : bar;
   }
 
-  Widget _row(LayoutPalette pal) {
+  Widget _row(BuildContext context, LayoutPalette pal) {
     return Row(
         children: [
 
-          if (showHome) _tab(AppTab.home, Icons.home_rounded, 'HOME'),
-          _tab(AppTab.library, Icons.library_music_rounded, 'LIBRARY'),
-          _tab(AppTab.search, Icons.search_rounded, 'SEARCH'),
+          if (showHome) _tab(context, AppTab.home, Icons.home_rounded, 'HOME'),
+          _tab(context, AppTab.library, Icons.library_music_rounded, 'LIBRARY'),
+          _tab(context, AppTab.search, Icons.search_rounded, 'SEARCH'),
 
         ],
     );
   }
 
-  Widget _tab(AppTab tab, IconData icon, String label) {
+  Widget _tab(BuildContext context, AppTab tab, IconData icon, String label) {
     final active = tab == current;
     final colour = active ? skin.accent : skin.textSecondary;
     final skew = skin.skewDegrees * (3.14159265 / 180);
@@ -129,7 +130,7 @@ class TabBarView2 extends StatelessWidget {
                         style: TextStyle(
                           fontSize: LayoutSpec.fontLabel,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 1,
+                          letterSpacing: trackingFor(context, 1),
                           color: colour,
                         ),
                       ),

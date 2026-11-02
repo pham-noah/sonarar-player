@@ -114,7 +114,7 @@ class RulesEditorScreen extends StatelessWidget {
               l10nOf(context).rulesActingNow,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                letterSpacing: 3,
+                letterSpacing: trackingFor(context, 3),
                 fontWeight: FontWeight.w800,
                 color: skin.accent,
               ),
@@ -170,7 +170,7 @@ class RulesEditorScreen extends StatelessWidget {
                     '${isActive ? " · ACTING NOW" : ""}',
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
-                      letterSpacing: 1.5,
+                      letterSpacing: trackingFor(context, 1.5),
                       color: isActive ? skin.accent : skin.textSecondary,
                     ),
                   ),
@@ -387,7 +387,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
           text,
           style: TextStyle(
             fontSize: LayoutSpec.fontLabel,
-            letterSpacing: 2,
+            letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
             color: skin.textSecondary,
           ),

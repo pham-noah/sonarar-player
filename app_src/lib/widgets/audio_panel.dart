@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -130,7 +131,7 @@ class _SectionLabel extends StatelessWidget {
           text,
           style: TextStyle(
             fontSize: LayoutSpec.fontMicro,
-            letterSpacing: 2.2,
+            letterSpacing: trackingFor(context, 2.2),
             fontWeight: FontWeight.w900,
             color: skin.accent,
           ),
@@ -192,7 +193,7 @@ class _PanelRow extends StatelessWidget {
                         blurb!,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
-                          letterSpacing: 1.2,
+                          letterSpacing: trackingFor(context, 1.2),
                           color: skin.textSecondary,
                         ),
                       ),

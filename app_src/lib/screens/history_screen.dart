@@ -157,7 +157,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               style: TextStyle(
                 fontSize: LayoutSpec.fontFloor - 1,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 0.8,
+                letterSpacing: trackingFor(context, 0.8),
                 color: skin.accent,
               ),
             ),
@@ -308,7 +308,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   '${day.date.day} ${_monthName(day.date.month)}',
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
-                    letterSpacing: 2,
+                    letterSpacing: trackingFor(context, 2),
                     fontWeight: FontWeight.w900,
                     color: skin.accent,
                   ),
@@ -394,7 +394,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w900,
-                letterSpacing: -1,
+                letterSpacing: trackingFor(context, -1),
                 color: skin.textPrimary,
               ),
             ),

@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -390,7 +391,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           existing == null ? l10nOf(context).importNewTitle : l10nOf(context).importEditTitle,
           style: TextStyle(
             fontSize: LayoutSpec.fontSmall,
-            letterSpacing: 2,
+            letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
             color: skin.accent,
           ),
@@ -525,7 +526,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           Text(l10nOf(context).importListTitle,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
-                letterSpacing: 2,
+                letterSpacing: trackingFor(context, 2),
                 fontWeight: FontWeight.w800,
                 color: skin.accent,
               )),
@@ -572,7 +573,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
               label: Text(l10nOf(context).importNewTitle,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontFloor,
-                    letterSpacing: 1.2,
+                    letterSpacing: trackingFor(context, 1.2),
                     fontWeight: FontWeight.w800,
                     color: skin.accent,
                   )),

@@ -3,6 +3,7 @@ library;
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart' hide RepeatMode;
 
+import '../l10n/script.dart';
 import '../l10n/l10n.dart';
 
 import '../theme/ambient_backdrop.dart';
@@ -372,7 +373,7 @@ class PlayerScreen extends StatelessWidget {
                       l10nOf(context).playerNowPlaying,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
-                        letterSpacing: 5,
+                        letterSpacing: trackingFor(context, 5),
                         fontWeight: FontWeight.w700,
                         color: pal.accent,
                       ),
@@ -511,7 +512,7 @@ class PlayerScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 2,
+                        letterSpacing: trackingFor(context, 2),
                         color: skin.background,
                       ),
                     ),
@@ -633,7 +634,7 @@ class PlayerScreen extends StatelessWidget {
                 style: TextStyle(
                   color: skin.textSecondary,
                   fontSize: LayoutSpec.fontMicro,
-                  letterSpacing: 2.4,
+                  letterSpacing: trackingFor(context, 2.4),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -670,7 +671,7 @@ class PlayerScreen extends StatelessWidget {
                               style: TextStyle(
                                 color: skin.accent,
                                 fontSize: LayoutSpec.fontMicro,
-                                letterSpacing: 1.6,
+                                letterSpacing: trackingFor(context, 1.6),
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -728,7 +729,7 @@ class PlayerScreen extends StatelessWidget {
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         height: 1.05,
-                        letterSpacing: -0.5,
+                        letterSpacing: trackingFor(context, -0.5),
                         color: skin.textPrimary,
                         shadows: const [
                           Shadow(
@@ -769,7 +770,7 @@ class PlayerScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: LayoutSpec.fontMicro,
                                   fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.6,
+                                  letterSpacing: trackingFor(context, 1.6),
                                   color: skin.onAccent,
                                 ),
                               ),
@@ -891,7 +892,7 @@ class PlayerScreen extends StatelessWidget {
           fontSize: 30,
           fontWeight: FontWeight.w900,
           height: 1.05,
-          letterSpacing: -0.5,
+          letterSpacing: trackingFor(context, -0.5),
           color: skin.textPrimary,
           shadows: const [
             Shadow(
@@ -1112,7 +1113,7 @@ class PlayerScreen extends StatelessWidget {
                       'SLEEP IN $text',
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
-                        letterSpacing: 2,
+                        letterSpacing: trackingFor(context, 2),
                         fontWeight: FontWeight.w800,
                         color: skin.accent,
 
@@ -1301,7 +1302,7 @@ class PlayerScreen extends StatelessWidget {
                                 title,
                                 style: TextStyle(
                                   fontSize: LayoutSpec.fontLabel,
-                                  letterSpacing: 4,
+                                  letterSpacing: trackingFor(context, 4),
                                   fontWeight: FontWeight.w800,
                                   color: skin.accent,
                                 ),
@@ -1455,7 +1456,7 @@ class PlayerScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: LayoutSpec.fontLabel,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
+                  letterSpacing: trackingFor(context, 1.2),
                   color: active ? skin.onAccent : skin.textSecondary,
                 ),
               ),
@@ -1484,7 +1485,7 @@ class PlayerScreen extends StatelessWidget {
             textAlign: TextAlign.right,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
-              letterSpacing: 0.4,
+              letterSpacing: trackingFor(context, 0.4),
               color: skin.textSecondary,
 
               shadows: const [
@@ -1507,7 +1508,7 @@ class PlayerScreen extends StatelessWidget {
             nextTitle == null ? l10nOf(context).playerEndOfQueue : l10nOf(context).playerUpNext,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
-              letterSpacing: 4,
+              letterSpacing: trackingFor(context, 4),
               fontWeight: FontWeight.w800,
               color: skin.accent,
             ),

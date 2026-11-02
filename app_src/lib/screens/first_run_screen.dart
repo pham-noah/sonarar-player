@@ -143,7 +143,7 @@ class FirstRunScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: LayoutSpec.fontBase,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
+                      letterSpacing: trackingFor(context, 2),
                       color: pal.onAccent,
                     ),
                   ),

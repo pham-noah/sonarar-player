@@ -3499,7 +3499,7 @@ class _HomeShellState extends State<HomeShell>
           'Sonarar',
           style: TextStyle(
             fontSize: 13,
-            letterSpacing: 1.2,
+            letterSpacing: trackingFor(context, 1.2),
             color: skin.textSecondary,
           ),
         ),

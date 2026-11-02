@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import 'layout.dart';
@@ -100,7 +101,7 @@ class SectionLabel extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                letterSpacing: 4,
+                letterSpacing: trackingFor(context, 4),
                 fontWeight: FontWeight.w800,
                 color: skin.accent,
               ),
@@ -111,7 +112,7 @@ class SectionLabel extends StatelessWidget {
               trailing!,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
-                letterSpacing: 2,
+                letterSpacing: trackingFor(context, 2),
                 fontWeight: FontWeight.w900,
                 color: skin.textSecondary,
               ),
@@ -139,7 +140,7 @@ class ScreenTitle extends StatelessWidget {
         style: TextStyle(
           fontSize: LayoutSpec.fontTitle,
           fontWeight: FontWeight.w900,
-          letterSpacing: 1,
+          letterSpacing: trackingFor(context, 1),
           color: skin.textPrimary,
         ),
       ),
@@ -200,7 +201,7 @@ class SkinChip extends StatelessWidget {
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
-                        letterSpacing: 1.5,
+                        letterSpacing: trackingFor(context, 1.5),
                         fontWeight: FontWeight.w900,
                         color: fg,
                       ),

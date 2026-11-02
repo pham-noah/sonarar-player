@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
@@ -49,9 +50,9 @@ class SwipePanel extends StatelessWidget {
           if (!atRight) ...[
             _icon(p),
 
-            if (p > 0.55) ...[const SizedBox(width: 6), _label()],
+            if (p > 0.55) ...[const SizedBox(width: 6), _label(context, )],
           ] else ...[
-            if (p > 0.55) ...[_label(), const SizedBox(width: 6)],
+            if (p > 0.55) ...[_label(context, ), const SizedBox(width: 6)],
             _icon(p),
           ],
         ],
@@ -65,13 +66,13 @@ class SwipePanel extends StatelessWidget {
         size: 22 * p.clamp(0.55, 1.0),
       );
 
-  Widget _label() => Text(
+  Widget _label(BuildContext context) => Text(
         label,
         maxLines: 1,
         softWrap: false,
         style: TextStyle(
           fontSize: LayoutSpec.fontLabel,
-          letterSpacing: 2,
+          letterSpacing: trackingFor(context, 2),
           fontWeight: FontWeight.w900,
           color: skin.accent,
         ),

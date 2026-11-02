@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -274,7 +275,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   style: TextStyle(
                                     fontSize: LayoutSpec.fontFloor,
                                     fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.2,
+                                    letterSpacing: trackingFor(context, 1.2),
                                     color: skin.textPrimary,
                                   )),
                             ],
@@ -636,7 +637,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
+                        letterSpacing: trackingFor(context, 1),
                         color: skin.textPrimary,
                       ),
                     ),
@@ -651,7 +652,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 0.8,
+                        letterSpacing: trackingFor(context, 0.8),
                         color: skin.onAccent,
                       ),
                     ),
@@ -767,7 +768,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   maxLines: 1,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontMicro,
-                    letterSpacing: 1,
+                    letterSpacing: trackingFor(context, 1),
                     fontWeight: FontWeight.w900,
                     color: active ? skin.onAccent : skin.textSecondary,
                   ),

@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -255,7 +256,7 @@ class _ToastCard extends StatelessWidget {
                   actionLabel!,
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+                    letterSpacing: trackingFor(context, 1.2),
                     color: actionColor,
                   ),
                 ),

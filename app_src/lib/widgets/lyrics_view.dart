@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -215,7 +216,7 @@ class _LyricsViewState extends State<LyricsView> {
                         style: TextStyle(
                           fontSize: LayoutSpec.fontLabel,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1.2,
+                          letterSpacing: trackingFor(context, 1.2),
                           color: skin.accent,
                         ),
                       ),
@@ -251,7 +252,7 @@ class _LyricsViewState extends State<LyricsView> {
                           style: TextStyle(
                             fontSize: LayoutSpec.fontLabel,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 1.4,
+                            letterSpacing: trackingFor(context, 1.4),
                             color: skin.accent,
                           ),
                         ),

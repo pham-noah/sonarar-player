@@ -320,6 +320,11 @@ ThemeData _themeFromSkin(Skin skin) {
         height: 1.35,
       ),
       bodyMedium: TextStyle(fontSize: LayoutSpec.fontBase),
+      // The one tracking value that cannot ask the locale: a Skin is data and
+      // a TextTheme is built before any BuildContext exists. -0.4px on a title
+      // is under 2% of the glyph, so it is left as is rather than threading a
+      // locale through the whole palette; tracked label text is done at the
+      // site, where trackingFor() can see the language.
       titleLarge: TextStyle(
         fontSize: LayoutSpec.fontTitle,
         fontWeight: FontWeight.w900,

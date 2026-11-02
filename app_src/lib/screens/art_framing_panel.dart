@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../art/art_focus.dart';
@@ -113,9 +114,9 @@ class ArtFramingPanel extends StatelessWidget {
                     child: IgnorePointer(
                       child: Row(
                         children: [
-                          _reachTick(skin, 'X', reach.x),
+                          _reachTick(context, skin, 'X', reach.x),
                           const SizedBox(width: 8),
-                          _reachTick(skin, 'Y', reach.y),
+                          _reachTick(context, skin, 'Y', reach.y),
                         ],
                       ),
                     ),
@@ -129,7 +130,7 @@ class ArtFramingPanel extends StatelessWidget {
     );
   }
 
-  Widget _reachTick(Skin skin, String axis, double amount) {
+  Widget _reachTick(BuildContext context, Skin skin, String axis, double amount) {
     return Expanded(
       child: Row(
         children: [
@@ -137,7 +138,7 @@ class ArtFramingPanel extends StatelessWidget {
             axis,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
-              letterSpacing: 1,
+              letterSpacing: trackingFor(context, 1),
               fontWeight: FontWeight.w900,
               color: skin.textSecondary,
             ),
@@ -169,7 +170,7 @@ class ArtFramingPanel extends StatelessWidget {
           'ZOOM',
           style: TextStyle(
             fontSize: LayoutSpec.fontLabel,
-            letterSpacing: 2,
+            letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
             color: skin.accent,
           ),

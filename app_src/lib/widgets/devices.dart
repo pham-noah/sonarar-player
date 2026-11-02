@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/layout.dart';
@@ -78,7 +79,7 @@ class Stamp extends StatelessWidget {
                   style: TextStyle(
                     fontSize: LayoutSpec.fontMicro,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: square ? 0.8 : 1.6,
+                    letterSpacing: trackingFor(context, square ? 0.8 : 1.6),
                     color: fg,
                   ),
                 ),
@@ -196,7 +197,7 @@ class SectionBand extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 0.8,
+                    letterSpacing: trackingFor(context, 0.8),
                     color: skin.textPrimary,
                   ),
                 ),
@@ -227,7 +228,7 @@ class SectionBand extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: square ? 0.6 : 2.4,
+                        letterSpacing: trackingFor(context, square ? 0.6 : 2.4),
                         color: skin.background,
                       ),
                     ),
@@ -344,7 +345,7 @@ class BigNumeral extends StatelessWidget {
             fontSize: 21,
             fontWeight: FontWeight.w900,
             height: 1.0,
-            letterSpacing: -0.5,
+            letterSpacing: trackingFor(context, -0.5),
             color: dim ? skin.textSecondary : skin.accent,
           ),
           ),

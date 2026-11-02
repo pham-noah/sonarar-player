@@ -1,3 +1,4 @@
+import '../l10n/script.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -108,7 +109,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
           l10nOf(context).settingsMusicFolder,
           style: TextStyle(
             fontSize: 13,
-            letterSpacing: 2,
+            letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w900,
             color: skin.textPrimary,
           ),
@@ -158,9 +159,9 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       ),
                       child: Text(
                         _jumpLabel(root),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
-                          letterSpacing: 1.2,
+                          letterSpacing: trackingFor(context, 1.2),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -252,7 +253,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                         l10nOf(context).folderUse,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
-                          letterSpacing: 2,
+                          letterSpacing: trackingFor(context, 2),
                           fontWeight: FontWeight.w900,
                         ),
                       ),

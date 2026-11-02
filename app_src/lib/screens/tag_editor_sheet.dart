@@ -197,7 +197,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                   capsFor(context, tagFieldLabel(f)),
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
-                    letterSpacing: 3,
+                    letterSpacing: trackingFor(context, 3),
                     fontWeight: FontWeight.w800,
                     color: overridden ? skin.accent : skin.textSecondary,
                   ),

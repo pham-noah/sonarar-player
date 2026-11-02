@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -111,7 +112,7 @@ class PlaceMap extends StatelessWidget {
                       width: 84,
                       height: 46,
                       alignment: Alignment.topCenter,
-                      child: _placePin(p),
+                      child: _placePin(context, p),
                     ),
 
                 if (here != null)
@@ -142,7 +143,7 @@ class PlaceMap extends StatelessWidget {
     };
   }
 
-  Widget _placePin(NamedPlace place) {
+  Widget _placePin(BuildContext context, NamedPlace place) {
     final colour = _tint(place);
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -161,7 +162,7 @@ class PlaceMap extends StatelessWidget {
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
               fontWeight: FontWeight.w800,
-              letterSpacing: 0.5,
+              letterSpacing: trackingFor(context, 0.5),
               color: skin.textPrimary,
             ),
           ),
@@ -315,7 +316,7 @@ class SaveSpotButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: LayoutSpec.fontMicro,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
+                letterSpacing: trackingFor(context, 1.5),
                 color: _usable ? skin.onAccent : skin.textSecondary,
               ),
             ),

@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -84,7 +85,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         foregroundColor: const Color(0xFFE3B84E),
-        title: Text(l10nOf(context).probeTitle, style: TextStyle(fontSize: LayoutSpec.fontSmall, letterSpacing: 2)),
+        title: Text(l10nOf(context).probeTitle, style: TextStyle(fontSize: LayoutSpec.fontSmall, letterSpacing: trackingFor(context, 2))),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -88,7 +89,7 @@ class BondsScreen extends StatelessWidget {
                   l10nOf(context).bondsStartOver,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
-                    letterSpacing: 1.5,
+                    letterSpacing: trackingFor(context, 1.5),
                     fontWeight: FontWeight.w800,
                     color: skin.textSecondary,
                   ),
@@ -187,7 +188,7 @@ class BondsScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
-                      letterSpacing: 1,
+                      letterSpacing: trackingFor(context, 1),
                       color: held ? skin.accent : skin.textSecondary,
                     ),
                   ),

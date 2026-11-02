@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/script.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -488,7 +489,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       label: Text(l10nOf(context).ytImportPlaylist,
                           style: TextStyle(
                               fontSize: LayoutSpec.fontFloor,
-                              letterSpacing: 1.2,
+                              letterSpacing: trackingFor(context, 1.2),
                               fontWeight: FontWeight.w800,
                               color: skin.accent)),
                       style: OutlinedButton.styleFrom(
@@ -526,7 +527,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             child: Text(l10nOf(context).ytInLibrary,
                                 style: TextStyle(
                                   fontSize: 13,
-                                  letterSpacing: 1.4,
+                                  letterSpacing: trackingFor(context, 1.4),
                                   fontWeight: FontWeight.w900,
                                   color: skin.textSecondary,
                                 )),
@@ -542,7 +543,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             child: Text(l10nOf(context).ytOnYoutube,
                                 style: TextStyle(
                                   fontSize: 13,
-                                  letterSpacing: 1.4,
+                                  letterSpacing: trackingFor(context, 1.4),
                                   fontWeight: FontWeight.w900,
                                   color: skin.textSecondary,
                                 )),
@@ -633,7 +634,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                           style: TextStyle(
                             fontSize: LayoutSpec.fontMicro,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 0.6,
+                            letterSpacing: trackingFor(context, 0.6),
                             color: hit.isOfficialGiven(_vouched) ? skin.accent : skin.textSecondary,
                           ),
                         ),

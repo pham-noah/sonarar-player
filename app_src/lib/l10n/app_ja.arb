@@ -5,7 +5,6 @@
     "description": "The application name. Not translated."
   },
   "settingsTitle": "設定",
-  "settingsTabLook": "外観",
   "settingsTabPlayback": "再生",
   "settingsTabLibrary": "ライブラリ",
   "settingsTabSystem": "システム",
@@ -34,7 +33,7 @@
   "settingsFpsCounter": "FPS 表示",
   "settingsCheckForUpdates": "アップデートを確認",
   "settingsChecking": "確認中…",
-  "settingsCheckNow": "今すぐ確認",
+  "settingsCheckNow": "今すぐ更新を確認",
   "settingsRomaji": "ローマ字",
   "settingsDynamicByDefault": "既定で動的",
   "settingsKeepPlaying": "キューが終わっても再生を続ける",
@@ -936,5 +935,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalizeTabLook": "外観"
 }

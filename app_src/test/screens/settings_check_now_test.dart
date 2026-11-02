@@ -6,7 +6,7 @@ import 'package:sonarar/screens/settings_screen.dart';
 import 'package:sonarar/update/update_feed.dart';
 import 'package:sonarar/update/update_service.dart';
 
-/// The switch is about phoning home uninvited. A person pressing CHECK NOW is
+/// The switch is about phoning home uninvited. A person pressing CHECK FOR UPDATES NOW is
 /// invited, so it runs either way — and it has to say what it found, in place,
 /// instead of flashing a snackbar that leaves with the frame.
 void main() {
@@ -33,7 +33,7 @@ void main() {
     await tester.pumpAndSettle();
     // INTERFACE sits below the fold on a phone-sized surface.
     await tester.scrollUntilVisible(
-      find.text('CHECK NOW'),
+      find.text('CHECK FOR UPDATES NOW'),
       300,
       scrollable: find.byType(Scrollable).first,
     );
@@ -48,7 +48,7 @@ void main() {
     }));
     await openSystemTab(tester);
 
-    await tester.tap(find.text('CHECK NOW'));
+    await tester.tap(find.text('CHECK FOR UPDATES NOW'));
     await tester.pumpAndSettle();
 
     expect(calls, 1);
@@ -66,7 +66,7 @@ void main() {
         )));
     await openSystemTab(tester);
 
-    await tester.tap(find.text('CHECK NOW'));
+    await tester.tap(find.text('CHECK FOR UPDATES NOW'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('0.2.2+22 is available'), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
     await tester.pumpWidget(host(() async => null));
     await openSystemTab(tester);
 
-    await tester.tap(find.text('CHECK NOW'));
+    await tester.tap(find.text('CHECK FOR UPDATES NOW'));
     await tester.pumpAndSettle();
 
     expect(offeredUpdate.value, isNull);

@@ -47,7 +47,6 @@ void main() {
       state: state,
       section: section,
       showTitle: showTitle,
-      onOpenPersonalize: () {},
 
       prefs: const AppPrefs(),
       onPrefsChanged: (_) {},
@@ -58,7 +57,6 @@ void main() {
     }
 
     final labels = <String>[
-      'LOOK',
       'PLAYBACK',
       'CONTEXT',
       'LISTENING MEMORY',
@@ -85,13 +83,6 @@ void main() {
           reason: 'the behaviour page opens with ${top.toStringAsFixed(1)}px of '
               'empty space above the first section — that is the headroom. '
               'A section spacer left outside its gate shows up here');
-    });
-
-    testWidgets('P E R S O N A L I Z E', (tester) async {
-      final top = await firstSectionTop(tester, SettingsSection.customization);
-      expect(top, lessThanOrEqualTo(_maxFirstSectionTop),
-          reason: 'the personalize page opens with ${top.toStringAsFixed(1)}px '
-              'of empty space above the first section');
     });
 
     testWidgets('A L L', (tester) async {

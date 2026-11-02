@@ -15,7 +15,6 @@ import 'package:sonarar/theme/skin_policy.dart';
 
 /// Tabs run in this order, and each tab's sections run in this order.
 const _wanted = <String, List<String>>{
-  'LOOK': ['LOOK'],
   'PLAYBACK': ['PLAYBACK', 'CONTEXT', 'LISTENING MEMORY'],
   'LIBRARY': ['LIBRARY'],
   'SYSTEM': ['INTERFACE', 'IF SOMETHING IS WRONG'],
@@ -45,7 +44,6 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       home: Material(
         child: SettingsScreen(
-          onOpenPersonalize: () {},
           state: state,
           prefs: AppPrefs.initial,
           onPrefsChanged: (_) {},
@@ -59,7 +57,6 @@ void main() {
     // Tabs are addressed by key: PLAYBACK is both a tab and a section band, so
     // matching on the word alone finds two widgets.
     final keys = {
-      'LOOK': 'settings-tab-look',
       'PLAYBACK': 'settings-tab-playback',
       'LIBRARY': 'settings-tab-library',
       'SYSTEM': 'settings-tab-system',

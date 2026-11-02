@@ -217,6 +217,9 @@ abstract final class LayoutSpec {
 
   static const double fontFloor = 16.0;
 
+  /// Settings rows read a step below the floor: a column of them at 16 shouted.
+  static const double fontRow = 14.0;
+
   /// The smallest type in the app. Anything computed as `fontFloor - 5` or
   /// `- 6` landed at 10 or 11, under the floor it was supposed to respect; this
   /// is the number those mean.

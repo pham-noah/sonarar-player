@@ -2,6 +2,14 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.1 — 2026-11-02
+
+### Changed
+
+- **The check row is named for what it does** — "CHECK FOR UPDATES NOW", in all five
+  languages. It sat directly under the CHECK FOR UPDATES switch with a label that did
+  not say which of the two ran a check.
+
 ## 0.3.0 — 2026-11-02
 
 ### Added

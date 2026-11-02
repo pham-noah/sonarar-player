@@ -5,7 +5,6 @@
     "description": "The application name. Not translated."
   },
   "settingsTitle": "CÀI ĐẶT",
-  "settingsTabLook": "GIAO DIỆN",
   "settingsTabPlayback": "PHÁT NHẠC",
   "settingsTabLibrary": "THƯ VIỆN",
   "settingsTabSystem": "HỆ THỐNG",
@@ -34,7 +33,7 @@
   "settingsFpsCounter": "BỘ ĐẾM FPS",
   "settingsCheckForUpdates": "KIỂM TRA CẬP NHẬT",
   "settingsChecking": "ĐANG KIỂM TRA…",
-  "settingsCheckNow": "KIỂM TRA NGAY",
+  "settingsCheckNow": "KIỂM TRA CẬP NHẬT NGAY",
   "settingsRomaji": "ROMAJI",
   "settingsDynamicByDefault": "MẶC ĐỊNH ĐỘNG",
   "settingsKeepPlaying": "TIẾP TỤC PHÁT KHI HẾT HÀNG ĐỢI",
@@ -936,5 +935,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalizeTabLook": "NGOẠI HÌNH"
 }

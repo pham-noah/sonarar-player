@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class KitRow extends StatelessWidget {
     super.key,
     required this.skin,
     required this.label,
+    this.labelSize = LayoutSpec.fontFloor,
     this.note,
     this.icon,
     this.trailing,
@@ -24,6 +26,9 @@ class KitRow extends StatelessWidget {
 
   final Skin skin;
   final String label;
+
+  /// The row's own type size. Screens with many rows pass [LayoutSpec.fontRow].
+  final double labelSize;
   final String? note;
   final IconData? icon;
   final Widget? trailing;
@@ -71,7 +76,7 @@ class KitRow extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: LayoutSpec.fontFloor,
+                        fontSize: labelSize,
                         fontWeight: FontWeight.w800,
                         letterSpacing: trackingFor(context, 1),
                         color: skin.textPrimary,
@@ -84,7 +89,7 @@ class KitRow extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: LayoutSpec.fontFloor - 4,
+                          fontSize: math.max(LayoutSpec.fontMicro, labelSize - 4),
                           height: 1.35,
                           color: skin.textSecondary,
                         ),

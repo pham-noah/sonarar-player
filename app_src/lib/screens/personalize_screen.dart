@@ -1665,7 +1665,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     skin: skin,
     labels: {
       PersonalizeTab.themes: l10nOf(context).themeThemes,
-      PersonalizeTab.look: l10nOf(context).settingsTabLook,
+      PersonalizeTab.look: l10nOf(context).personalizeTabLook,
       PersonalizeTab.art: l10nOf(context).themeArt,
       PersonalizeTab.home: l10nOf(context).scopeHome,
     },

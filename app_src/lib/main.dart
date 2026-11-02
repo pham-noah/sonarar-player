@@ -2437,7 +2437,6 @@ class _HomeShellState extends State<HomeShell>
 
         showTitle: false,
         onOpenDiagnostics: _openDiagnosticsPage,
-        onOpenPersonalize: _openPersonalizePage,
         onDeletePreset: (p) {
           widget.state.setUserPresets([
             for (final x in widget.state.userPresets)
@@ -2870,7 +2869,6 @@ class _HomeShellState extends State<HomeShell>
         headerArt: _headerArt(skin),
         recent: _recentTracks,
         home: widget.state.personalization.home,
-        onOpenPersonalize: _openPersonalizePage,
         headerMark: _brandMark(),
         band: decode.bandNameOf(_ctxForHome?.band),
         continueTrack: _continueTrack,

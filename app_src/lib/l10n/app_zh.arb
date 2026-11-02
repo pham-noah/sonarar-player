@@ -5,7 +5,6 @@
     "description": "The application name. Not translated."
   },
   "settingsTitle": "设置",
-  "settingsTabLook": "外观",
   "settingsTabPlayback": "播放",
   "settingsTabLibrary": "曲库",
   "settingsTabSystem": "系统",
@@ -34,7 +33,7 @@
   "settingsFpsCounter": "帧率显示",
   "settingsCheckForUpdates": "检查更新",
   "settingsChecking": "检查中…",
-  "settingsCheckNow": "立即检查",
+  "settingsCheckNow": "立即检查更新",
   "settingsRomaji": "罗马字",
   "settingsDynamicByDefault": "默认动态",
   "settingsKeepPlaying": "队列结束后继续播放",
@@ -936,5 +935,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalizeTabLook": "外观"
 }

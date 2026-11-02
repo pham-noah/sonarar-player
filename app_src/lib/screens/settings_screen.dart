@@ -28,8 +28,6 @@ import '../update/update_service.dart';
 
 
 enum SettingsSection {
-  customization,
-
   behaviour,
 
   all,
@@ -41,7 +39,6 @@ class SettingsScreen extends StatefulWidget {
     this.section = SettingsSection.all,
     super.key,
     required this.state,
-    this.onOpenPersonalize,
     this.onOpenDiagnostics,
     this.onSavePreset,
     this.onDeletePreset,
@@ -77,9 +74,6 @@ class SettingsScreen extends StatefulWidget {
 
   final SettingsSection section;
 
-  bool get _showCustomization =>
-      section == SettingsSection.customization || section == SettingsSection.all;
-
   bool get _showBehaviour =>
       section == SettingsSection.behaviour || section == SettingsSection.all;
 
@@ -89,9 +83,6 @@ class SettingsScreen extends StatefulWidget {
   final WeatherCondition weather;
 
   final VoidCallback? onContextsChanged;
-
-  /// The one door to PERSONALIZE: Settings does not edit appearance.
-  final VoidCallback? onOpenPersonalize;
 
   final VoidCallback? onOpenDiagnostics;
 
@@ -105,7 +96,7 @@ class SettingsScreen extends StatefulWidget {
 
 /// Pages of Settings. The strip on screen is the same one Personalize wears,
 /// so the two screens read as one place with different rooms.
-enum SettingsTab { look, playback, library, system }
+enum SettingsTab { playback, library, system }
 
 class _SettingsScreenState extends State<SettingsScreen> {
   SettingsTab _tab = SettingsTab.playback;
@@ -158,6 +149,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             for (final entry in _languages.entries)
               KitRow(
+              labelSize: LayoutSpec.fontRow,
                 skin: skin,
                 label: entry.value,
                 dense: true,
@@ -237,7 +229,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             KitTabs<SettingsTab>(
               skin: skin,
               labels: {
-                SettingsTab.look: l10n.settingsTabLook,
                 SettingsTab.playback: l10n.settingsTabPlayback,
                 SettingsTab.library: l10n.settingsTabLibrary,
                 SettingsTab.system: l10n.settingsTabSystem,
@@ -250,42 +241,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             
             
-            if (_tab == SettingsTab.look &&
-                widget._showCustomization &&
-                widget.onOpenPersonalize != null) ...[
-              SectionBand(skin: skin, label: l10n.settingsTabLook),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: GestureDetector(
-                  onTap: widget.onOpenPersonalize,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-                    color: skin.panel,
-                    child: Row(
-                      children: [
-                        Icon(Icons.wallpaper_rounded, color: skin.accent),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(l10n.settingsPersonalize,
-                                  style: TextStyle(
-                                    fontSize: LayoutSpec.fontFloor,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: trackingFor(context, 1.2),
-                                    color: skin.textPrimary,
-                                  )),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.chevron_right_rounded, color: skin.textSecondary),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
             const SizedBox(height: 16),
             
             if (widget._showBehaviour && prefs != null && onPrefsChanged != null) ...[
@@ -382,6 +337,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   widget.onOpenMusicFolder != null) ...[
                 SectionBand(skin: skin, label: l10n.settingsTabLibrary),
                 KitRow(
+              labelSize: LayoutSpec.fontRow,
                   skin: skin,
                   label: l10n.settingsMusicFolder,
                   icon: Icons.folder_rounded,
@@ -404,6 +360,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (_tab == SettingsTab.system) ...[
               SectionBand(skin: skin, label: l10n.settingsInterface),
               KitRow(
+              labelSize: LayoutSpec.fontRow,
                 skin: skin,
                 label: l10n.settingsLanguage,
                 icon: Icons.translate_rounded,
@@ -424,6 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   (v) =>
                       onPrefsChanged!(prefs!.copyWith(checkForUpdates: v))),
               KitRow(
+              labelSize: LayoutSpec.fontRow,
                 skin: skin,
                 label: _checking ? l10n.settingsChecking : l10n.settingsCheckNow,
                 icon: Icons.refresh_rounded,
@@ -474,6 +432,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: SectionBand(skin: skin, label: l10n.settingsSomethingWrong),
               ),
               KitRow(
+              labelSize: LayoutSpec.fontRow,
                 skin: skin,
                 label: l10n.settingsDiagnostics,
                 icon: Icons.receipt_long_rounded,
@@ -503,6 +462,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Flutter collects every package's licence text; ours are in the
               // list above, so this page is the whole story in one place.
               KitRow(
+              labelSize: LayoutSpec.fontRow,
                 skin: skin,
                 label: l10n.settingsLicenses,
                 icon: Icons.article_rounded,
@@ -520,6 +480,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               if (widget.appVersion != null && widget.appVersion!.isNotEmpty)
                 KitRow(
+              labelSize: LayoutSpec.fontRow,
                   skin: skin,
                   label: capsFor(context, l10nOf(context).settingsVersion(widget.appVersion!)),
                   icon: Icons.info_outline_rounded,
@@ -566,6 +527,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     IconData? icon,
   }) =>
       KitRow(
+              labelSize: LayoutSpec.fontRow,
         skin: skin,
         label: label,
         icon: icon,
@@ -585,6 +547,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String url,
   }) =>
       KitRow(
+              labelSize: LayoutSpec.fontRow,
         skin: skin,
         label: label,
         icon: icon,
@@ -690,6 +653,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     IconData? icon,
   }) =>
       KitRow(
+              labelSize: LayoutSpec.fontRow,
         skin: skin,
         label: label,
         icon: icon,

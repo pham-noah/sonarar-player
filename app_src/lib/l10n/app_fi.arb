@@ -5,7 +5,6 @@
     "description": "The application name. Not translated."
   },
   "settingsTitle": "ASETUKSET",
-  "settingsTabLook": "ULKOASU",
   "settingsTabPlayback": "TOISTO",
   "settingsTabLibrary": "KIRJASTO",
   "settingsTabSystem": "JÄRJESTELMÄ",
@@ -34,7 +33,7 @@
   "settingsFpsCounter": "FPS-LASKURI",
   "settingsCheckForUpdates": "TARKISTA PÄIVITYKSET",
   "settingsChecking": "TARKISTETAAN…",
-  "settingsCheckNow": "TARKISTA NYT",
+  "settingsCheckNow": "TARKISTA PÄIVITYKSET NYT",
   "settingsRomaji": "ROMAJI",
   "settingsDynamicByDefault": "OLETUKSENA DYNAAMINEN",
   "settingsKeepPlaying": "JATKA SOITTOA JONON PÄÄTYTTYÄ",
@@ -936,5 +935,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalizeTabLook": "ULKOASU"
 }

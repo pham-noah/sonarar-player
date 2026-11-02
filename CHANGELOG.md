@@ -4,43 +4,35 @@ Release notes for versions before 0.3.0 live on the [GitHub releases page](../..
 
 ## 0.3.0 — 2026-11-02
 
-### Languages
+### Added
 
-English, Tiếng Việt, 日本語, 简体中文 and Suomi. Settings → SYSTEM → INTERFACE →
-Language; the sheet is built from `supportedLocales`, so a language is offered
-only when its strings exist. The change applies immediately, without a restart.
-590 strings, all five locales at parity, guarded by a test that fails on a
-missing or unused key.
+- **Five languages** — English, Tiếng Việt, Suomi, 简体中文 and 日本語. Chosen in
+  Settings → SYSTEM → INTERFACE → Language, or followed from the phone. The change
+  applies immediately, without a restart.
+- **Per-script typography** — capitals and letter-spacing follow the script being
+  drawn. Japanese, Chinese, Korean and Thai are neither upper-cased nor tracked.
+- **Every screen speaks** — 590 strings across the five locales: toasts, the deep
+  panels, rule explanations, places and weather, history, the compendium, library,
+  player, queue, imports, YouTube search, diagnostics and first run.
+- **Download errors** say which problem it is — a missing all-files grant, or a
+  folder that cannot be written — in the reader's language, in the queue toast, on
+  the YouTube row and in the playlist importer.
 
-Caps and letter-spacing are script decisions rather than per-string ones
-(`lib/l10n/script.dart`): caseless scripts keep their own case, and tracking
-widens for scripts that read badly when set tight.
+### Changed
 
-### The library starts empty
-
-A new install has no songs, and nothing in the app implies otherwise. The
-theme-gap machinery that classified albums by their catalogue number as Persona
-soundtracks is gone, along with the "no tracks for this theme" message it
-produced. Point the app at your own music and it fills.
-
-### No Persona, anywhere
-
-Identifiers, copy and assets that carried the old name are gone: `originOf`,
-`fitFor`, `LibraryFit`, `kWhimsicalAlbum`, the six `persona_*.json` theme files
-(now named after the skin they define), the preview rows that named real
-recordings, `prefs.personaLayer` → `bondsLayer`, and the whole `personar`
-namespace — seven MethodChannels and the Kotlin package, now
-`com.noah.sonarar`. Saved settings from earlier versions still load: the old
-`persona_layer` key and the old `persona` layout value are read, never written.
-
-### Download errors speak the language
-
-The download service no longer stores finished sentences. It reports a kind
-(`needsAllFiles`, `cannotWrite`) or a detail string, and the screens put it into
-the reader's language — the queue toast, the YouTube row, and the playlist
-importer.
+- **The library starts empty.** A new install holds no songs, and nothing in the
+  app reads as though music is missing.
+- **The playlist importer's status line** is one localized summary of added,
+  skipped and failed counts instead of an English sentence.
 
 ### Fixed
 
-The layout preview suite writes PNGs rather than comparing them; a failed write
-on a full volume is now reported as a disk error instead of a layout diff.
+- **The update check compared the wrong version.** The build reported 0.2.5 while
+  the package said 0.3.0, so a newer build could look like the one already
+  installed.
+- **The title normaliser cut short tokens out of track titles** — any title
+  containing a bare alphanumeric suffix such as "P5" lost it before matching
+  duplicates.
+- **A failed preview write no longer reads as a layout change.** The preview suite
+  writes images instead of comparing them, and a full disk is now reported as a
+  disk error.

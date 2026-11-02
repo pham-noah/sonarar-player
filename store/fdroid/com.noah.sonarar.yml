@@ -8,6 +8,12 @@ RepoType: git
 Repo: https://github.com/pham-noah/sonarar-player.git
 
 Builds:
+  - versionName: 0.3.0
+    versionCode: 30
+    commit: v0.3.0
+  - versionName: 0.2.5
+    versionCode: 25
+    commit: v0.2.5
   - versionName: 0.2.0
     versionCode: 20
     commit: v0.2.0
@@ -37,5 +43,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.2.0
-CurrentVersionCode: 20
+CurrentVersion: 0.3.0
+CurrentVersionCode: 30

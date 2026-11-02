@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 import '../art/art_focus.dart';
@@ -83,7 +84,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
 
                 if (entries != null) ...[
                   Text(
-                    '$heard of ${entries.length} heard',
+                    l10nOf(context).archiveHeard(heard, entries.length),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontSmall,
                       color: skin.textSecondary,

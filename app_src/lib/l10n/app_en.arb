@@ -1118,5 +1118,184 @@
         "type": "String"
       }
     }
+  },
+  "artFramedByYou": "Framed by you. Tap the art and drag it, or use the controls.",
+  "@artFramedByYou": {
+    "placeholders": {}
+  },
+  "artDefaultFraming": "At its default framing for this piece.",
+  "@artDefaultFraming": {
+    "placeholders": {}
+  },
+  "mapAtPlace": "At {name} · {metres}m from its nearest spot",
+  "@mapAtPlace": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapAccuracy": "±{metres}m",
+  "@mapAccuracy": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapNotInPlace": "Not in a saved place · nearest is {name}, {metres}m away",
+  "@mapNotInPlace": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapStandStill": "Stand still a moment — the position is only good to ±{metres}m",
+  "@mapStandStill": {
+    "placeholders": {
+      "metres": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLicence": "GPL-3.0 — made by Noah Pham. Source and the exact licence at github.com/pham-noah/sonarar-player",
+  "@settingsLicence": {
+    "placeholders": {}
+  },
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "historyInRain": "{count, plural, =1{1 in rain} other{{count} in rain}}",
+  "@historyInRain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyShareNew": "{percent}% new",
+  "@historyShareNew": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "historyNewAndKnown": "{fresh} new · {known} known",
+  "@historyNewAndKnown": {
+    "placeholders": {
+      "fresh": {
+        "type": "int"
+      },
+      "known": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveHeard": "{heard} of {total} heard",
+  "@archiveHeard": {
+    "placeholders": {
+      "heard": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homePlayWhatFitsNamed": "Play what fits now — {name}",
+  "@homePlayWhatFitsNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCardPlays": "{plays} plays · {songs} songs",
+  "@homeCardPlays": {
+    "placeholders": {
+      "plays": {
+        "type": "int"
+      },
+      "songs": {
+        "type": "int"
+      }
+    }
+  },
+  "homeCardSongs": "{count, plural, =1{1 song} other{{count} songs}}",
+  "@homeCardSongs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeRecapSongs": "{count, plural, =1{1 song you played} other{{count} songs you played}}",
+  "@homeRecapSongs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loopRepeats": "{count, plural, =1{Repeats 1 time, then fades.} other{Repeats {count} times, then fades.}}",
+  "@loopRepeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loopClear": "Clear {label}",
+  "@loopClear": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "panelFixTagsCount": "Fix the tags ({count})",
+  "@panelFixTagsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "panelDeleteDownloadNote": "Deletes the file from this phone. It is a download, so nothing else has it — the next library push will not bring it back.",
+  "@panelDeleteDownloadNote": {
+    "placeholders": {}
+  },
+  "downloadMoreWaiting": "{count} more waiting",
+  "@downloadMoreWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nisNote": "These never come up, whatever the context. Bringing one back takes it off this list — nothing was deleted.",
+  "@nisNote": {
+    "placeholders": {}
+  },
+  "nisNotInLibrary": "Not in the library ({id})",
+  "@nisNotInLibrary": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
   }
 }

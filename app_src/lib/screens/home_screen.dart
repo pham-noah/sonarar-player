@@ -218,7 +218,7 @@ class HomeScreen extends StatelessWidget {
                       child: Text(
                         nowMixName == null
                             ? l10nOf(context).homePlayWhatFits
-                            : 'PLAY WHAT FITS NOW — $nowMixName',
+                            : capsFor(context, l10nOf(context).homePlayWhatFitsNamed(nowMixName!)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -374,8 +374,8 @@ class HomeScreen extends StatelessWidget {
                   Text(
 
                     entry.plays > 0
-                        ? '${entry.plays} plays · ${p.length} songs'
-                        : '${p.length} ${p.length == 1 ? "song" : "songs"}',
+                        ? l10nOf(context).homeCardPlays(entry.plays, p.length)
+                        : l10nOf(context).homeCardSongs(p.length),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
@@ -560,8 +560,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '${recapTracks.length} '
-                    '${recapTracks.length == 1 ? "song" : "songs"} you played',
+                    l10nOf(context).homeRecapSongs(recapTracks.length),
                     style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
                   ),
                 ],

@@ -89,7 +89,9 @@ class LibraryManagementPanel extends StatelessWidget {
           _row(
             skin,
             Icons.edit_note_rounded,
-            fixCount == 0 ? l10nOf(context).panelFixTags : 'Fix the tags ($fixCount)',
+            fixCount == 0
+                ? l10nOf(context).panelFixTags
+                : l10nOf(context).panelFixTagsCount(fixCount),
             onFixTags,
           ),
           _row(
@@ -104,8 +106,7 @@ class LibraryManagementPanel extends StatelessWidget {
             Divider(color: skin.secondary(0.25)),
             _row(skin, Icons.delete_forever_rounded, l10nOf(context).panelRemoveDownload, onRemoveDownload),
             Text(
-              'Deletes the file from this phone. It is a download, so nothing else has it — the next library '
-              'push will not bring it back.',
+              l10nOf(context).panelDeleteDownloadNote,
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 color: skin.textSecondary,

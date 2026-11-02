@@ -1,6 +1,7 @@
 library;
 
 import '../l10n/script.dart';
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 import '../art/art_focus.dart';
@@ -223,8 +224,8 @@ class ArtFramingPanel extends StatelessWidget {
         Expanded(
           child: Text(
             customised
-                ? 'Framed by you. Tap the art and drag it, or use the controls.'
-                : 'At its default framing for this piece.',
+                ? l10nOf(context).artFramedByYou
+                : l10nOf(context).artDefaultFraming,
             style: TextStyle(
               fontSize: LayoutSpec.fontLabel,
               color: skin.textSecondary,

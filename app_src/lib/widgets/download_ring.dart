@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 import '../download/download_manager.dart';
@@ -41,7 +42,8 @@ class DownloadRing extends StatelessWidget {
             onTap: onTap,
             child: Tooltip(
               message: waiting > 0
-                  ? '${job.title} · ${job.progressText} · $waiting more waiting'
+                  ? '${job.title} · ${job.progressText} · '
+                      '${l10nOf(context).downloadMoreWaiting(waiting)}'
                   : '${job.title} · ${job.progressText}',
               child: SizedBox(
                 width: size,

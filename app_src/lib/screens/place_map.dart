@@ -230,9 +230,10 @@ class NearestReadout extends StatelessWidget {
     final inside = places.placeAt(pos.latitude, pos.longitude);
     if (inside != null) {
       final d = inside.distanceToNearest(pos.latitude, pos.longitude) ?? 0;
+      final l10n = l10nOf(context);
       return Text(
-        'At ${inside.name} · ${d.round()}m from its nearest spot'
-        '${pos.accuracyMetres != null ? ' · ±${pos.accuracyMetres!.round()}m' : ''}',
+        '${l10n.mapAtPlace(inside.name, d.round())}'
+        '${pos.accuracyMetres != null ? ' · ${l10n.mapAccuracy(pos.accuracyMetres!.round())}' : ''}',
         style: TextStyle(
           fontSize: LayoutSpec.fontMicro,
           fontWeight: FontWeight.w800,
@@ -261,8 +262,7 @@ class NearestReadout extends StatelessWidget {
     }
 
     return Text(
-      'Not in a saved place · nearest is $bestName, '
-      '${bestDistance.round()}m away',
+      l10nOf(context).mapNotInPlace(bestName, bestDistance.round()),
       style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
     );
   }
@@ -326,8 +326,8 @@ class SaveSpotButton extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
 
-            'Stand still a moment — the position is only good to '
-            '±${here?.accuracyMetres?.round() ?? '?'}m',
+            l10nOf(context).mapStandStill(
+                '${here?.accuracyMetres?.round() ?? '?'}'),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.textSecondary),
           ),

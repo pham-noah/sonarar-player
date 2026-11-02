@@ -162,7 +162,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             Text(
               _loopCount == 0
                   ? l10nOf(context).loopNoRepeat
-                  : 'Repeats $_loopCount time${_loopCount == 1 ? '' : 's'}, then fades.',
+                  : l10nOf(context).loopRepeats(_loopCount),
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textSecondary,
@@ -312,7 +312,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             IconButton(
               onPressed: onClear,
               icon: Icon(Icons.close_rounded, color: skin.textSecondary),
-              tooltip: 'Clear $label',
+              tooltip: l10nOf(context).loopClear(label),
             ),
         ],
       ),

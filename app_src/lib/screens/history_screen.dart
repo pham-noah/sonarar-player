@@ -328,7 +328,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      '${day.playedInTheRain} in rain',
+                      l10nOf(context).historyInRain(day.playedInTheRain),
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
                         color: skin.textSecondary,
@@ -473,7 +473,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Icon(Icons.auto_awesome_rounded, size: 14, color: skin.accent),
             const SizedBox(width: 7),
             Text(
-              '${(share * 100).round()}% new',
+              l10nOf(context).historyShareNew((share * 100).round()),
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 fontWeight: FontWeight.w900,
@@ -482,7 +482,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
             const Spacer(),
             Text(
-              '${d.newTracks} new · ${d.repeatTracks} known',
+              l10nOf(context).historyNewAndKnown(d.newTracks, d.repeatTracks),
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 color: skin.textSecondary,

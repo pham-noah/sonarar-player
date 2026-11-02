@@ -515,9 +515,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     builder: (_) => LicensePage(
                       applicationName: 'Sonarar',
                       applicationVersion: widget.appVersion,
-                      applicationLegalese:
-                          'GPL-3.0 — made by Noah Pham. Source and the exact '
-                          'licence at github.com/pham-noah/sonarar-player',
+                      applicationLegalese: l10nOf(context).settingsLicence,
                     ),
                   ),
                 ),
@@ -525,7 +523,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (widget.appVersion != null && widget.appVersion!.isNotEmpty)
                 KitRow(
                   skin: skin,
-                  label: 'VERSION ${widget.appVersion}',
+                  label: capsFor(context, l10nOf(context).settingsVersion(widget.appVersion!)),
                   icon: Icons.info_outline_rounded,
                   trailing: const SizedBox.shrink(),
                 ),

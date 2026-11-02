@@ -44,8 +44,7 @@ class NeverInShuffleScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'These never come up, whatever the context. Bringing one back '
-              'takes it off this list — nothing was deleted.',
+              l10nOf(context).nisNote,
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: skin.textSecondary,
@@ -108,7 +107,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                 children: [
                   Text(
 
-                    track?.title ?? 'Not in the library ($id)',
+                    track?.title ?? l10nOf(context).nisNotInLibrary(id),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

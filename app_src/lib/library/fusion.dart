@@ -7,18 +7,7 @@ enum FusionMode {
   append,
   intersection;
 
-  String get label => switch (this) {
-        FusionMode.interleave => 'Interleave',
-        FusionMode.append => 'One after the other',
-        FusionMode.intersection => 'Only what they share',
-      };
 
-  String get blurb => switch (this) {
-        FusionMode.interleave =>
-          'Alternates between the two, so the mix is genuinely both.',
-        FusionMode.append => 'All of the first, then all of the second.',
-        FusionMode.intersection => 'Just the tracks both lists have.',
-      };
 }
 
 List<String> fuseIds(

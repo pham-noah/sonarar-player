@@ -218,22 +218,6 @@ void main() {
     });
   });
 
-  group('library fit is exposed to the UI', () {
-    test('the real composition reports P4R and P5R as unserved', () {
-      final s = AppState()
-        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
-      s.attachLibrary(_lib());
-      expect(s.fitFor(s.skin.id).total, _lib().length);
-    });
-
-    test('a fit query on an empty library does not divide by zero', () {
-      final s = AppState()
-        ..applyOptionalFeatures(learn: true, autoSkin: true, variants: true);
-      s.attachLibrary(const []);
-      expect(s.fitFor(s.skin.id).isThin, isTrue);
-    });
-  });
-
   group('resume still works with the engine in the path', () {
     test('a resume overrides the engine ordering', () {
       final s = AppState()

@@ -893,5 +893,8 @@
   "panelDeleteDownloadNote": "Tämä poistaa tiedoston puhelimesta. Se on lataus, joten muuta kopiota ei ole — seuraava kirjaston siirto ei tuo sitä takaisin.",
   "downloadMoreWaiting": "{count} odottaa lisää",
   "nisNote": "Nämä eivät tule esiin koskaan, kontekstista riippumatta. Yhden palauttaminen poistaa sen tältä listalta — mitään ei poistettu.",
-  "nisNotInLibrary": "Ei kirjastossa ({id})"
+  "nisNotInLibrary": "Ei kirjastossa ({id})",
+  "personalizeSampleTitle": "Kappaleen esimerkki",
+  "personalizeSampleArtist": "Artistin esimerkki",
+  "personalizeSampleSecond": "Toinen rivi"
 }

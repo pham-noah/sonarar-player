@@ -24,7 +24,7 @@ class AppPrefs {
     this.weatherVariants = false,
     this.autoSkin = false,
     this.recordHistory = true,
-    this.personaLayer = false,
+    this.bondsLayer = false,
     this.cycleCharacterArt = true,
     this.showVisualiser = true,
     this.showRomaji = true,
@@ -90,7 +90,7 @@ class AppPrefs {
 
   final bool recordHistory;
 
-  final bool personaLayer;
+  final bool bondsLayer;
 
   final bool cycleCharacterArt;
 
@@ -169,7 +169,7 @@ class AppPrefs {
     bool? weatherVariants,
     bool? autoSkin,
     bool? recordHistory,
-    bool? personaLayer,
+    bool? bondsLayer,
     bool? cycleCharacterArt,
     bool? showVisualiser,
     bool? showRomaji,
@@ -215,7 +215,7 @@ class AppPrefs {
         weatherVariants: weatherVariants ?? this.weatherVariants,
         autoSkin: autoSkin ?? this.autoSkin,
         recordHistory: recordHistory ?? this.recordHistory,
-        personaLayer: personaLayer ?? this.personaLayer,
+        bondsLayer: bondsLayer ?? this.bondsLayer,
         cycleCharacterArt: cycleCharacterArt ?? this.cycleCharacterArt,
         showVisualiser: showVisualiser ?? this.showVisualiser,
         showRomaji: showRomaji ?? this.showRomaji,
@@ -269,7 +269,7 @@ class AppPrefs {
         'auto_skin': autoSkin,
         'record_history': recordHistory,
         'prefs_version': 2,
-        'persona_layer': personaLayer,
+        'bonds_layer': bondsLayer,
         'cycle_character_art': cycleCharacterArt,
         'show_visualiser': showVisualiser,
         'show_romaji': showRomaji,
@@ -324,7 +324,10 @@ class AppPrefs {
       recordHistory: raw['prefs_version'] == null
           ? true
           : (_bool(raw['record_history']) ?? initial.recordHistory),
-      personaLayer: _bool(raw['persona_layer']) ?? initial.personaLayer,
+      // Files written before the rename stored this as 'persona_layer'.
+      bondsLayer: _bool(raw['bonds_layer']) ??
+          _bool(raw['persona_layer']) ??
+          initial.bondsLayer,
 
       cycleCharacterArt:
           _bool(raw['cycle_character_art']) ?? initial.cycleCharacterArt,

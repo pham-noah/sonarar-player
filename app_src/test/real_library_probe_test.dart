@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/library/track.dart';
 import 'package:sonarar/rules/rules_engine.dart';
-import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/theme/skin_policy.dart';
 
 String _short(String s, [int n = 22]) =>
@@ -42,11 +41,6 @@ void main() {
       print('$name hr=$hour band=${band.name} out=${out.length} library=${lib.length}');
       // ignore: avoid_print
       print('   TOP5 ${out.take(5).map((t) => "${_short(t.title)}(${t.duration.inSeconds}s)").join(" | ")}');
-    }
-
-    for (final s in SkinId.values) {
-      // ignore: avoid_print
-      print('FIT ${s.name} -> ${engine.fitFor(lib, s).summary}');
     }
 
     for (final band in ContextBand.values) {

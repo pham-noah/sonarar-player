@@ -1,10 +1,7 @@
 library;
 
 import '../library/track.dart';
-import '../theme/skin.dart';
 import '../theme/skin_policy.dart';
-
-const String kWhimsicalAlbum = 'Weathering With You';
 
 enum Energy { low, medium, high }
 
@@ -153,14 +150,6 @@ class FeedbackMemory {
 class RulesEngine {
   const RulesEngine();
 
-  String originOf(Track t) {
-    final hay = '${t.album} ${t.artist}'.toLowerCase();
-    if (hay.contains('p5') || hay.contains('persona 5')) return 'P5R';
-    if (hay.contains('p4') || hay.contains('persona 4')) return 'P4R';
-    if (hay.contains('p3') || hay.contains('persona 3')) return 'P3R';
-    return 'other';
-  }
-
   bool admits(
     Track t,
     PlaylistContext ctx, {
@@ -182,54 +171,4 @@ class RulesEngine {
     Set<String> excluded = const {},
   }) {
     return select(library, ctx, excluded: excluded);
-  }
-
-  LibraryFit fitFor(List<Track> library, SkinId skin) {
-    final want = switch (skin) {
-      SkinId.amber => 'P4R',
-      SkinId.crimson => 'P5R',
-      SkinId.abyss => 'P3R',
-      SkinId.minimal || SkinId.mono || SkinId.bloom => null,
-    };
-    if (want == null) {
-      return LibraryFit(skin: skin, wanted: null, matching: 0, total: library.length);
-    }
-    final have = library.where((t) => originOf(t) == want).length;
-    return LibraryFit(
-      skin: skin,
-      wanted: want,
-      matching: have,
-      total: library.length,
-    );
-  }
-}
-
-class LibraryFit {
-  const LibraryFit({
-    required this.skin,
-    required this.wanted,
-    required this.matching,
-    required this.total,
-  });
-
-  final SkinId skin;
-
-  final String? wanted;
-  final int matching;
-  final int total;
-
-  static const double thinThreshold = 0.25;
-
-  bool get isThin => total == 0 || matching / total < thinThreshold;
-
-  String get summary {
-    if (matching == 0) {
-      return 'No $wanted music in the library — this theme plays the P3R tracks.';
-    }
-    if (isThin) {
-      return 'Only $matching of $total tracks are $wanted — this theme mostly '
-          'plays the P3R tracks.';
-    }
-    return '$matching of $total tracks are $wanted.';
-  }
-}
+  }}

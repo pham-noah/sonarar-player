@@ -893,5 +893,8 @@
   "panelDeleteDownloadNote": "この端末からファイルを削除します。ダウンロードしたものなので、他のコピーはありません — 次にライブラリを送っても戻ってきません。",
   "downloadMoreWaiting": "あと {count} 件待ち",
   "nisNote": "どんなコンテキストでも、これらは出てきません。1つ戻すとこのリストから外れます — 何も削除されていません。",
-  "nisNotInLibrary": "ライブラリにありません（{id}）"
+  "nisNotInLibrary": "ライブラリにありません（{id}）",
+  "personalizeSampleTitle": "曲名の見本",
+  "personalizeSampleArtist": "アーティストの見本",
+  "personalizeSampleSecond": "2 行目"
 }

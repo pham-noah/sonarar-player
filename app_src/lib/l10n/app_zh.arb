@@ -893,5 +893,8 @@
   "panelDeleteDownloadNote": "这会从手机删除文件。它是下载来的，别处没有副本 — 下次推送曲库也不会带回来。",
   "downloadMoreWaiting": "还有 {count} 个在等",
   "nisNote": "无论情境如何，这些都不会出现。放回一个就会从这张列表里拿掉 — 什么也没有被删除。",
-  "nisNotInLibrary": "不在曲库里（{id}）"
+  "nisNotInLibrary": "不在曲库里（{id}）",
+  "personalizeSampleTitle": "歌名示例",
+  "personalizeSampleArtist": "歌手示例",
+  "personalizeSampleSecond": "第二行"
 }

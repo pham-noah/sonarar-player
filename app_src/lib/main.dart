@@ -2312,7 +2312,7 @@ class _HomeShellState extends State<HomeShell>
         skin: skin,
         events: _lastEvents,
         tracks: _repo.tracks,
-        ranks: (_prefs.personaLayer ? BondsScreen(
+        ranks: (_prefs.bondsLayer ? BondsScreen(
           state: widget.state,
           events: _lastEvents,
           tracks: _repo.tracks,
@@ -3799,7 +3799,7 @@ children: [
         tracks: _repo.tracks,
         inline: true,
 
-        ranks: (_prefs.personaLayer ? BondsScreen(
+        ranks: (_prefs.bondsLayer ? BondsScreen(
           state: widget.state,
           events: _lastEvents,
           tracks: _repo.tracks,

@@ -1166,7 +1166,6 @@ class AppState extends ChangeNotifier {
     );
   }
 
-  LibraryFit fitFor(SkinId id) => _engine.fitFor(_library, id);
 
   void chooseSkinManually(SkinId id) {
     _pref = SkinPreference(manualSkin: id, setAt: DateTime.now());

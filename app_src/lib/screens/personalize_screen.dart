@@ -888,9 +888,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ],
                   ),
                   const Spacer(),
-                  row('Beneath the Mask', 'ATLUS Sound Team', lead: sonar),
+                  row(l10nOf(context).personalizeSampleTitle, l10nOf(context).personalizeSampleArtist,
+                      lead: sonar),
                   const SizedBox(height: 5),
-                  row('Layer Cake', 'Persona 5 · 3:12', alpha: 0.55),
+                  row(l10nOf(context).personalizeSampleSecond, '3:12', alpha: 0.55),
                   const SizedBox(height: 7),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(2),

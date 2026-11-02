@@ -373,9 +373,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _toggle(skin, l10n.settingsPlayHistory, prefs!.recordHistory,
                   icon: Icons.timeline_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(recordHistory: v))),
-              _toggle(skin, l10n.settingsBonds, prefs!.personaLayer,
+              _toggle(skin, l10n.settingsBonds, prefs!.bondsLayer,
                   icon: Icons.diversity_1_rounded,
-                  (v) => onPrefsChanged!(prefs!.copyWith(personaLayer: v))),
+                  (v) => onPrefsChanged!(prefs!.copyWith(bondsLayer: v))),
 
               ],
               if (_tab == SettingsTab.library &&

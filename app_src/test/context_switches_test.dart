@@ -88,7 +88,7 @@ void main() {
       expect(fresh.autoSkin, isFalse);
       expect(fresh.recordHistory, isTrue,
           reason: 'a history nobody records is a screen that cannot fill');
-      expect(fresh.personaLayer, isFalse);
+      expect(fresh.bondsLayer, isFalse);
     });
 
     test('and each one is remembered when switched on', () {
@@ -98,7 +98,7 @@ void main() {
         weatherVariants: true,
         autoSkin: true,
         recordHistory: true,
-        personaLayer: true,
+        bondsLayer: true,
       );
       final back = AppPrefs.fromJson(on.toJson());
       expect(back.placesEnabled, isTrue);
@@ -106,7 +106,7 @@ void main() {
       expect(back.weatherVariants, isTrue);
       expect(back.autoSkin, isTrue);
       expect(back.recordHistory, isTrue);
-      expect(back.personaLayer, isTrue);
+      expect(back.bondsLayer, isTrue);
     });
 
     test('an older settings file without the keys lands on off', () {

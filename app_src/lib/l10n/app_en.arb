@@ -1297,5 +1297,17 @@
         "type": "String"
       }
     }
+  },
+  "personalizeSampleTitle": "Beneath the Mask",
+  "@personalizeSampleTitle": {
+    "description": "Sample row in the Personalize preview"
+  },
+  "personalizeSampleArtist": "Sound Team",
+  "@personalizeSampleArtist": {
+    "description": "Sample row in the Personalize preview"
+  },
+  "personalizeSampleSecond": "Another Row",
+  "@personalizeSampleSecond": {
+    "description": "Sample row in the Personalize preview"
   }
 }

@@ -893,5 +893,8 @@
   "panelDeleteDownloadNote": "Thao tác này xoá tệp khỏi điện thoại. Đây là bản tải về nên không có bản nào khác — lần đẩy thư viện sau cũng không mang nó về.",
   "downloadMoreWaiting": "Còn {count} cái đang chờ",
   "nisNote": "Những bài này không bao giờ xuất hiện, bất kể bối cảnh. Đưa một bài về sẽ bỏ nó khỏi danh sách này — không có gì bị xoá.",
-  "nisNotInLibrary": "Không có trong thư viện ({id})"
+  "nisNotInLibrary": "Không có trong thư viện ({id})",
+  "personalizeSampleTitle": "Tên bài mẫu",
+  "personalizeSampleArtist": "Tên ca sĩ mẫu",
+  "personalizeSampleSecond": "Dòng thứ hai"
 }

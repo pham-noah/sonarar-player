@@ -3,7 +3,6 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/library/track.dart';
 import 'package:sonarar/rules/rules_engine.dart';
-import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/theme/skin_policy.dart';
 
 Track _t(
@@ -42,32 +41,6 @@ void main() {
         _t('b', seconds: 644),
       ];
       expect(engine.playlist(lib, _ctx()).length, 2);
-    });
-  });
-
-  group('origin detection', () {
-    test('a Persona 3 album is P3R', () {
-      expect(engine.originOf(_t('a', album: 'Persona 3 Reload')), 'P3R');
-    });
-
-    test('a Megamix vinyl album is P3R', () {
-      expect(
-        engine.originOf(_t('a', album: 'Persona 3 Reload Megamix Vinyl Soundtrack')),
-        'P3R');
-    });
-
-    test('an unrelated single is other', () {
-      expect(
-        engine.originOf(_t('a', artist: 'Dominic Fike', album: 'Apple Music Live')),
-        'other');
-    });
-
-    test('a P5 album would be P5R', () {
-      expect(engine.originOf(_t('a', album: 'Persona 5 Royal')), 'P5R');
-    });
-
-    test('a P4 album would be P4R', () {
-      expect(engine.originOf(_t('a', album: 'Persona 4 Golden')), 'P4R');
     });
   });
 
@@ -164,39 +137,6 @@ void main() {
       final lib = [_t('a', seconds: 30), _t('b', seconds: 40)];
       expect(engine.playlist(lib, _ctx()).length, 2,
           reason: 'the engine emptied a list of short tracks — the length filter is back');
-    });
-  });
-
-  group('honest reporting of library fit', () {
-    test('the real library cannot serve P5R and says so', () {
-      final lib = [for (var i = 0; i < 10; i++) _t('t$i')];
-      final fit = engine.fitFor(lib, SkinId.crimson);
-      expect(fit.isThin, isTrue);
-      expect(fit.summary, contains('No P5R music'));
-    });
-
-    test('a thin but non-zero match says "Only", not "No"', () {
-      final lib = [
-        _t('p5', album: 'Persona 5 Royal'),
-        for (var i = 0; i < 99; i++) _t('t$i'),
-      ];
-      final fit = engine.fitFor(lib, SkinId.crimson);
-      expect(fit.isThin, isTrue);
-      expect(fit.matching, 1);
-      expect(fit.summary, contains('Only 1 of 100'));
-      expect(fit.summary, isNot(contains('No P5R music')));
-    });
-
-    test('P3R is well served', () {
-      final lib = [for (var i = 0; i < 10; i++) _t('t$i')];
-      final fit = engine.fitFor(lib, SkinId.abyss);
-      expect(fit.isThin, isFalse);
-      expect(fit.matching, 10);
-    });
-
-    test('an empty library is reported as thin, not divided by zero', () {
-      final fit = engine.fitFor([], SkinId.abyss);
-      expect(fit.isThin, isTrue);
     });
   });
 

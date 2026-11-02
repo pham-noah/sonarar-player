@@ -2424,7 +2424,7 @@ class _HomeShellState extends State<HomeShell>
         musicRoot: _musicRoot,
         stateDirectory: _stores.directory,
         downloadDirectory: _backupDirectory,
-        appVersion: '$appVersionName+$appVersionCode',
+        appVersion: appVersionName,
         onOpenMusicFolder: _openMusicFolder,
         prefs: _prefs,
         onPrefsChanged: _setPrefs,
@@ -3075,7 +3075,7 @@ class _HomeShellState extends State<HomeShell>
         musicRoot: _musicRoot,
         stateDirectory: _stores.directory,
         downloadDirectory: _backupDirectory,
-        appVersion: '$appVersionName+$appVersionCode',
+        appVersion: appVersionName,
         onOpenMusicFolder: _openMusicFolder,
         onOpenDiagnostics: () => _openDoor(_InlineDoor.diagnostics),
         onSavePreset: (name) {

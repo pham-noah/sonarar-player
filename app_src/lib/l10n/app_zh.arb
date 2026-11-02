@@ -1,0 +1,836 @@
+{
+  "@@locale": "zh",
+  "appTitle": "Sonarar",
+  "@appTitle": {
+    "description": "The application name. Not translated."
+  },
+  "settingsTitle": "设置",
+  "settingsTabLook": "外观",
+  "settingsTabPlayback": "播放",
+  "settingsTabLibrary": "曲库",
+  "settingsTabSystem": "系统",
+  "settingsPersonalize": "个性化",
+  "settingsResumeOnOpen": "打开时继续播放",
+  "settingsFadeIn": "淡入",
+  "settingsOff": "关闭",
+  "settingsSleepLength": "睡眠时长",
+  "settingsWeatherEvery": "天气检查间隔",
+  "settingsOfficialOnly": "仅官方版本",
+  "settingsContext": "情境",
+  "settingsOffline": "离线",
+  "settingsTimeOfDay": "时段",
+  "settingsWeather": "天气",
+  "settingsDynamicMix": "动态混合",
+  "settingsPlaces": "地点",
+  "settingsWeatherVariants": "天气变体",
+  "settingsAutoTheme": "自动主题",
+  "settingsListeningMemory": "聆听记忆",
+  "settingsLearnFromSkips": "从跳过中学习",
+  "settingsPlayHistory": "播放记录",
+  "settingsBonds": "羁绊",
+  "settingsMusicFolder": "音乐文件夹",
+  "settingsInterface": "界面",
+  "settingsLanguage": "语言",
+  "settingsFpsCounter": "帧率显示",
+  "settingsCheckForUpdates": "检查更新",
+  "settingsChecking": "检查中…",
+  "settingsCheckNow": "立即检查",
+  "settingsRomaji": "罗马字",
+  "settingsDynamicByDefault": "默认动态",
+  "settingsKeepPlaying": "队列结束后继续播放",
+  "settingsSomethingWrong": "如果出了问题",
+  "settingsDiagnostics": "诊断",
+  "settingsAbout": "关于",
+  "settingsMadeBy": "作者 NOAH PHAM",
+  "settingsSourceOnGithub": "在 GITHUB 上查看源码",
+  "settingsLicenses": "开源许可",
+  "settingsSpeedGlide": "滑行",
+  "settingsSpeedSmooth": "平顺",
+  "settingsSpeedBalanced": "均衡",
+  "settingsSpeedBrisk": "轻快",
+  "settingsSpeedSnap": "干脆",
+  "settingsLanguageSystem": "系统",
+  "libraryCopyHint": "从电脑把音乐复制到那个文件夹，或在电脑上运行 tools/sync_library.py 推过来。",
+  "librarySearch": "搜索",
+  "libraryPinned": "已置顶",
+  "librarySeeded": "自动生成",
+  "libraryCustom": "我的",
+  "libraryTitle": "曲库",
+  "librarySearchHint": "标题、歌手、专辑、文件夹",
+  "libraryEmptyPlaylist": "这个播放列表是空的。\n长按曲目即可加入。",
+  "libraryEmptyArtist": "这位歌手还没有曲目。",
+  "libraryRecents": "最近",
+  "libraryUpdated": "已更新",
+  "libraryNoPlaylists": "还没有播放列表。",
+  "libraryNoArtists": "还没有歌手。",
+  "libraryNewPlaylist": "新建播放列表",
+  "libraryPlaylistName": "名称",
+  "libraryCancel": "取消",
+  "libraryCreate": "创建",
+  "libraryDerivedNote": "随应用附带——可以置顶或改名，但不能删除。",
+  "librarySeededNote": "由应用根据你的收听自动生成——可以置顶，但不能改名或删除。",
+  "libraryNoLibrary": "这台设备上找不到曲库。",
+  "libraryAddToQueue": "加入队列",
+  "libraryQueue": "队列",
+  "libraryRemove": "移除",
+  "libraryUnlike": "取消喜欢",
+  "libraryLike": "喜欢",
+  "playerNowPlaying": "正在播放",
+  "playerModeDynamicHint": "动态——队列根据情境自动填充。点击切换到固定。",
+  "playerModeFixedHint": "固定——只播放你排入的曲目。点击切换到动态。",
+  "playerModeDynamic": "动态——队列根据情境自动填充。",
+  "playerModeFixed": "固定——只播放你排入的曲目。",
+  "playerOtherRecordings": "其他录音版本",
+  "playerAlbumVersion": "专辑版本",
+  "playerNothingLoaded": "尚未载入",
+  "playerWhyThisSong": "为什么是这首",
+  "playerQueue": "队列",
+  "playerTrackTools": "这首曲目——书签、标签、循环点",
+  "playerStopAfterOn": "将在本曲后停止——点击取消",
+  "playerStopAfter": "在本曲后停止",
+  "playerSleepOn": "睡眠定时已开启——点击关闭",
+  "playerSleep": "睡眠定时",
+  "playerFileMissing": "设备上找不到该曲目的文件",
+  "playerWhyThisSongTitle": "为什么是这首",
+  "playerQueueTitle": "队列",
+  "playerAudio": "音频",
+  "playerThisTrack": "这首曲目",
+  "playerLoopPoints": "循环点",
+  "playerShrink": "收起",
+  "playerClose": "关闭",
+  "playerLyrics": "歌词",
+  "playerEndOfQueue": "队列结束",
+  "playerUpNext": "接下来",
+  "playerNothingAfter": "之后没有曲目了",
+  "bandMorning": "早晨",
+  "bandAfternoon": "下午",
+  "bandEvening": "傍晚",
+  "bandNight": "夜晚",
+  "bandNightHour": "深夜时分",
+  "historyNothingPlayed": "还没有播放过任何内容。",
+  "historyTopTracks": "听得最多",
+  "historyByTimeOfDay": "按时段",
+  "historyMonth": "月份",
+  "historyTimeListened": "收听时长",
+  "importSavedNotWritten": "已暂存，但未能写入磁盘。",
+  "importNoVideos": "无法从该播放列表读取视频——请检查链接，或列表可能为空。",
+  "importNewTitle": "新建播放列表",
+  "importEditTitle": "编辑播放列表",
+  "importLink": "播放列表链接",
+  "importSave": "保存",
+  "importNeedsName": "播放列表需要一个名称",
+  "importNoPlaylistId": "该链接中没有播放列表编号",
+  "importFilesStay": "已下载的文件会保留——此操作只会忘记来源。",
+  "importKeep": "保留",
+  "importListTitle": "已导入的播放列表",
+  "importHint": "导入一个，或者以后再更新——只会获取新歌。",
+  "importEmpty": "还没有播放列表。在下面添加一个。",
+  "importEditAction": "编辑名称和链接",
+  "importRemoveAction": "移除",
+  "importRowHint": "导入或更新——只会获取新歌",
+  "homePersonalize": "个性化",
+  "homeNow": "此刻",
+  "homeNoBand": "时段未知",
+  "homeElsewhere": "别处",
+  "homeNoFix": "没有定位",
+  "homePlayWhatFits": "播放此刻合适的",
+  "homeContinue": "继续收听",
+  "homeRediscover": "重新发现",
+  "homeJumpBackIn": "回到播放",
+  "homeQuickPick": "快速挑选",
+  "homeFromLibrary": "来自你的曲库",
+  "homeGenre": "曲风",
+  "homeRecentlyAdded": "最近添加",
+  "diagCheckingStorage": "正在检查存储权限…",
+  "diagAllFiles": "已授予所有文件权限",
+  "diagNoAllFiles": "没有所有文件权限——无法写入下载和封面",
+  "diagStorageUnknown": "存储权限未知",
+  "diagGrant": "授予",
+  "diagProblems": "问题",
+  "diagAll": "全部",
+  "diagClear": "清空",
+  "diagSpectrum": "频谱",
+  "diagCopy": "复制",
+  "diagNothingWrong": "本次运行没有出问题。",
+  "diagNothingLogged": "还没有记录。",
+  "folderInternal": "内部存储",
+  "folderMusic": "音乐",
+  "folderDownload": "下载",
+  "folderSdcard": "存储卡",
+  "folderHoldsManifest": "这个文件夹里有 library_manifest.json。",
+  "folderNoManifest": "这里没有 library_manifest.json——应用无法把它当作曲库读取。",
+  "folderUse": "使用此文件夹",
+  "firstRunPitch": "配合你所处的地方和当下的天气，播放合适的音乐。",
+  "firstRunLayout": "布局",
+  "firstRunColours": "配色",
+  "firstRunSongList": "歌曲列表",
+  "firstRunGrid": "网格",
+  "firstRunList": "列表",
+  "firstRunStart": "开始收听",
+  "firstRunLater": "这些之后都能在设置里更改。",
+  "shellCannotReadFolder": "Sonarar 无法读取你的音乐文件夹——请在 设置 → 应用 → Sonarar → 权限 中授予访问权限",
+  "greetingMorning": "早上好",
+  "greetingAfternoon": "下午好",
+  "greetingEvening": "晚上好",
+  "greetingNight": "晚安",
+  "greetingLateNight": "夜深了",
+  "homeNothingFits": "此刻没有合适的",
+  "shellThisMonth": "本月",
+  "shellOutputSettingsFailed": "无法打开输出设置",
+  "commonSaved": "已保存",
+  "shellNoForward": "无法继续前进",
+  "shellNoEarlierTab": "没有更早的标签页",
+  "shellAddToPlaylist": "加入播放列表",
+  "shellAlreadyInPlaylist": "已在这个播放列表里",
+  "shellAlreadyInQueue": "已在队列里",
+  "shellLibraryNotResolved": "曲库尚未解析完成",
+  "shellDeleteDownloadNote": "这会从手机删除文件。它是下载来的，别处没有副本。",
+  "shellRemoveFailed": "无法移除",
+  "shellDownloadedNotIndexed": "已下载——但还不在曲库清单里",
+  "shellAddedToLibrary": "已加入曲库",
+  "shellHistory": "历史",
+  "shellMusicFolderSaved": "音乐文件夹已保存",
+  "shellLater": "稍后",
+  "shellRestartNow": "立即重启",
+  "shellLibraryTools": "曲库工具",
+  "shellSaveQueue": "把队列保存为播放列表",
+  "shellQueueEmptyToSave": "队列是空的，没有可保存的内容。",
+  "shellShuffleAllowed": "已重新允许随机播放",
+  "shellPlaylistNothingPlayable": "那个播放列表里没有可播放的曲目",
+  "shellRemovedFromLiked": "已从喜欢的歌曲中移除",
+  "shellArchive": "档案库",
+  "shellStoppingAfter": "将在本曲后停止",
+  "shellStopAfterOff": "在本曲后停止——已关闭",
+  "commonBack": "返回",
+  "shellCatalogue": "曲目总表",
+  "shellRanks": "排行",
+  "personalizeMotion": "动效",
+  "personalizeTabAnimation": "标签页动画",
+  "personalizeSpectrum": "频谱",
+  "personalizeSmoothness": "平滑度",
+  "personalizeScale": "缩放",
+  "personalizeBase": "底图",
+  "personalizeTheme": "主题",
+  "personalizeAccent": "强调色",
+  "personalizeFromPhoto": "取自照片",
+  "personalizePictureFor": "图片用于",
+  "personalizeNoPicture": "没有图片",
+  "personalizeAddPicture": "添加图片",
+  "personalizeReframe": "调整取景",
+  "personalizeReframeNoFile": "调整取景——没有可移动的图片",
+  "effectBlur": "模糊",
+  "effectDim": "压暗",
+  "effectZoom": "放大",
+  "effectRotation": "旋转",
+  "effectTintAccent": "以强调色着色",
+  "effectPlayerUsesCover": "播放器使用封面",
+  "effectFollowTrack": "跟随曲目",
+  "effectSaturation": "饱和度",
+  "effectContrast": "对比度",
+  "effectVignette": "暗角",
+  "effectGrain": "颗粒",
+  "effectBurn": "灼烧",
+  "baseSolid": "单色",
+  "baseGradient": "渐变",
+  "baseSkin": "皮肤",
+  "baseFrom": "来源",
+  "baseColour": "颜色",
+  "baseDirection": "方向",
+  "artFolders": "图片文件夹",
+  "artRescan": "重新扫描",
+  "scopeHome": "主屏",
+  "scopeEverywhere": "所有位置",
+  "scopePlayer": "播放器",
+  "scopeFolder": "文件夹",
+  "scopePhoto": "照片",
+  "themeNew": "新主题",
+  "themeOverride": "覆盖",
+  "photoNoneFound": "在 Pictures、DCIM 或 Download 中没有找到图片。",
+  "photoUseEverywhere": "在所有位置使用",
+  "photoUseHere": "在此使用",
+  "photoPutInFolder": "放入文件夹",
+  "photoFolderHint": "文件夹可以放很多图片，并能跟随曲目切换。",
+  "photoNoneSkinPaints": "没有图片——由皮肤绘制这一层",
+  "themeNamePrompt": "为新主题命名",
+  "themeNoneToOverride": "当前没有使用主题，所以没有可覆盖的内容。",
+  "layoutSonar": "声呐",
+  "layoutGlass": "玻璃",
+  "themeWorn": "使用中",
+  "themeBuiltIn": "内置",
+  "themeThemes": "主题",
+  "themeArt": "图片",
+  "commonAdd": "添加",
+  "themeRename": "重命名",
+  "themeDelete": "删除",
+  "artFolderName": "文件夹名称",
+  "photoNoColour": "没有选择照片，所以没有取到颜色。",
+  "photoWeakColour": "那张照片里没有足够强烈的颜色可作强调色。",
+  "artOnlyPicture": "这是最后一张图片了——请删除整个文件夹。",
+  "photoNoAccess": "Sonarar 看不到你的照片——请在设置中允许访问照片。",
+  "recapTitle": "回顾",
+  "placesTappedPin": "已选定点击的位置——保存的是这里，不是你站的地方",
+  "placesAskingOsm": "正在向 OpenStreetMap 查询这里是什么…",
+  "placesOsmNothing": "OpenStreetMap 在这里没有标注。你自己命名吧。",
+  "placesOsmUnreachable": "无法连接到 OpenStreetMap——你自己命名吧。",
+  "placesSavedTitle": "已保存的地点",
+  "placesEmpty": "还没有保存任何地点。站到某处，保存一个点，再给它命名。",
+  "placesEditTitle": "编辑这个地点",
+  "placesNameTitle": "给这个点命名",
+  "placesNameYourself": "你自己命名吧——OpenStreetMap 没有在这里标注任何东西。",
+  "placesNameLabel": "地点名称",
+  "placesPlaylistHere": "这里的播放列表",
+  "placesOrTypeName": "或者输入名称",
+  "placesIcon": "图标",
+  "placesTapToClear": "再点一次即可清除",
+  "placesSize": "这个点有多大",
+  "placesSaveChanges": "保存更改",
+  "rulesTitle": "情境规则",
+  "rulesActingNow": "当前生效",
+  "rulesMoreImportant": "更重要",
+  "rulesLessImportant": "较不重要",
+  "rulesRemoveRule": "删除这条规则",
+  "rulesAdd": "添加规则",
+  "rulesNew": "新规则",
+  "rulesTimeBand": "当时段为",
+  "rulesManualContext": "并且手动情境为",
+  "rulesWeather": "并且天气",
+  "rulesPlayPlaylist": "播放这个播放列表",
+  "rulesThemeOptional": "并使用这个主题（可选）",
+  "rulesCreate": "创建规则",
+  "ytNetworkOff": "设置中已关闭网络，因此无法搜索或下载任何内容。",
+  "ytNetworkOffNoMatch": "设置中已关闭网络，而且曲库里没有匹配的内容。",
+  "ytSearchHint": "搜索 YouTube",
+  "ytSearchingOnline": "正在联网搜索——点击关闭",
+  "ytImportPlaylist": "导入播放列表",
+  "ytInLibrary": "已在曲库中",
+  "ytOnYoutube": "在 YouTube 上",
+  "ytOfficial": "官方",
+  "ytNotOfficial": "非官方",
+  "ytPlayThis": "播放这首",
+  "ytNotOfficialBadge": "不是官方发行",
+  "ytDownload": "下载到曲库",
+  "loopTitle": "循环",
+  "loopIntroEnds": "前奏结束",
+  "loopStart": "循环起点",
+  "loopEnd": "循环终点",
+  "loopRepeat": "重复",
+  "loopNoRepeat": "不重复。曲目会一直播放到结尾。",
+  "loopEndBeforeStart": "循环终点在循环起点之前——不会重复。",
+  "loopPause": "暂停",
+  "loopPlay": "播放",
+  "loopSaved": "已保存",
+  "loopSet": "设定",
+  "loopHint": "播放曲目，在听到循环处点击标记，然后保存。没有标记的曲目仍会照原样播放。",
+  "placesOsmSays": "OpenStreetMap 说这里是{kind}。你想怎么改都行。",
+  "@placesOsmSays": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "panelPlayNow": "立即播放",
+  "panelPlayNext": "下一首播放",
+  "panelNeverInShuffle": "不参与随机播放",
+  "panelFixTags": "修正标签",
+  "panelClearBookmark": "清除这个书签",
+  "panelBookmarkSpot": "标记这个位置",
+  "panelRemoveDownload": "移除下载",
+  "panelShuffleNote": "它仍留在曲库中——只是永远不会出现在播放列表里。",
+  "panelExcludedNote": "被排除的曲目仍留在曲库中；只是不会被放进播放列表。",
+  "lyricsNoWords": "这首没有歌词",
+  "lyricsFollowsSong": "跟随歌曲",
+  "lyricsNoTiming": "有歌词，没有时间轴",
+  "lyricsNotFound": "未找到",
+  "lyricsTapToLookUp": "点击查找",
+  "lyricsSync": "同步",
+  "lyricsNoneFound": "没有找到歌词",
+  "lyricsInstrumental": "没有歌词——这是纯音乐",
+  "probeStep1": "第 1 步——权限",
+  "probeStep1Note": "第一次尝试卡在“授予”这一步，所以问题就出在这里。",
+  "probeStep2": "第 2 步——音频会话",
+  "probeStep3": "第 3 步——可视化器",
+  "probeTitle": "频谱检测",
+  "probeRunning": "运行中…",
+  "probeRun": "运行检测",
+  "probeHint": "按下按钮，然后把这里显示的内容发给我。",
+  "outputBluetooth": "蓝牙",
+  "outputWired": "有线",
+  "outputUsbDac": "USB / DAC",
+  "outputHdmi": "HDMI",
+  "outputThisPhone": "本机",
+  "outputVolume": "音量",
+  "outputPlaysThrough": "经由",
+  "outputChange": "切换输出",
+  "compendiumNotHeard": "尚未听过",
+  "compendiumMostHeard": "听得最多",
+  "compendiumRecent": "最近",
+  "outputPickerHint": "打开手机的输出选择器",
+  "backupFailed": "备份失败。",
+  "backupNoneFound": "在“下载”中没有找到备份。请先做一份，或把一份移过去。",
+  "backupRestore": "恢复",
+  "backupRestoreFailed": "恢复失败。",
+  "backupYourData": "你的数据",
+  "backupNow": "立即备份",
+  "backupRestoreTitle": "恢复备份",
+  "tagsUndoAll": "全部撤销",
+  "tagsRevert": "还原",
+  "bondsNothingSinceReset": "上次重置之后没有播放过。",
+  "bondsNothingYet": "还没有播放过。",
+  "bondsStartOver": "重新开始排行",
+  "bondsNote": "关于这份羁绊的备注",
+  "bondsWhy": "为什么这首重要",
+  "artAdjust": "调整图片",
+  "commonReset": "重置",
+  "artRotate": "旋转",
+  "artFade": "渐隐",
+  "artMirrored": "已镜像",
+  "artMirror": "镜像",
+  "commonDone": "完成",
+  "personalizeFramingNote": "取景属于图片本身，所以这些滑块会在所有使用这张图的地方一起移动它。",
+  "personalizeNoFoldersNote": "还没有文件夹。一个文件夹是 Music/Sonarar/art 里的一组图片；每个地点使用其中一组。",
+  "personalizeTapPictureNote": "点击文件夹里的图片即可在此使用。上方的“跟随曲目”决定文件夹是否随歌曲切换。",
+  "personalizeNothingWorn": "当前没有使用任何主题，所以没有可覆盖的对象——请先在上面选一个，或新建一个。",
+  "personalizeReframeHint": "点击图片中重要的部分。无论屏幕是什么形状，它都会保持在中间。",
+  "rulesWhenMatches": "当情境符合其中任一条时，它的播放列表就成为队列。匹配到优先级最高的那条胜出；如果一条都不匹配，播放器仍像以往一样自行挑选。",
+  "rulesNone": "没有规则。这也是一种可用状态——情境仍会挑选音乐，只是没有额外要说的。",
+  "rulesJsonNote": "规则也可以作为纯 JSON 在 rules.json 中编辑，该文件与其他状态文件放在一起。应用会在启动时读取它。",
+  "rulesNothingMatches": "此刻没有任何规则匹配——播放器在自己挑选。这是正常情况。",
+  "rulesEveryCondition": "你选择的每个条件都必须同时成立。一个都不选，规则就会在每个时刻生效——把它们放在最下面。",
+  "backupRestoreNote": "这会用文件中的副本替换标签、喜欢、播放列表、主题和播放记录。当前状态会先另存到 pre-restore-… 中。",
+  "backupWhatItHolds": "标签、喜欢、播放列表、主题和播放记录——所有不在音频文件里的东西。保存到“下载”。",
+  "tagsNote": "修正播放器显示的内容。音频文件永远不会被修改，所以随时可以撤销。",
+  "tagsPersistNote": "保存的修正会在重启后保留，重新扫描曲库也不会覆盖它们。",
+  "shuffleTitle": "不参与随机播放",
+  "shuffleNoneExcluded": "没有排除任何曲目。曲库里的每一首都可能被选中。",
+  "shuffleAllowAll": "重新全部允许",
+  "shuffleAllow": "允许",
+  "libraryPlaylists": "播放列表",
+  "libraryArtists": "歌手",
+  "librarySongs": "歌曲",
+  "libraryLikedSongs": "喜欢的歌曲",
+  "mapAttribution": "地图数据 © OpenStreetMap 贡献者",
+  "mapNoPosition": "位置尚未确定",
+  "mapNoPlaces": "还没有保存的地点",
+  "mapSaveSpot": "保存这个点",
+  "mapWaitingFix": "正在等待良好定位",
+  "explainAtPlace": "你在{place}。",
+  "@explainAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainNearPlace": "你在{place}附近。",
+  "@explainNearPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainOnTheMove": "你在路上。",
+  "explainBetweenPlaces": "你在已保存的地点之间。",
+  "explainSnowingOutside": "外面在下雪。",
+  "explainRainingOutside": "外面在下雨。",
+  "explainEasierSleeping": "而且你想更容易入睡。",
+  "explainItsBand": "现在是{band}。",
+  "@explainItsBand": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHand": "这个情境是你手动设定的。",
+  "explainNoReading": "正在等待情境读数——还没有任何东西做出决定。",
+  "explainSleepArmed": "睡眠定时已就绪——在它停止前播放纯音乐。",
+  "explainSnowRule": "在下雪——雪天规则生效。",
+  "explainRainRule": "在下雨——雨天规则生效。",
+  "explainCommuteRules": "正在出行——通勤规则生效。",
+  "explainHereAt": "在{place}。",
+  "@explainHereAt": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHereApprox": "在{place}（大概位置）。",
+  "@explainHereApprox": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHandNamed": "这个情境是你手动设定的（{mode}）。",
+  "@explainSetByHandNamed": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHourPicked": "{band}——是钟点选出了它。",
+  "@explainHourPicked": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainRuleMatched": "规则“{id}”匹配：{summary}。",
+  "@explainRuleMatched": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "explainPlaylistLeads": "“{playlist}”里有 {count} 首——它们领跑，曲库其余跟着。",
+  "@explainPlaylistLeads": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainPlaylistQueue": "“{playlist}”成为队列（{count} 首）。",
+  "@explainPlaylistQueue": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainFixedQueue": "固定队列——按这个顺序播放。按“动态”可以让应用随情况变化重新排序。",
+  "explainNothingPlaying": "没有正在播放的内容。",
+  "explainKeptIt": "你在这个时段留下了它 {count, plural, =1{一次} other{{count} 次}}。",
+  "@explainKeptIt": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weatherClear": "晴",
+  "weatherOvercast": "阴",
+  "weatherFog": "雾",
+  "weatherDrizzle": "毛毛雨",
+  "weatherRain": "雨",
+  "weatherSnow": "雪",
+  "weatherStorm": "暴风雨",
+  "weatherNoReading": "无读数",
+  "ytNotOfficialSkipped": "不是官方发行，因此没有下载。在设置中关闭“仅官方版本”即可接受任何上传。",
+  "ytNetworkOnSearchOnly": "只把网络用于搜索（位置、时间和天气保持关闭）",
+  "personalizeAccentTaken": "强调色取自照片：{hex}",
+  "@personalizeAccentTaken": {
+    "placeholders": {
+      "hex": {
+        "type": "String"
+      }
+    }
+  },
+  "panelBookmarkedAt": "书签位于 {time}",
+  "@panelBookmarkedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "panelTagsCorrected": "标签已修正 · {count} {count, plural, =1{项} other{项}}",
+  "@panelTagsCorrected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "panelPlayed": "已播放 {count, plural, =1{一次} other{{count} 次}}",
+  "@panelPlayed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackNeverPlayed": "从未播放",
+  "panelShuffleAllowed": "允许参与随机播放",
+  "loopPointsLabel": "循环点",
+  "panelAddToPlaylist": "加入播放列表",
+  "panelPlayedThrough": "{count, plural, =1{播放过一次} other{播放过 {count} 次}} · 完整听完 {through} 次",
+  "@panelPlayedThrough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "through": {
+        "type": "int"
+      }
+    }
+  },
+  "backupNoState": "还没有可备份的状态。",
+  "backupNotOurs": "那个文件不是 Sonarar 的备份。",
+  "backupUnreadableJson": "那个文件不是可读的 JSON。",
+  "backupUnreadableFile": "无法读取备份：{detail}",
+  "@backupUnreadableFile": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNewerVersion": "那个备份由更新版本的 Sonarar 制作。",
+  "backupNoData": "那个备份里没有数据。",
+  "backupNothingRestored": "那个备份里没有任何内容能恢复。",
+  "backupWriteFailed": "无法写入备份：{detail}",
+  "@backupWriteFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreStopped": "恢复已停止：{detail}",
+  "@backupRestoreStopped": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "placesDuplicateName": "你已经有一个同名地点——保存会把这里作为它的又一个点，而不是新建一个。",
+  "placesNameHint": "例如：大学、健身房、家",
+  "settingsOnNewest": "你已是最新版本（{version}）。",
+  "@settingsOnNewest": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailable": "Sonarar {version} 已可用——“更新”在应用顶部。",
+  "@settingsUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "rulesNotOffered": "此处不提供：地点规则和“干燥”天气条件——应用把未知天气报作不下雨，所以干燥规则会在它最不知情的那天触发。",
+  "compendiumEmptyBody": "还没有听过任何内容，所以总表是空的。随着你收听，它会自己填满。",
+  "compendiumHeardCount": "已听 {heard} / {total}",
+  "@compendiumHeardCount": {
+    "placeholders": {
+      "heard": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placesSpotCount": "{count, plural, =1{1 个点} other{{count} 个点}}",
+  "@placesSpotCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusOneBuilding": "{metres} 米——大约一栋楼",
+  "@placesRadiusOneBuilding": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusNeighbours": "{metres} 米——大约一栋楼和它的邻居",
+  "@placesRadiusNeighbours": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusCampus": "{metres} 米——大约一个园区",
+  "@placesRadiusCampus": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesExistingNamesHint": "输入已有的名称（{names}），把这里作为那个地点的又一个点加入。",
+  "@placesExistingNamesHint": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeard": "上次 {when}",
+  "@compendiumLastHeard": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeardThrough": "上次 {when} · 完整听完 {count} 次",
+  "@compendiumLastHeardThrough": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compendiumNeverHeard": "从未听过",
+  "historyThinSample": "{count, plural, =1{目前只有 1 次播放} other{目前只有 {count} 次播放}}——下面的形状是真的，只是还小。",
+  "@historyThinSample": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDayStats": "{length} · {plays, plural, =1{1 次播放} other{{plays} 次播放}} · 完整听完 {completions} 次",
+  "@historyDayStats": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "plays": {
+        "type": "int"
+      },
+      "completions": {
+        "type": "int"
+      }
+    }
+  },
+  "commonToday": "今天",
+  "commonYesterday": "昨天",
+  "agoDays": "{count, plural, =1{1 天前} other{{count} 天前}}",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoMonths": "{count, plural, =1{一个月前} other{{count} 个月前}}",
+  "@agoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "poiGym": "健身房",
+  "poiLibrary": "图书馆",
+  "poiUniversity": "大学",
+  "poiCoworking": "共享办公",
+  "poiCafe": "咖啡馆",
+  "poiRestaurant": "餐厅",
+  "poiBar": "酒吧",
+  "poiMall": "商场",
+  "poiCinema": "电影院",
+  "poiTransit": "交通站",
+  "poiParking": "停车场",
+  "poiPlaceOfWorship": "宗教场所",
+  "poiHospital": "医院",
+  "poiPark": "公园",
+  "poiStadium": "体育场",
+  "poiPool": "游泳池",
+  "poiHotel": "酒店",
+  "moodFocus": "你在这里做事",
+  "moodEnergy": "你在这里活动",
+  "moodSocial": "你身边有人",
+  "moodTransit": "你只是路过",
+  "moodQuiet": "想安静一会儿",
+  "moodAny": "没有特别指定",
+  "ruleWhenTime": "时段是{band}",
+  "@ruleWhenTime": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenMode": "模式是{mode}",
+  "@ruleWhenMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenRaining": "在下雨",
+  "ruleWhenSnowing": "在下雪",
+  "ruleWhenAtPlace": "你在{place}",
+  "@ruleWhenAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenNoPlace": "你不在任何已保存的地点",
+  "ruleAlways": "总是",
+  "ruleJoinAnd": "{a} 并且 {b}",
+  "@ruleJoinAnd": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleThenTheme": "换主题",
+  "ruleThenPlaylist": "播放列表“{playlist}”",
+  "@ruleThenPlaylist": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleSentence": "{when} → {then}",
+  "@ruleSentence": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "then": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleBandDarkHour": "深夜时分",
+  "ruleBandMorning": "早晨",
+  "ruleBandAfternoon": "下午",
+  "ruleBandEvening": "傍晚",
+  "ruleBandNight": "夜晚",
+  "modeBattleLabel": "能量",
+  "modeNightHourLabel": "深夜时分",
+  "modeBattleBlurb": "一下点进这里最响、最带劲的音乐。“重新洗牌”会把队列从头排一遍。",
+  "modeNightHourBlurb": "凌晨那几个小时，随时都能进去。刺耳的短曲子是允许的——这个时段本来就该觉得不对劲。"
+}

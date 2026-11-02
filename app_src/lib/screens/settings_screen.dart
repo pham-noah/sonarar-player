@@ -127,7 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'en': 'ENGLISH',
     'vi': 'TIẾNG VIỆT',
     'ja': '日本語',
-    'zh-Hans': '简体中文',
+    'zh': '简体中文',
     'fi': 'SUOMI',
   };
 

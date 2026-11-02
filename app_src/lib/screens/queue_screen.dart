@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/l10n.dart';
 import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
@@ -93,7 +94,7 @@ class QueuePanel extends StatelessWidget {
                             Icon(Icons.playlist_add_rounded, size: 18, color: skin.accent),
                             const SizedBox(width: 8),
                             Text(
-                              'SAVE AS PLAYLIST',
+                              capsFor(context, l10nOf(context).queueSaveAsPlaylist),
                               style: TextStyle(
                                 fontSize: LayoutSpec.fontLabel,
                                 letterSpacing: trackingFor(context, 1.5),
@@ -116,7 +117,7 @@ class QueuePanel extends StatelessWidget {
                                   size: 18, color: skin.textSecondary),
                               const SizedBox(width: 8),
                               Text(
-                                'CLEAR UPCOMING',
+                                capsFor(context, l10nOf(context).queueClearUpcoming),
                                 style: TextStyle(
                                   fontSize: LayoutSpec.fontLabel,
                                   letterSpacing: trackingFor(context, 1.5),
@@ -140,7 +141,7 @@ class QueuePanel extends StatelessWidget {
                     horizontal: padding.resolve(TextDirection.ltr).left,
                   ),
                   child: Text(
-                    'Nothing queued yet.',
+                    l10nOf(context).queueNothingYet,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontBase,
                       color: skin.textSecondary,

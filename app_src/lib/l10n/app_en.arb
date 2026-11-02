@@ -832,5 +832,291 @@
   "modeBattleLabel": "Energy",
   "modeNightHourLabel": "Night Hour",
   "modeBattleBlurb": "One tap into the loudest, most driving music here. Reshuffle reorders the queue from scratch.",
-  "modeNightHourBlurb": "The small hours, enterable at any time. The jarring short pieces are allowed in — the hour is meant to feel wrong."
+  "modeNightHourBlurb": "The small hours, enterable at any time. The jarring short pieces are allowed in — the hour is meant to feel wrong.",
+  "commonRemoveQuestion": "REMOVE \"{name}\"?",
+  "@commonRemoveQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryPinPrompt": "Pin \"{name}\"",
+  "@libraryPinPrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryUnpinPrompt": "Unpin \"{name}\"",
+  "@libraryUnpinPrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryRenamePrompt": "Rename \"{name}\"",
+  "@libraryRenamePrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryDeletePrompt": "Delete \"{name}\"",
+  "@libraryDeletePrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryNothingMatches": "Nothing matches \"{query}\".",
+  "@libraryNothingMatches": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "shellAddedToPlaylistName": "Added to {name}",
+  "@shellAddedToPlaylistName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shellAlreadyInPlaylistName": "Already in {name}",
+  "@shellAlreadyInPlaylistName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shellTracksCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@shellTracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shellCreatedWithTrack": "Created \"{name}\" with {track}",
+  "@shellCreatedWithTrack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "shellPlayingFromTrack": "Playing from — {track}",
+  "@shellPlayingFromTrack": {
+    "placeholders": {
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "shellAddedToQueueTrack": "Added to queue — {track}",
+  "@shellAddedToQueueTrack": {
+    "placeholders": {
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "shellNextTrack": "{track} — next",
+  "@shellNextTrack": {
+    "placeholders": {
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "shellSavedWithTracks": "Saved \"{name}\" with {count, plural, =1{1 track} other{{count} tracks}}.",
+  "@shellSavedWithTracks": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shellClearedFromQueue": "{count, plural, =1{Cleared 1 from the queue} other{Cleared {count} from the queue}}",
+  "@shellClearedFromQueue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shellRemovedTrack": "Removed {track}",
+  "@shellRemovedTrack": {
+    "placeholders": {
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "shellNeverInShuffleNote": "Never in shuffle — the full list is in library tools",
+  "@shellNeverInShuffleNote": {
+    "placeholders": {}
+  },
+  "shellCreatedPlaylist": "Created \"{name}\"",
+  "@shellCreatedPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shellRemovedFromPlaylist": "Removed from {name}",
+  "@shellRemovedFromPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shellDeletedPlaylist": "Deleted \"{name}\"",
+  "@shellDeletedPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shellLikedTrack": "Liked — {track}",
+  "@shellLikedTrack": {
+    "placeholders": {
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "shellSavedPlaylist": "Saved \"{name}\"",
+  "@shellSavedPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "queueSaveAsPlaylist": "Save as playlist",
+  "@queueSaveAsPlaylist": {
+    "placeholders": {}
+  },
+  "queueClearUpcoming": "Clear upcoming",
+  "@queueClearUpcoming": {
+    "placeholders": {}
+  },
+  "queueNothingYet": "Nothing queued yet.",
+  "@queueNothingYet": {
+    "placeholders": {}
+  },
+  "whyNotThisOne": "Not this one?",
+  "@whyNotThisOne": {
+    "placeholders": {}
+  },
+  "playerQueueCount": "Queue ({count})",
+  "@playerQueueCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playerSleepIn": "Sleep in {text}",
+  "@playerSleepIn": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "playerPlayingFrom": "Playing from {name}",
+  "@playerPlayingFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updateDidNotFinish": "The download did not finish. Try again.",
+  "@updateDidNotFinish": {
+    "placeholders": {}
+  },
+  "updateIsOut": "{label} is out",
+  "@updateIsOut": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "updateDownloading": "Downloading {percent}%",
+  "@updateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "diagLogCopied": "Log copied ({count, plural, =1{1 line} other{{count} lines}}) — paste it anywhere",
+  "@diagLogCopied": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "personalizeAddedToFolder": "Added to {folder}.",
+  "@personalizeAddedToFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "personalizeSavedInto": "Saved into \"{name}\".",
+  "@personalizeSavedInto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personalizeDeleteFolderTitle": "DELETE {name}?",
+  "@personalizeDeleteFolderTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personalizeDeleteFolderNote": "The {count, plural, =1{1 picture} other{{count} pictures}} in this folder are deleted with it. Your originals on the phone are untouched.",
+  "@personalizeDeleteFolderNote": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesYouAreIn": "You are in {name} — tap to edit it",
+  "@placesYouAreIn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

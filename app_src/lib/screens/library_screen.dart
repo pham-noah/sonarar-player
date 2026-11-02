@@ -1215,21 +1215,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
                 title: Text(
                   widget.pinnedPlaylistIds.contains(p.id)
-                      ? 'Unpin "${p.name}"'
-                      : 'Pin "${p.name}"',
+                      ? l10nOf(ctx).libraryUnpinPrompt(p.name)
+                      : l10nOf(ctx).libraryPinPrompt(p.name),
                   style: TextStyle(color: widget.skin.textPrimary),
                 ),
                 onTap: () => Navigator.of(ctx).pop('pin'),
               ),
             if (owned)
               ListTile(
-                title: Text('Rename "${p.name}"',
+                title: Text(l10nOf(ctx).libraryRenamePrompt(p.name),
                     style: TextStyle(color: widget.skin.textPrimary)),
                 onTap: () => Navigator.of(ctx).pop('rename'),
               ),
             if (owned)
               ListTile(
-                title: Text('Delete "${p.name}"',
+                title: Text(l10nOf(ctx).libraryDeletePrompt(p.name),
                     style: TextStyle(color: widget.skin.accent)),
                 onTap: () => Navigator.of(ctx).pop('delete'),
               ),
@@ -1297,7 +1297,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (_visible.isEmpty) {
       return Center(
         child: Text(
-          'Nothing matches "$_filter".',
+          l10nOf(context).libraryNothingMatches(_filter),
           style: TextStyle(fontSize: LayoutSpec.fontBase, color: skin.textSecondary),
         ),
       );

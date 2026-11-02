@@ -471,7 +471,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: PresentationScope.uiSkin(context, widget.skin).background,
-        title: Text('REMOVE "${src.label}"?',
+        title: Text(capsFor(context, l10nOf(context).commonRemoveQuestion(src.label)),
             style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 color: PresentationScope.uiSkin(context, widget.skin).textPrimary)),

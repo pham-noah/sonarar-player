@@ -1042,7 +1042,9 @@ class PlayerScreen extends StatelessWidget {
                 _iconAction(
                   skin,
                   Icons.queue_music_rounded,
-                  upNextCount == 0 ? l10nOf(context).playerQueue : 'Queue ($upNextCount)',
+                  upNextCount == 0
+                      ? l10nOf(context).playerQueue
+                      : l10nOf(context).playerQueueCount(upNextCount),
                   () => onPanel?.call(
                     panel == PlayerPanel.queue
                         ? PlayerPanel.none
@@ -1110,7 +1112,7 @@ class PlayerScreen extends StatelessWidget {
                     Icon(Icons.bedtime_rounded, size: 14, color: skin.accent),
                     const SizedBox(width: 6),
                     Text(
-                      'SLEEP IN $text',
+                      capsFor(context, l10nOf(context).playerSleepIn(text)),
                       style: TextStyle(
                         fontSize: LayoutSpec.fontLabel,
                         letterSpacing: trackingFor(context, 2),
@@ -1479,7 +1481,7 @@ class PlayerScreen extends StatelessWidget {
       children: [
         if (showSourceLine && state.playingFrom != null) ...[
           Text(
-            'Playing from ${state.playingFrom}',
+            l10nOf(context).playerPlayingFrom(state.playingFrom!),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,

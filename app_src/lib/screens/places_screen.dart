@@ -315,7 +315,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        'You are in ${_hereInside!.name} — tap to edit it',
+                        l10nOf(context).placesYouAreIn(_hereInside!.name),
                         style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
                       ),
                     ),

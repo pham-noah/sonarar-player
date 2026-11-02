@@ -1477,7 +1477,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final done = widget.state.overrideActiveTheme();
     setState(() {});
     toast(context, done
-              ? 'Saved into "$name".'
+              ? l10nOf(context).personalizeSavedInto(name ?? '')
               : l10nOf(context).themeNoneToOverride);
   }
 
@@ -1895,7 +1895,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     widget.state.setArtBundles(scanArtBundles(root.path));
     if (!mounted) return;
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Added to ${folder.name}.')));
+        .showSnackBar(SnackBar(content: Text(l10nOf(context).personalizeAddedToFolder(folder.name))));
   }
 
   Future<String?> _askFolderName() async {
@@ -2000,7 +2000,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
         title: Text(
-          'DELETE ${capsFor(context, folder.name)}?',
+          capsFor(context, l10nOf(context).personalizeDeleteFolderTitle(folder.name)),
           style: TextStyle(
             color: _skin.textPrimary,
             fontSize: LayoutSpec.fontFloor,
@@ -2008,8 +2008,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           ),
         ),
         content: Text(
-          'The ${folder.set.pieces.length} pictures in this folder are deleted '
-          'with it. Your originals on the phone are untouched.',
+          l10nOf(context)
+              .personalizeDeleteFolderNote(folder.set.pieces.length),
           style: TextStyle(
             color: _skin.textSecondary,
             fontSize: LayoutSpec.fontFloor - 3,

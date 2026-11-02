@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 import '../core/app_state.dart';
 import '../library/track.dart';
 import '../rules/playlist_explanation.dart';
@@ -45,7 +47,7 @@ class WhyPanel extends StatelessWidget {
 
             if (onPick != null && alternatives.isNotEmpty) ...[
               const SizedBox(height: 30),
-              SectionLabel(skin: skin, text: 'NOT THIS ONE?'),
+              SectionLabel(skin: skin, text: capsFor(context, l10nOf(context).whyNotThisOne)),
               const SizedBox(height: 12),
               for (final t in alternatives) _alternative(skin, t),
             ],

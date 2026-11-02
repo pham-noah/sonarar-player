@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/l10n.dart';
 import '../l10n/script.dart';
 import 'dart:async';
 
@@ -92,7 +93,7 @@ class _UpdateBarState extends State<UpdateBar> {
     if (!mounted) return;
     setState(() => _progress = null);
     if (file == null) {
-      toast(context, 'The download did not finish. Try again.');
+      toast(context, l10nOf(context).updateDidNotFinish);
       return;
     }
     // The system installer still asks; this only offers the file to it.
@@ -119,8 +120,9 @@ class _UpdateBarState extends State<UpdateBar> {
               Expanded(
                 child: Text(
                   progress == null
-                      ? '${update.label} is out'
-                      : 'Downloading ${(progress * 100).round()}%',
+                      ? l10nOf(context).updateIsOut(update.label)
+                      : l10nOf(context)
+                          .updateDownloading((progress * 100).round()),
                   style: TextStyle(
                     color: skin.textPrimary,
                     fontSize: LayoutSpec.fontFloor,

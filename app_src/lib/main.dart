@@ -767,8 +767,8 @@ class _HomeShellState extends State<HomeShell>
             final added = widget.state.addTrackToPlaylist(playlist, t.id);
 
             _toast(added
-                ? 'Added to ${playlist.name}'
-                : 'Already in ${playlist.name}');
+                ? l10nOf(context).shellAddedToPlaylistName(playlist.name)
+                : l10nOf(context).shellAlreadyInPlaylistName(playlist.name));
           },
           onPlayPlaylist: null,
           onCreatePlaylist: (_) {},
@@ -2016,7 +2016,7 @@ class _HomeShellState extends State<HomeShell>
 
                   subtitle: Text(
                     p.contains(track.id) ? l10nOf(context).shellAlreadyInPlaylist
-                        : '${p.length} tracks',
+                        : l10nOf(context).shellTracksCount(p.length),
                     style: TextStyle(color: widget.state.skin.textSecondary),
                   ),
                   onTap: () => Navigator.of(ctx).pop(p.id),
@@ -2042,7 +2042,8 @@ class _HomeShellState extends State<HomeShell>
       final created = widget.state.createPlaylist(name);
       widget.state.addTrackToPlaylist(created, track.id);
       await _persistPlaylists();
-      _toast('Created "$name" with ${track.title}');
+      if (!mounted) return;
+      _toast(l10nOf(context).shellCreatedWithTrack(name, track.title));
       return;
     }
 
@@ -2077,12 +2078,14 @@ class _HomeShellState extends State<HomeShell>
       // ignore: discarded_futures
       unawaited(_ensurePlaybackPermissions());
       widget.state.playTrack(track);
-      _toast('Playing from — ${track.title}');
+      _toast(l10nOf(context).shellPlayingFromTrack(track.title));
       setState(() {});
       return;
     }
     final ok = widget.state.addToQueue(track);
-    _toast(ok ? 'Added to queue — ${track.title}' : l10nOf(context).shellAlreadyInQueue);
+    _toast(ok
+        ? l10nOf(context).shellAddedToQueueTrack(track.title)
+        : l10nOf(context).shellAlreadyInQueue);
   }
 
   void _toastUndo(String message, VoidCallback undo) {
@@ -2162,7 +2165,8 @@ class _HomeShellState extends State<HomeShell>
                   context: context,
                   builder: (d) => AlertDialog(
                     backgroundColor: widget.state.uiSkin.background,
-                    title: Text('REMOVE "${track.title}"?',
+                    title: Text(
+                        capsFor(context, l10nOf(context).commonRemoveQuestion(track.title)),
                         style: TextStyle(fontSize: LayoutSpec.fontSmall, color: widget.state.skin.textPrimary)),
                     content: Text(
                       l10nOf(context).shellDeleteDownloadNote,
@@ -2561,7 +2565,7 @@ class _HomeShellState extends State<HomeShell>
         playingTrackId: widget.state.currentTrack?.id,
         onSummon: (t) {
           widget.state.playNextInQueue(t);
-          _toast('${t.title} — next');
+          _toast(l10nOf(context).shellNextTrack(t.title));
         },
         onOpenBonds: _openBonds,
         onOpenRules: _openRules,
@@ -2668,7 +2672,7 @@ class _HomeShellState extends State<HomeShell>
       return;
     }
     _persistListsNow();
-    _toast('Saved "${made.name}" with ${made.length} tracks.');
+    _toast(l10nOf(context).shellSavedWithTracks(made.name, made.length));
   }
 
   Widget? _queueContent() => QueueBody(
@@ -2680,11 +2684,11 @@ class _HomeShellState extends State<HomeShell>
           final dropped = widget.state.clearUpcoming();
           if (dropped <= 0) return;
           unawaited(_rebuildEngineQueueKeepingPosition());
-          _toast('Cleared $dropped from the queue');
+          _toast(l10nOf(context).shellClearedFromQueue(dropped));
         },
 
         onRemoved: (track, at) {
-          _toastUndo('Removed ${track.title}', () {
+          _toastUndo(l10nOf(context).shellRemovedTrack(track.title), () {
             if (!widget.state.restoreToQueue(at, track)) return;
             unawaited(_rebuildEngineQueueKeepingPosition());
           });
@@ -2767,7 +2771,7 @@ class _HomeShellState extends State<HomeShell>
       onNeverInShuffle: () {
         widget.state.toggleExclusion(t.id);
         _toast(widget.state.exclusions.contains(t.id)
-            ? 'Never in shuffle — the full list is in ${'library tools'}'
+            ? l10nOf(context).shellNeverInShuffleNote
             : l10nOf(context).shellShuffleAllowed);
       },
     );
@@ -2977,21 +2981,21 @@ class _HomeShellState extends State<HomeShell>
           widget.state.createPlaylist(name);
           // ignore: discarded_futures
           _persistPlaylists();
-          _toast('Created "$name"');
+          _toast(l10nOf(context).shellCreatedPlaylist(name));
         },
 
         onRemoveFromPlaylist: (p, t) {
           widget.state.removeTrackFromPlaylist(p, t.id);
           // ignore: discarded_futures
           _persistPlaylists();
-          _toast('Removed from ${p.name}');
+          _toast(l10nOf(context).shellRemovedFromPlaylist(p.name));
         },
         onDeletePlaylist: (p) {
           final slot = widget.state.playlistIndexOf(p.id);
           widget.state.deletePlaylist(p.id);
           // ignore: discarded_futures
           _persistPlaylists();
-          _toastUndo('Deleted "${p.name}"', () {
+          _toastUndo(l10nOf(context).shellDeletedPlaylist(p.name), () {
             if (!widget.state.restorePlaylist(slot, p)) return;
             // ignore: discarded_futures
             _persistPlaylists();
@@ -3000,14 +3004,18 @@ class _HomeShellState extends State<HomeShell>
 
         onQueue: (t) {
           final ok = widget.state.addToQueue(t);
-          _toast(ok ? 'Added to queue — ${t.title}' : l10nOf(context).shellAlreadyInQueue);
+          _toast(ok
+              ? l10nOf(context).shellAddedToQueueTrack(t.title)
+              : l10nOf(context).shellAlreadyInQueue);
           return ok ? SwipeOutcome.queued : SwipeOutcome.alreadyQueued;
         },
 
         onLike: (t) {
           final liked = widget.state.toggleFavorite(t.id);
           _persistLists();
-          _toast(liked ? 'Liked — ${t.title}' : l10nOf(context).shellRemovedFromLiked);
+          _toast(liked
+              ? l10nOf(context).shellLikedTrack(t.title)
+              : l10nOf(context).shellRemovedFromLiked);
           return liked ? SwipeOutcome.liked : SwipeOutcome.unliked;
         },
 
@@ -3092,7 +3100,7 @@ class _HomeShellState extends State<HomeShell>
           // ignore: discarded_futures
           _persistPresets();
           setState(() {});
-          _toast('Saved "$name"');
+          _toast(l10nOf(context).shellSavedPlaylist(name));
         },
         onDeletePreset: (p) {
           widget.state.setUserPresets([
@@ -3822,7 +3830,7 @@ children: [
         playingTrackId: widget.state.currentTrack?.id,
         onSummon: (t) {
           widget.state.playNextInQueue(t);
-          _toast('${t.title} — next');
+          _toast(l10nOf(context).shellNextTrack(t.title));
         },
         onOpenBonds: _openBonds,
         onOpenRules: _openRules,
@@ -3846,7 +3854,7 @@ children: [
         inline: true,
         onSummon: (t) {
           widget.state.playNextInQueue(t);
-          _toast('${t.title} — next');
+          _toast(l10nOf(context).shellNextTrack(t.title));
         },
       ),
     ),

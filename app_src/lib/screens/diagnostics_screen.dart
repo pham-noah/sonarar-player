@@ -126,7 +126,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
     if (text.isEmpty) return;
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    toast(context, 'Log copied (${widget.log.length} lines) — paste it anywhere');
+    toast(context, l10nOf(context).diagLogCopied(widget.log.length));
   }
 
   @override

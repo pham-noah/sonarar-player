@@ -67,6 +67,9 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Sonar,
   Solid, Glass), and a visualiser driven by per-track spectrum data kept beside the audio in the
   library folder. Tracks without a spectrum file simply show no bars.
+- **Languages** — English, Tiếng Việt, Suomi, 简体中文 and 日本語, chosen in Settings or followed from
+  the phone. Caps and letter-spacing are per-script: a caseless script is neither shouted nor tracked.
+  Adding one is a single ARB file; [docs/localization.md](docs/localization.md) has the steps.
 - **Personalize** — THEMES first, then LOOK (layout, song list shape, accent, motion: tab
   animation and the visualiser with its smoothness, scale and shape), PICTURES (per-place pictures
   and framing, or a solid or gradient fill when there is no picture), ART (folders on disk) and

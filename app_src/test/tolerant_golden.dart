@@ -68,8 +68,18 @@ class TolerantGoldenFileComparator extends GoldenFileComparator {
   @override
   Future<void> update(Uri golden, Uint8List imageBytes) async {
     final File file = _fileFor(golden);
-    await file.parent.create(recursive: true);
-    await file.writeAsBytes(imageBytes);
+    try {
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(imageBytes);
+    } on FileSystemException catch (e) {
+      // A preview that cannot be written is not a layout failure, and the raw
+      // "golden test failed" a full disk produces sends you looking at pixels.
+      throw FlutterError(
+        'Could not write ${file.path}: ${e.osError?.message ?? e.message}. '
+        'This suite writes previews to disk, so a full or read-only volume '
+        'fails it — it says nothing about the layout.',
+      );
+    }
   }
 
   static Future<Uint8List?> _rgba(Uint8List bytes) async {

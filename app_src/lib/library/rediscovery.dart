@@ -14,13 +14,10 @@ const Duration kRediscoverAfter = Duration(days: 90);
 class RediscoveryList {
   const RediscoveryList({
     required this.playlist,
-    required this.blurb,
     required this.usable,
   });
 
   final Playlist playlist;
-
-  final String blurb;
 
   final bool usable;
 
@@ -67,10 +64,6 @@ List<RediscoveryList> buildRediscovery({
       name: 'Rediscover',
       trackIds: [for (final t in staleTracks) t.id],
     ),
-    blurb: anyHistory
-        ? 'Not played in ${staleAfter.inDays} days, or ever. '
-            '${staleTracks.length} of ${library.length} tracks.'
-        : 'Nothing has been played yet, so there is nothing to rediscover.',
     usable: rediscoverUsable,
   );
 
@@ -85,11 +78,6 @@ List<RediscoveryList> buildRediscovery({
       name: 'Loved, then forgotten',
       trackIds: [for (final t in forgottenTracks) t.id],
     ),
-    blurb: forgottenTracks.isEmpty
-        ? 'Nothing liked has gone quiet.'
-        : 'Liked, and not played in ${staleAfter.inDays} days '
-            'or more. ${forgottenTracks.length} track'
-            '${forgottenTracks.length == 1 ? '' : 's'}.',
     usable: forgottenTracks.isNotEmpty,
   );
 

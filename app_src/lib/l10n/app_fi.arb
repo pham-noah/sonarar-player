@@ -896,5 +896,45 @@
   "nisNotInLibrary": "Ei kirjastossa ({id})",
   "personalizeSampleTitle": "Kappaleen esimerkki",
   "personalizeSampleArtist": "Artistin esimerkki",
-  "personalizeSampleSecond": "Toinen rivi"
+  "personalizeSampleSecond": "Toinen rivi",
+  "downloadNeedsAllFiles": "Sonarar tarvitsee \"Kaikkien tiedostojen käyttöoikeuden\" tallentaakseen lataukset kirjastoon.",
+  "downloadCannotWrite": "Sonarar ei voi kirjoittaa musiikkikansioonsa. Salli \"Kaikkien tiedostojen käyttöoikeus\" ja yritä latausta uudelleen.",
+  "downloadFailed": "Lataus epäonnistui: {detail}",
+  "downloadFailedShort": "EPÄONNISTUI — {message}",
+  "importUnreadable": "Ei voitu lukea: {detail}",
+  "importSummary": "lisätty {added} · ohitettu {skipped} · epäonnistui {failed}",
+  "@downloadFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@downloadFailedShort": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@importUnreadable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@importSummary": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  }
 }

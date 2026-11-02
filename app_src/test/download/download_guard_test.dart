@@ -26,14 +26,16 @@ void main() {
     manager.enqueue(DownloadJob(videoId: 'abc123', title: 'a track'));
 
     // The queue runs on its own microtask chain; wait for it to settle.
-    for (var i = 0; i < 40 && manager.lastError == null; i++) {
+    for (var i = 0; i < 40 && manager.lastIssue == null; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 25));
     }
 
-    expect(manager.lastError, isNotNull);
-    expect(manager.lastError, contains('All files access'));
+    // A read-only folder is a write failure, not a permissions grant that is
+    // missing: the host has no all-files grant to withhold, so this path is the
+    // one the test can reach on every platform.
+    expect(manager.lastIssue?.kind, DownloadBlockKind.cannotWrite);
 
     manager.clearError();
-    expect(manager.lastError, isNull);
+    expect(manager.lastIssue, isNull);
   });
 }

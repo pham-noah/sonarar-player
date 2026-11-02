@@ -896,5 +896,45 @@
   "nisNotInLibrary": "不在曲库里（{id}）",
   "personalizeSampleTitle": "歌名示例",
   "personalizeSampleArtist": "歌手示例",
-  "personalizeSampleSecond": "第二行"
+  "personalizeSampleSecond": "第二行",
+  "downloadNeedsAllFiles": "Sonarar 需要“所有文件访问权限”才能把下载保存到音乐库。",
+  "downloadCannotWrite": "Sonarar 无法写入音乐文件夹。请允许“所有文件访问权限”，然后重新下载。",
+  "downloadFailed": "下载失败：{detail}",
+  "downloadFailedShort": "失败 — {message}",
+  "importUnreadable": "无法读取：{detail}",
+  "importSummary": "已添加 {added} · 已跳过 {skipped} · 失败 {failed}",
+  "@downloadFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@downloadFailedShort": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@importUnreadable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@importSummary": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  }
 }

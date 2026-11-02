@@ -2093,23 +2093,29 @@ class _HomeShellState extends State<HomeShell>
     toastUndo(context, widget.state.uiSkin, message, undo);
   }
 
-  String? _shownDownloadError;
+  DownloadIssue? _shownDownloadIssue;
 
   /// A download that dies on a blocked folder otherwise only reaches the log,
   /// which is the one place nobody looks. Say it, and offer the fix.
   void _onDownloadProblem() {
-    final error = _downloads.lastError;
+    final issue = _downloads.lastIssue;
     if (!mounted) return;
-    if (error == null) {
-      _shownDownloadError = null;
+    if (issue == null) {
+      _shownDownloadIssue = null;
       return;
     }
-    if (error == _shownDownloadError) return;
-    _shownDownloadError = error;
-    _toastAction(error, l10nOf(context).settingsTitle, () {
+    if (identical(issue, _shownDownloadIssue)) return;
+    _shownDownloadIssue = issue;
+    final l10n = l10nOf(context);
+    final message = switch (issue.kind) {
+      DownloadBlockKind.needsAllFiles => l10n.downloadNeedsAllFiles,
+      DownloadBlockKind.cannotWrite => l10n.downloadCannotWrite,
+      null => l10n.downloadFailed(issue.detail ?? ''),
+    };
+    _toastAction(message, l10n.settingsTitle, () {
       unawaited(StoragePermission.request());
       _downloads.clearError();
-      _shownDownloadError = null;
+      _shownDownloadIssue = null;
     });
   }
 

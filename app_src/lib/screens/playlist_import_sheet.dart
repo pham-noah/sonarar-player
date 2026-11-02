@@ -282,14 +282,16 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           if (mounted) {
             setState(() {
               _seen[key] = (_seen[key] ?? 0) + 1;
-              _status[key] = 'added $added · skipped $skipped · failed $failed';
+              _status[key] =
+                l10nOf(context).importSummary(added, skipped, failed);
             });
           }
           continue;
         }
         if (mounted) {
           setState(() {
-            _status[key] = 'added $added · skipped $skipped · failed $failed';
+            _status[key] =
+                l10nOf(context).importSummary(added, skipped, failed);
 
             _nowTitle[key] = v.title;
             _nowId[key] = v.id;
@@ -353,12 +355,21 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         }
       }
       if (mounted) {
-        setState(() => _status[key] = 'added $added · skipped $skipped · failed $failed');
+        setState(() => _status[key] =
+            l10nOf(context).importSummary(added, skipped, failed));
       }
     } on DownloadBlocked catch (e) {
-      if (mounted) setState(() => _status[key] = e.message);
+      if (mounted) {
+        final l10n = l10nOf(context);
+        setState(() => _status[key] = switch (e.kind) {
+              DownloadBlockKind.needsAllFiles => l10n.downloadNeedsAllFiles,
+              DownloadBlockKind.cannotWrite => l10n.downloadCannotWrite,
+            });
+      }
     } catch (e) {
-      if (mounted) setState(() => _status[key] = 'Could not read it: $e');
+      if (mounted) {
+        setState(() => _status[key] = l10nOf(context).importUnreadable('$e'));
+      }
     } finally {
       poller.cancel();
       if (mounted) {

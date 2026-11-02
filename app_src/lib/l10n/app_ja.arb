@@ -896,5 +896,45 @@
   "nisNotInLibrary": "ライブラリにありません（{id}）",
   "personalizeSampleTitle": "曲名の見本",
   "personalizeSampleArtist": "アーティストの見本",
-  "personalizeSampleSecond": "2 行目"
+  "personalizeSampleSecond": "2 行目",
+  "downloadNeedsAllFiles": "ダウンロードをライブラリに保存するには「すべてのファイルへのアクセス」が必要です。",
+  "downloadCannotWrite": "音楽フォルダーに書き込めません。「すべてのファイルへのアクセス」を許可して、もう一度ダウンロードしてください。",
+  "downloadFailed": "ダウンロードに失敗しました: {detail}",
+  "downloadFailedShort": "失敗 — {message}",
+  "importUnreadable": "読み取れませんでした: {detail}",
+  "importSummary": "追加 {added} · スキップ {skipped} · 失敗 {failed}",
+  "@downloadFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@downloadFailedShort": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@importUnreadable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@importSummary": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  }
 }

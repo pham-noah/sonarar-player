@@ -574,7 +574,15 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     final done = _libraryIds.contains(hit.id);
     // The reason a download died is kept per video, so the row can say it
     // instead of the ring simply stopping.
-    final failure = done || downloading ? null : widget.downloads.errorFor(hit.id);
+    final issue = done || downloading ? null : widget.downloads.errorFor(hit.id);
+    final l10n = l10nOf(context);
+    final failure = issue == null
+        ? null
+        : switch (issue.kind) {
+            DownloadBlockKind.needsAllFiles => l10n.downloadNeedsAllFiles,
+            DownloadBlockKind.cannotWrite => l10n.downloadCannotWrite,
+            null => l10n.downloadFailed(issue.detail ?? ''),
+          };
     return Container(
       // The row IS the progress. A separate queue above the list made the same
       // download appear twice and never where the user was looking.
@@ -664,7 +672,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   GestureDetector(
                     onTap: () => toast(context, failure),
                     child: Text(
-                      'FAILED — ${failure.replaceFirst('Download failed: ', '')}',
+                      l10n.downloadFailedShort(failure),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

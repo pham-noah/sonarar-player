@@ -1309,5 +1309,45 @@
   "personalizeSampleSecond": "Another Row",
   "@personalizeSampleSecond": {
     "description": "Sample row in the Personalize preview"
+  },
+  "downloadNeedsAllFiles": "Sonarar needs \"All files access\" to save downloads into the library.",
+  "downloadCannotWrite": "Sonarar cannot write to its music folder. Allow \"All files access\", then try the download again.",
+  "downloadFailed": "Download failed: {detail}",
+  "downloadFailedShort": "FAILED — {message}",
+  "importUnreadable": "Could not read it: {detail}",
+  "importSummary": "added {added} · skipped {skipped} · failed {failed}",
+  "@downloadFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@downloadFailedShort": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@importUnreadable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@importSummary": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
   }
 }

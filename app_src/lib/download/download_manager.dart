@@ -40,13 +40,27 @@ class DownloadJob {
 
 /// Thrown when the library folder exists but cannot be written to, which on
 /// Android means the all-files grant is missing rather than the disk being full.
-class DownloadBlocked implements Exception {
-  const DownloadBlocked(this.message);
+/// Why a download could not start. The service says which, the UI says it in the
+/// reader's language; a sentence built here could only ever be English.
+enum DownloadBlockKind { needsAllFiles, cannotWrite }
 
-  final String message;
+class DownloadBlocked implements Exception {
+  const DownloadBlocked(this.kind);
+
+  final DownloadBlockKind kind;
 
   @override
-  String toString() => message;
+  String toString() => 'DownloadBlocked(${kind.name})';
+}
+
+/// A failed download, in the same spirit: a kind for the cases the UI can explain,
+/// a detail string for the ones it can only report.
+class DownloadIssue {
+  const DownloadIssue.blocked(this.kind) : detail = null;
+  const DownloadIssue.failed(this.detail) : kind = null;
+
+  final DownloadBlockKind? kind;
+  final String? detail;
 }
 
 /// Both download routes — the queue and the playlist importer — must clear this
@@ -59,9 +73,7 @@ Future<void> ensureDownloadReady(Directory dir, {DiagLog? log}) async {
       : StorageAccess.granted;
   log?.add('DL storage=$access');
   if (access != StorageAccess.granted) {
-    throw const DownloadBlocked(
-      'Sonarar needs "All files access" to save downloads into the library.',
-    );
+    throw const DownloadBlocked(DownloadBlockKind.needsAllFiles);
   }
 
   try {
@@ -70,10 +82,7 @@ Future<void> ensureDownloadReady(Directory dir, {DiagLog? log}) async {
     await probe.writeAsString('', flush: true);
     await probe.delete();
   } on FileSystemException {
-    throw const DownloadBlocked(
-      'Sonarar cannot write to its music folder. Allow "All files access", '
-      'then try the download again.',
-    );
+    throw const DownloadBlocked(DownloadBlockKind.cannotWrite);
   }
 }
 
@@ -105,14 +114,14 @@ class DownloadManager extends ChangeNotifier {
     return d;
   }
 
-  String? _lastError;
+  DownloadIssue? _lastIssue;
 
   /// Set when a download fails, and cleared once the UI has shown it.
-  String? get lastError => _lastError;
+  DownloadIssue? get lastIssue => _lastIssue;
 
   void clearError() {
-    if (_lastError == null) return;
-    _lastError = null;
+    if (_lastIssue == null) return;
+    _lastIssue = null;
     notifyListeners();
   }
 
@@ -135,9 +144,9 @@ class DownloadManager extends ChangeNotifier {
 
   /// Why this video's last download failed, if it did. A row can only say so
   /// if the reason is kept per video instead of in one global banner.
-  final Map<String, String> _errors = {};
+  final Map<String, DownloadIssue> _errors = {};
 
-  String? errorFor(String videoId) => _errors[videoId];
+  DownloadIssue? errorFor(String videoId) => _errors[videoId];
 
   void clearErrorFor(String videoId) => _errors.remove(videoId);
 
@@ -194,12 +203,12 @@ class DownloadManager extends ChangeNotifier {
           await _runOne(_current!);
         } catch (e, st) {
           debugPrint('[Sonarar][DL] failed ${_current?.videoId}: $e\n$st');
-          final reason = e is DownloadBlocked
-              ? e.message
-              : 'Download failed: ${_short(e)}';
-          _lastError = reason;
+          final issue = e is DownloadBlocked
+              ? DownloadIssue.blocked(e.kind)
+              : DownloadIssue.failed(_short(e));
+          _lastIssue = issue;
           final id = _current?.videoId;
-          if (id != null) _errors[id] = reason;
+          if (id != null) _errors[id] = issue;
           notifyListeners();
         } finally {
           _poll?.cancel();

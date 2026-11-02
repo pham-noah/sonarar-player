@@ -896,5 +896,45 @@
   "nisNotInLibrary": "Không có trong thư viện ({id})",
   "personalizeSampleTitle": "Tên bài mẫu",
   "personalizeSampleArtist": "Tên ca sĩ mẫu",
-  "personalizeSampleSecond": "Dòng thứ hai"
+  "personalizeSampleSecond": "Dòng thứ hai",
+  "downloadNeedsAllFiles": "Sonarar cần \"Truy cập mọi tệp\" để lưu bản tải vào thư viện.",
+  "downloadCannotWrite": "Sonarar không ghi được vào thư mục nhạc. Hãy cho phép \"Truy cập mọi tệp\" rồi tải lại.",
+  "downloadFailed": "Tải thất bại: {detail}",
+  "downloadFailedShort": "THẤT BẠI — {message}",
+  "importUnreadable": "Không đọc được: {detail}",
+  "importSummary": "đã thêm {added} · bỏ qua {skipped} · lỗi {failed}",
+  "@downloadFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@downloadFailedShort": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@importUnreadable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@importSummary": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,0 +1,836 @@
+{
+  "@@locale": "ja",
+  "appTitle": "Sonarar",
+  "@appTitle": {
+    "description": "The application name. Not translated."
+  },
+  "settingsTitle": "設定",
+  "settingsTabLook": "外観",
+  "settingsTabPlayback": "再生",
+  "settingsTabLibrary": "ライブラリ",
+  "settingsTabSystem": "システム",
+  "settingsPersonalize": "カスタマイズ",
+  "settingsResumeOnOpen": "起動時に続きから再生",
+  "settingsFadeIn": "フェードイン",
+  "settingsOff": "オフ",
+  "settingsSleepLength": "スリープ時間",
+  "settingsWeatherEvery": "天気の確認間隔",
+  "settingsOfficialOnly": "公式のみ",
+  "settingsContext": "コンテキスト",
+  "settingsOffline": "オフライン",
+  "settingsTimeOfDay": "時間帯",
+  "settingsWeather": "天気",
+  "settingsDynamicMix": "動的ミックス",
+  "settingsPlaces": "場所",
+  "settingsWeatherVariants": "天気バリエーション",
+  "settingsAutoTheme": "テーマ自動切替",
+  "settingsListeningMemory": "視聴の記憶",
+  "settingsLearnFromSkips": "スキップから学ぶ",
+  "settingsPlayHistory": "再生履歴",
+  "settingsBonds": "絆",
+  "settingsMusicFolder": "音楽フォルダ",
+  "settingsInterface": "インターフェース",
+  "settingsLanguage": "言語",
+  "settingsFpsCounter": "FPS 表示",
+  "settingsCheckForUpdates": "アップデートを確認",
+  "settingsChecking": "確認中…",
+  "settingsCheckNow": "今すぐ確認",
+  "settingsRomaji": "ローマ字",
+  "settingsDynamicByDefault": "既定で動的",
+  "settingsKeepPlaying": "キューが終わっても再生を続ける",
+  "settingsSomethingWrong": "不具合があるとき",
+  "settingsDiagnostics": "診断",
+  "settingsAbout": "このアプリについて",
+  "settingsMadeBy": "制作 NOAH PHAM",
+  "settingsSourceOnGithub": "GITHUB のソース",
+  "settingsLicenses": "ライセンス",
+  "settingsSpeedGlide": "滑らか",
+  "settingsSpeedSmooth": "なめらか",
+  "settingsSpeedBalanced": "標準",
+  "settingsSpeedBrisk": "きびきび",
+  "settingsSpeedSnap": "即座",
+  "settingsLanguageSystem": "システム",
+  "libraryCopyHint": "パソコンからそのフォルダに音楽をコピーするか、パソコンで tools/sync_library.py を実行して送り込んでください。",
+  "librarySearch": "検索",
+  "libraryPinned": "ピン留め",
+  "librarySeeded": "自動生成",
+  "libraryCustom": "自作",
+  "libraryTitle": "ライブラリ",
+  "librarySearchHint": "曲名、アーティスト、アルバム、フォルダ",
+  "libraryEmptyPlaylist": "このプレイリストは空です。\n曲を長押しすると追加できます。",
+  "libraryEmptyArtist": "このアーティストの曲はありません。",
+  "libraryRecents": "最近",
+  "libraryUpdated": "更新済み",
+  "libraryNoPlaylists": "プレイリストはまだありません。",
+  "libraryNoArtists": "アーティストはまだありません。",
+  "libraryNewPlaylist": "新しいプレイリスト",
+  "libraryPlaylistName": "名前",
+  "libraryCancel": "キャンセル",
+  "libraryCreate": "作成",
+  "libraryDerivedNote": "アプリに同梱されています。ピン留めや名前の変更はできますが、削除はできません。",
+  "librarySeededNote": "聴いた内容からアプリが作ります。ピン留めはできますが、名前の変更や削除はできません。",
+  "libraryNoLibrary": "この端末にライブラリが見つかりません。",
+  "libraryAddToQueue": "キューに追加",
+  "libraryQueue": "キュー",
+  "libraryRemove": "削除",
+  "libraryUnlike": "お気に入りから外す",
+  "libraryLike": "お気に入り",
+  "playerNowPlaying": "再生中",
+  "playerModeDynamicHint": "動的 — キューはコンテキストから自動で埋まります。タップで固定に切り替え。",
+  "playerModeFixedHint": "固定 — 自分で並べた曲だけを再生します。タップで動的に切り替え。",
+  "playerModeDynamic": "動的 — キューはコンテキストから自動で埋まります。",
+  "playerModeFixed": "固定 — 自分で並べた曲だけを再生します。",
+  "playerOtherRecordings": "他の音源",
+  "playerAlbumVersion": "アルバム版",
+  "playerNothingLoaded": "何も読み込まれていません",
+  "playerWhyThisSong": "この曲の理由",
+  "playerQueue": "キュー",
+  "playerTrackTools": "この曲 — ブックマーク、タグ、ループ位置",
+  "playerStopAfterOn": "この曲の後に停止します。タップで取り消し",
+  "playerStopAfter": "この曲の後に停止",
+  "playerSleepOn": "スリープタイマーがオンです。タップで解除",
+  "playerSleep": "スリープタイマー",
+  "playerFileMissing": "この曲のファイルが端末にありません",
+  "playerWhyThisSongTitle": "この曲の理由",
+  "playerQueueTitle": "キュー",
+  "playerAudio": "オーディオ",
+  "playerThisTrack": "この曲",
+  "playerLoopPoints": "ループ位置",
+  "playerShrink": "たたむ",
+  "playerClose": "閉じる",
+  "playerLyrics": "歌詞",
+  "playerEndOfQueue": "キューの終わり",
+  "playerUpNext": "次の曲",
+  "playerNothingAfter": "この後に曲はありません",
+  "bandMorning": "朝",
+  "bandAfternoon": "午後",
+  "bandEvening": "夕方",
+  "bandNight": "夜",
+  "bandNightHour": "深夜",
+  "historyNothingPlayed": "まだ何も再生していません。",
+  "historyTopTracks": "よく聴いた曲",
+  "historyByTimeOfDay": "時間帯別",
+  "historyMonth": "月",
+  "historyTimeListened": "再生時間",
+  "importSavedNotWritten": "ひとまず保存しましたが、ディスクに書き込めませんでした。",
+  "importNoVideos": "そのプレイリストから動画を読み取れませんでした。リンクを確認してください。空の可能性もあります。",
+  "importNewTitle": "新しいプレイリスト",
+  "importEditTitle": "プレイリストを編集",
+  "importLink": "プレイリストのリンク",
+  "importSave": "保存",
+  "importNeedsName": "プレイリストには名前が必要です",
+  "importNoPlaylistId": "そのリンクにはプレイリスト ID がありません",
+  "importFilesStay": "ダウンロード済みのファイルは残ります。これは取り込み元を忘れるだけです。",
+  "importKeep": "残す",
+  "importListTitle": "取り込んだプレイリスト",
+  "importHint": "1つ取り込むか、後で更新できます。取り込まれるのは新しい曲だけです。",
+  "importEmpty": "プレイリストはまだありません。下から追加してください。",
+  "importEditAction": "名前とリンクを編集",
+  "importRemoveAction": "削除",
+  "importRowHint": "取り込み・更新 — 新しい曲だけを取り込みます",
+  "homePersonalize": "カスタマイズ",
+  "homeNow": "いま",
+  "homeNoBand": "時間帯不明",
+  "homeElsewhere": "どこか別の場所",
+  "homeNoFix": "位置情報なし",
+  "homePlayWhatFits": "いま合う曲を再生",
+  "homeContinue": "続きを聴く",
+  "homeRediscover": "もう一度発見",
+  "homeJumpBackIn": "また聴く",
+  "homeQuickPick": "クイック選択",
+  "homeFromLibrary": "ライブラリから",
+  "homeGenre": "ジャンル",
+  "homeRecentlyAdded": "最近追加",
+  "diagCheckingStorage": "ストレージへのアクセスを確認中…",
+  "diagAllFiles": "すべてのファイルへのアクセスが許可されています",
+  "diagNoAllFiles": "全ファイルアクセスがありません。ダウンロードとカバー画像を書き込めません",
+  "diagStorageUnknown": "ストレージへのアクセスは不明です",
+  "diagGrant": "許可する",
+  "diagProblems": "問題",
+  "diagAll": "すべて",
+  "diagClear": "クリア",
+  "diagSpectrum": "スペクトル",
+  "diagCopy": "コピー",
+  "diagNothingWrong": "この起動では何も問題は起きていません。",
+  "diagNothingLogged": "まだ何も記録されていません。",
+  "folderInternal": "内部ストレージ",
+  "folderMusic": "ミュージック",
+  "folderDownload": "ダウンロード",
+  "folderSdcard": "SD カード",
+  "folderHoldsManifest": "このフォルダには library_manifest.json があります。",
+  "folderNoManifest": "ここに library_manifest.json がありません。ライブラリとして読み込めません。",
+  "folderUse": "このフォルダを使う",
+  "firstRunPitch": "いる場所と空模様に合う音楽を。",
+  "firstRunLayout": "レイアウト",
+  "firstRunColours": "配色",
+  "firstRunSongList": "曲リスト",
+  "firstRunGrid": "グリッド",
+  "firstRunList": "リスト",
+  "firstRunStart": "聴き始める",
+  "firstRunLater": "これらは後から設定で変更できます。",
+  "shellCannotReadFolder": "Sonarar が音楽フォルダを読み取れません。設定 → アプリ → Sonarar → 権限 でアクセスを許可してください",
+  "greetingMorning": "おはようございます",
+  "greetingAfternoon": "こんにちは",
+  "greetingEvening": "こんばんは",
+  "greetingNight": "おやすみなさい",
+  "greetingLateNight": "夜更けですね",
+  "homeNothingFits": "いま合う曲がありません",
+  "shellThisMonth": "今月",
+  "shellOutputSettingsFailed": "出力設定を開けませんでした",
+  "commonSaved": "保存しました",
+  "shellNoForward": "これ以上進めません",
+  "shellNoEarlierTab": "前のタブはありません",
+  "shellAddToPlaylist": "プレイリストに追加",
+  "shellAlreadyInPlaylist": "このプレイリストに含まれています",
+  "shellAlreadyInQueue": "すでにキューにあります",
+  "shellLibraryNotResolved": "ライブラリはまだ読み込み中です",
+  "shellDeleteDownloadNote": "端末からファイルを削除します。ダウンロードしたものなので、他のコピーはありません。",
+  "shellRemoveFailed": "削除できませんでした",
+  "shellDownloadedNotIndexed": "ダウンロードしました。まだライブラリの一覧には入っていません",
+  "shellAddedToLibrary": "ライブラリに追加しました",
+  "shellHistory": "履歴",
+  "shellMusicFolderSaved": "音楽フォルダを保存しました",
+  "shellLater": "あとで",
+  "shellRestartNow": "今すぐ再起動",
+  "shellLibraryTools": "ライブラリのツール",
+  "shellSaveQueue": "キューをプレイリストとして保存",
+  "shellQueueEmptyToSave": "キューが空なので保存できません。",
+  "shellShuffleAllowed": "シャッフルで再生できるように戻しました",
+  "shellPlaylistNothingPlayable": "そのプレイリストには再生できる曲がありません",
+  "shellRemovedFromLiked": "お気に入りから削除しました",
+  "shellArchive": "アーカイブ",
+  "shellStoppingAfter": "この曲の後に停止します",
+  "shellStopAfterOff": "この曲の後に停止 — オフ",
+  "commonBack": "戻る",
+  "shellCatalogue": "全曲リスト",
+  "shellRanks": "ランキング",
+  "personalizeMotion": "動き",
+  "personalizeTabAnimation": "タブのアニメーション",
+  "personalizeSpectrum": "スペクトル",
+  "personalizeSmoothness": "なめらかさ",
+  "personalizeScale": "大きさ",
+  "personalizeBase": "ベース",
+  "personalizeTheme": "テーマ",
+  "personalizeAccent": "アクセント",
+  "personalizeFromPhoto": "写真から",
+  "personalizePictureFor": "使う写真",
+  "personalizeNoPicture": "写真なし",
+  "personalizeAddPicture": "写真を追加",
+  "personalizeReframe": "切り抜きを調整",
+  "personalizeReframeNoFile": "切り抜きを調整 — 動かせる写真がありません",
+  "effectBlur": "ぼかし",
+  "effectDim": "暗くする",
+  "effectZoom": "拡大",
+  "effectRotation": "回転",
+  "effectTintAccent": "アクセントで着色",
+  "effectPlayerUsesCover": "プレイヤーはカバーを使う",
+  "effectFollowTrack": "曲に合わせる",
+  "effectSaturation": "彩度",
+  "effectContrast": "コントラスト",
+  "effectVignette": "周辺減光",
+  "effectGrain": "粒子",
+  "effectBurn": "焼き込み",
+  "baseSolid": "単色",
+  "baseGradient": "グラデーション",
+  "baseSkin": "スキン",
+  "baseFrom": "元",
+  "baseColour": "色",
+  "baseDirection": "方向",
+  "artFolders": "画像フォルダ",
+  "artRescan": "再スキャン",
+  "scopeHome": "ホーム",
+  "scopeEverywhere": "すべて",
+  "scopePlayer": "プレイヤー",
+  "scopeFolder": "フォルダ",
+  "scopePhoto": "写真",
+  "themeNew": "新しいテーマ",
+  "themeOverride": "上書き",
+  "photoNoneFound": "Pictures、DCIM、Download に写真が見つかりません。",
+  "photoUseEverywhere": "すべてで使う",
+  "photoUseHere": "ここで使う",
+  "photoPutInFolder": "フォルダに入れる",
+  "photoFolderHint": "フォルダには複数の写真を入れられ、曲に合わせて切り替えられます。",
+  "photoNoneSkinPaints": "写真なし — スキンがこの部分を描きます",
+  "themeNamePrompt": "新しいテーマに名前をつける",
+  "themeNoneToOverride": "テーマを使っていないので、上書きする対象がありません。",
+  "layoutSonar": "ソナー",
+  "layoutGlass": "ガラス",
+  "themeWorn": "使用中",
+  "themeBuiltIn": "内蔵",
+  "themeThemes": "テーマ",
+  "themeArt": "画像",
+  "commonAdd": "追加",
+  "themeRename": "名前を変更",
+  "themeDelete": "削除",
+  "artFolderName": "フォルダ名",
+  "photoNoColour": "写真が選ばれていないので、色を取り出せません。",
+  "photoWeakColour": "その写真にはアクセントにできるほど強い色がありません。",
+  "artOnlyPicture": "残っている写真はこれだけです。フォルダごと削除してください。",
+  "photoNoAccess": "Sonarar が写真を読めません。設定で写真へのアクセスを許可してください。",
+  "recapTitle": "ふりかえり",
+  "placesTappedPin": "タップした地点を選びました。保存されるのはここで、立っている場所ではありません",
+  "placesAskingOsm": "OpenStreetMap にここが何かを問い合わせています…",
+  "placesOsmNothing": "OpenStreetMap にはここに何の情報もありません。自分で名前をつけてください。",
+  "placesOsmUnreachable": "OpenStreetMap に接続できませんでした。自分で名前をつけてください。",
+  "placesSavedTitle": "保存した場所",
+  "placesEmpty": "まだ何も保存されていません。どこかで立ち止まり、地点を保存して名前をつけてください。",
+  "placesEditTitle": "この場所を編集",
+  "placesNameTitle": "この地点に名前をつける",
+  "placesNameYourself": "自分で名前をつけてください。OpenStreetMap にはここの情報がありません。",
+  "placesNameLabel": "場所の名前",
+  "placesPlaylistHere": "ここのプレイリスト",
+  "placesOrTypeName": "または名前を入力",
+  "placesIcon": "アイコン",
+  "placesTapToClear": "もう一度タップでクリア",
+  "placesSize": "この地点の広さ",
+  "placesSaveChanges": "変更を保存",
+  "rulesTitle": "コンテキストのルール",
+  "rulesActingNow": "現在有効",
+  "rulesMoreImportant": "より重要",
+  "rulesLessImportant": "重要度を下げる",
+  "rulesRemoveRule": "このルールを削除",
+  "rulesAdd": "ルールを追加",
+  "rulesNew": "新しいルール",
+  "rulesTimeBand": "時間帯が",
+  "rulesManualContext": "かつ手動コンテキストが",
+  "rulesWeather": "かつ天気が",
+  "rulesPlayPlaylist": "このプレイリストを再生",
+  "rulesThemeOptional": "かつこのテーマを使う（任意）",
+  "rulesCreate": "ルールを作成",
+  "ytNetworkOff": "設定でネットワークがオフのため、検索もダウンロードもできません。",
+  "ytNetworkOffNoMatch": "設定でネットワークがオフで、ライブラリにも一致する曲がありません。",
+  "ytSearchHint": "YouTube を検索",
+  "ytSearchingOnline": "オンラインで検索中。タップでオフ",
+  "ytImportPlaylist": "プレイリストを取り込む",
+  "ytInLibrary": "ライブラリにあり",
+  "ytOnYoutube": "YOUTUBE 上",
+  "ytOfficial": "公式",
+  "ytNotOfficial": "非公式",
+  "ytPlayThis": "これを再生",
+  "ytNotOfficialBadge": "公式リリースではありません",
+  "ytDownload": "ライブラリにダウンロード",
+  "loopTitle": "ループ",
+  "loopIntroEnds": "イントロの終わり",
+  "loopStart": "ループ開始",
+  "loopEnd": "ループ終了",
+  "loopRepeat": "リピート",
+  "loopNoRepeat": "リピートなし。曲はそのまま最後まで再生されます。",
+  "loopEndBeforeStart": "ループ終了がループ開始より前です。リピートできません。",
+  "loopPause": "一時停止",
+  "loopPlay": "再生",
+  "loopSaved": "保存済み",
+  "loopSet": "設定",
+  "loopHint": "曲を再生し、ループさせたい位置でマーカーをタップしてから保存します。マーカーのない曲はこれまで通りに再生されます。",
+  "placesOsmSays": "OpenStreetMap ではここは{kind}です。自由に変更できます。",
+  "@placesOsmSays": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "panelPlayNow": "今すぐ再生",
+  "panelPlayNext": "次に再生",
+  "panelNeverInShuffle": "シャッフルでは再生しない",
+  "panelFixTags": "タグを修正",
+  "panelClearBookmark": "このブックマークを削除",
+  "panelBookmarkSpot": "この位置をブックマーク",
+  "panelRemoveDownload": "ダウンロードを削除",
+  "panelShuffleNote": "ライブラリには残ります。プレイリストに出てこなくなるだけです。",
+  "panelExcludedNote": "除外した曲もライブラリには残ります。プレイリストに入らないだけです。",
+  "lyricsNoWords": "この曲には歌詞がありません",
+  "lyricsFollowsSong": "曲に追従",
+  "lyricsNoTiming": "歌詞あり、タイミングなし",
+  "lyricsNotFound": "見つかりません",
+  "lyricsTapToLookUp": "タップして検索",
+  "lyricsSync": "同期",
+  "lyricsNoneFound": "歌詞が見つかりません",
+  "lyricsInstrumental": "歌詞はありません。インストゥルメンタルです",
+  "probeStep1": "ステップ 1 — 権限",
+  "probeStep1Note": "最初の試行は「許可」の段階で失敗したので、問題はここです。",
+  "probeStep2": "ステップ 2 — オーディオセッション",
+  "probeStep3": "ステップ 3 — ビジュアライザー",
+  "probeTitle": "スペクトル調査",
+  "probeRunning": "実行中…",
+  "probeRun": "調査を実行",
+  "probeHint": "ボタンを押して、ここに表示された内容を送ってください。",
+  "outputBluetooth": "BLUETOOTH",
+  "outputWired": "有線",
+  "outputUsbDac": "USB / DAC",
+  "outputHdmi": "HDMI",
+  "outputThisPhone": "この端末",
+  "outputVolume": "音量",
+  "outputPlaysThrough": "出力先",
+  "outputChange": "出力を変更",
+  "compendiumNotHeard": "まだ聴いていません",
+  "compendiumMostHeard": "よく聴いた曲",
+  "compendiumRecent": "最近",
+  "outputPickerHint": "端末の出力選択画面を開きます",
+  "backupFailed": "バックアップに失敗しました。",
+  "backupNoneFound": "ダウンロードにバックアップが見つかりません。まず作成するか、そこへ移してください。",
+  "backupRestore": "復元",
+  "backupRestoreFailed": "復元に失敗しました。",
+  "backupYourData": "あなたのデータ",
+  "backupNow": "今すぐバックアップ",
+  "backupRestoreTitle": "バックアップから復元",
+  "tagsUndoAll": "すべて元に戻す",
+  "tagsRevert": "戻す",
+  "bondsNothingSinceReset": "前回のリセット以降、何も再生していません。",
+  "bondsNothingYet": "まだ何も再生していません。",
+  "bondsStartOver": "ランキングをやり直す",
+  "bondsNote": "この絆についてのメモ",
+  "bondsWhy": "なぜこれが大事なのか",
+  "artAdjust": "画像を調整",
+  "commonReset": "リセット",
+  "artRotate": "回転",
+  "artFade": "フェード",
+  "artMirrored": "ミラー済み",
+  "artMirror": "ミラー",
+  "commonDone": "完了",
+  "personalizeFramingNote": "切り抜きは写真そのものに属するので、このスライダーはその写真を使うすべての場所で動きます。",
+  "personalizeNoFoldersNote": "フォルダはまだありません。フォルダとは Music/Sonarar/art 内の写真のまとまりで、場所ごとにそのうちの1つを使います。",
+  "personalizeTapPictureNote": "フォルダ内の写真をタップするとここで使われます。上の「曲に合わせる」で、曲ごとにフォルダを切り替えるかが決まります。",
+  "personalizeNothingWorn": "いまテーマを使っていないので、上書きする対象がありません。上で1つ選ぶか、新しく作ってください。",
+  "personalizeReframeHint": "写真の中で大事な部分をタップしてください。画面がどんな形でも、そこが中央に保たれます。",
+  "rulesWhenMatches": "コンテキストがこれらのいずれかに一致すると、そのプレイリストがキューになります。一致したうち優先度が最も高いものが勝ちます。どれも一致しなければ、プレイヤーはこれまで通り自分で選びます。",
+  "rulesNone": "ルールはありません。それでも動きます。コンテキストは音楽を選びますが、付け加えて言うことはないだけです。",
+  "rulesJsonNote": "ルールは rules.json に素の JSON として書いて編集することもできます。他の状態ファイルと同じ場所に置くと、アプリは起動時に読み込みます。",
+  "rulesNothingMatches": "いまはどのルールも一致していません。プレイヤーが自分で選んでいます。これは普通のことです。",
+  "rulesEveryCondition": "選んだ条件はすべて同時に満たす必要があります。何も選ばなければ、そのルールはいつでも一致します。そういうルールは一番下に置いてください。",
+  "backupRestoreNote": "タグ、お気に入り、プレイリスト、テーマ、再生履歴をファイル内のコピーで置き換えます。現在の状態は先に pre-restore-… に退避されます。",
+  "backupWhatItHolds": "タグ、お気に入り、プレイリスト、テーマ、再生履歴 — 音声ファイルに含まれないものすべて。ダウンロードに保存します。",
+  "tagsNote": "プレイヤーに表示される内容を直します。音声ファイルは一切変更しないので、いつでも元に戻せます。",
+  "tagsPersistNote": "保存した修正は再起動後も残り、ライブラリの再スキャンでも上書きされません。",
+  "shuffleTitle": "シャッフルでは再生しない",
+  "shuffleNoneExcluded": "除外された曲はありません。ライブラリのすべての曲が対象です。",
+  "shuffleAllowAll": "すべて許可に戻す",
+  "shuffleAllow": "許可",
+  "libraryPlaylists": "プレイリスト",
+  "libraryArtists": "アーティスト",
+  "librarySongs": "曲",
+  "libraryLikedSongs": "お気に入りの曲",
+  "mapAttribution": "地図データ © OpenStreetMap の貢献者",
+  "mapNoPosition": "位置はまだ分かりません",
+  "mapNoPlaces": "保存された場所はまだありません",
+  "mapSaveSpot": "この地点を保存",
+  "mapWaitingFix": "正確な位置を待っています",
+  "explainAtPlace": "{place}にいます。",
+  "@explainAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainNearPlace": "{place}の近くにいます。",
+  "@explainNearPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainOnTheMove": "移動中です。",
+  "explainBetweenPlaces": "保存した場所と場所のあいだにいます。",
+  "explainSnowingOutside": "外は雪です。",
+  "explainRainingOutside": "外は雨です。",
+  "explainEasierSleeping": "それに、少しでも寝つきたいと思っています。",
+  "explainItsBand": "{band}です。",
+  "@explainItsBand": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHand": "この時間帯は手動で設定しました。",
+  "explainNoReading": "コンテキストの読み取りを待っています。まだ何も決まっていません。",
+  "explainSleepArmed": "スリープタイマーが作動中です。止まるまでインストゥルメンタルです。",
+  "explainSnowRule": "雪です。雪のルールが有効です。",
+  "explainRainRule": "雨です。雨のルールが有効です。",
+  "explainCommuteRules": "移動中です。通勤のルールが有効です。",
+  "explainHereAt": "{place}にいます。",
+  "@explainHereAt": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHereApprox": "{place}にいます（おおよその位置）。",
+  "@explainHereApprox": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSetByHandNamed": "このコンテキストは手動で選びました（{mode}）。",
+  "@explainSetByHandNamed": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "explainHourPicked": "{band} — この時間帯が選びました。",
+  "@explainHourPicked": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "explainRuleMatched": "ルール「{id}」に一致しました: {summary}。",
+  "@explainRuleMatched": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "explainPlaylistLeads": "「{playlist}」に {count} 曲あります。それが先導し、ライブラリの残りが続きます。",
+  "@explainPlaylistLeads": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainPlaylistQueue": "「{playlist}」がキューになりました（{count} 曲）。",
+  "@explainPlaylistQueue": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "explainFixedQueue": "固定キューです。この順番で再生します。状況の変化に合わせて並べ替えたいときは「動的」を押してください。",
+  "explainNothingPlaying": "何も再生していません。",
+  "explainKeptIt": "この時間帯で {count, plural, =1{1 回} other{{count} 回}} そのまま聴きました。",
+  "@explainKeptIt": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weatherClear": "晴れ",
+  "weatherOvercast": "くもり",
+  "weatherFog": "霧",
+  "weatherDrizzle": "霧雨",
+  "weatherRain": "雨",
+  "weatherSnow": "雪",
+  "weatherStorm": "嵐",
+  "weatherNoReading": "読み取りなし",
+  "ytNotOfficialSkipped": "公式リリースではないのでダウンロードしませんでした。設定で「公式のみ」をオフにすると、どのアップロードでも取り込めます。",
+  "ytNetworkOnSearchOnly": "ネットワークを検索のみに使う（位置・時刻・天気はオフのまま）",
+  "personalizeAccentTaken": "写真から取ったアクセント色: {hex}",
+  "@personalizeAccentTaken": {
+    "placeholders": {
+      "hex": {
+        "type": "String"
+      }
+    }
+  },
+  "panelBookmarkedAt": "{time} にブックマーク",
+  "@panelBookmarkedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "panelTagsCorrected": "タグを修正 · {count} {count, plural, =1{項目} other{項目}}",
+  "@panelTagsCorrected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "panelPlayed": "{count, plural, =1{1 回} other{{count} 回}} 再生",
+  "@panelPlayed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackNeverPlayed": "一度も再生していません",
+  "panelShuffleAllowed": "シャッフルで再生可",
+  "loopPointsLabel": "ループ位置",
+  "panelAddToPlaylist": "プレイリストに追加",
+  "panelPlayedThrough": "{count, plural, =1{1 回再生} other{{count} 回再生}} · 最後まで {through} 回",
+  "@panelPlayedThrough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "through": {
+        "type": "int"
+      }
+    }
+  },
+  "backupNoState": "まだバックアップできる状態がありません。",
+  "backupNotOurs": "そのファイルは Sonarar のバックアップではありません。",
+  "backupUnreadableJson": "そのファイルは読める JSON ではありません。",
+  "backupUnreadableFile": "バックアップを読み取れませんでした: {detail}",
+  "@backupUnreadableFile": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNewerVersion": "そのバックアップは新しいバージョンの Sonarar で作られたものです。",
+  "backupNoData": "そのバックアップにはデータが入っていません。",
+  "backupNothingRestored": "そのバックアップからは何も復元できませんでした。",
+  "backupWriteFailed": "バックアップを書き込めませんでした: {detail}",
+  "@backupWriteFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreStopped": "復元を中止しました: {detail}",
+  "@backupRestoreStopped": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "placesDuplicateName": "同じ名前の場所がすでにあります。保存すると新しい場所を作らず、この地点をそこに追加します。",
+  "placesNameHint": "例: 大学、ジム、家",
+  "settingsOnNewest": "最新のビルドです（{version}）。",
+  "@settingsOnNewest": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailable": "Sonarar {version} が公開されています。「アップデート」はアプリの上部にあります。",
+  "@settingsUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "rulesNotOffered": "ここでは提供していません: 場所のルールと「乾燥」の天気条件です。アプリは不明な天気を「雨ではない」として扱うため、乾燥のルールは最も情報が少ない日に発動してしまいます。",
+  "compendiumEmptyBody": "まだ何も聴いていないので、収録リストは空です。聴くにつれて自然に埋まっていきます。",
+  "compendiumHeardCount": "{total} 曲中 {heard} 曲",
+  "@compendiumHeardCount": {
+    "placeholders": {
+      "heard": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placesSpotCount": "{count, plural, =1{1 地点} other{{count} 地点}}",
+  "@placesSpotCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusOneBuilding": "{metres}m — ビル1棟ほど",
+  "@placesRadiusOneBuilding": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusNeighbours": "{metres}m — ビル1棟とその周辺ほど",
+  "@placesRadiusNeighbours": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesRadiusCampus": "{metres}m — キャンパスほど",
+  "@placesRadiusCampus": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesExistingNamesHint": "既存の名前（{names}）を入力すると、その場所のもう1つの地点として追加されます。",
+  "@placesExistingNamesHint": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeard": "最後は {when}",
+  "@compendiumLastHeard": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "compendiumLastHeardThrough": "最後は {when} · 最後まで {count} 回",
+  "@compendiumLastHeardThrough": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compendiumNeverHeard": "まだ聴いていません",
+  "historyThinSample": "{count, plural, =1{まだ 1 回しか再生していません} other{まだ {count} 回しか再生していません}} — 下の形は本物ですが、まだ小さいだけです。",
+  "@historyThinSample": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDayStats": "{length} · {plays, plural, =1{1 回再生} other{{plays} 回再生}} · 最後まで {completions} 回",
+  "@historyDayStats": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "plays": {
+        "type": "int"
+      },
+      "completions": {
+        "type": "int"
+      }
+    }
+  },
+  "commonToday": "今日",
+  "commonYesterday": "昨日",
+  "agoDays": "{count, plural, =1{1 日前} other{{count} 日前}}",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoMonths": "{count, plural, =1{1 か月前} other{{count} か月前}}",
+  "@agoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "poiGym": "ジム",
+  "poiLibrary": "図書館",
+  "poiUniversity": "大学",
+  "poiCoworking": "コワーキング",
+  "poiCafe": "カフェ",
+  "poiRestaurant": "レストラン",
+  "poiBar": "バー",
+  "poiMall": "ショッピングモール",
+  "poiCinema": "映画館",
+  "poiTransit": "駅・乗り場",
+  "poiParking": "駐車場",
+  "poiPlaceOfWorship": "礼拝所",
+  "poiHospital": "病院",
+  "poiPark": "公園",
+  "poiStadium": "スタジアム",
+  "poiPool": "プール",
+  "poiHotel": "ホテル",
+  "moodFocus": "ここで作業している",
+  "moodEnergy": "ここで体を動かしている",
+  "moodSocial": "人に囲まれている",
+  "moodTransit": "通り過ぎているところ",
+  "moodQuiet": "静かにしていたい",
+  "moodAny": "特に指定なし",
+  "ruleWhenTime": "時間帯が{band}で",
+  "@ruleWhenTime": {
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenMode": "モードが{mode}で",
+  "@ruleWhenMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenRaining": "雨が降っていて",
+  "ruleWhenSnowing": "雪が降っていて",
+  "ruleWhenAtPlace": "{place}にいて",
+  "@ruleWhenAtPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleWhenNoPlace": "保存した場所のどこにもいなくて",
+  "ruleAlways": "いつでも",
+  "ruleJoinAnd": "{a}、かつ{b}",
+  "@ruleJoinAnd": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleThenTheme": "テーマを切り替え",
+  "ruleThenPlaylist": "「{playlist}」を再生",
+  "@ruleThenPlaylist": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleSentence": "{when} → {then}",
+  "@ruleSentence": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "then": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleBandDarkHour": "深夜",
+  "ruleBandMorning": "朝",
+  "ruleBandAfternoon": "午後",
+  "ruleBandEvening": "夕方",
+  "ruleBandNight": "夜",
+  "modeBattleLabel": "エネルギー",
+  "modeNightHourLabel": "深夜",
+  "modeBattleBlurb": "タップひとつで、ここで一番うるさくて勢いのある音楽へ。シャッフルし直すとキューが最初から並び替わります。",
+  "modeNightHourBlurb": "いつでも入れる深夜の時間。耳に刺さる短い曲も入ってきます。この時間は、少しずれているほうが正しいのです。"
+}

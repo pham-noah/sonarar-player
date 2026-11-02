@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/core/prefs.dart';
+import 'package:sonarar/l10n/app_localizations.dart';
 import 'package:sonarar/screens/settings_screen.dart';
 
 /// The language row: it exists, it lists every language the build can speak,
@@ -58,10 +59,10 @@ void main() {
     expect(find.text('TIẾNG VIỆT'), findsOneWidget);
     expect(find.text('简体中文'), findsOneWidget);
     expect(find.text('SUOMI'), findsOneWidget);
-    // Offered only if the build speaks it: 日本語 has no ARB yet, and a language
-    // that answers in English would look finished.
-    expect(find.text('日本語'), findsNothing,
-        reason: 'ja has no ARB yet, so it must not be offered');
+    expect(find.text('日本語'), findsOneWidget);
+    // The picker reads supportedLocales, so a language can only appear here if
+    // an ARB exists for it — five languages, five rows plus SYSTEM.
+    expect(AppLocalizations.supportedLocales, hasLength(5));
 
     await tester.tap(find.text('TIẾNG VIỆT'));
     await tester.pumpAndSettle();

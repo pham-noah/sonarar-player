@@ -97,8 +97,8 @@ import 'widgets/framed_art.dart';
 import 'widgets/spectrum.dart';
 import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
-import 'player/engine_window.dart';
 import 'player/playback_ticker.dart';
+import 'player/track_loader.dart';
 import 'player/queue_mode.dart';
 import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
@@ -815,6 +815,14 @@ class _HomeShellState extends State<HomeShell>
 
   bool _playing = false;
   AudioEngine? _audio;
+
+  late final TrackLoader _loader = TrackLoader(
+    state: widget.state,
+    repo: _repo,
+    engine: () => _audio,
+    volume: () => _volume,
+    loopPointsFor: (id) => _loopPoints[id],
+  );
   late final PlaybackTicker _ticker = PlaybackTicker(_onProgressTick);
 
   bool get tickerRunning => _ticker.isRunning;
@@ -987,85 +995,13 @@ class _HomeShellState extends State<HomeShell>
       _ctx.resolvePlaceThenWeather(onArrival: _maybeSwitchOnArrival);
 
   Future<bool> _loadCurrentTrack({Duration? startAt, bool autoPlay = true}) async {
-    final engine = _audio;
-    final track = widget.state.currentTrack;
-    if (engine == null || track == null) return false;
-    final path = _repo.absoluteFor(track);
-    if (path == null) return false;
-
-    engine.loop = LoopController(points: _loopPoints[track.id]);
-
-    final effectiveStart = startAt ?? Duration.zero;
-
-    unawaited(engine.setVolume(_volume));
-
-    final order = widget.state.queue?.order ?? const <Track>[];
-
-    if (order.length < 3) {
-      debugPrint('[Sonarar][SHORTQUEUE] order=${order.length} track=${track.id} '
-          'want=${widget.state.currentTrack?.id}');
-      debugPrint('[Sonarar][SHORTQUEUE] stack:\n${StackTrace.current}');
-    }
-
-    final built = engineWindowFor(
-      order: order,
-      track: track,
-      pathFor: _repo.absoluteFor,
-      coverFor: _repo.coverPathFor,
-      exists: (p) => File(p).existsSync(),
-    );
-    final playable = built.entries;
-    final idx = built.index;
-    final atStart = order.isEmpty ? null : order[built.windowStart];
-
-    debugPrint('[Sonarar][WINDOW] ${playable.length} of ${built.windowLength} files exist; '
-        'want=$path '
-        'sample=${atStart == null ? "none" : _repo.absoluteFor(atStart) ?? "null"}');
-
-    bool ok;
-
-    if (playable.isEmpty) {
-      debugPrint('[Sonarar][LOAD] none of the ${built.windowLength} window files exist; '
-          'keeping the current queue. first=${atStart?.file ?? "none"}');
-      _fileMissing = true;
-      return false;
-    }
-
-    if (idx < 0) {
-      debugPrint('[Sonarar][LOAD] not-in-window: window=${built.windowLength} '
-          'playable=${playable.length} want=$path '
-          'first=${playable.isEmpty ? "none" : playable.first.path}');
-      final coverPath = _repo.coverPathFor(track);
-      ok = await engine.loadAndPlay(
-        path,
-        startAt: effectiveStart,
-        autoPlay: autoPlay,
-        title: track.title,
-        artist: track.artist,
-        album: track.album,
-        coverUri: (coverPath != null && File(coverPath).existsSync())
-            ? Uri.file(coverPath)
-            : null,
-      );
-    } else {
-      final paths = [for (final e in playable) e.path];
-      if (engine.queueMatches(paths)) {
-        await engine.seekToIndex(idx);
-        if (effectiveStart > Duration.zero) await engine.seek(effectiveStart);
-        if (autoPlay && !engine.isPlaying) await engine.play();
-        ok = true;
-      } else {
-        ok = await engine.setQueue(playable, initialIndex: idx);
-
-        if (ok && effectiveStart > Duration.zero) await engine.seek(effectiveStart);
-      }
-
-      if (ok) widget.state.queue?.markEngineSynced();
-    }
+    final ok = await _loader.loadCurrent(startAt: startAt, autoPlay: autoPlay);
     if (!mounted) return ok;
 
+    // What to do about a failure is the shell's call: the loader reports, the
+    // interface decides whether to step over the track or show it as missing.
     _shellChanged(() {
-      _fileMissing = !ok;
+      _fileMissing = _loader.fileMissing;
       if (!ok) {
         debugPrint('[Sonarar] could not load the current track — the player will '
             'report it as missing.');
@@ -1073,8 +1009,7 @@ class _HomeShellState extends State<HomeShell>
         if (!_skippingMissing) {
           _skippingMissing = true;
 
-          final steppedTo =
-              widget.state.queue?.next(wrap: false);
+          final steppedTo = widget.state.queue?.next(wrap: false);
           _skippingMissing = false;
           if (steppedTo != null) {
             debugPrint('[Sonarar] stepping over an unloadable track');
@@ -1085,7 +1020,7 @@ class _HomeShellState extends State<HomeShell>
         }
       }
 
-      if (ok) _loadedTrackId = track.id;
+      if (ok) _loadedTrackId = _loader.loadedTrackId;
 
       if (!ok) _playing = false;
       _syncProgressTicker();

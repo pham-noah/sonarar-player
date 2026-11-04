@@ -9,6 +9,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
 import 'engine_window.dart';
+import 'playback_engine.dart';
 import 'playback_intent.dart';
 import 'volume_policy.dart';
 
@@ -17,7 +18,7 @@ import '../player/queue.dart' show RepeatMode;
 
 Uri fileUriForPath(String absolutePath) => File(absolutePath).uri;
 
-class AudioEngine {
+class AudioEngine implements PlaybackEngine {
   AudioEngine({AudioPlayer? player}) : _player = player ?? AudioPlayer();
 
   Future<void> configureAudioSession() async {
@@ -66,10 +67,13 @@ class AudioEngine {
 
   VoidCallback? onCompleted;
 
+  @override
   Duration get position => _player.position;
 
+  @override
   bool get isPlaying => _player.playing;
 
+  @override
   Duration? get duration => _player.duration;
 
   bool _wantPlay = false;
@@ -89,6 +93,7 @@ class AudioEngine {
   List<String> get queuePaths => List.unmodifiable(_queuePaths);
   List<String> _queuePaths = const [];
 
+  @override
   Future<void> seekToIndex(int index) => _player.seek(Duration.zero, index: index);
 
   bool moveWithinEngine(int from, int to) {
@@ -104,6 +109,7 @@ class AudioEngine {
     return true;
   }
 
+  @override
   bool queueMatches(List<String> paths) {
     if (paths.length != _queuePaths.length) return false;
     for (var i = 0; i < paths.length; i++) {
@@ -119,6 +125,7 @@ class AudioEngine {
   static int _loadSeq = 0;
   DateTime? _lastLoadAt;
 
+  @override
   Future<bool> setQueue(
     List<EngineEntry> items, {
     required int initialIndex,
@@ -196,6 +203,7 @@ class AudioEngine {
 
   int? _wantIndex;
 
+  @override
   Future<bool> loadAndPlay(
     String absolutePath, {
     Duration? startAt,
@@ -268,6 +276,7 @@ class AudioEngine {
     }
   }
 
+  @override
   Future<void> play() async {
     _wantPlay = true;
     _playOutstanding = true;
@@ -290,6 +299,7 @@ class AudioEngine {
     }
   }
 
+  @override
   Future<void> pause() {
     _wantPlay = false;
     _playOutstanding = false;
@@ -297,8 +307,10 @@ class AudioEngine {
     return _player.pause();
   }
 
+  @override
   Future<void> seek(Duration to) => _player.seek(to);
 
+  @override
   Future<void> setVolume(double v) {
     _cancelFade();
     _targetVolume = v.clamp(0.0, 1.0);
@@ -416,6 +428,7 @@ class AudioEngine {
     return null;
   }
 
+  @override
   String? get playingPath => _currentSourcePath();
 
   String? _lastReportedPath;
@@ -525,6 +538,7 @@ class AudioEngine {
     }));
   }
 
+  @override
   LoopController? loop;
 
   Future<void> _fadeThenStop() async {

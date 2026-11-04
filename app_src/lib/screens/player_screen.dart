@@ -472,7 +472,7 @@ class PlayerScreen extends StatelessWidget {
   static const contextBadgeKey = Key('context-badge');
 
   static const transportKey = Key('player-transport');
-  static const volumeKey = Key('player-view.volume');
+  static const volumeKey = Key('player-volume');
   static const secondaryKey = Key('player-secondary');
   static const playButtonKey = Key('player-play');
 

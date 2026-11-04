@@ -21,10 +21,12 @@ import '../theme/skin.dart';
 import '../widgets/art_scrim.dart';
 
 enum HomeTab { home, quickPick, fromLibrary, genre, recap }
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({
-    super.key,
+/// Everything the home screen is handed, in one object.
+///
+/// The rails, the header art and the callbacks the shell wires; naming them once
+/// keeps the widget's interface one argument instead of thirty-four.
+class HomeView {
+  const HomeView({
     required this.skin,
     required this.band,
     this.continueTrack,
@@ -60,6 +62,7 @@ class HomeScreen extends StatelessWidget {
     this.headerArt,
     this.recent = const [],
   });
+
 
   final Skin skin;
 
@@ -136,6 +139,13 @@ class HomeScreen extends StatelessWidget {
   final bool hasFix;
   final bool contextEnabled;
 
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key, required this.view});
+
+  final HomeView view;
+
   @override
   Widget build(BuildContext context) {
     final list = SafeArea(
@@ -145,86 +155,86 @@ class HomeScreen extends StatelessWidget {
           16,
           8,
           16,
-          PresentationScope.of(context, fallback: skin)
+          PresentationScope.of(context, fallback: view.skin)
               .arrangement
               .bottomClearance,
         ),
         children: [
-          if (greeting != null)
+          if (view.greeting != null)
             AppScreenHeader(
-              skin: skin,
-              title: greeting!,
-              mark: headerMark,
-              trailing: onOpenPersonalize == null
+              skin: view.skin,
+              title: view.greeting!,
+              mark: view.headerMark,
+              trailing: view.onOpenPersonalize == null
                   ? null
                   : IconButton(
                       key: const Key('open-personalize'),
-                      onPressed: onOpenPersonalize,
-                      icon: Icon(Icons.tune_rounded, color: skin.accent),
+                      onPressed: view.onOpenPersonalize,
+                      icon: Icon(Icons.tune_rounded, color: view.skin.accent),
                       tooltip: l10nOf(context).homePersonalize,
                     ),
             ),
 
-        if (contextEnabled) ...[
+        if (view.contextEnabled) ...[
           _bandText(context, l10nOf(context).homeNow),
           Row(
             children: [
               _stateTile(
                 context,
-                _bandIcon(band),
-                band ?? l10nOf(context).homeNoBand,
-                dim: band == null,
+                _bandIcon(view.band),
+                view.band ?? l10nOf(context).homeNoBand,
+                dim: view.band == null,
               ),
               const SizedBox(width: 8),
               _stateTile(
                 context,
-                weatherIcon(weather) ?? Icons.help_outline_rounded,
-                weatherName(l10nOf(context), weather),
-                dim: weather == WeatherCondition.unknown,
+                weatherIcon(view.weather) ?? Icons.help_outline_rounded,
+                weatherName(l10nOf(context), view.weather),
+                dim: view.weather == WeatherCondition.unknown,
               ),
               const SizedBox(width: 8),
               _stateTile(
                 context,
-                hasFix
-                    ? (placeIcon ?? kDefaultPlaceIcon)
+                view.hasFix
+                    ? (view.placeIcon ?? kDefaultPlaceIcon)
                     : Icons.location_searching_rounded,
-                hasFix
-                    ? ((placeName == null || placeName!.trim().isEmpty)
+                view.hasFix
+                    ? ((view.placeName == null || view.placeName!.trim().isEmpty)
                         ? l10nOf(context).homeElsewhere
-                        : capsFor(context, placeName!))
+                        : capsFor(context, view.placeName!))
                     : l10nOf(context).homeNoFix,
-                dim: !hasFix || placeName == null || placeName!.trim().isEmpty,
+                dim: !view.hasFix || view.placeName == null || view.placeName!.trim().isEmpty,
               ),
             ],
           ),
 
-          if (onPlayNowMix != null) ...[
+          if (view.onPlayNowMix != null) ...[
             const SizedBox(height: 12),
             GestureDetector(
-              onTap: onPlayNowMix,
+              onTap: view.onPlayNowMix,
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
                 decoration: BoxDecoration(
-                  color: skin.accent,
+                  color: view.skin.accent,
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.play_arrow_rounded,
-                        color: skin.onAccent,
+                        color: view.skin.onAccent,
                         size: 24),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        nowMixName == null
+                        view.nowMixName == null
                             ? l10nOf(context).homePlayWhatFits
-                            : capsFor(context, l10nOf(context).homePlayWhatFitsNamed(nowMixName!)),
+                            : capsFor(context, l10nOf(context).homePlayWhatFitsNamed(view.nowMixName!)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontFloor,
                           letterSpacing: trackingFor(context, 1.4),
                           fontWeight: FontWeight.w900,
-                          color: skin.onAccent,
+                          color: view.skin.onAccent,
                         ),
                       ),
                     ),
@@ -236,7 +246,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 26),
         ],
 
-        for (final section in home.visible) ...switch (section) {
+        for (final section in view.home.visible) ...switch (section) {
           HomeSection.now => const <Widget>[],
           HomeSection.continueListening => _continueSection(context),
           HomeSection.recentlyAdded => _recentSection(context),
@@ -251,7 +261,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
 
-    final art = headerArt;
+    final art = view.headerArt;
     if (art == null) return list;
     return Stack(
       fit: StackFit.expand,
@@ -268,7 +278,7 @@ class HomeScreen extends StatelessWidget {
           right: 0,
           top: 0,
           height: 320,
-          child: ArtScrim(color: skin.background),
+          child: ArtScrim(color: view.skin.background),
         ),
         list,
       ],
@@ -276,31 +286,31 @@ class HomeScreen extends StatelessWidget {
   }
 
   List<Widget> _continueSection(BuildContext context) {
-    if (continueTrack == null) return const [];
+    if (view.continueTrack == null) return const [];
     return [
       _bandText(context, l10nOf(context).homeContinue),
-      _continueRow(context, continueTrack!),
+      _continueRow(context, view.continueTrack!),
       const SizedBox(height: 22),
     ];
   }
 
   List<Widget> _rediscoverSection(BuildContext context) {
-    if (rediscover.isEmpty) return const [];
+    if (view.rediscover.isEmpty) return const [];
     return [
       GestureDetector(
-        onTap: onOpenRediscover,
+        onTap: view.onOpenRediscover,
         child: _bandText(context, l10nOf(context).homeRediscover),
       ),
-      _coverRail(context, rediscover),
+      _coverRail(context, view.rediscover),
       const SizedBox(height: 22),
     ];
   }
 
   List<Widget> _jumpBackInSection(BuildContext context) {
-    if (jumpBackIn.isEmpty) return const [];
+    if (view.jumpBackIn.isEmpty) return const [];
     return [
       _bandText(context, l10nOf(context).homeJumpBackIn),
-      _coverRail(context, jumpBackIn),
+      _coverRail(context, view.jumpBackIn),
       const SizedBox(height: 22),
     ];
   }
@@ -308,35 +318,35 @@ class HomeScreen extends StatelessWidget {
   List<Widget> _quickPickSection(BuildContext context) {
     final seen = <String>{};
     final pool = <Track>[
-      for (final t in mostPlayed)
+      for (final t in view.mostPlayed)
         if (seen.add(t.id)) t,
-      for (final t in likedSongs)
+      for (final t in view.likedSongs)
         if (seen.add(t.id)) t,
     ];
     if (pool.isEmpty) return const [];
     return [
       _bandText(context, l10nOf(context).homeQuickPick),
       _QuickPickPager(
-        skin: skin,
+        skin: view.skin,
         pool: pool,
-        coverPathFor: coverPathFor,
-        onPlay: onPlay,
+        coverPathFor: view.coverPathFor,
+        onPlay: view.onPlay,
       ),
       const SizedBox(height: 22),
     ];
   }
 
   List<Widget> _fromLibrarySection(BuildContext context) {
-    if (libraryPlaylists.isEmpty) return const [];
+    if (view.libraryPlaylists.isEmpty) return const [];
     return [
       _bandText(context, l10nOf(context).homeFromLibrary),
-      _playlistRail(context, libraryPlaylists),
+      _playlistRail(context, view.libraryPlaylists),
       const SizedBox(height: 22),
     ];
   }
 
   Widget _playlistRail(BuildContext context, List<PlaylistPlays> lists) {
-    final pal = PresentationScope.of(context, fallback: skin).palette;
+    final pal = PresentationScope.of(context, fallback: view.skin).palette;
     return SizedBox(
       height: 104 + 6 + 2 * 26 + 4,
       child: ListView.separated(
@@ -348,7 +358,7 @@ class HomeScreen extends StatelessWidget {
           final p = entry.playlist;
           return GestureDetector(
 
-            onTap: onPlayPlaylist == null ? null : () => onPlayPlaylist!(p),
+            onTap: view.onPlayPlaylist == null ? null : () => view.onPlayPlaylist!(p),
             child: SizedBox(
               width: 104,
               child: Column(
@@ -390,15 +400,15 @@ class HomeScreen extends StatelessWidget {
 
   Widget _playlistCover(Playlist p) {
     final first = tracksOf(p);
-    final cover = first.isEmpty ? null : coverPathFor?.call(first.first);
+    final cover = first.isEmpty ? null : view.coverPathFor?.call(first.first);
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: skin.secondary(0.28)),
+        border: Border.all(color: view.skin.secondary(0.28)),
       ),
       child: (cover == null || !File(cover).existsSync())
           ? ColoredBox(
-              color: skin.panel,
-              child: Icon(Icons.queue_music_rounded, color: skin.accentDeep, size: 30),
+              color: view.skin.panel,
+              child: Icon(Icons.queue_music_rounded, color: view.skin.accentDeep, size: 30),
             )
           // Full-size art in a small slot is a decode the UI never uses.
           : Image(
@@ -411,7 +421,7 @@ class HomeScreen extends StatelessWidget {
   // ignore: unused_element
   List<Widget> _genreSection(BuildContext context) {
     final withTracks = [
-      for (final p in genreLists)
+      for (final p in view.genreLists)
         if (tracksOf(p).isNotEmpty) p,
     ];
     if (withTracks.isEmpty) return const [];
@@ -425,7 +435,7 @@ class HomeScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: LayoutSpec.fontFloor,
               fontWeight: FontWeight.w800,
-              color: skin.textSecondary,
+              color: view.skin.textSecondary,
             ),
           ),
         ),
@@ -437,19 +447,19 @@ class HomeScreen extends StatelessWidget {
   }
 
   List<Widget> _recentSection(BuildContext context) {
-    if (recent.isEmpty) return const [];
+    if (view.recent.isEmpty) return const [];
     return [
       _bandText(context, l10nOf(context).homeRecentlyAdded),
       SizedBox(
         height: 104 + 6 + 2 * 20 + 10,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          itemCount: recent.length,
+          itemCount: view.recent.length,
           separatorBuilder: (_, __) => const SizedBox(width: 10),
           itemBuilder: (_, i) {
-            final t = recent[i];
-            final cover = coverPathFor?.call(t);
-            final play = onPlay;
+            final t = view.recent[i];
+            final cover = view.coverPathFor?.call(t);
+            final play = view.onPlay;
             return GestureDetector(
               onTap: play == null ? null : () => play(t),
               child: SizedBox(
@@ -461,11 +471,11 @@ class HomeScreen extends StatelessWidget {
                     AspectRatio(
                       aspectRatio: 1,
                       child: Container(
-                        color: skin.panel,
+                        color: view.skin.panel,
                         child: cover == null
                             ? Icon(Icons.music_note_rounded,
                                 size: 26,
-                                color: skin.secondary(0.6))
+                                color: view.skin.secondary(0.6))
                             : Image.file(
                                 File(cover),
                                 fit: BoxFit.cover,
@@ -473,7 +483,7 @@ class HomeScreen extends StatelessWidget {
                                 errorBuilder: (_, __, ___) => Icon(
                                     Icons.music_note_rounded,
                                     size: 26,
-                                    color: skin.textSecondary),
+                                    color: view.skin.textSecondary),
                               ),
                       ),
                     ),
@@ -485,7 +495,7 @@ class HomeScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: LayoutSpec.fontFloor,
                         fontWeight: FontWeight.w700,
-                        color: skin.textPrimary,
+                        color: view.skin.textPrimary,
                       ),
                     ),
                     Text(
@@ -494,7 +504,7 @@ class HomeScreen extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontFloor,
-                        color: skin.textSecondary,
+                        color: view.skin.textSecondary,
                       ),
                     ),
                   ],
@@ -509,20 +519,20 @@ class HomeScreen extends StatelessWidget {
   }
 
   List<Widget> _recapSection(BuildContext context) {
-    if (recapTracks.isEmpty) return const [];
+    if (view.recapTracks.isEmpty) return const [];
     return [
-      _bandText(context, 'RECAP — ${capsFor(context, recapLabel)}'),
+      _bandText(context, 'RECAP — ${capsFor(context, view.recapLabel)}'),
       _recapCard(context),
       const SizedBox(height: 22),
     ];
   }
 
   Widget _recapCard(BuildContext context) {
-    final pal = PresentationScope.of(context, fallback: skin).palette;
-    final first = recapTracks.first;
-    final cover = coverPathFor?.call(first);
+    final pal = PresentationScope.of(context, fallback: view.skin).palette;
+    final first = view.recapTracks.first;
+    final cover = view.coverPathFor?.call(first);
     return GestureDetector(
-      onTap: onOpenRecap,
+      onTap: view.onOpenRecap,
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -548,7 +558,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'RECAP — ${capsFor(context, recapLabel)}',
+                    'RECAP — ${capsFor(context, view.recapLabel)}',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -559,7 +569,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    l10nOf(context).homeRecapSongs(recapTracks.length),
+                    l10nOf(context).homeRecapSongs(view.recapTracks.length),
                     style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
                   ),
                 ],
@@ -573,7 +583,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   List<Track> tracksOf(Playlist p) {
-    final byId = {for (final t in allTracks) t.id: t};
+    final byId = {for (final t in view.allTracks) t.id: t};
     return [
       for (final id in p.trackIds)
         if (byId[id] != null) byId[id]!,
@@ -588,8 +598,8 @@ class HomeScreen extends StatelessWidget {
             fontSize: LayoutSpec.fontFloor,
             letterSpacing: trackingFor(context, 2.2),
             fontWeight: FontWeight.w900,
-            color: skin.accent,
-            // The band sits on artwork, so it needs a shadow of its own.
+            color: view.skin.accent,
+            // The view.band sits on artwork, so it needs a shadow of its own.
             shadows: [
               Shadow(
                 color: Colors.black.withValues(alpha: 0.85),
@@ -602,9 +612,9 @@ class HomeScreen extends StatelessWidget {
       );
 
   Widget _continueRow(BuildContext context, Track t) {
-    final pal = PresentationScope.of(context, fallback: skin).palette;
+    final pal = PresentationScope.of(context, fallback: view.skin).palette;
     return GestureDetector(
-      onTap: onPlay == null ? null : () => onPlay!(t),
+      onTap: view.onPlay == null ? null : () => view.onPlay!(t),
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -661,10 +671,10 @@ class HomeScreen extends StatelessWidget {
       );
 
   Widget _coverTile(BuildContext context, Track t) {
-    final pal = PresentationScope.of(context, fallback: skin).palette;
+    final pal = PresentationScope.of(context, fallback: view.skin).palette;
     return GestureDetector(
 
-      onTap: onPlay == null ? null : () => onPlay!(t),
+      onTap: view.onPlay == null ? null : () => view.onPlay!(t),
       child: SizedBox(
         width: 104,
         child: Column(
@@ -695,8 +705,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _coverBox(BuildContext context, Track t, double size) {
-    final pal = PresentationScope.of(context, fallback: skin).palette;
-    final path = coverPathFor?.call(t);
+    final pal = PresentationScope.of(context, fallback: view.skin).palette;
+    final path = view.coverPathFor?.call(t);
     return Container(
       width: size,
       height: size,
@@ -717,7 +727,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _stateTile(BuildContext context, IconData icon, String label, {bool dim = false}) {
-    final pal = PresentationScope.of(context, fallback: skin).palette;
+    final pal = PresentationScope.of(context, fallback: view.skin).palette;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),

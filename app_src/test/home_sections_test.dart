@@ -35,7 +35,7 @@ Future<void> _pump(
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(
     home: Material(
-      child: HomeScreen(
+      child: HomeScreen(view: HomeView(
         skin: kSkinCrimson,
         band: 'afternoon',
         greeting: 'Good afternoon',
@@ -51,7 +51,7 @@ Future<void> _pump(
         onOpenRecap: onOpenRecap ?? () {},
         onOpenRecentPlaylist: () {},
         recent: recentTracks,
-      ),
+      )),
     ),
   ));
   await tester.pumpAndSettle();
@@ -65,14 +65,14 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(MaterialApp(
       home: Material(
-        child: HomeScreen(
+        child: HomeScreen(view: HomeView(
           skin: kSkinCrimson,
           band: 'afternoon',
           greeting: 'Good afternoon',
           allTracks: [for (var i = 0; i < 4; i++) _t(i)],
           onPlay: (_) {},
           headerArt: const SizedBox.expand(key: Key('home-art')),
-        ),
+        )),
       ),
     ));
     await tester.pumpAndSettle();

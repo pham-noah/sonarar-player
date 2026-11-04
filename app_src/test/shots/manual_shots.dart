@@ -174,7 +174,7 @@ void main() {
       ),
     ]);
 
-    final screen = HomeScreen(
+    final screen = HomeScreen(view: HomeView(
       skin: s.skin,
       band: 'EVENING',
       greeting: 'Good evening',
@@ -198,7 +198,7 @@ void main() {
       contextEnabled: true,
       coverPathFor: _coverPath,
       onPlay: (_) {},
-    );
+    ));
 
     await _pump(tester, screen, s.skin);
     await expectLater(

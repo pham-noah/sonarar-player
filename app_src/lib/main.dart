@@ -2836,7 +2836,7 @@ class _HomeShellState extends State<HomeShell>
         AppTab.settings => _settingsTab(skin),
       };
   /// The home tab, wired. `_tabContent` is the routing; this is the wiring.
-  Widget _homeTab(Skin skin) => HomeScreen(
+  Widget _homeTab(Skin skin) => HomeScreen(view: HomeView(
         skin: skin,
         headerArt: _headerArt(skin),
         recent: _recentTracks,
@@ -2879,7 +2879,7 @@ class _HomeShellState extends State<HomeShell>
             : placeIconFor(_ctx.placeBook.byId(_ctx.currentPlaceId!)?.icon),
         hasFix: _ctx.currentPlaceId != null,
         contextEnabled: widget.state.contextEnabled,
-      );
+      ));
   /// The library tab, wired. `_tabContent` is the routing; this is the wiring.
   Widget _libraryTab(Skin skin) => LibraryScreen(view: LibraryScreenView(
 

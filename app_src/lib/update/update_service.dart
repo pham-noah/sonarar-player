@@ -17,6 +17,7 @@ class AppUpdate {
     required this.notesUrl,
     required this.sizeBytes,
     this.sha256,
+    this.notes = '',
   });
 
   final String version;
@@ -32,7 +33,20 @@ class AppUpdate {
   /// release did not publish one; the download is then accepted on size alone.
   final String? sha256;
 
+  /// The release body, as GitHub holds it (markdown). Shown in the update sheet
+  /// so the offer says what changed; empty when the release has none.
+  final String notes;
+
   String get label => 'v$version';
+
+  /// What to put in front of the reader: the note's first paragraph-ish slice,
+  /// with the markdown headings and links left in rather than half-stripped.
+  String get notesPreview {
+    final trimmed = notes.trim();
+    if (trimmed.isEmpty) return '';
+    const limit = 500;
+    return trimmed.length <= limit ? trimmed : '${trimmed.substring(0, limit).trimRight()}…';
+  }
 }
 
 /// Self-update is a courtesy, not a feature of the music player.
@@ -88,6 +102,7 @@ Future<AppUpdate?> checkForUpdate(
       apkUrl: asset.$1,
       sizeBytes: asset.$2,
       notesUrl: body['html_url'] is String ? body['html_url'] as String : '',
+      notes: body['body'] is String ? body['body'] as String : '',
       sha256: _digestIn(body['body']),
     );
   } catch (_) {

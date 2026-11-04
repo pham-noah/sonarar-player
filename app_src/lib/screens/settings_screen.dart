@@ -25,6 +25,8 @@ import '../theme/slab.dart';
 import '../l10n/app_localizations.dart';
 import '../update/update_feed.dart';
 import '../update/update_service.dart';
+import '../update/update_sheet.dart';
+import '../update/update_ui.dart';
 
 
 enum SettingsSection {
@@ -52,6 +54,7 @@ class SettingsScreen extends StatefulWidget {
     this.downloadDirectory,
     this.appVersion,
     this.checkUpdate,
+    this.updateUi,
   });
 
   final AppState state;
@@ -69,6 +72,10 @@ class SettingsScreen extends StatefulWidget {
 
   /// The manual check, replaceable so a test can answer without a network.
   final Future<AppUpdate?> Function()? checkUpdate;
+
+  /// The update flow, when the shell has one. Present means the row opens the
+  /// sheet; absent means the old one-line answer, which is what a bare test sees.
+  final UpdateUi? updateUi;
 
   final bool showTitle;
 
@@ -171,6 +178,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _checkNow() async {
+    final ui = widget.updateUi;
+    if (ui != null) {
+      await showUpdateSheet(context, ui, skin: skin);
+      return;
+    }
     if (_checking) return;
     setState(() {
       _checking = true;

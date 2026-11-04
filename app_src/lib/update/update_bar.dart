@@ -13,6 +13,8 @@ import '../theme/skin.dart';
 import '../widgets/toasts.dart';
 import 'update_feed.dart';
 import 'update_service.dart';
+import 'update_sheet.dart';
+import 'update_ui.dart';
 
 /// The offer to update, as one widget that looks after itself.
 ///
@@ -25,9 +27,15 @@ class UpdateBar extends StatefulWidget {
     required this.skin,
     this.enabled = true,
     this.check,
+    this.ui,
   });
 
   final Skin skin;
+
+  /// Where the offer is actually handled: tapping the bar opens the update sheet,
+  /// which has the notes, the size and the two steps. Null keeps the old
+  /// download-on-tap path, which only tests use.
+  final UpdateUi? ui;
 
   /// Off means no check at all — not a check whose result is hidden.
   final bool enabled;
@@ -110,7 +118,16 @@ class _UpdateBarState extends State<UpdateBar> {
     return Material(
       color: skin.panel,
       child: InkWell(
-        onTap: progress == null ? () => _download(update) : null,
+        onTap: progress == null
+            ? () {
+                final ui = widget.ui;
+                if (ui == null) {
+                  unawaited(_download(update));
+                  return;
+                }
+                unawaited(showUpdateSheet(context, ui, skin: skin, known: update));
+              }
+            : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           child: Row(

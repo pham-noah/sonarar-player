@@ -1050,6 +1050,21 @@
       }
     }
   },
+  "updateSheetTitle": "Software update",
+  "updateChecking": "Checking for updates…",
+  "updateDownload": "Download",
+  "updateInstall": "Install",
+  "updateCheckAgain": "Check again",
+  "updateSizeMb": "{mb} MB",
+  "@updateSizeMb": {
+    "placeholders": {
+      "mb": {
+        "type": "int"
+      }
+    }
+  },
+  "updateNotesHeading": "What changed",
+  "updateInstallRefusedHint": "If Android refuses the install, allow “install unknown apps” for Sonarar once, then press Install again.",
   "updateDidNotFinish": "The download did not finish. Try again.",
   "@updateDidNotFinish": {
     "placeholders": {}

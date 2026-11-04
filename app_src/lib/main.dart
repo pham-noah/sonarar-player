@@ -7,6 +7,8 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
@@ -22,6 +24,8 @@ import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
 import 'core/legal.dart';
+import 'update/update_service.dart';
+import 'update/update_ui.dart';
 import 'l10n/app_localizations.dart';
 import 'l10n/script.dart';
 import 'l10n/l10n.dart';
@@ -505,6 +509,19 @@ class _HomeShellState extends State<HomeShell>
   final _showPlayer = ValueNotifier<bool>(false);
 
   final _shellTick = ValueNotifier<int>(0);
+
+  /// The update flow, shared by the bar and the Settings row: one check, one
+  /// download, one sheet, so the two entry points cannot disagree.
+  late final UpdateUi _updates = UpdateUi(
+    check: () => checkForUpdate(appVersionCode, currentVersion: appVersionName),
+    fetch: (update, onProgress) async {
+      final downloads = await getDownloadsDirectory();
+      if (downloads == null) return null;
+      return downloadUpdate(update, downloads, onProgress: onProgress);
+    },
+    install: (apk) async =>
+        (await OpenFilex.open(apk.path)).type == ResultType.done,
+  );
 
   bool _disposed = false;
 
@@ -2420,6 +2437,7 @@ class _HomeShellState extends State<HomeShell>
       l10nOf(context).settingsTitle,
       (_) => SettingsScreen(
         state: widget.state,
+        updateUi: _updates,
         section: SettingsSection.behaviour,
         musicRoot: _musicRoot,
         stateDirectory: _stores.directory,
@@ -3071,6 +3089,7 @@ class _HomeShellState extends State<HomeShell>
       );
   /// The settings tab, wired. `_tabContent` is the routing; this is the wiring.
   Widget _settingsTab(Skin skin) => SettingsScreen(
+        updateUi: _updates,
         state: widget.state,
         musicRoot: _musicRoot,
         stateDirectory: _stores.directory,
@@ -3353,7 +3372,11 @@ class _HomeShellState extends State<HomeShell>
       ShellFrame.docked => Column(
           children: [
 
-            UpdateBar(skin: skin, enabled: _prefs.checkForUpdates),
+            UpdateBar(
+              skin: skin,
+              enabled: _prefs.checkForUpdates,
+              ui: _updates,
+            ),
             Expanded(
               child: Stack(
                 children: [_tabBackdrop(skin), _tabContentArrival(skin)],
@@ -3370,6 +3393,18 @@ class _HomeShellState extends State<HomeShell>
             Positioned.fill(
               child: Stack(
                 children: [_tabBackdrop(skin), _tabContentArrival(skin)],
+              ),
+            ),
+            // The offer used to exist only in the docked frame, so a user on the
+            // Solid or Glass layout was never told there was an update.
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: UpdateBar(
+                skin: skin,
+                enabled: _prefs.checkForUpdates,
+                ui: _updates,
               ),
             ),
             Positioned(

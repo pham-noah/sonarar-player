@@ -17,9 +17,9 @@ dependencies:
   path_provider: ^2.1.4
   audio_session: ^0.1.21
   just_audio: ^0.9.42
-  # Pinned exactly: a caret on a beta means the lock screen can change under a
-  # release build without this file saying so.
-  just_audio_background: 0.0.1-beta.15
+  # Pinned exactly at what 0.3.2 ships: a caret on a beta let this range pick
+  # beta.15 while the released build carried beta.17.
+  just_audio_background: 0.0.1-beta.17
 
   http: ^1.2.0
   open_filex: ^4.6.0

@@ -157,6 +157,39 @@ void main() {
           reason: 'the queue it holds is better than an empty one');
     });
 
+    test('a queue that changed under the same track is EDITED, not reloaded',
+        () async {
+      // The engine holds a queue the loader did not build, and the track being
+      // asked for is the one already playing: the queue edit must not hand the
+      // platform a new source, because that is what stops the music.
+      final h = await _setup(tracks: 4);
+      h.engine
+        ..matchesAnswer = false
+        ..editAnswer = true;
+
+      final ok = await h.loader.loadCurrent();
+
+      expect(ok, isTrue);
+      expect(h.engine.calls, contains('editQueue'));
+      expect(h.engine.calls, isNot(contains('setQueue')),
+          reason: 'setQueue tears the player down and the music drops for a moment');
+      expect(h.engine.calls, isNot(contains('seekToIndex')),
+          reason: 'the playing item did not move, so there is nothing to seek to');
+      expect(h.state.queue!.engineIsStale, isFalse);
+    });
+
+    test('when the engine cannot edit, it falls back to a reload', () async {
+      final h = await _setup(tracks: 4);
+      h.engine
+        ..matchesAnswer = false
+        ..editAnswer = false;
+
+      await h.loader.loadCurrent();
+
+      expect(h.engine.calls, contains('editQueue'));
+      expect(h.engine.calls, contains('setQueue'), reason: 'the fallback must exist');
+    });
+
     test('an engine refusal is reported, not thrown', () async {
       final h = await _setup(tracks: 4);
       h.engine.setQueueAnswer = false;

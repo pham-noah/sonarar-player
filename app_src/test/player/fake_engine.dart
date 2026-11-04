@@ -12,6 +12,7 @@ class FakeEngine implements PlaybackEngine {
   final List<String> calls = [];
 
   List<EngineEntry>? queued;
+  List<EngineEntry>? edited;
   int? queuedIndex;
   String? singlePath;
   Duration? soughtTo;
@@ -21,6 +22,7 @@ class FakeEngine implements PlaybackEngine {
   bool setQueueAnswer = true;
   bool loadAnswer = true;
   bool matchesAnswer = false;
+  bool editAnswer = false;
   @override
   bool hasNext = false;
 
@@ -67,6 +69,13 @@ class FakeEngine implements PlaybackEngine {
     queued = items;
     queuedIndex = initialIndex;
     return setQueueAnswer;
+  }
+
+  @override
+  Future<bool> editQueue(List<EngineEntry> items, {required String keepPlaying}) async {
+    calls.add('editQueue');
+    edited = items;
+    return editAnswer;
   }
 
   @override

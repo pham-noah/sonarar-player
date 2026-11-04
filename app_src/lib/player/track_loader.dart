@@ -132,6 +132,12 @@ class TrackLoader {
         if (effectiveStart > Duration.zero) await e.seek(effectiveStart);
         if (autoPlay && !e.isPlaying) await e.play();
         ok = true;
+      } else if (await e.editQueue(playable, keepPlaying: path)) {
+        // The queue moved under a track that did not. Editing the queue in place
+        // keeps the platform player running; setQueue would stop it — the music
+        // drops for a moment and comes back, which is what a queue edit used to
+        // sound like.
+        ok = true;
       } else {
         ok = await e.setQueue(playable, initialIndex: idx);
 

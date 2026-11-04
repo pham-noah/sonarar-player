@@ -11,6 +11,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'engine_window.dart';
 import 'fade_envelope.dart';
 import 'interruption_policy.dart';
+import 'queue_edit.dart';
 import 'playback_engine.dart';
 import 'playback_intent.dart';
 import 'volume_policy.dart';
@@ -94,6 +95,68 @@ class AudioEngine implements PlaybackEngine {
 
   @override
   Future<void> seekToIndex(int index) => _player.seek(Duration.zero, index: index);
+
+  /// Edits the queue in place: insert, remove and move only what changed.
+  ///
+  /// [setQueue] hands just_audio a whole new source, which stops the platform
+  /// player — the music drops for a moment. A queue edit needs none of that: the
+  /// current item is still the current item, so the queue around it can be edited
+  /// while it plays.
+  @override
+  Future<bool> editQueue(List<EngineEntry> items, {required String keepPlaying}) async {
+    final source = _player.audioSource;
+    if (source is! ConcatenatingAudioSource) return false;
+    if (_currentSourcePath() != keepPlaying) return false;
+
+    final edits = queueEditsFor(from: _queuePaths, to: items);
+    if (edits.isEmpty) {
+      _queuePaths = [for (final i in items) i.path];
+      return true;
+    }
+
+    try {
+      for (final edit in edits) {
+        switch (edit) {
+          case QueueRemove(:final index):
+            await source.removeAt(index);
+          case QueueInsert(:final index, :final entry):
+            await source.insert(
+              index,
+              AudioSource.uri(
+                fileUriForPath(entry.path),
+                tag: MediaItem(
+                  id: entry.path,
+                  title: entry.title,
+                  artist: entry.artist,
+                  album: entry.album,
+                  artUri: entry.cover,
+                ),
+              ),
+            );
+          case QueueMove(:final from, :final to):
+            await source.move(from, to);
+        }
+      }
+    } catch (e) {
+      // Half-edited is worse than reloaded: say so and let the caller reload.
+      debugPrint('[Sonarar][QUEUE] in-place edit failed, reloading: $e');
+      return false;
+    }
+
+    final kept = _currentSourcePath();
+    if (kept != keepPlaying) {
+      debugPrint('[Sonarar][QUEUE] in-place edit lost the playing track '
+          '(wanted=$keepPlaying, got=$kept), reloading');
+      return false;
+    }
+
+    _queuePaths = [for (final i in items) i.path];
+    // Visible in diagnostics.log: a queue edit that was applied in place. Before
+    // this, every edit logged a [LOAD] and the music audibly dropped.
+    debugPrint('[Sonarar][QUEUE] edited in place: ${edits.length} op(s) '
+        '${edits.take(4).join(", ")}${edits.length > 4 ? " …" : ""}');
+    return true;
+  }
 
   bool moveWithinEngine(int from, int to) {
     final source = _player.audioSource;

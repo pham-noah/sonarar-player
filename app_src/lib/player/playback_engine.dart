@@ -34,7 +34,17 @@ abstract interface class PlaybackEngine {
   bool queueMatches(List<String> paths);
 
   /// Hands the engine a window of the queue and starts at [initialIndex].
+  ///
+  /// This tears the platform player down and builds a new one, which is audible
+  /// when the music was playing. Use [editQueue] when only the queue changed.
   Future<bool> setQueue(List<EngineEntry> items, {required int initialIndex});
+
+  /// Edits the queue the engine already holds, leaving [keepPlaying] playing.
+  ///
+  /// Returns false when the engine cannot do that safely — nothing holds, the
+  /// player is not where it was expected, or the source is not editable — and the
+  /// caller falls back to [setQueue].
+  Future<bool> editQueue(List<EngineEntry> items, {required String keepPlaying});
 
   /// Plays one file on its own, with no queue behind it.
   Future<bool> loadAndPlay(

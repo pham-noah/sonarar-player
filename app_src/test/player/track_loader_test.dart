@@ -157,6 +157,41 @@ void main() {
           reason: 'the queue it holds is better than an empty one');
     });
 
+    test('a queue that did not change the window does NOT rewind the track',
+        () async {
+      // The other half of the same bug: the engine already holds this queue (a
+      // track was appended past the window), so there is nothing to seek — and
+      // seeking to index 0 and back is an audible rewind.
+      final h = await _setup(tracks: 4);
+      h.engine
+        ..matchesAnswer = true
+        ..playingPath = '/lib/music/t0.m4a'
+        ..position = const Duration(seconds: 37);
+
+      final ok = await h.loader.loadCurrent(startAt: const Duration(seconds: 37));
+
+      expect(ok, isTrue);
+      expect(h.engine.calls, isNot(contains('seekToIndex')),
+          reason: 'the engine is already on this track; seeking to its index is a '
+              'seek to zero');
+      expect(h.engine.calls, isNot(contains('seek')),
+          reason: 'it is already at the position that was asked for');
+    });
+
+    test('a resume position still moves the track when it is elsewhere', () async {
+      final h = await _setup(tracks: 4);
+      h.engine
+        ..matchesAnswer = true
+        ..playingPath = '/lib/music/t0.m4a'
+        ..position = Duration.zero;
+
+      await h.loader.loadCurrent(startAt: const Duration(seconds: 42));
+
+      expect(h.engine.soughtTo, const Duration(seconds: 42));
+      expect(h.engine.calls, isNot(contains('seekToIndex')),
+          reason: 'same track, so the position is all that needs moving');
+    });
+
     test('a queue that changed under the same track is EDITED, not reloaded',
         () async {
       // The engine holds a queue the loader did not build, and the track being

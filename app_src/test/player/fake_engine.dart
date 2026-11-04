@@ -48,6 +48,8 @@ class FakeEngine implements PlaybackEngine {
   @override
   String? get playingPath => _path;
 
+  set playingPath(String? value) => _path = value;
+
   @override
   LoopController? get loop => _loop;
 

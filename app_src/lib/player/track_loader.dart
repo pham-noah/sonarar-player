@@ -128,8 +128,15 @@ class TrackLoader {
     } else {
       final paths = [for (final entry in playable) entry.path];
       if (e.queueMatches(paths)) {
-        await e.seekToIndex(idx);
-        if (effectiveStart > Duration.zero) await e.seek(effectiveStart);
+        // The engine already holds exactly this queue. A queue edit that did not
+        // change the window lands here — and seeking the track that is already
+        // playing back to zero only to seek forward again is an audible rewind.
+        // Only move if the engine is somewhere else.
+        if (e.playingPath != path) await e.seekToIndex(idx);
+        final drift = (e.position - effectiveStart).abs();
+        if (effectiveStart > Duration.zero && drift > const Duration(seconds: 1)) {
+          await e.seek(effectiveStart);
+        }
         if (autoPlay && !e.isPlaying) await e.play();
         ok = true;
       } else if (await e.editQueue(playable, keepPlaying: path)) {

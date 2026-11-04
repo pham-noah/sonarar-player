@@ -8,6 +8,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
+import 'engine_window.dart';
 import 'playback_intent.dart';
 import 'volume_policy.dart';
 
@@ -119,7 +120,7 @@ class AudioEngine {
   DateTime? _lastLoadAt;
 
   Future<bool> setQueue(
-    List<({String path, String title, String artist, String album, Uri? cover})> items, {
+    List<EngineEntry> items, {
     required int initialIndex,
   }) async {
     final sources = <AudioSource>[

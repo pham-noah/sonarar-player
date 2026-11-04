@@ -97,6 +97,7 @@ import 'widgets/framed_art.dart';
 import 'widgets/spectrum.dart';
 import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
+import 'player/engine_window.dart';
 import 'player/queue_mode.dart';
 import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
@@ -1008,7 +1009,6 @@ class _HomeShellState extends State<HomeShell>
 
     unawaited(engine.setVolume(_volume));
 
-    const chunk = 24;
     final order = widget.state.queue?.order ?? const <Track>[];
 
     if (order.length < 3) {
@@ -1016,48 +1016,33 @@ class _HomeShellState extends State<HomeShell>
           'want=${widget.state.currentTrack?.id}');
       debugPrint('[Sonarar][SHORTQUEUE] stack:\n${StackTrace.current}');
     }
-    final at = order.indexWhere((t) => t.id == track.id);
-    final start = at < 0 ? 0 : (at ~/ chunk) * chunk;
-    final window = order.sublist(
-      start,
-      (start + chunk).clamp(0, order.length),
+
+    final built = engineWindowFor(
+      order: order,
+      track: track,
+      pathFor: _repo.absoluteFor,
+      coverFor: _repo.coverPathFor,
+      exists: (p) => File(p).existsSync(),
     );
+    final playable = built.entries;
+    final idx = built.index;
+    final atStart = order.isEmpty ? null : order[built.windowStart];
 
-    ({String path, String title, String artist, String album, Uri? cover}) mk(
-        Track t) {
-      final p = _repo.absoluteFor(t);
-      final c = _repo.coverPathFor(t);
-      return (
-        path: p ?? '',
-        title: t.title,
-        artist: t.artist,
-        album: t.album,
-        cover: (c != null && File(c).existsSync()) ? Uri.file(c) : null,
-      );
-    }
-
-    final playable = <({String path, String title, String artist, String album, Uri? cover})>[];
-    for (final t in window) {
-      final e = mk(t);
-      if (e.path.isNotEmpty && File(e.path).existsSync()) playable.add(e);
-    }
-    final idx = playable.indexWhere((e) => e.path == path);
-
-    debugPrint('[Sonarar][WINDOW] ${playable.length} of ${window.length} files exist; '
+    debugPrint('[Sonarar][WINDOW] ${playable.length} of ${built.windowLength} files exist; '
         'want=$path '
-        'sample=${window.isEmpty ? "none" : _repo.absoluteFor(window.first) ?? "null"}');
+        'sample=${atStart == null ? "none" : _repo.absoluteFor(atStart) ?? "null"}');
 
     bool ok;
 
     if (playable.isEmpty) {
-      debugPrint('[Sonarar][LOAD] none of the ${window.length} window files exist; '
-          'keeping the current queue. first=${window.isEmpty ? "none" : window.first.file}');
+      debugPrint('[Sonarar][LOAD] none of the ${built.windowLength} window files exist; '
+          'keeping the current queue. first=${atStart?.file ?? "none"}');
       _fileMissing = true;
       return false;
     }
 
     if (idx < 0) {
-      debugPrint('[Sonarar][LOAD] not-in-window: window=${window.length} '
+      debugPrint('[Sonarar][LOAD] not-in-window: window=${built.windowLength} '
           'playable=${playable.length} want=$path '
           'first=${playable.isEmpty ? "none" : playable.first.path}');
       final coverPath = _repo.coverPathFor(track);

@@ -161,7 +161,7 @@ void main() {
       Future<void> pumpLibrary({required bool grid, bool scrollAway = false}) async {
         await tester.pumpWidget(MaterialApp(
           home: Scaffold(
-            body: LibraryScreen(
+            body: LibraryScreen(view: LibraryScreenView(
 
               searchOnly: true,
               entryToken: 0,
@@ -171,7 +171,7 @@ void main() {
               grid: grid,
               headerScrollsAway: scrollAway,
               contentMaxWidth: 720,
-            ),
+            )),
           ),
         ));
         for (var i = 0; i < 6; i++) {
@@ -217,14 +217,14 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
-          body: LibraryScreen(
+          body: LibraryScreen(view: LibraryScreenView(
             searchOnly: true,
             entryToken: 0,
             tracks: [for (var i = 0; i < 12; i++) _t('t$i')],
             coverPathFor: (_) => null,
             skin: skin,
             grid: true,
-          ),
+          )),
         ),
       ));
       for (var i = 0; i < 6; i++) {

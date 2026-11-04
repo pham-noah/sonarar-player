@@ -38,14 +38,14 @@ Future<void> _pumpLibrary(WidgetTester tester, LayoutKind kind) async {
     home: PresentationScope(
       presentation: presentationFor(kind, skin),
       child: Scaffold(
-        body: LibraryScreen(
+        body: LibraryScreen(view: LibraryScreenView(
           entryToken: 0,
           tracks: [_t('a'), _t('b')],
           coverPathFor: (_) => null,
           skin: skin,
 
           headerScrollsAway: true,
-        ),
+        )),
       ),
     ),
   ));

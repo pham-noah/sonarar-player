@@ -101,8 +101,10 @@ import 'widgets/framed_art.dart';
 import 'widgets/spectrum.dart';
 import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
+import 'player/playback_ticker.dart';
+import 'player/player_controller.dart';
+import 'player/track_loader.dart';
 import 'player/queue_mode.dart';
-import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
 
 Future<void>? _audioInit;
@@ -114,35 +116,28 @@ final diagLog = DiagLog();
 Future<void> main() async {
   final tMain = DateTime.now();
   WidgetsFlutterBinding.ensureInitialized();
-  // ignore: avoid_print
-  print('[Sonarar][MAIN] binding=${DateTime.now().difference(tMain).inMilliseconds}ms');
+  debugPrint('[Sonarar][MAIN] binding=${DateTime.now().difference(tMain).inMilliseconds}ms');
 
   diagLog.attach();
 
   var fullErrorsPrinted = 0;
   FlutterError.onError = (details) {
-    // ignore: avoid_print
-    print('[Sonarar][FLUTTER_ERROR] ${details.exceptionAsString()}');
-    // ignore: avoid_print
-    print('[Sonarar][FLUTTER_ERROR] context=${details.context}');
+    debugPrint('[Sonarar][FLUTTER_ERROR] ${details.exceptionAsString()}');
+    debugPrint('[Sonarar][FLUTTER_ERROR] context=${details.context}');
     if (fullErrorsPrinted < 3) {
       fullErrorsPrinted++;
-      // ignore: avoid_print
-      print('[Sonarar][FLUTTER_ERROR] full:\n${details.toString()}');
+      debugPrint('[Sonarar][FLUTTER_ERROR] full:\n${details.toString()}');
     }
 
     final stack = details.stack;
     if (stack != null) {
-      // ignore: avoid_print
-      print('[Sonarar][FLUTTER_ERROR] stack:\n$stack');
+      debugPrint('[Sonarar][FLUTTER_ERROR] stack:\n$stack');
     }
     FlutterError.presentError(details);
   };
   PlatformDispatcher.instance.onError = (error, stack) {
-    // ignore: avoid_print
-    print('[Sonarar][UNCAUGHT] $error');
-    // ignore: avoid_print
-    print('[Sonarar][UNCAUGHT] stack:\n$stack');
+    debugPrint('[Sonarar][UNCAUGHT] $error');
+    debugPrint('[Sonarar][UNCAUGHT] stack:\n$stack');
     return true;
   };
 
@@ -164,8 +159,7 @@ Future<void> main() async {
 
       androidStopForegroundOnPause: false,
       );
-      // ignore: avoid_print
-      print('[Sonarar][MAIN] audio_service READY in ${DateTime.now().difference(tAudio).inMilliseconds}ms '
+      debugPrint('[Sonarar][MAIN] audio_service READY in ${DateTime.now().difference(tAudio).inMilliseconds}ms '
           '(started after the first frame)');
     }();
     await _audioInit;
@@ -178,16 +172,14 @@ Future<void> main() async {
     onDetach: () => unawaited(diagLog.flush()),
   );
 
-  // ignore: avoid_print
-  print('[Sonarar][MAIN] pre_runApp=${DateTime.now().difference(tMain).inMilliseconds}ms');
+  debugPrint('[Sonarar][MAIN] pre_runApp=${DateTime.now().difference(tMain).inMilliseconds}ms');
 
   var firstFrameLogged = false;
   WidgetsBinding.instance.addTimingsCallback((timings) {
     if (firstFrameLogged) return;
     firstFrameLogged = true;
     final t = timings.last;
-    // ignore: avoid_print
-    print('[Sonarar][FRAME] first frame build=${t.buildDuration.inMilliseconds}ms '
+    debugPrint('[Sonarar][FRAME] first frame build=${t.buildDuration.inMilliseconds}ms '
         'raster=${t.rasterDuration.inMilliseconds}ms '
         'at=${DateTime.now().difference(tMain).inMilliseconds}ms');
   });
@@ -366,7 +358,7 @@ class _HomeShellState extends State<HomeShell>
       presentation: widget.state.presentation,
       rebuildOn: _routeListenable,
 
-      builder: (_) => LibraryScreen(
+      builder: (_) => LibraryScreen(view: LibraryScreenView(
         tracks: _rediscoverTracks,
         playlists: null,
         skin: widget.state.uiSkin,
@@ -376,12 +368,12 @@ class _HomeShellState extends State<HomeShell>
         onCreatePlaylist: (_) {},
         onDeletePlaylist: (_) {},
         headerScrollsAway: true,
-      ),
+      )),
     );
   }
 
   void _openRecap() {
-    _openPage('RECAP — $_recapLabel', (_) => LibraryScreen(
+    _openPage('RECAP — $_recapLabel', (_) => LibraryScreen(view: LibraryScreenView(
       tracks: _recapTracks,
       playlists: null,
       skin: widget.state.uiSkin,
@@ -391,7 +383,7 @@ class _HomeShellState extends State<HomeShell>
       onCreatePlaylist: (_) {},
       onDeletePlaylist: (_) {},
       headerScrollsAway: true,
-    ));
+    )));
   }
 
   void _notePlaylistOpened(String id) {
@@ -489,14 +481,15 @@ class _HomeShellState extends State<HomeShell>
 
   StorageAccess _notificationAccess = StorageAccess.unknown;
 
-  double _volume = 1.0;
-  double _volumeBeforeMute = 1.0;
-  bool get _muted => _volume <= 0.0;
+  // Transport state lives in PlayerController now. These keep the shell's
+  // twenty-five reads unchanged; the writes go through one object instead of
+  // being spread over setState closures.
+  double get _volume => _player.volume;
 
   final SleepTimer _sleep = SleepTimer();
 
   /// Armed from the player, spent on completion, dropped by a manual skip.
-  bool _stopAfterTrack = false;
+  bool get _stopAfterTrack => _player.stopAfterTrack;
 
   final ValueNotifier<Duration?> _sleepLeft = ValueNotifier(null);
   AppTab _tab = AppTab.home;
@@ -650,8 +643,7 @@ class _HomeShellState extends State<HomeShell>
       _askedStorage = true;
       _storageAccess = await StoragePermission.request();
       if (mounted) setState(() {});
-      // ignore: avoid_print
-      print('[Sonarar] storage after request=$_storageAccess');
+      debugPrint('[Sonarar] storage after request=$_storageAccess');
       // The library was read before the grant, so re-read it now, not next launch.
       if (_storageAccess == StorageAccess.granted) await _rereadLibrary();
     }
@@ -760,7 +752,7 @@ class _HomeShellState extends State<HomeShell>
         if (byId[id] != null) byId[id]!,
     ];
     // ignore: discarded_futures
-    return LibraryScreen(
+    return LibraryScreen(view: LibraryScreenView(
       tracks: tracks,
       playlists: null,
       skin: widget.state.uiSkin,
@@ -772,11 +764,11 @@ class _HomeShellState extends State<HomeShell>
 
       onAddSongs: () => _addSongsToPlaylist(p),
       headerScrollsAway: true,
-    );
+    ));
   }
 
   void _addSongsToPlaylist(Playlist playlist) {
-    _openPage('ADD TO ${capsFor(context, playlist.name)}', (_) => LibraryScreen(
+    _openPage('ADD TO ${capsFor(context, playlist.name)}', (_) => LibraryScreen(view: LibraryScreenView(
           tracks: _repo.tracks,
           playlists: null,
           skin: widget.state.uiSkin,
@@ -792,7 +784,7 @@ class _HomeShellState extends State<HomeShell>
           onCreatePlaylist: (_) {},
           onDeletePlaylist: (_) {},
           headerScrollsAway: true,
-        ));
+        )));
   }
 
   List<Playlist> get _genreLists => [
@@ -842,13 +834,27 @@ class _HomeShellState extends State<HomeShell>
 
   bool _needsSetup = false;
 
-  bool _playing = false;
+  bool get _playing => _player.playing;
   AudioEngine? _audio;
-  Timer? _progress;
 
-  final _tickerWanted = ValueNotifier<bool>(false);
+  late final PlayerController _player = PlayerController(
+    state: widget.state,
+    loader: _loader,
+    engine: () => _audio,
+    reload: ({Duration? startAt, bool autoPlay = true}) =>
+        _loadCurrentTrack(startAt: startAt, autoPlay: autoPlay),
+  );
 
-  bool get tickerRunning => _progress != null;
+  late final TrackLoader _loader = TrackLoader(
+    state: widget.state,
+    repo: _repo,
+    engine: () => _audio,
+    volume: () => _volume,
+    loopPointsFor: (id) => _loopPoints[id],
+  );
+  late final PlaybackTicker _ticker = PlaybackTicker(_onProgressTick);
+
+  bool get tickerRunning => _ticker.isRunning;
 
   @visibleForTesting
   bool debugWantTicker = false;
@@ -881,71 +887,70 @@ class _HomeShellState extends State<HomeShell>
 
   bool _skippingMissing = false;
 
-  void _syncProgressTicker() {
-    final wanted = _playing || _sleep.isRunning || debugWantTicker;
-    _tickerWanted.value = wanted;
-    if (wanted && _progress == null) {
-      _startProgressTicker();
-    } else if (!wanted && _progress != null) {
-      _progress!.cancel();
-      _progress = null;
+  void _syncProgressTicker() => _ticker.sync(
+        run: _playing || _sleep.isRunning || debugWantTicker,
+      );
+
+  /// One tick of the player's clock.
+  void _onProgressTick() {
+    final e = _audio;
+    if (e == null) return;
+    final st = widget.state;
+
+    final now = DateTime.now();
+    if (_playing) {
+      _sleep.resume(now);
+    } else {
+      _sleep.pause(now);
+    }
+    _sleepLeft.value = _sleep.remaining(now);
+
+    if (!_playing) return;
+
+    st.position.value = e.position;
+    _lastPlayedId = st.currentTrack?.id;
+    _lastPlayedMs = e.position.inMilliseconds;
+
+    final trackLength = st.currentTrack?.duration;
+    st.duration.value = trackLength ?? e.duration;
+    _durationOrZero.value = trackLength ?? e.duration ?? Duration.zero;
+
+    unawaited(e.tickLoop());
+
+    final sleep = _sleep.tick(now);
+    switch (sleep.action) {
+      case SleepAction.fadeTo:
+        unawaited(e.setVolume(_volume * sleep.volume));
+      case SleepAction.stop:
+        unawaited(e.pause());
+
+        unawaited(e.setVolume(_volume));
+        widget.state.setSleeping(false);
+        if (mounted) {
+          setState(() => _player.setPlaying(false));
+          _syncProgressTicker();
+        }
+      case SleepAction.none:
+        break;
     }
   }
 
-  void _startProgressTicker() {
-    _progress?.cancel();
-    _progress = Timer.periodic(const Duration(milliseconds: 250), (_) {
-      final e = _audio;
-      if (e == null) return;
-      final st = widget.state;
-
-      final now = DateTime.now();
-      if (_playing) {
-        _sleep.resume(now);
-      } else {
-        _sleep.pause(now);
-      }
-      _sleepLeft.value = _sleep.remaining(now);
-
-      if (_playing) {
-        st.position.value = e.position;
-        _lastPlayedId = st.currentTrack?.id;
-        _lastPlayedMs = e.position.inMilliseconds;
-
-        final trackLength = st.currentTrack?.duration;
-        st.duration.value = trackLength ?? e.duration;
-        _durationOrZero.value = trackLength ?? e.duration ?? Duration.zero;
-
-        unawaited(e.tickLoop());
-
-        final sleep = _sleep.tick(now);
-        switch (sleep.action) {
-          case SleepAction.fadeTo:
-            unawaited(e.setVolume(_volume * sleep.volume));
-          case SleepAction.stop:
-            unawaited(e.pause());
-
-            unawaited(e.setVolume(_volume));
-            widget.state.setSleeping(false);
-            if (mounted) {
-              setState(() => _playing = false);
-              _syncProgressTicker();
-            }
-          case SleepAction.none:
-            break;
-        }
-      }
-    });
-  }
-
-  String? _loadedTrackId;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _player.addListener(_onPlayerChanged);
 
     unawaited(_load());
+  }
+
+  /// Playing, volume and stop-after-this-track all arrive here now, so a repaint
+  /// no longer depends on which call site remembered to ask for one.
+  void _onPlayerChanged() {
+    if (!mounted) return;
+    setState(() {});
+    _syncProgressTicker();
   }
 
   bool _inFront = true;
@@ -1027,120 +1032,24 @@ class _HomeShellState extends State<HomeShell>
       _ctx.resolvePlaceThenWeather(onArrival: _maybeSwitchOnArrival);
 
   Future<bool> _loadCurrentTrack({Duration? startAt, bool autoPlay = true}) async {
-    final engine = _audio;
-    final track = widget.state.currentTrack;
-    if (engine == null || track == null) return false;
-    final path = _repo.absoluteFor(track);
-    if (path == null) return false;
-
-    engine.loop = LoopController(points: _loopPoints[track.id]);
-
-    final effectiveStart = startAt ?? Duration.zero;
-
-    unawaited(engine.setVolume(_volume));
-
-    const chunk = 24;
-    final order = widget.state.queue?.order ?? const <Track>[];
-
-    if (order.length < 3) {
-      // ignore: avoid_print
-      print('[Sonarar][SHORTQUEUE] order=${order.length} track=${track.id} '
-          'want=${widget.state.currentTrack?.id}');
-      // ignore: avoid_print
-      print('[Sonarar][SHORTQUEUE] stack:\n${StackTrace.current}');
-    }
-    final at = order.indexWhere((t) => t.id == track.id);
-    final start = at < 0 ? 0 : (at ~/ chunk) * chunk;
-    final window = order.sublist(
-      start,
-      (start + chunk).clamp(0, order.length),
-    );
-
-    ({String path, String title, String artist, String album, Uri? cover}) mk(
-        Track t) {
-      final p = _repo.absoluteFor(t);
-      final c = _repo.coverPathFor(t);
-      return (
-        path: p ?? '',
-        title: t.title,
-        artist: t.artist,
-        album: t.album,
-        cover: (c != null && File(c).existsSync()) ? Uri.file(c) : null,
-      );
-    }
-
-    final playable = <({String path, String title, String artist, String album, Uri? cover})>[];
-    for (final t in window) {
-      final e = mk(t);
-      if (e.path.isNotEmpty && File(e.path).existsSync()) playable.add(e);
-    }
-    final idx = playable.indexWhere((e) => e.path == path);
-
-    // ignore: avoid_print
-    print('[Sonarar][WINDOW] ${playable.length} of ${window.length} files exist; '
-        'want=$path '
-        'sample=${window.isEmpty ? "none" : _repo.absoluteFor(window.first) ?? "null"}');
-
-    bool ok;
-
-    if (playable.isEmpty) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] none of the ${window.length} window files exist; '
-          'keeping the current queue. first=${window.isEmpty ? "none" : window.first.file}');
-      _fileMissing = true;
-      return false;
-    }
-
-    if (idx < 0) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] not-in-window: window=${window.length} '
-          'playable=${playable.length} want=$path '
-          'first=${playable.isEmpty ? "none" : playable.first.path}');
-      final coverPath = _repo.coverPathFor(track);
-      ok = await engine.loadAndPlay(
-        path,
-        startAt: effectiveStart,
-        autoPlay: autoPlay,
-        title: track.title,
-        artist: track.artist,
-        album: track.album,
-        coverUri: (coverPath != null && File(coverPath).existsSync())
-            ? Uri.file(coverPath)
-            : null,
-      );
-    } else {
-      final paths = [for (final e in playable) e.path];
-      if (engine.queueMatches(paths)) {
-        await engine.seekToIndex(idx);
-        if (effectiveStart > Duration.zero) await engine.seek(effectiveStart);
-        if (autoPlay && !engine.isPlaying) await engine.play();
-        ok = true;
-      } else {
-        ok = await engine.setQueue(playable, initialIndex: idx);
-
-        if (ok && effectiveStart > Duration.zero) await engine.seek(effectiveStart);
-      }
-
-      if (ok) widget.state.queue?.markEngineSynced();
-    }
+    final ok = await _loader.loadCurrent(startAt: startAt, autoPlay: autoPlay);
     if (!mounted) return ok;
 
+    // What to do about a failure is the shell's call: the loader reports, the
+    // interface decides whether to step over the track or show it as missing.
     _shellChanged(() {
-      _fileMissing = !ok;
+      _fileMissing = _loader.fileMissing;
       if (!ok) {
-        // ignore: avoid_print
-        print('[Sonarar] could not load the current track — the player will '
+        debugPrint('[Sonarar] could not load the current track — the player will '
             'report it as missing.');
 
         if (!_skippingMissing) {
           _skippingMissing = true;
 
-          final steppedTo =
-              widget.state.queue?.next(wrap: false);
+          final steppedTo = widget.state.queue?.next(wrap: false);
           _skippingMissing = false;
           if (steppedTo != null) {
-            // ignore: avoid_print
-            print('[Sonarar] stepping over an unloadable track');
+            debugPrint('[Sonarar] stepping over an unloadable track');
             // ignore: discarded_futures
             _loadCurrentTrack(autoPlay: _playing);
             return;
@@ -1148,9 +1057,8 @@ class _HomeShellState extends State<HomeShell>
         }
       }
 
-      if (ok) _loadedTrackId = track.id;
 
-      if (!ok) _playing = false;
+      if (!ok) _player.setPlaying(false);
       _syncProgressTicker();
     });
     return ok;
@@ -1165,14 +1073,12 @@ class _HomeShellState extends State<HomeShell>
     _lastPhase = now;
     if (since != null) _phaseCosts[label] = since;
     if (mounted) setState(() {});
-    // ignore: avoid_print
-    print('[Sonarar] boot ${(progress * 100).round()}% $label'
+    debugPrint('[Sonarar] boot ${(progress * 100).round()}% $label'
         '${since == null ? '' : ' (+${since}ms)'}');
     if (progress >= 1.0) {
       final ranked = _phaseCosts.entries.toList()
         ..sort((a, b) => b.value.compareTo(a.value));
-      // ignore: avoid_print
-      print('[Sonarar] boot TOTAL '
+      debugPrint('[Sonarar] boot TOTAL '
           '${ranked.fold<int>(0, (sum, e) => sum + e.value)}ms — slowest: '
           '${ranked.take(3).map((e) => '${e.key}=${e.value}ms').join(', ')}');
     }
@@ -1181,33 +1087,49 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _load() async {
     _boot(0.02, 'checking permissions');
 
-    _storageAccess = await StoragePermission.status();
-    _notificationAccess = await StoragePermission.notificationStatus();
-    // ignore: avoid_print
-    print('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
+    // Nothing in this group needs another's answer, and each is a platform round
+    // trip: the two permission reads, the chosen music root, and the state
+    // directory. Waiting for them one at a time was four round trips in series
+    // for no reason. The state lives under the default root, not the chosen one:
+    // plays, playlists and themes are not music, and changing the music folder
+    // must not move them.
+    final (storage, notifications, root, stores) = await (
+      StoragePermission.status(),
+      StoragePermission.notificationStatus(),
+      MusicRoot.read(),
+      StateStores.open(libraryRoot: kAndroidLibraryRoot),
+    ).wait;
+
+    _storageAccess = storage;
+    _notificationAccess = notifications;
+    _musicRoot = root;
+    _stores = stores;
+    debugPrint('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
     if (mounted) setState(() {});
-    // ignore: avoid_print
-    print('[Sonarar] storage after request=$_storageAccess');
 
     _boot(0.18, 'reading your library');
-    _musicRoot = await MusicRoot.read();
     _repo.root = _musicRoot;
     await _repo.load();
     _boot(0.52, 'found ${_repo.tracks.length} tracks');
-    // ignore: avoid_print
-    print('[Sonarar] library root=${_repo.libraryRoot} '
+    debugPrint('[Sonarar] library root=${_repo.libraryRoot} '
         'from=${_repo.loadedFrom ?? "none"} '
         'tracks=${_repo.tracks.length} '
         'accessDenied=${_repo.accessDenied}');
 
     _boot(0.60, 'opening your saved state');
-    // Deliberately the default root, not the chosen one: plays, playlists and
-    // themes are not music, and changing the music folder must not move them.
-    _stores = await StateStores.open(libraryRoot: kAndroidLibraryRoot);
     widget.state.libraryRoot = _repo.libraryRoot;
 
     unawaited(_refreshHomeRails());
     _stateDir = _stores.directory;
+
+    // Everything the saved state holds is a separate file, so they are all read
+    // at once. A first run has no prefs.json yet, which is the only question that
+    // has to be asked before the read, not after it.
+    _needsSetup = !File('${_stores.directory}/prefs.json').existsSync();
+
+    final placesRead = _stores.places.load();
+    final prefsRead = _stores.prefs.load();
+    final personalizationRead = _stores.personalization.load();
 
     final (loopPoints, excludedIds, marks, favoriteIds, tags, bonds, rules) = await (
       _stores.loopPoints.load(),
@@ -1221,14 +1143,12 @@ class _HomeShellState extends State<HomeShell>
 
     _loopPoints = loopPoints;
 
-    _ctx.setPlaces(await _stores.places.load());
+    _ctx.setPlaces(await placesRead);
 
-    _needsSetup = !File('${_stores.directory}/prefs.json').existsSync();
-
-    _prefs = await _stores.prefs.load();
+    _prefs = await prefsRead;
     _applyLocale(_prefs);
 
-    widget.state.setPersonalization(await _stores.personalization.load());
+    widget.state.setPersonalization(await personalizationRead);
     widget.state.onPersonalizationChanged = _stores.personalization.save;
 
     widget.state.applyQueuePrefs(
@@ -1256,6 +1176,9 @@ class _HomeShellState extends State<HomeShell>
       favoriteIds: favoriteIds.keys,
     );
     _boot(0.74, 'restoring your place');
+    // The theme presets are a different file from the snapshot; read them while
+    // the snapshot is coming back instead of after it.
+    final presetsRead = _stores.themePresets.load();
     final resume = await _stores.snapshot.load();
     widget.state.attachLibrary(_repo.tracks, resume: resume);
     await _refreshArtBundles();
@@ -1273,7 +1196,7 @@ class _HomeShellState extends State<HomeShell>
     );
 
     widget.state.onPresetsChanged = _themeSession.touched;
-    final loadedPresets = await _stores.themePresets.load();
+    final loadedPresets = await presetsRead;
     final migratedPresets = [
       for (final p in loadedPresets)
         p.personalization == null
@@ -1320,8 +1243,7 @@ class _HomeShellState extends State<HomeShell>
 
     final savedVolume = resume?.volume;
     if (savedVolume != null) {
-      _volume = savedVolume;
-      _volumeBeforeMute = savedVolume > 0 ? savedVolume : 1.0;
+      _player.restoreVolume(savedVolume);
       widget.state.setRestoredVolume(savedVolume);
     }
 
@@ -1331,7 +1253,7 @@ class _HomeShellState extends State<HomeShell>
     _audio!.onPlayingChanged = (playing) {
       if (playing) unawaited(_ensureNotificationPermission());
       if (mounted && _playing != playing) {
-        setState(() => _playing = playing);
+        setState(() => _player.setPlaying(playing));
 
         _syncProgressTicker();
 
@@ -1347,25 +1269,25 @@ class _HomeShellState extends State<HomeShell>
       final finished = widget.state.currentTrack;
 
       if (_stopAfterTrack) {
-        _stopAfterTrack = false;
+        _player.setStopAfterTrack(false);
         if (finished != null) _closeOutPlay(finished);
         widget.state.stopAtEnd();
-        if (mounted) setState(() => _playing = false);
+        if (mounted) setState(() => _player.setPlaying(false));
         _syncProgressTicker();
         return;
       }
 
       switch (widget.state.autoAdvanceAction()) {
-        case AutoAdvance.next:
+        case AutoAdvanceMode.next:
           widget.state.advance(automatic: true);
           // ignore: discarded_futures
           _loadCurrentTrack();
-        case AutoAdvance.replay:
+        case AutoAdvanceMode.replay:
 
           if (finished != null) _closeOutPlay(finished);
           // ignore: discarded_futures
           _loadCurrentTrack(autoPlay: true);
-        case AutoAdvance.stop:
+        case AutoAdvanceMode.stop:
 
           if (widget.state.refillWhenQueueEnds && widget.state.refillFromContext()) {
             // ignore: discarded_futures
@@ -1374,7 +1296,7 @@ class _HomeShellState extends State<HomeShell>
           }
 
           widget.state.stopAtEnd();
-          if (mounted) setState(() => _playing = false);
+          if (mounted) setState(() => _player.setPlaying(false));
           _syncProgressTicker();
       }
     };
@@ -1399,20 +1321,17 @@ class _HomeShellState extends State<HomeShell>
     if (const bool.fromEnvironment('sonarar_audiotest')) {
       final engine = _audio;
       final t = widget.state.currentTrack;
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] loaded=$loaded track=${t?.title ?? "none"} '
+      debugPrint('[Sonarar][AUDIO] loaded=$loaded track=${t?.title ?? "none"} '
           'path=${t == null ? "n/a" : _repo.absoluteFor(t)}');
 
       if (engine != null && loaded) {
         final t = widget.state.currentTrack;
         final path = _repo.absoluteFor(t!)!;
-        // ignore: avoid_print
-        print('[Sonarar][AUDIO] probe path=$path');
+        debugPrint('[Sonarar][AUDIO] probe path=$path');
         unawaited(engine.play());
         for (var i = 1; i <= 8; i++) {
           await Future<void>.delayed(const Duration(seconds: 1));
-          // ignore: avoid_print
-          print('[Sonarar][AUDIO] +${i}s playing=${engine.isPlaying} '
+          debugPrint('[Sonarar][AUDIO] +${i}s playing=${engine.isPlaying} '
               'pos=${engine.position.inMilliseconds}ms '
               'dur=${engine.duration?.inMilliseconds ?? -1}ms');
         }
@@ -1424,8 +1343,7 @@ class _HomeShellState extends State<HomeShell>
         await engine.play();
         for (var i = 1; i <= 4; i++) {
           await Future<void>.delayed(const Duration(seconds: 1));
-          // ignore: avoid_print
-          print('[Sonarar][AUDIO] NEXT +${i}s title=${t2?.title ?? "none"} '
+          debugPrint('[Sonarar][AUDIO] NEXT +${i}s title=${t2?.title ?? "none"} '
               'playing=${engine.isPlaying} '
               'pos=${engine.position.inMilliseconds}ms');
         }
@@ -1438,8 +1356,7 @@ class _HomeShellState extends State<HomeShell>
 
     _ctx.startTimers(weatherRefresh: _prefs.weatherRefresh);
 
-    // ignore: avoid_print
-    print('[Sonarar] library=${_repo.tracks.length} '
+    debugPrint('[Sonarar] library=${_repo.tracks.length} '
 
         'from=${_repo.loadedFrom ?? "none"} '
         'resume=${resume == null ? "none" : (resume.isStale ? "stale" : resume.trackId)} '
@@ -1482,97 +1399,13 @@ class _HomeShellState extends State<HomeShell>
     }
   }
 
-  Future<void> _togglePlay() async {
-    final engine = _audio;
-    if (engine == null) return;
-    if (_playing) {
-      await engine.pause();
+  // Transport lives in PlayerController; the shell only names the callbacks the
+  // interface already binds.
+  Future<void> _togglePlay() => _player.togglePlay();
 
-      if (mounted) _shellChanged(() => _playing = false);
-      return;
-    }
+  Future<void> _skipNext() => _player.skipNext();
 
-    if (widget.state.queueEnded) {
-      // Parked at the queue's end: play() alone reads as a dead button.
-      final id = widget.state.currentTrack?.id;
-      if (id != null) widget.state.playTrackNow(id);
-      final started = await _loadCurrentTrack(startAt: Duration.zero);
-      if (mounted) _shellChanged(() => _playing = started);
-      _syncProgressTicker();
-      return;
-    }
-
-    if (!engine.isPlaying && _loadedTrackId != widget.state.currentTrack?.id) {
-      final started = await _loadCurrentTrack();
-      if (mounted) _shellChanged(() => _playing = started);
-      return;
-    }
-    await engine.play();
-    if (mounted) _shellChanged(() => _playing = true);
-    _syncProgressTicker();
-  }
-
-  bool _skipPending = false;
-
-  Future<void> _skipNext() async {
-    final engine = _audio;
-    if (engine == null || _skipPending) return;
-    // A skip is a request to move on, not to stop where we land.
-    if (_stopAfterTrack) setState(() => _stopAfterTrack = false);
-
-    if (!engine.hasNext) {
-      if (canStepOutsideEngine(
-        widget.state.queue,
-        repeatAll: widget.state.repeatMode == playqueue.RepeatMode.all,
-        forward: true,
-      )) {
-        _skipPending = true;
-
-        try {
-          widget.state.nextTrack();
-          await _loadCurrentTrack();
-        } finally {
-          _skipPending = false;
-        }
-      }
-      return;
-    }
-    _skipPending = true;
-    try {
-      await engine.skipNext();
-    } finally {
-      _skipPending = false;
-    }
-  }
-
-  Future<void> _skipPrevious() async {
-    final engine = _audio;
-    if (engine == null || _skipPending) return;
-    if (_stopAfterTrack) setState(() => _stopAfterTrack = false);
-    if (!engine.hasPrevious) {
-      if (canStepOutsideEngine(
-        widget.state.queue,
-        repeatAll: widget.state.repeatMode == playqueue.RepeatMode.all,
-        forward: false,
-      )) {
-        _skipPending = true;
-
-        try {
-          widget.state.previousTrack();
-          await _loadCurrentTrack();
-        } finally {
-          _skipPending = false;
-        }
-      }
-      return;
-    }
-    _skipPending = true;
-    try {
-      await engine.skipPrevious();
-    } finally {
-      _skipPending = false;
-    }
-  }
+  Future<void> _skipPrevious() => _player.skipPrevious();
 
   Future<void> _persistPlaces(PlaceBook book) async {
     await _stores.savePlaces(book);
@@ -1583,7 +1416,9 @@ class _HomeShellState extends State<HomeShell>
     _disposed = true;
     _downloads.removeListener(_onDownloadProblem);
     _themeSession.dispose();
-    _tickerWanted.dispose();
+    _ticker.dispose();
+    _player.removeListener(_onPlayerChanged);
+    _player.dispose();
 
     _shellTick.dispose();
 
@@ -1598,7 +1433,6 @@ class _HomeShellState extends State<HomeShell>
 
     _ctx.dispose();
     _durationOrZero.dispose();
-    _progress?.cancel();
 
     _routeAnimation?.removeStatusListener(_onPlayerRouteStatus);
     _routeAnimation = null;
@@ -1828,12 +1662,8 @@ class _HomeShellState extends State<HomeShell>
         _setVolume(_volume - kVolumeStep);
 
       case ShortcutCommand.mute:
-        if (_muted) {
-          _setVolume(_volumeBeforeMute <= 0 ? 1.0 : _volumeBeforeMute);
-        } else {
-          _volumeBeforeMute = _volume;
-          _setVolume(0);
-        }
+        _player.toggleMute();
+        _shellTick.value++;
 
       case ShortcutCommand.seekForward:
         _seekBy(kSeekStep);
@@ -1960,25 +1790,13 @@ class _HomeShellState extends State<HomeShell>
     });
   }
 
+  /// The volume slider repaints off [_shellTick]; the level is the controller's.
   void _setVolume(double v) {
-    final clamped = v.clamp(0.0, 1.0);
-    if (clamped > 0) _volumeBeforeMute = clamped;
-
-    _volume = clamped;
+    _player.setVolume(v);
     _shellTick.value++;
-    unawaited(_audio?.setVolume(clamped) ?? Future<void>.value());
   }
 
-  void _seekBy(Duration delta) {
-    final engine = _audio;
-    if (engine == null) return;
-    final total = widget.state.duration.value;
-    final from = widget.state.position.value;
-    var target = from + delta;
-    if (target < Duration.zero) target = Duration.zero;
-    if (total != null && target > total) target = total;
-    unawaited(engine.seek(target));
-  }
+  void _seekBy(Duration delta) => unawaited(_player.seekBy(delta));
 
   final List<AppTab> _history = [];
   int _historyAt = -1;
@@ -2885,7 +2703,7 @@ class _HomeShellState extends State<HomeShell>
         AppTab.settings => _settingsTab(skin),
       };
   /// The home tab, wired. `_tabContent` is the routing; this is the wiring.
-  Widget _homeTab(Skin skin) => HomeScreen(
+  Widget _homeTab(Skin skin) => HomeScreen(view: HomeView(
         skin: skin,
         headerArt: _headerArt(skin),
         recent: _recentTracks,
@@ -2928,9 +2746,9 @@ class _HomeShellState extends State<HomeShell>
             : placeIconFor(_ctx.placeBook.byId(_ctx.currentPlaceId!)?.icon),
         hasFix: _ctx.currentPlaceId != null,
         contextEnabled: widget.state.contextEnabled,
-      );
+      ));
   /// The library tab, wired. `_tabContent` is the routing; this is the wiring.
-  Widget _libraryTab(Skin skin) => LibraryScreen(
+  Widget _libraryTab(Skin skin) => LibraryScreen(view: LibraryScreenView(
 
         entryToken: _libraryEntry,
         grid: _prefs.libraryIsGrid ?? widget.state.arrangement.libraryIsGrid,
@@ -2983,16 +2801,14 @@ class _HomeShellState extends State<HomeShell>
         dynamicBlurb: _dynamicBlurb(),
 
         onPlayPlaylist: (p) {
-          // ignore: avoid_print
-          print('[Sonarar][PLAYPRESS] id=${p.id} name="${p.name}" '
+          debugPrint('[Sonarar][PLAYPRESS] id=${p.id} name="${p.name}" '
               'tracks=${p.trackIds.length} library=${widget.state.library.length} '
               'dynamicMix=${widget.state.dynamicMix()?.length ?? -1}');
           if (widget.state.playPlaylist(p)) {
             // ignore: discarded_futures
             _loadCurrentTrack();
           } else {
-            // ignore: avoid_print
-            print('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
+            debugPrint('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
             _toast(l10nOf(context).shellPlaylistNothingPlayable);
           }
         },
@@ -3049,7 +2865,7 @@ class _HomeShellState extends State<HomeShell>
         playingTrackId: widget.state.currentTrack?.id,
 
         isPlaying: _playing,
-      );
+      ));
   /// The search tab, wired. `_tabContent` is the routing; this is the wiring.
   Widget _searchTab(Skin skin) => YoutubeSearchScreen(
         state: widget.state,
@@ -3205,7 +3021,7 @@ class _HomeShellState extends State<HomeShell>
         _saveDebounce = null;
         unawaited(_stores.saveSnapshot(widget.state.snapshot(volume: _volume)));
         setState(() {
-          _playing = false;
+          _player.setPlaying(false);
           _panel = PlayerPanel.none;
         });
       },
@@ -3604,7 +3420,7 @@ class _HomeShellState extends State<HomeShell>
     final current = _repo.tracks.isEmpty ? null : _repo.tracks.first;
     return Stack(
 children: [
-  PlayerScreen(
+  PlayerScreen(view: PlayerView(
                     state: widget.state,
                     onMinimise: _closePlayer,
                     onArtist: _openArtist,
@@ -3753,7 +3569,7 @@ children: [
                     onStopAfterTrack: (v) {
                       // The player is a pushed route; setState here would not
                       // repaint it. _shellChanged bumps the tick it listens to.
-                      _shellChanged(() => _stopAfterTrack = v);
+                      _player.setStopAfterTrack(v);
                       _toast(v
                           ? l10nOf(context).shellStoppingAfter
                           : l10nOf(context).shellStopAfterOff);
@@ -3762,7 +3578,7 @@ children: [
                     sleepTimer: _prefs.sleepTimer,
 
                     sleepLeft: _sleepLeft,
-                  ),
+                  )),
   Positioned(
     left: 8,
     top: MediaQuery.of(context).padding.top + 4,

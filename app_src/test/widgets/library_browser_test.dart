@@ -25,7 +25,7 @@ PlaylistList _lists() => PlaylistList([
 Future<void> _pump(WidgetTester tester, {PlaylistList? lists}) async {
   await tester.pumpWidget(MaterialApp(
     home: Material(
-      child: LibraryScreen(
+      child: LibraryScreen(view: LibraryScreenView(
         tracks: _tracks(),
         coverPathFor: (_) => null,
         skin: kSkinCrimson,
@@ -34,7 +34,7 @@ Future<void> _pump(WidgetTester tester, {PlaylistList? lists}) async {
         onCreatePlaylist: (_) {},
         onDeletePlaylist: (_) {},
         onPlayPlaylist: (_) {},
-      ),
+      )),
     ),
   ));
   await tester.pump();

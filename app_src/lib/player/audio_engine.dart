@@ -3,11 +3,16 @@ library;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/foundation.dart' show VoidCallback, debugPrint;
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
+import 'engine_window.dart';
+import 'fade_envelope.dart';
+import 'interruption_policy.dart';
+import 'queue_edit.dart';
+import 'playback_engine.dart';
 import 'playback_intent.dart';
 import 'volume_policy.dart';
 
@@ -16,7 +21,7 @@ import '../player/queue.dart' show RepeatMode;
 
 Uri fileUriForPath(String absolutePath) => File(absolutePath).uri;
 
-class AudioEngine {
+class AudioEngine implements PlaybackEngine {
   AudioEngine({AudioPlayer? player}) : _player = player ?? AudioPlayer();
 
   Future<void> configureAudioSession() async {
@@ -24,34 +29,31 @@ class AudioEngine {
     await session.configure(const AudioSessionConfiguration.music());
 
     _subs.add(session.interruptionEventStream.listen((event) {
-      if (event.begin) {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-
-            unawaited(_player.setVolume(ducked(_targetVolume)));
-          case AudioInterruptionType.pause:
-          case AudioInterruptionType.unknown:
-
-            _pausedByInterruption = true;
-            unawaited(_player.pause());
-        }
-      } else {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-
-            unawaited(_player.setVolume(restoredLevel(_targetVolume)));
-          case AudioInterruptionType.pause:
-
-            if (_pausedByInterruption && _wantPlay) {
-              _pausedByInterruption = false;
-              notePlayIntent();
-              unawaited(_player.play());
-            }
-          case AudioInterruptionType.unknown:
-            break;
-        }
+      // The rules are a function; this only carries them out.
+      switch (interruptionActionFor(
+        begin: event.begin,
+        type: event.type,
+        pausedByInterruption: _pausedByInterruption,
+        wantPlay: _wantPlay,
+      )) {
+        case InterruptionAction.duck:
+          unawaited(_player.setVolume(ducked(_targetVolume)));
+        case InterruptionAction.pause:
+          _pausedByInterruption = true;
+          unawaited(_player.pause());
+        case InterruptionAction.restore:
+          unawaited(_player.setVolume(restoredLevel(_targetVolume)));
+        case InterruptionAction.resume:
+          _pausedByInterruption = false;
+          notePlayIntent();
+          unawaited(_player.play());
+        case InterruptionAction.none:
+          break;
       }
     }));
+
+    // Headphones out is a pause the platform did not ask for either, so it is
+    // remembered the same way: unplugging must not be undone by the next event.
 
     _subs.add(session.becomingNoisyEventStream.listen((_) {
       _pausedByInterruption = true;
@@ -65,10 +67,13 @@ class AudioEngine {
 
   VoidCallback? onCompleted;
 
+  @override
   Duration get position => _player.position;
 
+  @override
   bool get isPlaying => _player.playing;
 
+  @override
   Duration? get duration => _player.duration;
 
   bool _wantPlay = false;
@@ -88,7 +93,70 @@ class AudioEngine {
   List<String> get queuePaths => List.unmodifiable(_queuePaths);
   List<String> _queuePaths = const [];
 
+  @override
   Future<void> seekToIndex(int index) => _player.seek(Duration.zero, index: index);
+
+  /// Edits the queue in place: insert, remove and move only what changed.
+  ///
+  /// [setQueue] hands just_audio a whole new source, which stops the platform
+  /// player — the music drops for a moment. A queue edit needs none of that: the
+  /// current item is still the current item, so the queue around it can be edited
+  /// while it plays.
+  @override
+  Future<bool> editQueue(List<EngineEntry> items, {required String keepPlaying}) async {
+    final source = _player.audioSource;
+    if (source is! ConcatenatingAudioSource) return false;
+    if (_currentSourcePath() != keepPlaying) return false;
+
+    final edits = queueEditsFor(from: _queuePaths, to: items);
+    if (edits.isEmpty) {
+      _queuePaths = [for (final i in items) i.path];
+      return true;
+    }
+
+    try {
+      for (final edit in edits) {
+        switch (edit) {
+          case QueueRemove(:final index):
+            await source.removeAt(index);
+          case QueueInsert(:final index, :final entry):
+            await source.insert(
+              index,
+              AudioSource.uri(
+                fileUriForPath(entry.path),
+                tag: MediaItem(
+                  id: entry.path,
+                  title: entry.title,
+                  artist: entry.artist,
+                  album: entry.album,
+                  artUri: entry.cover,
+                ),
+              ),
+            );
+          case QueueMove(:final from, :final to):
+            await source.move(from, to);
+        }
+      }
+    } catch (e) {
+      // Half-edited is worse than reloaded: say so and let the caller reload.
+      debugPrint('[Sonarar][QUEUE] in-place edit failed, reloading: $e');
+      return false;
+    }
+
+    final kept = _currentSourcePath();
+    if (kept != keepPlaying) {
+      debugPrint('[Sonarar][QUEUE] in-place edit lost the playing track '
+          '(wanted=$keepPlaying, got=$kept), reloading');
+      return false;
+    }
+
+    _queuePaths = [for (final i in items) i.path];
+    // Visible in diagnostics.log: a queue edit that was applied in place. Before
+    // this, every edit logged a [LOAD] and the music audibly dropped.
+    debugPrint('[Sonarar][QUEUE] edited in place: ${edits.length} op(s) '
+        '${edits.take(4).join(", ")}${edits.length > 4 ? " …" : ""}');
+    return true;
+  }
 
   bool moveWithinEngine(int from, int to) {
     final source = _player.audioSource;
@@ -103,6 +171,7 @@ class AudioEngine {
     return true;
   }
 
+  @override
   bool queueMatches(List<String> paths) {
     if (paths.length != _queuePaths.length) return false;
     for (var i = 0; i < paths.length; i++) {
@@ -118,8 +187,9 @@ class AudioEngine {
   static int _loadSeq = 0;
   DateTime? _lastLoadAt;
 
+  @override
   Future<bool> setQueue(
-    List<({String path, String title, String artist, String album, Uri? cover})> items, {
+    List<EngineEntry> items, {
     required int initialIndex,
   }) async {
     final sources = <AudioSource>[
@@ -150,8 +220,7 @@ class AudioEngine {
         ? 'first'
         : '${now.difference(_lastLoadAt!).inMilliseconds}ms since #${_loadSeq - 1}';
     _lastLoadAt = now;
-    // ignore: avoid_print
-    print('[Sonarar][LOAD] #$_loadSeq $gap items=${items.length}');
+    debugPrint('[Sonarar][LOAD] #$_loadSeq $gap items=${items.length}');
 
     try {
       await _player.setAudioSource(
@@ -161,17 +230,14 @@ class AudioEngine {
       );
     } catch (e, st) {
       if (_superseded(generation)) {
-        // ignore: avoid_print
-        print('[Sonarar][LOAD] #$_loadSeq superseded mid-setup, ignored');
+        debugPrint('[Sonarar][LOAD] #$_loadSeq superseded mid-setup, ignored');
         return false;
       }
 
       _loadFailed = true;
       _queuePaths = const [];
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] #$_loadSeq FAILED: $e');
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] stack:\n$st');
+      debugPrint('[Sonarar][LOAD] #$_loadSeq FAILED: $e');
+      debugPrint('[Sonarar][AUDIO] stack:\n$st');
       return false;
     }
 
@@ -180,8 +246,7 @@ class AudioEngine {
     notePlayIntent();
 
     if (_superseded(generation)) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] #$_loadSeq superseded after setup, ignored');
+      debugPrint('[Sonarar][LOAD] #$_loadSeq superseded after setup, ignored');
       return false;
     }
 
@@ -189,8 +254,7 @@ class AudioEngine {
     await _reapplyRepeatMode();
 
     if (_superseded(generation)) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] #$_loadSeq superseded during repeat re-assert, ignored');
+      debugPrint('[Sonarar][LOAD] #$_loadSeq superseded during repeat re-assert, ignored');
       return false;
     }
 
@@ -201,6 +265,7 @@ class AudioEngine {
 
   int? _wantIndex;
 
+  @override
   Future<bool> loadAndPlay(
     String absolutePath, {
     Duration? startAt,
@@ -213,8 +278,7 @@ class AudioEngine {
   }) async {
     if (!await File(absolutePath).exists()) {
       _loadFailed = true;
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] not found: $absolutePath');
+      debugPrint('[Sonarar][AUDIO] not found: $absolutePath');
       return false;
     }
     try {
@@ -253,7 +317,6 @@ class AudioEngine {
       return true;
     } catch (e) {
       _loadFailed = true;
-      // ignore: avoid_print
 
       String probe;
       try {
@@ -268,14 +331,14 @@ class AudioEngine {
       } catch (e) {
         probe = 'NOT READABLE: ${e.runtimeType}: $e';
       }
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] load failed: $absolutePath\n'
+      debugPrint('[Sonarar][AUDIO] load failed: $absolutePath\n'
           '  error: ${e.runtimeType}: $e\n'
           '  probe: $probe');
       return false;
     }
   }
 
+  @override
   Future<void> play() async {
     _wantPlay = true;
     _playOutstanding = true;
@@ -293,10 +356,12 @@ class AudioEngine {
     try {
       // Engine loop never reports completion, so repeats went uncounted.
       await _player.setLoopMode(LoopMode.off);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][AUDIO] repeat re-assert failed: $e');
     }
   }
 
+  @override
   Future<void> pause() {
     _wantPlay = false;
     _playOutstanding = false;
@@ -304,8 +369,10 @@ class AudioEngine {
     return _player.pause();
   }
 
+  @override
   Future<void> seek(Duration to) => _player.seek(to);
 
+  @override
   Future<void> setVolume(double v) {
     _cancelFade();
     _targetVolume = v.clamp(0.0, 1.0);
@@ -324,48 +391,19 @@ class AudioEngine {
         : (d > const Duration(seconds: 12) ? const Duration(seconds: 12) : d);
   }
 
-  Timer? _fadeTimer;
+  /// The fade lives in its own object now; it only needs to set and read the
+  /// engine's level, which is all the two callbacks are.
+  late final FadeEnvelope _fade = FadeEnvelope(
+    applyVolume: (v) {
+      // The fade is fire-and-forget; the engine reports its own failures.
+      unawaited(_player.setVolume(v));
+    },
+    readVolume: () => _player.volume,
+  );
 
-  Completer<void>? _fadeDone;
+  void _cancelFade() => _fade.cancel();
 
-  bool _fadingOut = false;
-
-  void _cancelFade() {
-    _fadeTimer?.cancel();
-    _fadeTimer = null;
-    _fadingOut = false;
-    final done = _fadeDone;
-    _fadeDone = null;
-
-    if (done != null && !done.isCompleted) done.complete();
-  }
-
-  Future<void> _fadeTo(double to, Duration over) async {
-    _cancelFade();
-    if (over <= Duration.zero) {
-      await _player.setVolume(to.clamp(0.0, 1.0));
-      return;
-    }
-    const steps = 24;
-    final from = _player.volume;
-    final step = over.inMilliseconds ~/ steps;
-    var i = 0;
-    final done = Completer<void>();
-    _fadeDone = done;
-    _fadeTimer = Timer.periodic(Duration(milliseconds: step.clamp(8, 500)), (t) {
-      i++;
-      final f = (i / steps).clamp(0.0, 1.0);
-      // ignore: discarded_futures
-      _player.setVolume((from + (to - from) * f).clamp(0.0, 1.0));
-      if (i >= steps) {
-        t.cancel();
-        _fadeTimer = null;
-        _fadeDone = null;
-        if (!done.isCompleted) done.complete();
-      }
-    });
-    return done.future;
-  }
+  Future<void> _fadeTo(double to, Duration over) => _fade.fadeTo(to, over);
 
   Future<Duration?> beginVariantSwap() async {
     if (_variantSwapPosition != null) return _variantSwapPosition;
@@ -396,11 +434,13 @@ class AudioEngine {
   Duration? _variantSwapPosition;
   bool _variantSwapWasPlaying = false;
 
+  @override
   Future<void> skipNext() {
     _skipRequested = true;
     return _player.seekToNext();
   }
 
+  @override
   Future<void> skipPrevious() {
     _skipRequested = true;
     return _player.seekToPrevious();
@@ -408,7 +448,9 @@ class AudioEngine {
 
   bool _skipRequested = false;
 
+  @override
   bool get hasNext => _player.hasNext;
+  @override
   bool get hasPrevious => _player.hasPrevious;
 
   Future<void> stop() => _player.stop();
@@ -423,6 +465,7 @@ class AudioEngine {
     return null;
   }
 
+  @override
   String? get playingPath => _currentSourcePath();
 
   String? _lastReportedPath;
@@ -444,8 +487,7 @@ class AudioEngine {
       final intended = _intendedIndex;
       _intendedIndex = null;
 
-      // ignore: avoid_print
-      print('[Sonarar][SKIP] index=$index intended=$intended '
+      debugPrint('[Sonarar][SKIP] index=$index intended=$intended '
           'same_path=${path == _lastReportedPath} playing=${_player.playing}');
 
       if (path == _lastReportedPath) return;
@@ -533,32 +575,26 @@ class AudioEngine {
     }));
   }
 
+  @override
   LoopController? loop;
 
   Future<void> _fadeThenStop() async {
     _wantPlay = false;
 
-    _fadingOut = true;
-    const steps = 20;
-    final gap = Duration(milliseconds: loop?.points?.fade.inMilliseconds != null
-        ? (loop!.points!.fade.inMilliseconds / steps).round().clamp(50, 2000)
-        : 400);
-
-    final from = _player.volume;
-    for (var i = steps; i >= 0; i--) {
-      if (!_fadingOut) break;
-      try {
-        await _player.setVolume((from * (i / steps)).clamp(0.0, 1.0));
-      } catch (_) {
-        break;
-      }
-      await Future<void>.delayed(gap);
-    }
-    _fadingOut = false;
+    // The loop's own fade length, or 400ms when it has none. This used to be a
+    // second fade loop with its own step count and its own cancel flag; it is the
+    // same fade as everywhere else now, so cancelling behaves the same way.
+    final over = Duration(
+      milliseconds: loop?.points?.fade.inMilliseconds != null
+          ? loop!.points!.fade.inMilliseconds.clamp(50, 2000)
+          : 400,
+    );
+    await _fade.fadeTo(0, over);
     await _player.pause();
     try {
       await _player.setVolume(restoredLevel(_targetVolume));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][AUDIO] volume restore failed: $e');
     }
   }
 

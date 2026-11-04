@@ -40,8 +40,7 @@ class ArtWarmer {
     if (openCover != null && context.mounted) {
       await precacheImage(openCover, context);
     }
-    // ignore: avoid_print
-    print('[Sonarar][BOOT] warm=${DateTime.now().difference(started).inMilliseconds}ms '
+    debugPrint('[Sonarar][BOOT] warm=${DateTime.now().difference(started).inMilliseconds}ms '
         'cover=${openCover != null}');
     for (final piece in artToWarmAfterGate(
       pieces: state.artSet.pieces,

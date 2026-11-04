@@ -34,7 +34,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(MaterialApp(
       home: Material(
-        child: LibraryScreen(
+        child: LibraryScreen(view: LibraryScreenView(
           tracks: [_t('a'), _t('b')],
           coverPathFor: (_) => null,
           skin: kSkinCrimson,
@@ -46,7 +46,7 @@ void main() {
           onPlayPlaylist: (_) {},
 
           onAddSongsTo: (p) => added.add(p),
-        ),
+        )),
       ),
     ));
     await tester.pumpAndSettle();

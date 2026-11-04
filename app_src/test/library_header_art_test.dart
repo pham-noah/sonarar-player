@@ -23,13 +23,13 @@ const _artKey = Key('test-header-art');
 
 Widget _screen({Widget? art, bool search = false}) => MaterialApp(
       home: Scaffold(
-        body: LibraryScreen(
+        body: LibraryScreen(view: LibraryScreenView(
           tracks: [_t('a', 'Beneath the Mask'), _t('b', 'Last Surprise')],
           coverPathFor: (_) => null,
           skin: kSkinCrimson,
           searchOnly: search,
           headerArt: art,
-        ),
+        )),
       ),
     );
 

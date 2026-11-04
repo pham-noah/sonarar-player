@@ -86,10 +86,10 @@ void main() {
 
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: s,
         track: s.currentTrack,
-        cover: MemoryImage(_coverBytes())));
+        cover: MemoryImage(_coverBytes()))));
     await expectLater(
       find.byType(PlayerScreen),
       matchesGoldenFile('goldens/player_abyss_evening.png'));
@@ -105,10 +105,10 @@ void main() {
 
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: s,
         track: s.currentTrack,
-        cover: MemoryImage(_coverBytes())));
+        cover: MemoryImage(_coverBytes()))));
     await expectLater(
       find.byType(PlayerScreen),
       matchesGoldenFile('goldens/player_amber_morning.png'));
@@ -124,10 +124,10 @@ void main() {
 
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: s,
         track: s.currentTrack,
-        cover: MemoryImage(_coverBytes())));
+        cover: MemoryImage(_coverBytes()))));
     await expectLater(
       find.byType(PlayerScreen),
       matchesGoldenFile('goldens/player_crimson_night.png'));
@@ -169,13 +169,13 @@ void main() {
     final s = _stateFor(band: ContextBand.night, hour: 23);
     await _pump(
       tester,
-      LibraryScreen(
+      LibraryScreen(view: LibraryScreenView(
         tracks: _lib,
         coverPathFor: (_) => null,
         skin: s.skin,
 
         playlists: PlaylistList(),
-        libraryRoot: null));
+        libraryRoot: null)));
     await expectLater(
       find.byType(LibraryScreen),
       matchesGoldenFile('goldens/library_crimson.png'));
@@ -189,10 +189,10 @@ void main() {
     final s = _stateFor(band: ContextBand.evening, hour: 19);
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: s,
         track: s.currentTrack,
-        cover: MemoryImage(_coverBytes())));
+        cover: MemoryImage(_coverBytes()))));
     await expectLater(
       find.byType(PlayerScreen),
       matchesGoldenFile('goldens/player_abyss_with_cover.png'));
@@ -208,10 +208,10 @@ void main() {
     final s = _stateFor(band: ContextBand.evening, hour: 19);
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: s,
         track: s.currentTrack,
-        cover: MemoryImage(_coverBytes())));
+        cover: MemoryImage(_coverBytes()))));
     await expectLater(
       find.byType(PlayerScreen),
       matchesGoldenFile('goldens/player_window_size.png'));

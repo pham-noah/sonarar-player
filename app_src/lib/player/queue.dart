@@ -1,5 +1,6 @@
 library;
 
+import 'dart:collection';
 import 'dart:math';
 
 import '../library/track.dart';
@@ -71,7 +72,9 @@ class PlayQueue {
 
   int _index = 0;
 
-  List<Track> get order => List.unmodifiable(_order);
+  /// A live view, not a copy: this is read from build methods, and
+  /// `List.unmodifiable` copies the whole queue every time.
+  List<Track> get order => UnmodifiableListView(_order);
   int get index => _index;
   bool get isEmpty => _order.isEmpty;
   int get length => _order.length;
@@ -231,7 +234,6 @@ class PlayQueue {
     for (var i = _source.length - 1; i >= 0; i--) {
       if (_source[i].id == replacement.id && i != srcAt) _source.removeAt(i);
     }
-    _bumpOrder();
     return true;
   }
 
@@ -240,12 +242,13 @@ class PlayQueue {
 
     final byId = {for (final t in _source) t.id: t};
     final restored = <Track>[];
+    final seen = <String>{};
     for (final id in ids) {
       final t = byId[id];
-      if (t != null) restored.add(t);
+      if (t != null && seen.add(t.id)) restored.add(t);
     }
     for (final t in _source) {
-      if (!restored.any((r) => r.id == t.id)) restored.add(t);
+      if (seen.add(t.id)) restored.add(t);
     }
 
     if (restored.isEmpty) return;
@@ -281,10 +284,8 @@ class PlayQueue {
           _index = wasAt.clamp(0, _order.isEmpty ? 0 : _order.length - 1);
         }
       } else if (policy == InsertPolicy.refuse) {
-        final fresh = [
-          for (final t in tracks)
-            if (!_order.any((o) => o.id == t.id)) t,
-        ];
+        final present = {for (final o in _order) o.id};
+        final fresh = [for (final t in tracks) if (!present.contains(t.id)) t];
         tracks = fresh;
         if (tracks.isEmpty) return;
       }

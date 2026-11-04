@@ -12,6 +12,7 @@ import '../library/bonds.dart';
 import '../library/exclusions.dart';
 import '../library/playlists.dart';
 import '../library/play_log.dart';
+import '../library/tag_layer.dart';
 import '../library/tag_overrides.dart';
 import '../library/track.dart';
 import '../library/weather_variants.dart';
@@ -116,8 +117,6 @@ class AppState extends ChangeNotifier {
 
   String? get playingFrom => _playingFrom;
   String? _playingFrom;
-
-  void setPlayingFrom(String? name) => _playingFrom = name;
 
   QueueMode _mode = QueueMode.dynamic;
   QueueMode get mode => _mode;
@@ -269,8 +268,7 @@ class AppState extends ChangeNotifier {
     final base = _engine.playlist(_library, ctx, excluded: _excluded.ids);
     if (base.isEmpty) return false;
 
-    // ignore: avoid_print
-    print(
+    debugPrint(
       '[Sonarar][QUEUE] context switch admitted ${base.length} '
       'of ${_library.length} (excluded=${_excluded.ids.length})',
     );
@@ -292,39 +290,32 @@ class AppState extends ChangeNotifier {
     return false;
   }
 
-  TagOverrides _tags = TagOverrides();
-  TagOverrides get tagOverrides => _tags;
+  /// The raw library, the tag overrides and the retitled copy are one object now;
+  /// the getters below keep every read in this class unchanged.
+  final TagLayer _tagLayer = TagLayer();
 
-  List<Track> _rawLibrary = const [];
-  List<Track> get rawLibrary => _rawLibrary;
+  TagOverrides get tagOverrides => _tagLayer.overrides;
+
+  List<Track> get rawLibrary => _tagLayer.raw;
 
   void setTagOverrides(TagOverrides overrides) {
-    _tags = overrides;
-    _reapplyOverrides();
+    _tagLayer.replaceOverrides(overrides);
     notifyListeners();
   }
 
   void setTagOverride(String trackId, TagField field, String value) {
-    _tags.set(trackId, field, value);
-    _reapplyOverrides();
+    _tagLayer.override(trackId, field, value);
     notifyListeners();
   }
 
   void clearTagOverride(String trackId, TagField field) {
-    _tags.clearField(trackId, field);
-    _reapplyOverrides();
+    _tagLayer.clear(trackId, field);
     notifyListeners();
   }
 
   void clearAllTagOverrides() {
-    _tags.clearAll();
-    _reapplyOverrides();
+    _tagLayer.clearAll();
     notifyListeners();
-  }
-
-  void _reapplyOverrides() {
-    if (_rawLibrary.isEmpty) return;
-    _library = List<Track>.unmodifiable(_tags.applyAll(_rawLibrary));
   }
 
   BondState _bondState = BondState();
@@ -358,6 +349,7 @@ class AppState extends ChangeNotifier {
   void setContextRules(ContextRules rules) {
     _writtenRules = rules;
     _rebuildRules();
+    notifyListeners();
   }
 
   ContextRules _writtenRules = ContextRules.empty;
@@ -366,9 +358,15 @@ class AppState extends ChangeNotifier {
   PlaceBook _places = PlaceBook.empty;
   PlaceBook get places => _places;
 
+  /// Replaces the known places, and the rules derived from them.
+  ///
+  /// Notifies like every other mutation here. Which setters were quiet used to be
+  /// something a caller had to remember, and the failure it invited was a panel
+  /// drawing yesterday's places.
   void setPlaces(PlaceBook book) {
     _places = book;
     _rebuildRules();
+    notifyListeners();
   }
 
   void _rebuildRules() {
@@ -422,8 +420,7 @@ class AppState extends ChangeNotifier {
     final ids = playlist.trackIds.toSet();
     final tracks = _library.where((t) => ids.contains(t.id)).toList();
     if (tracks.isEmpty) {
-      // ignore: avoid_print
-      print(
+      debugPrint(
         '[Sonarar][PLAYPRESS] "${playlist.name}" has ${ids.length} ids, '
         'NONE of them in the ${_library.length}-track library',
       );
@@ -631,7 +628,7 @@ class AppState extends ChangeNotifier {
     return true;
   }
 
-  List<Track> _library = const [];
+  List<Track> get _library => _tagLayer.library;
   List<Track> get library => _library;
 
   PlaylistContext? _playlistCtx;
@@ -1108,8 +1105,7 @@ class AppState extends ChangeNotifier {
     final q = PlayQueue(source: lead, shuffle: _queue?.isShuffled ?? false);
     if (keep != null) q.jumpTo(keep);
     if (lead.length != ordered.length) {
-      // ignore: avoid_print
-      print(
+      debugPrint(
         '[Sonarar][QUEUEPROBE] makeQueue: rule list had ${ordered.length}, '
         'built ${lead.length} (library=${_library.length})',
       );
@@ -1394,8 +1390,7 @@ class AppState extends ChangeNotifier {
   Track? get currentTrack => _queue?.current;
 
   void attachLibrary(List<Track> tracks, {PlaybackSnapshot? resume}) {
-    _rawLibrary = List<Track>.unmodifiable(tracks);
-    _library = List<Track>.unmodifiable(_tags.applyAll(_rawLibrary));
+    _tagLayer.replaceRaw(tracks);
 
     // A library arriving without a snapshot must not reset playback.
     if (resume == null && _queue?.current != null) {
@@ -1465,8 +1460,7 @@ class AppState extends ChangeNotifier {
 
   void _probeQueue(String site, int len) {
     if (len < 3) {
-      // ignore: avoid_print
-      print(
+      debugPrint(
         '[Sonarar][QUEUEPROBE] $site built a queue of $len '
         '(library=${_library.length})',
       );
@@ -1586,21 +1580,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  AutoAdvance autoAdvanceAction() {
-    if (_repeat == RepeatMode.one) return AutoAdvance.replay;
-    final decision = advanceFor(
-      mode: _mode,
-      repeatOne: false,
-      repeatAll: _repeat == RepeatMode.all,
-      hasNext: _queue != null && _queue!.index + 1 < _queue!.length,
-    );
-    if (decision == AutoAdvanceMode.stop) return AutoAdvance.stop;
-    final q = _queue;
-    if (q == null) return AutoAdvance.stop;
-    if (_repeat == RepeatMode.all) return AutoAdvance.next;
-
-    return q.index + 1 < q.length ? AutoAdvance.next : AutoAdvance.stop;
-  }
+  /// What happens when the current track ends.
+  ///
+  /// [advanceFor] is the only place that decides this; asking it directly is
+  /// what keeps this from being a second, slightly different copy of the rules.
+  AutoAdvanceMode autoAdvanceAction() => advanceFor(
+        mode: _mode,
+        repeatOne: _repeat == RepeatMode.one,
+        repeatAll: _repeat == RepeatMode.all,
+        hasNext: _queue != null && _queue!.index + 1 < _queue!.length,
+      );
 
   void nextTrack() {
     final q = _queue;

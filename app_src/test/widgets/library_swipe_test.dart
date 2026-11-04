@@ -34,7 +34,7 @@ Future<void> _pump(
   final tracks = _tracks(count);
   await tester.pumpWidget(MaterialApp(
     home: Scaffold(
-      body: LibraryScreen(
+      body: LibraryScreen(view: LibraryScreenView(
 
           searchOnly: searchOnly,
         tracks: tracks,
@@ -45,7 +45,7 @@ Future<void> _pump(
         onQueue: onQueue,
         onLike: onLike,
         likedIds: liked,
-      ),
+      )),
     ),
   ));
   await tester.pump();

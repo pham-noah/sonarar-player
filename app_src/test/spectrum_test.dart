@@ -145,12 +145,12 @@ void main() {
       addTearDown(tester.view.reset);
       await tester.pumpWidget(MaterialApp(
         home: Material(
-          child: PlayerScreen(
+          child: PlayerScreen(view: PlayerView(
 
             state: AppState(),
             track: _t(),
             spectrum: spectrum,
-          ),
+          )),
         ),
       ));
       await tester.pump();

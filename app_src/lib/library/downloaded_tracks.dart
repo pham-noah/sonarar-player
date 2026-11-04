@@ -3,6 +3,8 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show debugPrint;
+
 import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 
 import 'playlists.dart';
@@ -120,7 +122,8 @@ Future<DownloadedTrack?> describeDownload({
         await f.writeAsBytes(bytes);
         coverName = 'Downloaded/$videoId.jpg';
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][DL] thumbnail failed: $videoId: $e');
     }
   }
 
@@ -234,7 +237,9 @@ Future<int?> removeDownload({
         freed += await f.length();
         await f.delete();
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Sonarar][DL] delete failed: $libraryRoot$sep$rel: $e');
+    }
   }
   return freed;
 }

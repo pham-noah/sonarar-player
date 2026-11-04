@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 import 'constants.dart';
@@ -27,7 +29,11 @@ class MusicRoot {
         final path = (await file.readAsString()).trim();
         if (path.isNotEmpty) return path;
       }
-    } catch (_) {}
+    } catch (e) {
+      // No saved root is the normal first run; a read that throws is not, and
+      // which folder was lost is worth having in the diagnostics log.
+      debugPrint('[Sonarar][ROOT] saved root failed: $e');
+    }
     return kAndroidLibraryRoot;
   }
 

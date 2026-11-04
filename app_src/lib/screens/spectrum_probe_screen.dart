@@ -24,8 +24,7 @@ class _SpectrumProbeScreenState extends State<SpectrumProbeScreen> {
   void _say(String s) {
     if (!mounted) return;
     setState(() => _lines.add(s));
-    // ignore: avoid_print
-    print('[SPECTRUM PROBE] $s');
+    debugPrint('[SPECTRUM PROBE] $s');
   }
 
   Future<void> _run() async {

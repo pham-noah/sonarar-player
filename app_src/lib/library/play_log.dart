@@ -63,8 +63,6 @@ const int kMinPlayMs = 10000;
 
 bool isCountedPlay(PlayEvent e) => e.completed || e.positionMs >= kMinPlayMs;
 
-enum AutoAdvance { next, replay, stop }
-
 class PlayLog {
   PlayLog(this.file, {this.maxReadBytes = 4 * 1024 * 1024});
 

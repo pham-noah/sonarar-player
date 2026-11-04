@@ -67,14 +67,14 @@ void main() {
         final msg = await _overflowAt(
           tester,
           size,
-          () => PlayerScreen(
+          () => PlayerScreen(view: PlayerView(
             state: AppState(),
             track: _tracks(1).first,
             volume: 0.65,
             onVolume: (_) {},
             onPlayPause: () {},
             onCycleRepeat: () {},
-          ),
+          )),
         );
         expect(msg, isNull, reason: msg ?? '');
       });
@@ -88,7 +88,7 @@ void main() {
         final msg = await _overflowAt(
           tester,
           size,
-          () => LibraryScreen(
+          () => LibraryScreen(view: LibraryScreenView(
             tracks: _tracks(12),
             coverPathFor: (_) => null,
             skin: kSkinCrimson,
@@ -98,7 +98,7 @@ void main() {
             onLike: (_) => SwipeOutcome.liked,
             onPlay: (_) {},
             onTogglePlay: (_) {},
-          ),
+          )),
         );
         expect(msg, isNull, reason: msg ?? '');
       });
@@ -195,7 +195,7 @@ void main() {
         final msg = await _overflowAt(
           tester,
           size,
-          () => LibraryScreen(
+          () => LibraryScreen(view: LibraryScreenView(
             searchOnly: true,
             tracks: _tracks(12),
             coverPathFor: (_) => null,
@@ -206,7 +206,7 @@ void main() {
             onLike: (_) => SwipeOutcome.liked,
             onPlay: (_) {},
             onTogglePlay: (_) {},
-          ),
+          )),
         );
         expect(msg, isNull, reason: msg ?? '');
       });

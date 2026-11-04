@@ -19,7 +19,7 @@ Future<void> _pump(WidgetTester tester, {VoidCallback? onLyrics}) async {
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(
     home: Material(
-      child: PlayerScreen(
+      child: PlayerScreen(view: PlayerView(
         state: AppState(),
         track: _t(),
         hasWhy: true,
@@ -27,7 +27,7 @@ Future<void> _pump(WidgetTester tester, {VoidCallback? onLyrics}) async {
         hasTrackPanel: true,
         onSleep: (_) {},
         onLyrics: onLyrics ?? () {},
-      ),
+      )),
     ),
   ));
   await tester.pumpAndSettle();
@@ -73,10 +73,10 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(MaterialApp(
       home: Material(
-        child: PlayerScreen(
+        child: PlayerScreen(view: PlayerView(
           state: AppState(), track: _t(),
           audioContent: const SizedBox(height: 40),
-        ),
+        )),
       ),
     ));
     await tester.pumpAndSettle();

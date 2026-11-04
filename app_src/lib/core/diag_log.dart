@@ -80,6 +80,8 @@ class DiagLog extends ChangeNotifier {
         if (keep.isNotEmpty) notifyListeners();
       }
     } catch (_) {
+      // The log cannot report its own failures through itself: add() here
+      // would recurse, and a missing history file is not worth a line anyway.
     }
   }
 
@@ -125,6 +127,8 @@ class DiagLog extends ChangeNotifier {
     try {
       await f.writeAsString('${batch.join('\n')}\n', mode: FileMode.append);
     } catch (_) {
+      // Same reason as [restore]: writing the log through the log loops.
+      // The batch is dropped; the ring buffer in memory keeps the lines.
     }
   }
 

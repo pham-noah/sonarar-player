@@ -45,12 +45,12 @@ enum PlayerPanel { none, why, queue, track, audio, loop }
 const double kLyricsArtOpacity = 1.0;
 
 const double kPlainArtBehind = 88.0;
-
-class PlayerScreen extends StatelessWidget {
-  static const Key lyricsButtonKey = Key('player-lyrics-button');
-
-  const PlayerScreen({
-    super.key,
+/// Everything the player screen is handed, in one object.
+///
+/// Fifty-two values and callbacks wired by the shell; naming them once keeps the
+/// widget's interface a single argument instead of a list nobody can check.
+class PlayerView {
+  const PlayerView({
     required this.state,
     required this.track,
     this.onPrevious,
@@ -106,6 +106,7 @@ class PlayerScreen extends StatelessWidget {
     this.placeIcon,
     this.weather = WeatherCondition.unknown,
   });
+
 
   final AppState state;
   final Track? track;
@@ -196,16 +197,25 @@ class PlayerScreen extends StatelessWidget {
   final VoidCallback? onSwipeNext;
   final VoidCallback? onSwipePrevious;
 
+}
+
+class PlayerScreen extends StatelessWidget {
+  static const Key lyricsButtonKey = Key('player-lyrics-button');
+
+  const PlayerScreen({super.key, required this.view});
+
+  final PlayerView view;
+
   @override
   Widget build(BuildContext context) {
-    final skin = state.uiSkin;
-    final art = state.artForSurface(SurfaceId.player);
+    final skin = view.state.uiSkin;
+    final art = view.state.artForSurface(SurfaceId.player);
     final skew = skin.skewDegrees * (3.14159265 / 180);
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onHorizontalDragEnd: _swipeHorizontal,
-      onVerticalDragEnd: lyricsMode ? null : _swipeVertical,
+      onVerticalDragEnd: view.lyricsMode ? null : _swipeVertical,
       child: _body(context, skin, art, skew),
     );
   }
@@ -213,9 +223,9 @@ class PlayerScreen extends StatelessWidget {
   void _swipeHorizontal(DragEndDetails d) {
     final v = d.primaryVelocity ?? 0;
     if (v > 220) {
-      onSwipePrevious?.call();
+      view.onSwipePrevious?.call();
     } else if (v < -220) {
-      onSwipeNext?.call();
+      view.onSwipeNext?.call();
     }
   }
 
@@ -224,14 +234,14 @@ class PlayerScreen extends StatelessWidget {
   void _swipeVertical(DragEndDetails d) {
     final v = d.primaryVelocity ?? 0;
     if (v < -220) {
-      onPanel?.call(PlayerPanel.queue);
+      view.onPanel?.call(PlayerPanel.queue);
     } else if (v > 220) {
       // Down means "put away": the sheet first, then the player itself. A
       // swipe that does nothing at all reads as a broken gesture.
-      if (panel != PlayerPanel.none) {
-        onPanel?.call(PlayerPanel.none);
+      if (view.panel != PlayerPanel.none) {
+        view.onPanel?.call(PlayerPanel.none);
       } else {
-        onMinimise?.call();
+        view.onMinimise?.call();
       }
     }
   }
@@ -240,10 +250,10 @@ class PlayerScreen extends StatelessWidget {
     final pal = PresentationScope.of(context, fallback: skin).palette;
     final showFigure =
         art != null &&
-        (state.artChosen ||
-            state.presentation.kit.chrome.artByDefault ||
-            state.artSkinOverride != null);
-    final chrome = state.presentation.kit.chrome;
+        (view.state.artChosen ||
+            view.state.presentation.kit.chrome.artByDefault ||
+            view.state.artSkinOverride != null);
+    final chrome = view.state.presentation.kit.chrome;
     return Stack(
       fit: StackFit.expand,
 
@@ -256,23 +266,23 @@ class PlayerScreen extends StatelessWidget {
         ),
 
         // The photo under the player's own art. When the backdrop asks for the
-        // cover instead, this stays out of the way and the art does the work.
-        if (state.personalization.backdropFor(SurfaceId.player).isSet &&
-            !state.personalization.backdrop.coverOnPlayer)
+        // view.cover instead, this stays out of the way and the art does the work.
+        if (view.state.personalization.backdropFor(SurfaceId.player).isSet &&
+            !view.state.personalization.backdrop.coverOnPlayer)
           Positioned.fill(
             child: PersonalBackdrop(
-              root: state.libraryRoot == null
+              root: view.state.libraryRoot == null
                   ? null
-                  : Directory(state.libraryRoot!),
-              spec: state.personalization.backdropFor(SurfaceId.player),
+                  : Directory(view.state.libraryRoot!),
+              spec: view.state.personalization.backdropFor(SurfaceId.player),
               skin: skin,
             ),
           ),
 
-        if (!state.personalization.backdropFor(SurfaceId.player).isSet &&
-            state.personalization.fill.isSet)
+        if (!view.state.personalization.backdropFor(SurfaceId.player).isSet &&
+            view.state.personalization.fill.isSet)
           Positioned.fill(
-            child: FillBackdrop(fill: state.personalization.fill),
+            child: FillBackdrop(fill: view.state.personalization.fill),
           ),
 
         if (art != null && art.fullBleed && showFigure)
@@ -283,7 +293,7 @@ class PlayerScreen extends StatelessWidget {
                 assetPath: art.assetPath,
                 spec: art.spec,
                 aspect: art.aspect,
-                focus: state.artFocus,
+                focus: view.state.artFocus,
                 cacheWidth: 900,
                 enterFrom: -220,
                 burn: 1.0,
@@ -305,22 +315,22 @@ class PlayerScreen extends StatelessWidget {
                     assetPath: art.assetPath,
                     spec: art.spec,
                     aspect: art.aspect,
-                    focus: state.artFocus,
+                    focus: view.state.artFocus,
                     cacheWidth: 900,
                     enterFrom: -220,
                     burn: 1.0,
-                    opacity: lyricsMode ? kLyricsArtOpacity : 1.0,
+                    opacity: view.lyricsMode ? kLyricsArtOpacity : 1.0,
                   ),
                 );
 
                 final placed = framed;
-                if (lyricsMode) return placed;
+                if (view.lyricsMode) return placed;
                 return ShaderMask(
                   blendMode: BlendMode.dstIn,
                   shaderCallback: (rect) => RadialGradient(
                     center: Alignment(
-                      (state.artFocus.dx * 0.8).clamp(-1.0, 1.0) + 0.15,
-                      (-state.artFocus.dy * 0.8).clamp(-1.0, 1.0) - 0.10,
+                      (view.state.artFocus.dx * 0.8).clamp(-1.0, 1.0) + 0.15,
+                      (-view.state.artFocus.dy * 0.8).clamp(-1.0, 1.0) - 0.10,
                     ),
                     radius: 1.05,
 
@@ -337,31 +347,31 @@ class PlayerScreen extends StatelessWidget {
             ),
           ),
 
-        if (lyricsMode && lyricsContent != null) lyricsContent!,
+        if (view.lyricsMode && view.lyricsContent != null) view.lyricsContent!,
 
-        if (spectrum != null && !lyricsMode)
+        if (view.spectrum != null && !view.lyricsMode)
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: spectrumHeight,
+            height: view.spectrumHeight,
             child: ValueListenableBuilder<Duration>(
-              valueListenable: state.position,
+              valueListenable: view.state.position,
               builder: (context, at, _) => SpectrumBars(
                 skin: skin,
-                spectrum: spectrum,
+                spectrum: view.spectrum,
                 position: at,
-                playing: playing,
-                ease: spectrumEase,
-                shape: spectrumShape,
+                playing: view.playing,
+                ease: view.spectrumEase,
+                shape: view.spectrumShape,
               ),
             ),
           ),
 
-        if (!lyricsMode && (chrome.hemisphereScrim || showFigure))
+        if (!view.lyricsMode && (chrome.hemisphereScrim || showFigure))
           Positioned.fill(child: ArtScrim(color: pal.background)),
 
-        if (!lyricsMode)
+        if (!view.lyricsMode)
           SafeArea(
             child: Padding(
               padding: LayoutSpec.screenPadding,
@@ -377,7 +387,7 @@ class PlayerScreen extends StatelessWidget {
                         color: pal.accent,
                       ),
                     ),
-                  if (state.arrangement.contextPlateExists) ...[
+                  if (view.state.arrangement.contextPlateExists) ...[
                     const SizedBox(height: 13),
                     _contextBadge(context, skin, skew, pal),
                     const SizedBox(height: 9),
@@ -399,8 +409,8 @@ class PlayerScreen extends StatelessWidget {
                         padding: EdgeInsets.only(
                           bottom:
                               LayoutSpec.tabBarHeight +
-                              state.arrangement.tabBarInsets.bottom +
-                              (lyricsMode ? LayoutSpec.miniPlayerClearance : 0),
+                              view.state.arrangement.tabBarInsets.bottom +
+                              (view.lyricsMode ? LayoutSpec.miniPlayerClearance : 0),
                         ),
                         child: Align(
                           alignment: Alignment.bottomCenter,
@@ -409,7 +419,7 @@ class PlayerScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (lyrics != null && onLyrics != null)
+                                if (view.lyrics != null && view.onLyrics != null)
                                   _liveLyricLine(context, skin),
                                 _meta(
                                   context,
@@ -454,7 +464,7 @@ class PlayerScreen extends StatelessWidget {
             ),
           ),
 
-        if (panel != PlayerPanel.none) _panelOverlay(context, skin),
+        if (view.panel != PlayerPanel.none) _panelOverlay(context, skin),
       ],
     );
   }
@@ -462,7 +472,7 @@ class PlayerScreen extends StatelessWidget {
   static const contextBadgeKey = Key('context-badge');
 
   static const transportKey = Key('player-transport');
-  static const volumeKey = Key('player-volume');
+  static const volumeKey = Key('player-view.volume');
   static const secondaryKey = Key('player-secondary');
   static const playButtonKey = Key('player-play');
 
@@ -522,29 +532,29 @@ class PlayerScreen extends StatelessWidget {
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
 
-                onTap: state.contextEnabled ? state.toggleMode : null,
+                onTap: view.state.contextEnabled ? view.state.toggleMode : null,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Tooltip(
-                      message: state.contextEnabled
-                          ? (state.mode == QueueMode.dynamic
+                      message: view.state.contextEnabled
+                          ? (view.state.mode == QueueMode.dynamic
                                 ? l10nOf(context).playerModeDynamicHint
                                 : l10nOf(context).playerModeFixedHint)
-                          : (state.mode == QueueMode.dynamic
+                          : (view.state.mode == QueueMode.dynamic
                                 ? l10nOf(context).playerModeDynamic
                                 : l10nOf(context).playerModeFixed),
                       child: _factChip(
                         skin,
                         skew,
-                        state.mode == QueueMode.dynamic
+                        view.state.mode == QueueMode.dynamic
                             ? Icons.auto_awesome_motion_rounded
                             : Icons.playlist_play_rounded,
                         dark: true,
                       ),
                     ),
 
-                    if (state.mode == QueueMode.dynamic) ...[
+                    if (view.state.mode == QueueMode.dynamic) ...[
                       const SizedBox(width: 5),
                       for (final fact in _contextFacts(context, skin))
                         Padding(
@@ -588,11 +598,11 @@ class PlayerScreen extends StatelessWidget {
   List<({IconData icon, String label})> _contextFacts(BuildContext context, Skin skin) {
     final out = <({IconData icon, String label})>[];
 
-    final sky = weatherIcon(weather);
-    if (sky != null) out.add((icon: sky, label: weatherName(l10nOf(context), weather)));
+    final sky = weatherIcon(view.weather);
+    if (sky != null) out.add((icon: sky, label: weatherName(l10nOf(context), view.weather)));
 
-    if (placeName != null && placeName!.trim().isNotEmpty) {
-      out.add((icon: placeIcon ?? kDefaultPlaceIcon, label: placeName!));
+    if (view.placeName != null && view.placeName!.trim().isNotEmpty) {
+      out.add((icon: view.placeIcon ?? kDefaultPlaceIcon, label: view.placeName!));
     }
     return out;
   }
@@ -601,7 +611,7 @@ class PlayerScreen extends StatelessWidget {
   /// not from the theme: a theme that renames the evening is a theme that lies
   /// about what the app is doing.
   String _contextLabel(BuildContext context, Skin skin) {
-    final ctx = state.playlistContext;
+    final ctx = view.state.playlistContext;
     if (ctx == null) return l10nOf(context).homeNoBand;
     return switch (ctx.band) {
       ContextBand.darkHour => l10nOf(context).bandNightHour,
@@ -638,7 +648,7 @@ class PlayerScreen extends StatelessWidget {
                 ),
               ),
             ),
-            for (final v in variants)
+            for (final v in view.variants)
               InkWell(
                 onTap: () => Navigator.of(ctx).pop(v),
                 child: Padding(
@@ -689,7 +699,7 @@ class PlayerScreen extends StatelessWidget {
         ),
       ),
     );
-    if (pick != null) onSwapVariant?.call(pick);
+    if (pick != null) view.onSwapVariant?.call(pick);
   }
 
   Widget _meta(
@@ -700,7 +710,7 @@ class PlayerScreen extends StatelessWidget {
     bool titleBeside = false,
     required ChromeKit chrome,
   }) {
-    final t = track;
+    final t = view.track;
     return Column(
       crossAxisAlignment: center
           ? CrossAxisAlignment.center
@@ -746,7 +756,7 @@ class PlayerScreen extends StatelessWidget {
 
                     Pressable(
                       child: InkWell(
-                        onTap: (variants.isEmpty || onSwapVariant == null)
+                        onTap: (view.variants.isEmpty || view.onSwapVariant == null)
                             ? null
                             : () => _pickVariant(context, skin, t),
                         child: Container(
@@ -774,8 +784,8 @@ class PlayerScreen extends StatelessWidget {
                                 ),
                               ),
 
-                              if (variants.isNotEmpty &&
-                                  onSwapVariant != null) ...[
+                              if (view.variants.isNotEmpty &&
+                                  view.onSwapVariant != null) ...[
                                 const SizedBox(width: 3),
                                 Icon(
                                   Icons.expand_more_rounded,
@@ -801,9 +811,9 @@ class PlayerScreen extends StatelessWidget {
               children: [
                 Flexible(
                   child: GestureDetector(
-                    onTap: (onArtist == null || (t?.artist ?? '').isEmpty)
+                    onTap: (view.onArtist == null || (t?.artist ?? '').isEmpty)
                         ? null
-                        : () => onArtist!(t!.artist),
+                        : () => view.onArtist!(t!.artist),
                     child: Text(
                       t?.artist ?? '',
                       maxLines: 1,
@@ -841,7 +851,7 @@ class PlayerScreen extends StatelessWidget {
             ),
           ),
         ],
-        if (cover != null || onPlayPause != null) ...[
+        if (view.cover != null || view.onPlayPause != null) ...[
           const SizedBox(height: 14),
           SwapSlide(
             keyValue: t?.id ?? '',
@@ -851,9 +861,9 @@ class PlayerScreen extends StatelessWidget {
                 if (t == null)
                   CoverButton(
                     skin: skin,
-                    cover: cover,
-                    playing: playing,
-                    onPlayPause: onPlayPause,
+                    cover: view.cover,
+                    playing: view.playing,
+                    onPlayPause: view.onPlayPause,
                     size: chrome.coverSize,
                   )
                 else
@@ -861,9 +871,9 @@ class PlayerScreen extends StatelessWidget {
                     tag: kCoverHeroTag(t.id),
                     child: CoverButton(
                       skin: skin,
-                      cover: cover,
-                      playing: playing,
-                      onPlayPause: onPlayPause,
+                      cover: view.cover,
+                      playing: view.playing,
+                      onPlayPause: view.onPlayPause,
                       size: chrome.coverSize,
                     ),
                   ),
@@ -905,9 +915,9 @@ class PlayerScreen extends StatelessWidget {
       if (t != null && t.artist.trim().isNotEmpty) ...[
         const SizedBox(height: 4),
         GestureDetector(
-          onTap: (onArtist == null || (t.artist).isEmpty)
+          onTap: (view.onArtist == null || (t.artist).isEmpty)
               ? null
-              : () => onArtist!(t.artist),
+              : () => view.onArtist!(t.artist),
           behavior: HitTestBehavior.opaque,
           child: Text(
             t.artist,
@@ -946,41 +956,41 @@ class PlayerScreen extends StatelessWidget {
             skin,
             skew,
             Icons.shuffle_rounded,
-            onTap: onShuffle,
-            active: shuffled,
+            onTap: view.onShuffle,
+            active: view.shuffled,
             compact: true,
           ),
           const SizedBox(width: 7),
           NudgingButton(
             direction: -1,
-            onTap: onPrevious,
+            onTap: view.onPrevious,
             child: _transportButton(
               skin,
               skew,
               Icons.skip_previous_rounded,
-              onTap: onPrevious,
+              onTap: view.onPrevious,
             ),
           ),
           const SizedBox(width: 8),
-          _playButton(skin, skew, playing: playing),
+          _playButton(skin, skew, playing: view.playing),
           const SizedBox(width: 8),
           NudgingButton(
             direction: 1,
-            onTap: onNext,
+            onTap: view.onNext,
             child: _transportButton(
               skin,
               skew,
               Icons.skip_next_rounded,
-              onTap: onNext,
+              onTap: view.onNext,
             ),
           ),
           const SizedBox(width: 10),
           _transportButton(
             skin,
             skew,
-            _repeatIcon(repeatMode),
-            onTap: onCycleRepeat,
-            active: repeatMode != RepeatMode.off,
+            _repeatIcon(view.repeatMode),
+            onTap: view.onCycleRepeat,
+            active: view.repeatMode != RepeatMode.off,
             compact: true,
           ),
         ],
@@ -1015,85 +1025,85 @@ class PlayerScreen extends StatelessWidget {
           overrideDy: 26,
           child: TrackActions(
             skin: skin,
-            audioOpen: panel == PlayerPanel.audio,
-            onAudio: audioContent == null
+            audioOpen: view.panel == PlayerPanel.audio,
+            onAudio: view.audioContent == null
                 ? null
-                : () => onPanel?.call(
-                    panel == PlayerPanel.audio
+                : () => view.onPanel?.call(
+                    view.panel == PlayerPanel.audio
                         ? PlayerPanel.none
                         : PlayerPanel.audio,
                   ),
 
             actions: [
-              if (hasWhy)
+              if (view.hasWhy)
                 _iconAction(
                   skin,
                   Icons.help_outline_rounded,
                   l10nOf(context).playerWhyThisSong,
-                  () => onPanel?.call(
-                    panel == PlayerPanel.why
+                  () => view.onPanel?.call(
+                    view.panel == PlayerPanel.why
                         ? PlayerPanel.none
                         : PlayerPanel.why,
                   ),
-                  active: panel == PlayerPanel.why,
+                  active: view.panel == PlayerPanel.why,
                 ),
-              if (hasQueue)
+              if (view.hasQueue)
                 _iconAction(
                   skin,
                   Icons.queue_music_rounded,
-                  upNextCount == 0
+                  view.upNextCount == 0
                       ? l10nOf(context).playerQueue
-                      : l10nOf(context).playerQueueCount(upNextCount),
-                  () => onPanel?.call(
-                    panel == PlayerPanel.queue
+                      : l10nOf(context).playerQueueCount(view.upNextCount),
+                  () => view.onPanel?.call(
+                    view.panel == PlayerPanel.queue
                         ? PlayerPanel.none
                         : PlayerPanel.queue,
                   ),
-                  active: panel == PlayerPanel.queue,
-                  badge: upNextCount > 0 ? '$upNextCount' : null,
+                  active: view.panel == PlayerPanel.queue,
+                  badge: view.upNextCount > 0 ? '${view.upNextCount}' : null,
                 ),
 
-              if (hasTrackPanel)
+              if (view.hasTrackPanel)
                 _iconAction(
                   skin,
                   Icons.tune_rounded,
                   l10nOf(context).playerTrackTools,
-                  () => onPanel?.call(
-                    panel == PlayerPanel.track
+                  () => view.onPanel?.call(
+                    view.panel == PlayerPanel.track
                         ? PlayerPanel.none
                         : PlayerPanel.track,
                   ),
-                  active: panel == PlayerPanel.track,
+                  active: view.panel == PlayerPanel.track,
                 ),
-              if (onStopAfterTrack != null)
+              if (view.onStopAfterTrack != null)
                 _iconAction(
                   skin,
-                  stopAfterTrack
+                  view.stopAfterTrack
                       ? Icons.stop_circle_rounded
                       : Icons.stop_circle_outlined,
-                  stopAfterTrack
+                  view.stopAfterTrack
                       ? l10nOf(context).playerStopAfterOn
                       : l10nOf(context).playerStopAfter,
-                  () => onStopAfterTrack!(!stopAfterTrack),
-                  active: stopAfterTrack,
+                  () => view.onStopAfterTrack!(!view.stopAfterTrack),
+                  active: view.stopAfterTrack,
                 ),
-              if (onSleep != null)
+              if (view.onSleep != null)
                 _iconAction(
                   skin,
-                  sleepRunning ? Icons.bedtime_rounded : Icons.bedtime_outlined,
-                  sleepRunning
+                  view.sleepRunning ? Icons.bedtime_rounded : Icons.bedtime_outlined,
+                  view.sleepRunning
                       ? l10nOf(context).playerSleepOn
                       : l10nOf(context).playerSleep,
-                  () => onSleep!(sleepRunning ? null : sleepTimer),
-                  active: sleepRunning,
+                  () => view.onSleep!(view.sleepRunning ? null : view.sleepTimer),
+                  active: view.sleepRunning,
                 ),
             ],
           ),
         ),
 
-        if (sleepLeft != null)
+        if (view.sleepLeft != null)
           ValueListenableBuilder<Duration?>(
-            valueListenable: sleepLeft!,
+            valueListenable: view.sleepLeft!,
             builder: (context, left, _) {
               if (left == null) return const SizedBox.shrink();
               final total = left.inSeconds;
@@ -1132,7 +1142,7 @@ class PlayerScreen extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (onLyrics != null) ...[
+              if (view.onLyrics != null) ...[
                 _lyricsButton(context, skin),
                 const SizedBox(width: 12),
               ],
@@ -1142,7 +1152,7 @@ class PlayerScreen extends StatelessWidget {
             ],
           ),
 
-        if (fileMissing)
+        if (view.fileMissing)
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Text(
@@ -1165,17 +1175,17 @@ class PlayerScreen extends StatelessWidget {
   Widget _liveLyricLine(BuildContext context, Skin skin) {
     final pal = PresentationScope.of(context, fallback: skin).palette;
     return ValueListenableBuilder<Duration>(
-      valueListenable: state.position,
+      valueListenable: view.state.position,
       builder: (context, at, _) {
-        final l = lyrics;
+        final l = view.lyrics;
         if (l == null) return const SizedBox.shrink();
         final i = l.indexAt(at);
         final text = (i >= 0 && i < l.lines.length)
-            ? (romaji[i] ?? l.lines[i].text)
+            ? (view.romaji[i] ?? l.lines[i].text)
             : null;
         final has = text != null && text.trim().isNotEmpty;
         return GestureDetector(
-          onTap: has ? onLyrics : null,
+          onTap: has ? view.onLyrics : null,
           behavior: HitTestBehavior.opaque,
           child: Container(
             width: double.infinity,
@@ -1208,18 +1218,18 @@ class PlayerScreen extends StatelessWidget {
   }
 
   Widget _panelOverlay(BuildContext context, Skin skin) {
-    final chrome = state.presentation.kit.chrome;
-    final content = switch (panel) {
-      PlayerPanel.why => whyContent,
-      PlayerPanel.queue => queueContent,
-      PlayerPanel.audio => audioContent,
-      PlayerPanel.track => trackContent,
-      PlayerPanel.loop => loopContent,
+    final chrome = view.state.presentation.kit.chrome;
+    final content = switch (view.panel) {
+      PlayerPanel.why => view.whyContent,
+      PlayerPanel.queue => view.queueContent,
+      PlayerPanel.audio => view.audioContent,
+      PlayerPanel.track => view.trackContent,
+      PlayerPanel.loop => view.loopContent,
       PlayerPanel.none => null,
     };
     if (content == null) return const SizedBox.shrink();
 
-    final title = switch (panel) {
+    final title = switch (view.panel) {
       PlayerPanel.why => l10nOf(context).playerWhyThisSongTitle,
       PlayerPanel.queue => l10nOf(context).playerQueueTitle,
       PlayerPanel.audio => l10nOf(context).playerAudio,
@@ -1238,7 +1248,7 @@ class PlayerScreen extends StatelessWidget {
       child: Stack(
         children: [
           GestureDetector(
-            onTap: () => onPanel?.call(PlayerPanel.none),
+            onTap: () => view.onPanel?.call(PlayerPanel.none),
             child: ColoredBox(color: Colors.black.withValues(alpha: 0.55)),
           ),
           Align(
@@ -1255,12 +1265,12 @@ class PlayerScreen extends StatelessWidget {
                 final dy = dragDy;
                 dragDy = 0;
                 if (v < -220 || dy < -48) {
-                  onPanelMaximised?.call(true);
+                  view.onPanelMaximised?.call(true);
                 } else if (v > 220 || dy > 48) {
-                  if (panelMaximised) {
-                    onPanelMaximised?.call(false);
+                  if (view.panelMaximised) {
+                    view.onPanelMaximised?.call(false);
                   } else {
-                    onPanel?.call(PlayerPanel.none);
+                    view.onPanel?.call(PlayerPanel.none);
                   }
                 }
               },
@@ -1273,10 +1283,10 @@ class PlayerScreen extends StatelessWidget {
                     final pulled = pull;
                     pull = 0;
                     if (pulled > 90) {
-                      if (panelMaximised) {
-                        onPanelMaximised?.call(false);
+                      if (view.panelMaximised) {
+                        view.onPanelMaximised?.call(false);
                       } else {
-                        onPanel?.call(PlayerPanel.none);
+                        view.onPanel?.call(PlayerPanel.none);
                       }
                     }
                   }
@@ -1286,7 +1296,7 @@ class PlayerScreen extends StatelessWidget {
                 builder: (context) {
                   final layout = PresentationScope.of(context, fallback: skin);
                   final sheet = SizedBox(
-                    height: panelMaximised
+                    height: view.panelMaximised
                         ? MediaQuery.of(context).size.height
                         : MediaQuery.of(context).size.height * 0.64,
                     child: Column(
@@ -1309,9 +1319,9 @@ class PlayerScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (panelMaximised)
+                            if (view.panelMaximised)
                               IconButton(
-                                onPressed: () => onPanelMaximised?.call(false),
+                                onPressed: () => view.onPanelMaximised?.call(false),
                                 icon: Icon(
                                   Icons.fullscreen_exit_rounded,
                                   color: skin.textPrimary,
@@ -1320,7 +1330,7 @@ class PlayerScreen extends StatelessWidget {
                                 tooltip: l10nOf(context).playerShrink,
                               ),
                             IconButton(
-                              onPressed: () => onPanel?.call(PlayerPanel.none),
+                              onPressed: () => view.onPanel?.call(PlayerPanel.none),
                               icon: Icon(
                                 Icons.close_rounded,
                                 color: skin.textPrimary,
@@ -1428,11 +1438,11 @@ class PlayerScreen extends StatelessWidget {
   }
 
   Widget _lyricsButton(BuildContext context, Skin skin) {
-    final active = lyricsMode;
+    final active = view.lyricsMode;
     return Pressable(
       child: GestureDetector(
         key: lyricsButtonKey,
-        onTap: onLyrics,
+        onTap: view.onLyrics,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
@@ -1469,7 +1479,7 @@ class PlayerScreen extends StatelessWidget {
   }
 
   Widget _upNext(BuildContext context, Skin skin, double skew, {bool showSourceLine = false}) {
-    final q = state.queue;
+    final q = view.state.queue;
     final upcoming = q?.upcoming ?? const [];
     final nextTitle = upcoming.isEmpty ? null : upcoming.first.title;
     final nextArtist = upcoming.isEmpty ? null : upcoming.first.artist;
@@ -1478,9 +1488,9 @@ class PlayerScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (showSourceLine && state.playingFrom != null) ...[
+        if (showSourceLine && view.state.playingFrom != null) ...[
           Text(
-            l10nOf(context).playerPlayingFrom(state.playingFrom!),
+            l10nOf(context).playerPlayingFrom(view.state.playingFrom!),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,
@@ -1561,9 +1571,9 @@ class PlayerScreen extends StatelessWidget {
   Widget _progressBar(Skin skin, double skew) => PlayerProgressBar(
     skin: skin,
     skew: skew,
-    position: state.position,
-    duration: state.duration,
-    onSeek: onSeek,
+    position: view.state.position,
+    duration: view.state.duration,
+    onSeek: view.onSeek,
   );
 
   Widget _times(Skin skin, double skew) {
@@ -1572,9 +1582,9 @@ class PlayerScreen extends StatelessWidget {
       alignment: Alignment.centerLeft,
 
       child: ValueListenableBuilder<Duration>(
-        valueListenable: state.position,
+        valueListenable: view.state.position,
         builder: (context, pos, _) => ValueListenableBuilder<Duration?>(
-          valueListenable: state.duration,
+          valueListenable: view.state.duration,
           builder: (context, dur, __) => Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1663,9 +1673,9 @@ class PlayerScreen extends StatelessWidget {
       child: Transform(
         transform: Matrix4.skewX(-skew),
         child: InkWell(
-          onTap: onPlayPause,
+          onTap: view.onPlayPause,
           child: PopOnChange(
-            keyValue: playing,
+            keyValue: view.playing,
             child: Container(
               width: LayoutSpec.playButtonWidth,
               height: LayoutSpec.playButtonHeight,
@@ -1691,8 +1701,8 @@ class PlayerScreen extends StatelessWidget {
                     child: ScaleTransition(scale: animation, child: child),
                   ),
                   child: Icon(
-                    playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    key: ValueKey<bool>(playing),
+                    view.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    key: ValueKey<bool>(view.playing),
                     size: 30,
                     color: skin.background,
                   ),

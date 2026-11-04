@@ -31,14 +31,14 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: PlayerScreen(
+          body: PlayerScreen(view: PlayerView(
             state: state,
             track: _t('a'),
             hasWhy: true,
             hasQueue: true,
             hasTrackPanel: true,
             upNextCount: 2,
-          ),
+          )),
         ),
       ),
     );

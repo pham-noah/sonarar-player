@@ -46,7 +46,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: PlayerScreen(
+          body: PlayerScreen(view: PlayerView(
             state: state,
             track: _t('t1'),
             spectrum: _shaped(),
@@ -56,7 +56,7 @@ void main() {
             hasTrackPanel: true,
             onSleep: (_) {},
             upNextCount: 3,
-          ),
+          )),
         ),
       ),
     );

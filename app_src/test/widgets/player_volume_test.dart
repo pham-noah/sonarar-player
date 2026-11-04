@@ -32,7 +32,7 @@ Future<List<double>> _pump(WidgetTester tester, {double volume = 1.0}) async {
 
   await tester.pumpWidget(MaterialApp(
     home: Material(
-      child: PlayerScreen(
+      child: PlayerScreen(view: PlayerView(
         state: _state(),
         track: _track(),
         volume: volume,
@@ -46,7 +46,7 @@ Future<List<double>> _pump(WidgetTester tester, {double volume = 1.0}) async {
           onVolume: changes.add,
           muted: volume <= 0.001,
         ),
-      ),
+      )),
     ),
   ));
 
@@ -76,7 +76,7 @@ void main() {
       tester.view.devicePixelRatio = 3.0;
       addTearDown(tester.view.reset);
       await tester.pumpWidget(MaterialApp(
-        home: Material(child: PlayerScreen(state: _state(), track: _track())),
+        home: Material(child: PlayerScreen(view: PlayerView(state: _state(), track: _track()))),
       ));
       await tester.pumpAndSettle();
       expect(find.byType(Slider), findsNothing);

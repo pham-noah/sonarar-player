@@ -37,7 +37,7 @@ Widget _host({
 }) =>
     MaterialApp(
       home: Material(
-        child: PlayerScreen(
+        child: PlayerScreen(view: PlayerView(
           state: AppState(),
           track: _t(),
           lyricsMode: true,
@@ -53,13 +53,13 @@ Widget _host({
             onExit: onExit,
             onSeek: onSeek,
           ),
-        ),
+        )),
       ),
     );
 
 Widget _figureHost({required bool lyricsMode}) => MaterialApp(
       home: Material(
-        child: PlayerScreen(
+        child: PlayerScreen(view: PlayerView(
           state: AppState(),
           track: _t(),
           lyricsMode: lyricsMode,
@@ -73,7 +73,7 @@ Widget _figureHost({required bool lyricsMode}) => MaterialApp(
                   onExit: () {},
                 )
               : null,
-        ),
+        )),
       ),
     );
 

@@ -67,14 +67,14 @@ void main() {
         final msg = await _overflowAt(
           tester,
           size,
-          () => PlayerScreen(
+          () => PlayerScreen(view: PlayerView(
             state: AppState(),
             track: _tracks(1).first,
             volume: 0.65,
             onVolume: (_) {},
             onPlayPause: () {},
             onCycleRepeat: () {},
-          ),
+          )),
         );
         expect(msg, isNull, reason: msg ?? '');
       });

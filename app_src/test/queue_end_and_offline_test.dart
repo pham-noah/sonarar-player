@@ -125,7 +125,7 @@ void main() {
 
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
-          body: PlayerScreen(state: state, track: _t('a')),
+          body: PlayerScreen(view: PlayerView(state: state, track: _t('a'))),
         ),
       ));
       await tester.pump();

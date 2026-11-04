@@ -140,11 +140,11 @@ void main() {
 
   testWidgets('player', (tester) async {
     final s = _state(SkinId.abyss);
-    final screen = PlayerScreen(
+    final screen = PlayerScreen(view: PlayerView(
       state: s,
       track: _library.first,
       cover: MemoryImage(_cover('night-drive')),
-    );
+    ));
 
     await _pump(tester, screen, s.skin);
     await expectLater(find.byType(PlayerScreen),

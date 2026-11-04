@@ -24,7 +24,7 @@ Lyrics _synced() => Lyrics(lines: const [
 
 Widget _player({required bool mode, Lyrics? lyrics}) => MaterialApp(
       home: Material(
-        child: PlayerScreen(
+        child: PlayerScreen(view: PlayerView(
           state: AppState(),
           track: _t(),
           lyricsMode: mode,
@@ -38,7 +38,7 @@ Widget _player({required bool mode, Lyrics? lyrics}) => MaterialApp(
                   onExit: () {},
                 )
               : null,
-        ),
+        )),
       ),
     );
 

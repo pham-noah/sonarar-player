@@ -40,13 +40,13 @@ void main() {
 
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: state,
         track: _t(0),
         onNext: () => nexts++,
         onPrevious: () => prevs++,
         onShuffle: () => shuffles++,
-      ),
+      )),
     );
 
     await _tapIcon(tester, Icons.skip_next_rounded);
@@ -64,12 +64,12 @@ void main() {
 
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: state,
         track: _t(0),
         onNext: () {},
         onPrevious: () => prevs++,
-      ),
+      )),
     );
 
     await _tapIcon(tester, Icons.skip_previous_rounded);
@@ -84,11 +84,11 @@ void main() {
 
     await _pump(
       tester,
-      PlayerScreen(
+      PlayerScreen(view: PlayerView(
         state: state,
         track: _t(0),
         onShuffle: () => shuffles++,
-      ),
+      )),
     );
 
     await _tapIcon(tester, Icons.shuffle_rounded);

@@ -3529,7 +3529,7 @@ class _HomeShellState extends State<HomeShell>
     final current = _repo.tracks.isEmpty ? null : _repo.tracks.first;
     return Stack(
 children: [
-  PlayerScreen(
+  PlayerScreen(view: PlayerView(
                     state: widget.state,
                     onMinimise: _closePlayer,
                     onArtist: _openArtist,
@@ -3687,7 +3687,7 @@ children: [
                     sleepTimer: _prefs.sleepTimer,
 
                     sleepLeft: _sleepLeft,
-                  ),
+                  )),
   Positioned(
     left: 8,
     top: MediaQuery.of(context).padding.top + 4,

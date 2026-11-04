@@ -27,11 +27,11 @@ void main() {
       final tapped = <String>[];
       await tester.pumpWidget(MaterialApp(
         home: Material(
-          child: PlayerScreen(
+          child: PlayerScreen(view: PlayerView(
             state: AppState(),
             track: _t('a', 'Rivers In the Desert', 'ATLUS Sound Team'),
             onArtist: tapped.add,
-          ),
+          )),
         ),
       ));
       await tester.pumpAndSettle();
@@ -45,10 +45,10 @@ void main() {
         (tester) async {
       await tester.pumpWidget(MaterialApp(
         home: Material(
-          child: PlayerScreen(
+          child: PlayerScreen(view: PlayerView(
             state: AppState(),
             track: _t('a', 'Rivers In the Desert', 'ATLUS Sound Team'),
-          ),
+          )),
         ),
       ));
       await tester.pumpAndSettle();

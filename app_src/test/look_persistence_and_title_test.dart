@@ -30,14 +30,14 @@ Future<void> _pump(WidgetTester tester, LayoutKind layout) async {
 
   await tester.pumpWidget(MaterialApp(
     home: Scaffold(
-      body: PlayerScreen(
+      body: PlayerScreen(view: PlayerView(
         state: state,
         track: _t(),
         onPlayPause: () {},
         onSeek: (_) {},
         onVolume: (_) {},
         onCycleRepeat: () {},
-      ),
+      )),
     ),
   ));
   await tester.pumpAndSettle();

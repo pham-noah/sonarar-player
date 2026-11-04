@@ -33,7 +33,7 @@ Future<_Harness> _pump(WidgetTester tester) async {
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(
     home: Material(
-      child: LibraryScreen(
+      child: LibraryScreen(view: LibraryScreenView(
         tracks: _tracks(),
         coverPathFor: (_) => null,
         skin: kSkinCrimson,
@@ -44,7 +44,7 @@ Future<_Harness> _pump(WidgetTester tester) async {
         onCreatePlaylist: (_) {},
         onDeletePlaylist: (_) {},
         onPlayPlaylist: (_) {},
-      ),
+      )),
     ),
   ));
   await tester.pumpAndSettle();
@@ -82,7 +82,7 @@ void main() {
     h.request++;
     await tester.pumpWidget(MaterialApp(
       home: Material(
-        child: LibraryScreen(
+        child: LibraryScreen(view: LibraryScreenView(
           tracks: _tracks(),
           coverPathFor: (_) => null,
           skin: kSkinCrimson,
@@ -93,7 +93,7 @@ void main() {
           onCreatePlaylist: (_) {},
           onDeletePlaylist: (_) {},
           onPlayPlaylist: (_) {},
-        ),
+        )),
       ),
     ));
     await tester.pumpAndSettle();

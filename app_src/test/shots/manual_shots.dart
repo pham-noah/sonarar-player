@@ -123,7 +123,7 @@ void main() {
 
   testWidgets('library', (tester) async {
     final s = _state(SkinId.crimson);
-    final screen = LibraryScreen(
+    final screen = LibraryScreen(view: LibraryScreenView(
       tracks: _library,
       coverPathFor: _coverPath,
       skin: s.skin,
@@ -131,7 +131,7 @@ void main() {
         Playlist(id: 'pl_a', name: 'Night Bus', trackIds: const ['night-drive']),
       ]),
       libraryRoot: '/storage/emulated/0/Music/Sonarar',
-    );
+    ));
 
     await _pump(tester, screen, s.skin);
     await expectLater(find.byType(LibraryScreen),

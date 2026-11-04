@@ -41,10 +41,13 @@ enum _SwipeAction { queue, like }
 enum SwipeOutcome { queued, alreadyQueued, liked, unliked, nothing }
 
 enum _PlaylistKind { seeded, custom }
-
-class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({
-    super.key,
+/// Everything the library screen is handed, in one object.
+///
+/// The screen has forty-five things to draw and answer; naming them once here
+/// keeps the shell's wiring countable and lets a caller keep a view around
+/// instead of re-deriving forty-five arguments.
+class LibraryScreenView {
+  const LibraryScreenView({
     required this.tracks,
     required this.coverPathFor,
     required this.skin,
@@ -92,6 +95,7 @@ class LibraryScreen extends StatefulWidget {
     this.onDeletePlaylist,
     this.onRemoveFromPlaylist,
   });
+
 
   final void Function(Track)? onDragToQueue;
 
@@ -179,11 +183,22 @@ class LibraryScreen extends StatefulWidget {
 
   final void Function(Playlist, Track)? onRemoveFromPlaylist;
 
+}
+
+class LibraryScreen extends StatefulWidget {
+  const LibraryScreen({super.key, required this.view});
+
+  final LibraryScreenView view;
+
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
+  /// The screen's arguments, named once. Everything the state reads comes
+  /// through here, so the widget itself only has to carry the object.
+  LibraryScreenView get view => widget.view;
+
   final _searchController = TextEditingController();
   final _searchFocus = FocusNode();
   final _listController = ScrollController();
@@ -191,7 +206,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   static const double _kLibraryBottomAir = 16;
 
   double get _clearance =>
-      PresentationScope.of(context, fallback: widget.skin).arrangement.bottomClearance +
+      PresentationScope.of(context, fallback: view.skin).arrangement.bottomClearance +
       _kLibraryBottomAir;
 
   int? _cursor;
@@ -216,20 +231,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   LibraryView? _pickedView;
 
-  bool get _playlistsAreGrid => _playlistGrid ?? widget.playlistGrid ?? widget.grid;
+  bool get _playlistsAreGrid => _playlistGrid ?? view.playlistGrid ?? view.grid;
 
-  bool get _searchOnly => widget.searchOnly;
+  bool get _searchOnly => view.searchOnly;
 
   Playlist? _openPlaylist;
 
   String? _openArtist;
-  late List<Track> _visible = widget.tracks;
+  late List<Track> _visible = view.tracks;
 
-  late Map<String, List<Track>> _byArtist = groupByArtist(widget.tracks);
+  late Map<String, List<Track>> _byArtist = groupByArtist(view.tracks);
 
   /// Id to track, rebuilt with [_byArtist]: a playlist row asks for one cover
   /// by id, and rebuilding the index per row per frame was O(playlists×tracks).
-  late Map<String, Track> _tracksById = _indexTracks(widget.tracks);
+  late Map<String, Track> _tracksById = _indexTracks(view.tracks);
 
   static Map<String, Track> _indexTracks(List<Track> tracks) =>
       {for (final t in tracks) t.id: t};
@@ -239,7 +254,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void didUpdateWidget(LibraryScreen old) {
     super.didUpdateWidget(old);
-    if (old.entryToken != widget.entryToken) {
+    if (old.view.entryToken != view.entryToken) {
       _view = LibraryView.playlists;
       _playlistFilter = null;
       _openPlaylist = null;
@@ -247,15 +262,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
       _cursor = null;
     }
 
-    if (old.tracks != widget.tracks || !setEquals(old.likedIds, widget.likedIds)) {
-      _byArtist = groupByArtist(widget.tracks);
-      _tracksById = _indexTracks(widget.tracks);
+    if (old.view.tracks != view.tracks || !setEquals(old.view.likedIds, view.likedIds)) {
+      _byArtist = groupByArtist(view.tracks);
+      _tracksById = _indexTracks(view.tracks);
 
       _sortedArtistsCache = null;
       _applyFilter();
     }
 
-    if (old.searchRequest != widget.searchRequest) {
+    if (old.view.searchRequest != view.searchRequest) {
       _searchFocus.requestFocus();
       _searchController.selection = TextSelection(
         baseOffset: 0,
@@ -263,13 +278,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
       );
     }
 
-    if (widget.closeListRequest != old.closeListRequest) {
+    if (view.closeListRequest != old.view.closeListRequest) {
       _closeOpenList();
     }
 
-    if (widget.artistRequest != null &&
-        widget.artistRequest != old.artistRequest) {
-      setState(() => _applyArtistRequest(widget.artistRequest));
+    if (view.artistRequest != null &&
+        view.artistRequest != old.view.artistRequest) {
+      setState(() => _applyArtistRequest(view.artistRequest));
     }
   }
 
@@ -285,8 +300,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final terms = Track.searchTerms(_filter);
     setState(() {
       _visible = terms.isEmpty
-          ? widget.tracks
-          : widget.tracks.where((t) => t.matchesTerms(terms)).toList(growable: false);
+          ? view.tracks
+          : view.tracks.where((t) => t.matchesTerms(terms)).toList(growable: false);
 
       if (_cursor != null) {
         _cursor = _visible.isEmpty
@@ -325,7 +340,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _playCursor() {
     final i = _cursor;
     if (i == null || i >= _visible.length) return;
-    widget.onPlay?.call(_visible[i]);
+    view.onPlay?.call(_visible[i]);
   }
 
   @override
@@ -333,7 +348,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     super.initState();
     _applyFilter();
 
-    _applyArtistRequest(widget.artistRequest);
+    _applyArtistRequest(view.artistRequest);
   }
 
   void _applyArtistRequest(String? artist) {
@@ -354,12 +369,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
     });
   }
 
-  Widget _capped(Widget child) => widget.contentMaxWidth == null
+  Widget _capped(Widget child) => view.contentMaxWidth == null
       ? child
       : Center(
           child: ConstrainedBox(
 
-            constraints: BoxConstraints(maxWidth: widget.contentMaxWidth!),
+            constraints: BoxConstraints(maxWidth: view.contentMaxWidth!),
             child: child,
           ),
         );
@@ -368,10 +383,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final skin = widget.skin;
+    final skin = view.skin;
 
     if (_searchOnly) {
-      final fullArt = widget.headerArt;
+      final fullArt = view.headerArt;
       return ColoredBox(
         color: PresentationScope.of(context, fallback: skin).palette.pageFill ??
               PresentationScope.of(context, fallback: skin).palette.background,
@@ -406,7 +421,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
     final page = Column(
           children: [
-            if (!widget.headerScrollsAway) ...[
+            if (!view.headerScrollsAway) ...[
               _head(skin),
               const SizedBox(height: 4),
             ],
@@ -424,11 +439,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Widget _sortSegment(Skin skin, String label, String value) {
-    final on = widget.playlistSort == value;
+    final on = view.playlistSort == value;
     return GestureDetector(
-      onTap: widget.onPlaylistSort == null
+      onTap: view.onPlaylistSort == null
           ? null
-          : () => widget.onPlaylistSort!(value),
+          : () => view.onPlaylistSort!(value),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
         decoration: BoxDecoration(
@@ -453,7 +468,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Widget _playlistCell(Skin skin, Playlist p) {
-    final pinned = widget.pinnedPlaylistIds.contains(p.id);
+    final pinned = view.pinnedPlaylistIds.contains(p.id);
     return GestureDetector(
       onTap: () => _openList(p),
 
@@ -535,9 +550,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
       _openPlaylist = p;
       _cursor = null;
     });
-    widget.onPlaylistOpened?.call(p);
+    view.onPlaylistOpened?.call(p);
 
-    widget.onListOpenChanged?.call(true);
+    view.onListOpenChanged?.call(true);
   }
 
   void _closeOpenList() {
@@ -547,7 +562,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       _openArtist = null;
       _cursor = null;
     });
-    widget.onListOpenChanged?.call(false);
+    view.onListOpenChanged?.call(false);
   }
 
   Widget _kindChip(Skin skin, String label, _PlaylistKind kind) {
@@ -586,21 +601,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   bool get _showBrowserBar =>
-      _openPlaylist == null && _openArtist == null && widget.playlists != null;
+      _openPlaylist == null && _openArtist == null && view.playlists != null;
 
   Playlist? get _openListForAdd {
     final opened = _openPlaylist;
-    if (opened != null && widget.onAddSongsTo != null) return opened;
+    if (opened != null && view.onAddSongsTo != null) return opened;
     return null;
   }
 
-  bool get _plusAddsSongs => _openListForAdd != null || widget.onAddSongs != null;
+  bool get _plusAddsSongs => _openListForAdd != null || view.onAddSongs != null;
 
   VoidCallback? get _plusAction {
     final target = _openListForAdd;
-    if (target != null) return () => widget.onAddSongsTo!(target);
-    if (widget.onAddSongs != null) return widget.onAddSongs;
-    return widget.onCreatePlaylist == null ? null : _newPlaylistDialog;
+    if (target != null) return () => view.onAddSongsTo!(target);
+    if (view.onAddSongs != null) return view.onAddSongs;
+    return view.onCreatePlaylist == null ? null : _newPlaylistDialog;
   }
 
   Widget _head(Skin skin) => _headStrip(
@@ -642,9 +657,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 });
                 _selectView(v);
               },
-              playlistCount: widget.playlists?.length ?? 0,
+              playlistCount: view.playlists?.length ?? 0,
               artistCount: _artistCount,
-              songCount: widget.tracks.length,
+              songCount: view.tracks.length,
               besidePlaylists: !_kindChoicesOpen
                   ? const []
                   : [
@@ -670,7 +685,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     Widget head, {
     bool scrim = true,
   }) {
-    final art = widget.headerArt;
+    final art = view.headerArt;
     if (art == null) return head;
     final artLayer = Positioned(
       left: 0,
@@ -746,7 +761,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       return AppScreenHeader(
         skin: skin,
         title: heading,
-        mark: widget.headerMark,
+        mark: view.headerMark,
         trailing: plus(skin.accent),
       );
     }
@@ -755,8 +770,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
       padding: const EdgeInsets.fromLTRB(14, 14, 20, 8),
       child: Row(
         children: [
-          if (widget.headerMark != null)
-            SidebarMarkButton(mark: widget.headerMark!, size: AppScreenHeader.markSize),
+          if (view.headerMark != null)
+            SidebarMarkButton(mark: view.headerMark!, size: AppScreenHeader.markSize),
           Expanded(
             child: SectionBand(
               skin: skin,
@@ -901,7 +916,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   List<Track> _tracksForOpen() {
     final pl = _openPlaylist;
     if (pl != null) {
-      final byId = {for (final t in widget.tracks) t.id: t};
+      final byId = {for (final t in view.tracks) t.id: t};
       return [
         for (final id in pl.trackIds)
           if (byId[id] != null) byId[id]!,
@@ -909,11 +924,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
     }
     final artist = _openArtist;
     if (artist == null) return const [];
-    return widget.tracks.where((t) => t.artist.trim() == artist).toList();
+    return view.tracks.where((t) => t.artist.trim() == artist).toList();
   }
 
   Widget _playlistsView(Skin skin) {
-    final all = widget.visiblePlaylists ?? widget.playlists?.all ?? const <Playlist>[];
+    final all = view.visiblePlaylists ?? view.playlists?.all ?? const <Playlist>[];
     var derived = [for (final p in all) if (isDerivedPlaylistId(p.id)) p];
     var seeded = [
       for (final p in all)
@@ -925,8 +940,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
     ];
 
     List<Playlist> arrange(List<Playlist> input) {
-      final pinned = widget.pinnedPlaylistIds.toSet();
-      final all = widget.playlists?.all ?? const <Playlist>[];
+      final pinned = view.pinnedPlaylistIds.toSet();
+      final all = view.playlists?.all ?? const <Playlist>[];
       final fileOrder = {for (var i = 0; i < all.length; i++) all[i].id: i};
       int byFileOrder(Playlist a, Playlist b) {
         final ia = fileOrder[a.id];
@@ -941,7 +956,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       }
 
       int bySort(Playlist a, Playlist b) {
-        switch (widget.playlistSort) {
+        switch (view.playlistSort) {
           case 'alpha':
             return a.name.toLowerCase().compareTo(b.name.toLowerCase());
           case 'updated':
@@ -963,7 +978,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       return [...isPinned, ...rest];
     }
 
-    final liked = likedAsPlaylist(orderedIds: widget.likedOrder, name: l10nOf(context).libraryLikedSongs);
+    final liked = likedAsPlaylist(orderedIds: view.likedOrder, name: l10nOf(context).libraryLikedSongs);
 
     final lists = arrange(switch (_playlistFilter) {
       _PlaylistKind.seeded => seeded,
@@ -975,7 +990,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       padding: EdgeInsets.only(bottom: _clearance),
       children: [
 
-        if (widget.headerScrollsAway) _head(skin),
+        if (view.headerScrollsAway) _head(skin),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
           child: Row(
@@ -988,14 +1003,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
               const Spacer(),
 
               GestureDetector(
-                onTap: widget.onPlaylistGrid == null
+                onTap: view.onPlaylistGrid == null
                     ? null
-                    : () => widget.onPlaylistGrid!(!_playlistsAreGrid),
+                    : () => view.onPlaylistGrid!(!_playlistsAreGrid),
                 child: Icon(
                   _playlistsAreGrid
                       ? Icons.view_list_rounded
                       : Icons.grid_view_rounded,
-                  color: widget.onPlaylistGrid == null
+                  color: view.onPlaylistGrid == null
                       ? skin.secondary(0.4)
                       : skin.accent,
                   size: 24,
@@ -1012,12 +1027,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
               playlist: liked,
               cover: _coverOfFirst(liked),
 
-              pinned: widget.pinnedPlaylistIds.contains(kLikedPlaylistId),
+              pinned: view.pinnedPlaylistIds.contains(kLikedPlaylistId),
               onOpen: () => _openList(liked),
               onLongPress: () => _playlistActions(liked),
-              onPlay: widget.onPlayPlaylist == null
+              onPlay: view.onPlayPlaylist == null
                   ? null
-                  : () => widget.onPlayPlaylist!(liked),
+                  : () => view.onPlayPlaylist!(liked),
             ),
           ),
         if (!_playlistsAreGrid && _playlistFilter != _PlaylistKind.custom)
@@ -1030,13 +1045,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   skin: skin,
                   playlist: p,
                   cover: _coverOfFirst(p),
-                  pinned: widget.pinnedPlaylistIds.contains(p.id),
+                  pinned: view.pinnedPlaylistIds.contains(p.id),
                   onOpen: () => _openList(p),
 
                   onLongPress: () => _playlistActions(p),
-                  onPlay: widget.onPlayPlaylist == null
+                  onPlay: view.onPlayPlaylist == null
                       ? null
-                      : () => widget.onPlayPlaylist!(p),
+                      : () => view.onPlayPlaylist!(p),
                 ),
               ),
 
@@ -1098,12 +1113,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   playlist: entry.value,
 
                   cover: _coverOfFirst(entry.value),
-                  pinned: widget.pinnedPlaylistIds.contains(entry.value.id),
+                  pinned: view.pinnedPlaylistIds.contains(entry.value.id),
 
                   onOpen: () => _openList(entry.value),
-                  onPlay: (widget.onPlayPlaylist == null || entry.value.isEmpty)
+                  onPlay: (view.onPlayPlaylist == null || entry.value.isEmpty)
                       ? null
-                      : () => widget.onPlayPlaylist!(entry.value),
+                      : () => view.onPlayPlaylist!(entry.value),
                   onLongPress: () => _playlistActions(entry.value),
                 ),
               ),
@@ -1126,7 +1141,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       );
     }
 
-    final withHeader = widget.headerScrollsAway;
+    final withHeader = view.headerScrollsAway;
     return ListView.builder(
       padding: EdgeInsets.only(bottom: _clearance),
       itemCount: names.length + (withHeader ? 1 : 0),
@@ -1162,7 +1177,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   ImageProvider? _coverOf(Track t, {int decodeWidth = 120}) {
-    final path = widget.coverPathFor(t);
+    final path = view.coverPathFor(t);
     if (path == null || path.isEmpty) return null;
     final base = coverProviderFor(path);
     if (base == null) return null;
@@ -1174,13 +1189,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: PresentationScope.uiSkin(context, widget.skin).background,
+        backgroundColor: PresentationScope.uiSkin(context, view.skin).background,
         title: Text(l10nOf(context).libraryNewPlaylist,
-            style: TextStyle(color: widget.skin.textPrimary)),
+            style: TextStyle(color: view.skin.textPrimary)),
         content: TextField(
           controller: controller,
           autofocus: true,
-          style: TextStyle(color: widget.skin.textPrimary),
+          style: TextStyle(color: view.skin.textPrimary),
           decoration: InputDecoration(hintText: l10nOf(context).libraryPlaylistName),
           onSubmitted: (v) => Navigator.of(ctx).pop(v),
         ),
@@ -1199,7 +1214,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     controller.dispose();
     final trimmed = (name ?? '').trim();
     if (trimmed.isEmpty) return;
-    widget.onCreatePlaylist?.call(trimmed);
+    view.onCreatePlaylist?.call(trimmed);
   }
 
   Future<void> _playlistActions(Playlist p) async {
@@ -1207,37 +1222,37 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final owned = !isDerivedPlaylistId(p.id) && !seeded;
     final action = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: PresentationScope.uiSkin(context, widget.skin).background,
+      backgroundColor: PresentationScope.uiSkin(context, view.skin).background,
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (widget.onTogglePin != null)
+            if (view.onTogglePin != null)
               ListTile(
                 leading: Icon(
-                  widget.pinnedPlaylistIds.contains(p.id)
+                  view.pinnedPlaylistIds.contains(p.id)
                       ? Icons.push_pin_rounded
                       : Icons.push_pin_outlined,
-                  color: widget.skin.accent,
+                  color: view.skin.accent,
                 ),
                 title: Text(
-                  widget.pinnedPlaylistIds.contains(p.id)
+                  view.pinnedPlaylistIds.contains(p.id)
                       ? l10nOf(ctx).libraryUnpinPrompt(p.name)
                       : l10nOf(ctx).libraryPinPrompt(p.name),
-                  style: TextStyle(color: widget.skin.textPrimary),
+                  style: TextStyle(color: view.skin.textPrimary),
                 ),
                 onTap: () => Navigator.of(ctx).pop('pin'),
               ),
             if (owned)
               ListTile(
                 title: Text(l10nOf(ctx).libraryRenamePrompt(p.name),
-                    style: TextStyle(color: widget.skin.textPrimary)),
+                    style: TextStyle(color: view.skin.textPrimary)),
                 onTap: () => Navigator.of(ctx).pop('rename'),
               ),
             if (owned)
               ListTile(
                 title: Text(l10nOf(ctx).libraryDeletePrompt(p.name),
-                    style: TextStyle(color: widget.skin.accent)),
+                    style: TextStyle(color: view.skin.accent)),
                 onTap: () => Navigator.of(ctx).pop('delete'),
               ),
             if (seeded || isDerivedPlaylistId(p.id))
@@ -1250,7 +1265,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       : l10nOf(context).libraryDerivedNote,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
-                    color: widget.skin.textSecondary,
+                    color: view.skin.textSecondary,
                   ),
                 ),
               ),
@@ -1259,16 +1274,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
     );
     if (action == 'pin') {
-      widget.onTogglePin?.call(p.id);
+      view.onTogglePin?.call(p.id);
     }
     if (action == 'delete') {
-      widget.onDeletePlaylist?.call(p);
+      view.onDeletePlaylist?.call(p);
     }
   }
 
   Widget _list(Skin skin, [List<Track>? source, Playlist? inPlaylist]) {
     final rows = source ?? _visible;
-    if (widget.tracks.isEmpty) {
+    if (view.tracks.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -1285,7 +1300,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Expected at:\n${widget.libraryRoot ?? ''}',
+                'Expected at:\n${view.libraryRoot ?? ''}',
                 style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
@@ -1320,14 +1335,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
       child: Focus(
         autofocus: true,
 
-        child: (widget.grid || widget.headerScrollsAway)
+        child: (view.grid || view.headerScrollsAway)
             ? CustomScrollView(
                 controller: _listController,
                 slivers: [
 
-                  if (widget.headerScrollsAway)
+                  if (view.headerScrollsAway)
                     SliverToBoxAdapter(child: _head(skin)),
-                  if (widget.grid)
+                  if (view.grid)
                     SliverPadding(
                       padding: EdgeInsets.only(bottom: _clearance),
                       sliver: SliverGrid.builder(
@@ -1375,37 +1390,37 @@ class _LibraryScreenState extends State<LibraryScreen> {
     style: StaggerStyle.shelf,
     child: _TrackRow(
     track: rows[i],
-    coverPath: widget.coverPathFor(rows[i]),
+    coverPath: view.coverPathFor(rows[i]),
     skin: skin,
-    onManage: widget.onManage,
+    onManage: view.onManage,
 
-    onCoverTap: widget.onTogglePlay == null
+    onCoverTap: view.onTogglePlay == null
         ? null
         : () {
             final t = rows[i];
-            if (widget.playingTrackId == t.id) {
-              widget.onTogglePlay!(t);
+            if (view.playingTrackId == t.id) {
+              view.onTogglePlay!(t);
             } else {
-              widget.onPlay?.call(t);
+              view.onPlay?.call(t);
             }
           },
 
-    isPlaying: widget.isPlaying,
+    isPlaying: view.isPlaying,
 
-    isLiked: widget.likedIds.contains(rows[i].id),
-    onQueue: widget.onQueue == null
+    isLiked: view.likedIds.contains(rows[i].id),
+    onQueue: view.onQueue == null
         ? null
-        : (t) => widget.onQueue!(t),
-    onDragToQueue: widget.onDragToQueue,
+        : (t) => view.onQueue!(t),
+    onDragToQueue: view.onDragToQueue,
 
     dragLabel: rows[i].title,
-    onLike: widget.onLike == null
+    onLike: view.onLike == null
         ? null
         : (t) {
             if (inPlaylist != null) {
-              widget.onRemoveFromPlaylist?.call(inPlaylist, t);
+              view.onRemoveFromPlaylist?.call(inPlaylist, t);
             } else {
-              widget.onLike!(t);
+              view.onLike!(t);
             }
           },
     inPlaylist: inPlaylist != null,
@@ -1414,7 +1429,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     selected: _cursor == i && source == null,
     index: i,
 
-    ranked: widget.rankedList,
+    ranked: view.rankedList,
   ),
   );
 
@@ -1426,7 +1441,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     Playlist? inPlaylist,
   ) {
     final t = rows[i];
-    final playing = widget.playingTrackId == t.id;
+    final playing = view.playingTrackId == t.id;
     final pal = PresentationScope.of(context, fallback: skin).palette;
 
     Widget coverBox = Container(
@@ -1437,10 +1452,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
           width: playing ? 2 : 1,
         ),
       ),
-      child: widget.coverPathFor(t) == null
+      child: view.coverPathFor(t) == null
           ? null
           : Image.file(
-              File(widget.coverPathFor(t)!),
+              File(view.coverPathFor(t)!),
               fit: BoxFit.cover,
               // Decoding a full-size cover per tile is what makes a grid
               // stutter while it is still moving. Tiles are small; ask small.
@@ -1448,7 +1463,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
     );
 
-    final drag = widget.onDragToQueue;
+    final drag = view.onDragToQueue;
     if (drag != null) {
       coverBox = LongPressDraggable<Track>(
         data: t,
@@ -1456,7 +1471,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         feedback: _TrackRowState.dragFeedback(
           skin: skin,
           label: t.title,
-          coverPath: widget.coverPathFor(t),
+          coverPath: view.coverPathFor(t),
           addLabel: l10nOf(context).libraryAddToQueue,
           size: 56,
         ),
@@ -1466,9 +1481,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
     }
 
     return GestureDetector(
-      onTap: widget.onPlay == null ? null : () => widget.onPlay!(t),
+      onTap: view.onPlay == null ? null : () => view.onPlay!(t),
 
-      onLongPress: widget.onManage == null ? null : () => widget.onManage!(t),
+      onLongPress: view.onManage == null ? null : () => view.onManage!(t),
       behavior: HitTestBehavior.opaque,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

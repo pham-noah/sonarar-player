@@ -41,7 +41,7 @@ void main() {
         body: Column(
           children: [
             Expanded(
-              child: LibraryScreen(
+              child: LibraryScreen(view: LibraryScreenView(
 
                 searchOnly: true,
                 entryToken: 0,
@@ -49,7 +49,7 @@ void main() {
                 coverPathFor: (_) => null,
                 skin: skin,
                 onDragToQueue: (t) => dropped.add(t.id),
-              ),
+              )),
             ),
             MiniPlayer(
               skin: skin,
@@ -105,7 +105,7 @@ void main() {
         body: Column(
           children: [
             Expanded(
-              child: LibraryScreen(
+              child: LibraryScreen(view: LibraryScreenView(
                 searchOnly: true,
                 entryToken: 0,
                 tracks: _lib(6),
@@ -115,7 +115,7 @@ void main() {
                 grid: true,
                 onDragToQueue: (t) => dropped.add(t.id),
                 onManage: (_) {},
-              ),
+              )),
             ),
             MiniPlayer(
               skin: skin,

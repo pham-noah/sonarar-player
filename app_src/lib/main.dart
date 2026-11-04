@@ -18,7 +18,6 @@ import 'context/weather_codes.dart';
 import 'core/build_info.dart';
 import 'core/app_state.dart';
 import 'player/art_warmer.dart';
-import 'player/queue_mode.dart';
 import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
@@ -353,7 +352,7 @@ class _HomeShellState extends State<HomeShell>
       presentation: widget.state.presentation,
       rebuildOn: _routeListenable,
 
-      builder: (_) => LibraryScreen(
+      builder: (_) => LibraryScreen(view: LibraryScreenView(
         tracks: _rediscoverTracks,
         playlists: null,
         skin: widget.state.uiSkin,
@@ -363,12 +362,12 @@ class _HomeShellState extends State<HomeShell>
         onCreatePlaylist: (_) {},
         onDeletePlaylist: (_) {},
         headerScrollsAway: true,
-      ),
+      )),
     );
   }
 
   void _openRecap() {
-    _openPage('RECAP — $_recapLabel', (_) => LibraryScreen(
+    _openPage('RECAP — $_recapLabel', (_) => LibraryScreen(view: LibraryScreenView(
       tracks: _recapTracks,
       playlists: null,
       skin: widget.state.uiSkin,
@@ -378,7 +377,7 @@ class _HomeShellState extends State<HomeShell>
       onCreatePlaylist: (_) {},
       onDeletePlaylist: (_) {},
       headerScrollsAway: true,
-    ));
+    )));
   }
 
   void _notePlaylistOpened(String id) {
@@ -730,7 +729,7 @@ class _HomeShellState extends State<HomeShell>
         if (byId[id] != null) byId[id]!,
     ];
     // ignore: discarded_futures
-    return LibraryScreen(
+    return LibraryScreen(view: LibraryScreenView(
       tracks: tracks,
       playlists: null,
       skin: widget.state.uiSkin,
@@ -742,11 +741,11 @@ class _HomeShellState extends State<HomeShell>
 
       onAddSongs: () => _addSongsToPlaylist(p),
       headerScrollsAway: true,
-    );
+    ));
   }
 
   void _addSongsToPlaylist(Playlist playlist) {
-    _openPage('ADD TO ${capsFor(context, playlist.name)}', (_) => LibraryScreen(
+    _openPage('ADD TO ${capsFor(context, playlist.name)}', (_) => LibraryScreen(view: LibraryScreenView(
           tracks: _repo.tracks,
           playlists: null,
           skin: widget.state.uiSkin,
@@ -762,7 +761,7 @@ class _HomeShellState extends State<HomeShell>
           onCreatePlaylist: (_) {},
           onDeletePlaylist: (_) {},
           headerScrollsAway: true,
-        ));
+        )));
   }
 
   List<Playlist> get _genreLists => [
@@ -2882,7 +2881,7 @@ class _HomeShellState extends State<HomeShell>
         contextEnabled: widget.state.contextEnabled,
       );
   /// The library tab, wired. `_tabContent` is the routing; this is the wiring.
-  Widget _libraryTab(Skin skin) => LibraryScreen(
+  Widget _libraryTab(Skin skin) => LibraryScreen(view: LibraryScreenView(
 
         entryToken: _libraryEntry,
         grid: _prefs.libraryIsGrid ?? widget.state.arrangement.libraryIsGrid,
@@ -2999,7 +2998,7 @@ class _HomeShellState extends State<HomeShell>
         playingTrackId: widget.state.currentTrack?.id,
 
         isPlaying: _playing,
-      );
+      ));
   /// The search tab, wired. `_tabContent` is the routing; this is the wiring.
   Widget _searchTab(Skin skin) => YoutubeSearchScreen(
         state: widget.state,

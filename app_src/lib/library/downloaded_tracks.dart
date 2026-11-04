@@ -238,7 +238,7 @@ Future<int?> removeDownload({
         await f.delete();
       }
     } catch (e) {
-      debugPrint('[Sonarar][DL] delete failed: ${f.path}: $e');
+      debugPrint('[Sonarar][DL] delete failed: $libraryRoot$sep$rel: $e');
     }
   }
   return freed;

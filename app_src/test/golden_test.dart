@@ -169,13 +169,13 @@ void main() {
     final s = _stateFor(band: ContextBand.night, hour: 23);
     await _pump(
       tester,
-      LibraryScreen(
+      LibraryScreen(view: LibraryScreenView(
         tracks: _lib,
         coverPathFor: (_) => null,
         skin: s.skin,
 
         playlists: PlaylistList(),
-        libraryRoot: null));
+        libraryRoot: null)));
     await expectLater(
       find.byType(LibraryScreen),
       matchesGoldenFile('goldens/library_crimson.png'));

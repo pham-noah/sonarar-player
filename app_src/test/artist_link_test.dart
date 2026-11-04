@@ -63,7 +63,7 @@ void main() {
     Future<void> pump(WidgetTester tester, {String? artistRequest}) async {
       await tester.pumpWidget(MaterialApp(
         home: Material(
-          child: LibraryScreen(
+          child: LibraryScreen(view: LibraryScreenView(
             tracks: [
               _t('a', 'Rivers In the Desert', 'ATLUS Sound Team'),
               _t('b', 'Last Surprise', 'ATLUS Sound Team'),
@@ -72,7 +72,7 @@ void main() {
             coverPathFor: (_) => null,
             skin: kSkinCrimson,
             artistRequest: artistRequest,
-          ),
+          )),
         ),
       ));
       await tester.pumpAndSettle();
@@ -100,7 +100,7 @@ void main() {
 
       await tester.pumpWidget(MaterialApp(
         home: Material(
-          child: LibraryScreen(
+          child: LibraryScreen(view: LibraryScreenView(
             tracks: [
               _t('a', 'Rivers In the Desert', 'ATLUS Sound Team'),
               _t('c', 'Some Other Song', 'RADWIMPS'),
@@ -108,7 +108,7 @@ void main() {
             coverPathFor: (_) => null,
             skin: kSkinCrimson,
             artistRequest: 'RADWIMPS',
-          ),
+          )),
         ),
       ));
       await tester.pumpAndSettle();

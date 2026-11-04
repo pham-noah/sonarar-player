@@ -26,14 +26,14 @@ Future<List<Track>> _pump(WidgetTester tester, {int count = 5}) async {
   final played = <Track>[];
   await tester.pumpWidget(MaterialApp(
     home: Scaffold(
-      body: LibraryScreen(
+      body: LibraryScreen(view: LibraryScreenView(
 
           searchOnly: true,
         tracks: _tracks(count),
         coverPathFor: (_) => null,
         skin: kSkinCrimson,
         onPlay: played.add,
-      ),
+      )),
     ),
   ));
   await tester.pump();

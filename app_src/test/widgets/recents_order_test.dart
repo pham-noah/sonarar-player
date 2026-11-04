@@ -43,7 +43,7 @@ Future<void> _pump(
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(
     home: Material(
-      child: LibraryScreen(
+      child: LibraryScreen(view: LibraryScreenView(
         tracks: _tracks(),
         coverPathFor: (_) => null,
         skin: kSkinCrimson,
@@ -57,7 +57,7 @@ Future<void> _pump(
         onCreatePlaylist: (_) {},
         onDeletePlaylist: (_) {},
         onPlayPlaylist: (_) {},
-      ),
+      )),
     ),
   ));
   await tester.pumpAndSettle();

@@ -19,7 +19,7 @@ void main() {
       (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: Material(
-        child: LibraryScreen(
+        child: LibraryScreen(view: LibraryScreenView(
           tracks: [_t()],
           coverPathFor: (_) => null,
           skin: kSkinCrimson,
@@ -28,7 +28,7 @@ void main() {
 
           onQueue: (_) => SwipeOutcome.queued,
           onLike: (_) => SwipeOutcome.liked,
-        ),
+        )),
       ),
     ));
     await tester.pumpAndSettle();

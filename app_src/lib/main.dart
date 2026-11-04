@@ -1116,14 +1116,27 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _load() async {
     _boot(0.02, 'checking permissions');
 
-    _storageAccess = await StoragePermission.status();
-    _notificationAccess = await StoragePermission.notificationStatus();
+    // Nothing in this group needs another's answer, and each is a platform round
+    // trip: the two permission reads, the chosen music root, and the state
+    // directory. Waiting for them one at a time was four round trips in series
+    // for no reason. The state lives under the default root, not the chosen one:
+    // plays, playlists and themes are not music, and changing the music folder
+    // must not move them.
+    final (storage, notifications, root, stores) = await (
+      StoragePermission.status(),
+      StoragePermission.notificationStatus(),
+      MusicRoot.read(),
+      StateStores.open(libraryRoot: kAndroidLibraryRoot),
+    ).wait;
+
+    _storageAccess = storage;
+    _notificationAccess = notifications;
+    _musicRoot = root;
+    _stores = stores;
     debugPrint('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
     if (mounted) setState(() {});
-    debugPrint('[Sonarar] storage after request=$_storageAccess');
 
     _boot(0.18, 'reading your library');
-    _musicRoot = await MusicRoot.read();
     _repo.root = _musicRoot;
     await _repo.load();
     _boot(0.52, 'found ${_repo.tracks.length} tracks');
@@ -1133,13 +1146,19 @@ class _HomeShellState extends State<HomeShell>
         'accessDenied=${_repo.accessDenied}');
 
     _boot(0.60, 'opening your saved state');
-    // Deliberately the default root, not the chosen one: plays, playlists and
-    // themes are not music, and changing the music folder must not move them.
-    _stores = await StateStores.open(libraryRoot: kAndroidLibraryRoot);
     widget.state.libraryRoot = _repo.libraryRoot;
 
     unawaited(_refreshHomeRails());
     _stateDir = _stores.directory;
+
+    // Everything the saved state holds is a separate file, so they are all read
+    // at once. A first run has no prefs.json yet, which is the only question that
+    // has to be asked before the read, not after it.
+    _needsSetup = !File('${_stores.directory}/prefs.json').existsSync();
+
+    final placesRead = _stores.places.load();
+    final prefsRead = _stores.prefs.load();
+    final personalizationRead = _stores.personalization.load();
 
     final (loopPoints, excludedIds, marks, favoriteIds, tags, bonds, rules) = await (
       _stores.loopPoints.load(),
@@ -1153,14 +1172,12 @@ class _HomeShellState extends State<HomeShell>
 
     _loopPoints = loopPoints;
 
-    _ctx.setPlaces(await _stores.places.load());
+    _ctx.setPlaces(await placesRead);
 
-    _needsSetup = !File('${_stores.directory}/prefs.json').existsSync();
-
-    _prefs = await _stores.prefs.load();
+    _prefs = await prefsRead;
     _applyLocale(_prefs);
 
-    widget.state.setPersonalization(await _stores.personalization.load());
+    widget.state.setPersonalization(await personalizationRead);
     widget.state.onPersonalizationChanged = _stores.personalization.save;
 
     widget.state.applyQueuePrefs(
@@ -1188,6 +1205,9 @@ class _HomeShellState extends State<HomeShell>
       favoriteIds: favoriteIds.keys,
     );
     _boot(0.74, 'restoring your place');
+    // The theme presets are a different file from the snapshot; read them while
+    // the snapshot is coming back instead of after it.
+    final presetsRead = _stores.themePresets.load();
     final resume = await _stores.snapshot.load();
     widget.state.attachLibrary(_repo.tracks, resume: resume);
     await _refreshArtBundles();
@@ -1205,7 +1225,7 @@ class _HomeShellState extends State<HomeShell>
     );
 
     widget.state.onPresetsChanged = _themeSession.touched;
-    final loadedPresets = await _stores.themePresets.load();
+    final loadedPresets = await presetsRead;
     final migratedPresets = [
       for (final p in loadedPresets)
         p.personalization == null

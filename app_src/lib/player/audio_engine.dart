@@ -10,6 +10,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 import 'engine_window.dart';
 import 'fade_envelope.dart';
+import 'interruption_policy.dart';
 import 'playback_engine.dart';
 import 'playback_intent.dart';
 import 'volume_policy.dart';
@@ -27,34 +28,31 @@ class AudioEngine implements PlaybackEngine {
     await session.configure(const AudioSessionConfiguration.music());
 
     _subs.add(session.interruptionEventStream.listen((event) {
-      if (event.begin) {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-
-            unawaited(_player.setVolume(ducked(_targetVolume)));
-          case AudioInterruptionType.pause:
-          case AudioInterruptionType.unknown:
-
-            _pausedByInterruption = true;
-            unawaited(_player.pause());
-        }
-      } else {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-
-            unawaited(_player.setVolume(restoredLevel(_targetVolume)));
-          case AudioInterruptionType.pause:
-
-            if (_pausedByInterruption && _wantPlay) {
-              _pausedByInterruption = false;
-              notePlayIntent();
-              unawaited(_player.play());
-            }
-          case AudioInterruptionType.unknown:
-            break;
-        }
+      // The rules are a function; this only carries them out.
+      switch (interruptionActionFor(
+        begin: event.begin,
+        type: event.type,
+        pausedByInterruption: _pausedByInterruption,
+        wantPlay: _wantPlay,
+      )) {
+        case InterruptionAction.duck:
+          unawaited(_player.setVolume(ducked(_targetVolume)));
+        case InterruptionAction.pause:
+          _pausedByInterruption = true;
+          unawaited(_player.pause());
+        case InterruptionAction.restore:
+          unawaited(_player.setVolume(restoredLevel(_targetVolume)));
+        case InterruptionAction.resume:
+          _pausedByInterruption = false;
+          notePlayIntent();
+          unawaited(_player.play());
+        case InterruptionAction.none:
+          break;
       }
     }));
+
+    // Headphones out is a pause the platform did not ask for either, so it is
+    // remembered the same way: unplugging must not be undone by the next event.
 
     _subs.add(session.becomingNoisyEventStream.listen((_) {
       _pausedByInterruption = true;

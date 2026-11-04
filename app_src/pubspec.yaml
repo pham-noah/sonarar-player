@@ -1,7 +1,7 @@
 name: sonarar
 description: "Sonarar — a personal music player that already knows what you want."
 publish_to: 'none'
-version: 0.3.1+31
+version: 0.3.2+32
 
 environment:
   sdk: ^3.13.0
@@ -17,7 +17,9 @@ dependencies:
   path_provider: ^2.1.4
   audio_session: ^0.1.21
   just_audio: ^0.9.42
-  just_audio_background: ^0.0.1-beta.15
+  # Pinned exactly: a caret on a beta means the lock screen can change under a
+  # release build without this file saying so.
+  just_audio_background: 0.0.1-beta.15
 
   http: ^1.2.0
   open_filex: ^4.6.0
@@ -28,7 +30,8 @@ dependencies:
 
   korean_romanization_converter: ^0.0.1
   youtube_explode_dart: ^3.1.0
-  ytdlp_flutter: ^0.1.0
+  # Pinned exactly, same reason: 0.1.x is three APIs in one week.
+  ytdlp_flutter: 0.1.0
 
 dev_dependencies:
   flutter_test:

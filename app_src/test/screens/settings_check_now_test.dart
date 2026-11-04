@@ -3,17 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/core/prefs.dart';
 import 'package:sonarar/screens/settings_screen.dart';
-import 'package:sonarar/update/update_feed.dart';
 import 'package:sonarar/update/update_service.dart';
+import 'package:sonarar/update/update_ui.dart';
 
-/// The switch is about phoning home uninvited. A person pressing CHECK FOR UPDATES NOW is
-/// invited, so it runs either way — and it has to say what it found, in place,
-/// instead of flashing a snackbar that leaves with the frame.
+/// The switch is about phoning home uninvited. A person pressing CHECK FOR UPDATES
+/// NOW is invited, so it runs either way — and it has to say what it found.
+///
+/// Two shapes are tested: the shell's real one (the row opens the update sheet,
+/// which owns the offer) and the bare one (no flow supplied, so the screen writes
+/// a sentence itself, which is what keeps the widget testable on its own).
 void main() {
-  setUp(() => offerUpdate(null));
-  tearDown(() => offerUpdate(null));
-
-  Widget host(Future<AppUpdate?> Function() check) => MaterialApp(
+  Widget host(Future<AppUpdate?> Function() check, {UpdateUi? ui}) => MaterialApp(
         home: Scaffold(
           body: SettingsScreen(
             state: AppState(),
@@ -21,6 +21,7 @@ void main() {
             onPrefsChanged: (_) {},
             appVersion: '0.2.0+20',
             checkUpdate: check,
+            updateUi: ui,
           ),
         ),
       );
@@ -55,8 +56,7 @@ void main() {
     expect(find.textContaining('newest build'), findsOneWidget);
   });
 
-  testWidgets('a newer build is named, and the banner is pointed at',
-      (tester) async {
+  testWidgets('a newer build is named in place', (tester) async {
     await tester.pumpWidget(host(() async => const AppUpdate(
           version: '0.2.2+22',
           build: 22,
@@ -70,19 +70,34 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('0.2.2+22 is available'), findsOneWidget);
-
-    // The sentence points at the banner, so the banner has to have been given
-    // the update — otherwise CHECK NOW promises something that is not there.
-    expect(offeredUpdate.value?.version, '0.2.2+22');
   });
 
-  testWidgets('nothing newer leaves the banner alone', (tester) async {
-    await tester.pumpWidget(host(() async => null));
+  testWidgets('with the update flow, the row opens the sheet and checks once',
+      (tester) async {
+    var checks = 0;
+    final ui = UpdateUi(
+      check: () async {
+        checks++;
+        return const AppUpdate(
+          version: '0.2.2+22',
+          build: 22,
+          apkUrl: 'https://example.test/sonarar.apk',
+          notesUrl: 'https://example.test/notes',
+          sizeBytes: 65 * 1024 * 1024,
+        );
+      },
+      fetch: (_, __) async => null,
+      install: (_) async => false,
+    );
+
+    await tester.pumpWidget(host(() async => null, ui: ui));
     await openSystemTab(tester);
 
     await tester.tap(find.text('CHECK FOR UPDATES NOW'));
     await tester.pumpAndSettle();
 
-    expect(offeredUpdate.value, isNull);
+    expect(ui.isOpen, isTrue, reason: 'the sheet is where the offer lives now');
+    expect(checks, 1, reason: 'the row must not run a second check behind the sheet');
+    expect(find.textContaining('v0.2.2+22'), findsWidgets);
   });
 }

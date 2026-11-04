@@ -2,6 +2,58 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.2 — 2026-11-04
+
+### Added
+
+- **A real update screen.** The offer used to be a strip you tapped, which downloaded
+  immediately and threw the file at the system installer — no notes, no size, no
+  progress worth watching, and nothing to say when a download failed. It is now a
+  sheet: what version is out, what changed in it, how big it is, then Download with a
+  progress bar, then **Install**. Settings → CHECK FOR UPDATES NOW opens the same
+  sheet, so both entry points answer the same way.
+- **Release notes reach the app.** The check always fetched the release body and then
+  dropped it on the floor; it is shown now, trimmed to a readable slice.
+
+### Changed
+
+- **The update strip is on every layout.** It was mounted only in the docked shell
+  frame, so Solid and Glass — which float their bars — showed no offer *and never ran
+  the automatic check at all*, because the check lived inside that widget.
+- **The first run picks its colours for real.** The colour chips were drawn with an
+  empty tap handler and a selection pinned to the first palette, and there was nowhere
+  to store the choice anyway: the layout was applied with a palette index of 0 on every
+  preference change. The palette is a preference now and survives.
+
+### Fixed
+
+- **A queue edit no longer stops the music for a moment.** Changing the queue (add,
+  remove, reorder, play next) reloaded the whole engine queue — handing just_audio a
+  brand new source, which tears the platform player down. The queue is edited in place
+  now: only the entries that actually changed are inserted, removed or moved.
+- **A queue change that leaves the track alone no longer rewinds it.** When the engine
+  already held the same queue, the loader seeked the playing track to zero and back to
+  its position, which sounded like the same stutter from a different line.
+- **The first run wears the layout you picked.** The screen was built outside the
+  presentation scope, so the START button kept the old palette's accent while the
+  background followed.
+- **The retitled library cannot go stale.** The tag overrides, the library as the disk
+  reports it, and the retitled copy were three fields kept in sync by hand; one missed
+  call and the app painted yesterday's titles.
+
+### Internal
+
+- The diagnostics log now receives everything the app logs. It only hooked
+  `debugPrint`, while 45 call sites used `print` — every audio load failure and boot
+  timing went to logcat and never into the log the diagnostics screen reads.
+- Twelve swallowed exceptions now report what failed instead of vanishing, including
+  every state write, which used to fail silently.
+- One `AutoAdvance` enum instead of two identical ones.
+- Playback, loading, the engine window, the ticker, the fade and the interruption rules
+  were lifted out of the widget and are covered by unit tests that need neither a
+  device nor an audio stack: 1,785 of them, up from 1,759.
+- CI: analyze and the full suite run on every push and pull request.
+
 ## 0.3.1 — 2026-11-02
 
 ### Changed

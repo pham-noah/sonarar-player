@@ -1,0 +1,36 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app_src
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # The generated localization files are gitignored ("generated on every
+      # build"), so a clean checkout has none of them until pub get runs.
+      - name: pub get
+        run: flutter pub get
+
+      - name: analyze
+        run: flutter analyze
+
+      # Redirected on purpose: a suite piped through anything reports that
+      # command's status, so a failing run can look like exit 0.
+      - name: test
+        run: |
+          flutter test --no-pub --reporter compact > test.log 2>&1
+          code=$?
+          tail -40 test.log
+          exit $code

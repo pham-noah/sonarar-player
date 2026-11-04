@@ -1,133 +1,90 @@
 library;
 
-import '../l10n/l10n.dart';
-import '../l10n/script.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 
-import '../core/build_info.dart';
+import '../l10n/l10n.dart';
+import '../l10n/script.dart';
 import '../theme/skin.dart';
-import '../widgets/toasts.dart';
-import 'update_feed.dart';
-import 'update_service.dart';
 import 'update_sheet.dart';
 import 'update_ui.dart';
 
 /// The offer to update, as one widget that looks after itself.
 ///
-/// It keeps its own state and its own download, so the shell only has to place
-/// it. When there is nothing newer it draws nothing at all — no empty row, no
+/// It reads the shell's one [UpdateUi] — the same object the update sheet and the
+/// Settings row use — so it cannot claim a version the sheet has already
+/// withdrawn. It used to keep its own copy of the found update and listen to a
+/// global notifier, which is two answers to one question.
+///
+/// When there is nothing newer it draws nothing at all — no empty row, no
 /// reserved space.
 class UpdateBar extends StatefulWidget {
   const UpdateBar({
     super.key,
     required this.skin,
+    required this.ui,
     this.enabled = true,
-    this.check,
-    this.ui,
   });
 
   final Skin skin;
 
-  /// Where the offer is actually handled: tapping the bar opens the update sheet,
-  /// which has the notes, the size and the two steps. Null keeps the old
-  /// download-on-tap path, which only tests use.
-  final UpdateUi? ui;
+  /// The update flow this bar is a view of.
+  final UpdateUi ui;
 
-  /// Off means no check at all — not a check whose result is hidden.
+  /// Off means no automatic check at all — not a check whose result is hidden.
+  /// A manual check still fills the flow, and the bar shows what it finds.
   final bool enabled;
-
-  /// The check itself, replaceable so a test can see whether it ran.
-  final Future<AppUpdate?> Function()? check;
 
   @override
   State<UpdateBar> createState() => _UpdateBarState();
 }
 
 class _UpdateBarState extends State<UpdateBar> {
-  AppUpdate? _update;
-  double? _progress;
-
   @override
   void initState() {
     super.initState();
-    // A manual check can offer an update without the switch being on: that is
-    // the user asking, not the app phoning home. Listen either way.
-    offeredUpdate.addListener(_takeOffer);
-    _takeOffer();
+    widget.ui.addListener(_changed);
 
-    // After the first frame: an update check must never sit in front of the
-    // app opening.
+    // After the first frame: an update check must never sit in front of the app
+    // opening.
     if (!widget.enabled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(_check());
+      if (mounted) widget.ui.unawaitedCheck();
     });
   }
 
-  void _takeOffer() {
-    if (!mounted) return;
-    final offered = offeredUpdate.value;
-    if (offered == null && _update == null) return;
-    setState(() => _update = offered);
+  void _changed() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    offeredUpdate.removeListener(_takeOffer);
+    widget.ui.removeListener(_changed);
     super.dispose();
-  }
-
-  Future<void> _check() async {
-    final update =
-        await (widget.check ?? () => checkForUpdate(appVersionCode))();
-    if (!mounted || update == null) return;
-    setState(() => _update = update);
-  }
-
-  Future<void> _download(AppUpdate update) async {
-    final downloads = await getDownloadsDirectory();
-    if (downloads == null || !mounted) return;
-    setState(() => _progress = 0);
-    final file = await downloadUpdate(
-      update,
-      downloads,
-      onProgress: (p) {
-        if (mounted) setState(() => _progress = p);
-      },
-    );
-    if (!mounted) return;
-    setState(() => _progress = null);
-    if (file == null) {
-      toast(context, l10nOf(context).updateDidNotFinish);
-      return;
-    }
-    // The system installer still asks; this only offers the file to it.
-    await OpenFilex.open(file.path);
   }
 
   @override
   Widget build(BuildContext context) {
-    final update = _update;
+    final ui = widget.ui;
+    final update = ui.release;
     if (update == null) return const SizedBox.shrink();
+    if (ui.phase != UpdatePhase.available &&
+        ui.phase != UpdatePhase.downloading &&
+        ui.phase != UpdatePhase.ready) {
+      return const SizedBox.shrink();
+    }
+
     final skin = widget.skin;
-    final progress = _progress;
+    final downloading = ui.phase == UpdatePhase.downloading;
+    final progress = ui.progress;
 
     return Material(
       color: skin.panel,
       child: InkWell(
-        onTap: progress == null
-            ? () {
-                final ui = widget.ui;
-                if (ui == null) {
-                  unawaited(_download(update));
-                  return;
-                }
-                unawaited(showUpdateSheet(context, ui, skin: skin, known: update));
-              }
-            : null,
+        onTap: () {
+          unawaited(showUpdateSheet(context, ui, skin: skin, known: update));
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           child: Row(
@@ -136,10 +93,9 @@ class _UpdateBarState extends State<UpdateBar> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  progress == null
-                      ? l10nOf(context).updateIsOut(update.label)
-                      : l10nOf(context)
-                          .updateDownloading((progress * 100).round()),
+                  downloading
+                      ? l10nOf(context).updateDownloading((progress * 100).round())
+                      : l10nOf(context).updateIsOut(update.label),
                   style: TextStyle(
                     color: skin.textPrimary,
                     fontSize: LayoutSpec.fontFloor,
@@ -148,7 +104,7 @@ class _UpdateBarState extends State<UpdateBar> {
                 ),
               ),
               Text(
-                progress == null ? 'UPDATE' : '',
+                downloading ? '' : capsFor(context, l10nOf(context).updateSheetTitle),
                 style: TextStyle(
                   color: skin.accent,
                   fontSize: LayoutSpec.fontFloor,
@@ -156,7 +112,7 @@ class _UpdateBarState extends State<UpdateBar> {
                   letterSpacing: trackingFor(context, 1.2),
                 ),
               ),
-              if (progress != null) ...[
+              if (downloading) ...[
                 const SizedBox(width: 10),
                 SizedBox(
                   width: 60,

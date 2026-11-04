@@ -23,7 +23,6 @@ import '../widgets/stagger_in.dart';
 
 import '../theme/slab.dart';
 import '../l10n/app_localizations.dart';
-import '../update/update_feed.dart';
 import '../update/update_service.dart';
 import '../update/update_sheet.dart';
 import '../update/update_ui.dart';
@@ -192,10 +191,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         () => checkForUpdate(appVersionCode, currentVersion: appVersionName);
     final update = await check();
     if (!mounted) return;
-    // Hand the answer to the banner, whether or not the automatic check is on:
-    // a sentence pointing at a banner that was never built is worse than no
-    // sentence at all.
-    offerUpdate(update);
     setState(() {
       _checking = false;
       _checkResult = update == null

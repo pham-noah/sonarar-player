@@ -38,11 +38,25 @@ void main() {
   }
 
   test('the play/pause handler pings the route', () {
-    final body = bodyOf('Future<void> _togglePlay()');
-    expect(body.contains('_shellChanged('), isTrue,
-        reason: '_togglePlay only uses setState. It is called by the PLAYER ROUTE\'s play button, and the '
-            'route is outside the shell\'s builder — so the icon will not change until the player is reopened. '
-            'That is "the play/pause doesn\'t change the icon inside".');
+    // The transport used to live in _togglePlay and had to call _shellChanged
+    // itself. It lives in PlayerController now, and the shell hears it through
+    // _onPlayerChanged — so that is where the ping has to happen. The route is
+    // outside the shell's builder: setState alone would leave the play icon
+    // stale until the player was reopened.
+    final body = bodyOf('void _onPlayerChanged()');
+    expect(body.contains('setState('), isTrue,
+        reason: 'the transport listener does not repaint, so the PLAYER ROUTE\'s '
+            'play button will keep drawing the old icon. That is "the play/pause '
+            'doesn\'t change the icon inside".');
+  });
+
+  test('every shell setState is what pings the route', () {
+    // The mechanism the listener relies on: the override bumps _shellTick, and
+    // the pushed route listens to it. If this stops being true, everything that
+    // repaints the shell silently stops repainting the player.
+    final body = bodyOf('void setState(VoidCallback fn)');
+    expect(body.contains('_shellTick.value++'), isTrue,
+        reason: 'setState no longer pings the route — pushed routes will go stale');
   });
 
   test('the track-load path pings the route', () {

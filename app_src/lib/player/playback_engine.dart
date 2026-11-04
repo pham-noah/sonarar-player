@@ -50,6 +50,16 @@ abstract interface class PlaybackEngine {
   /// Moves within the queue the engine already holds.
   Future<void> seekToIndex(int index);
 
+  /// Whether the engine's own window has anywhere to go. The queue behind it may
+  /// be longer; that is [canStepOutsideEngine]'s question.
+  bool get hasNext;
+
+  bool get hasPrevious;
+
+  Future<void> skipNext();
+
+  Future<void> skipPrevious();
+
   Future<void> seek(Duration to);
 
   Future<void> play();

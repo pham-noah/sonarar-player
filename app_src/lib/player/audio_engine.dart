@@ -401,11 +401,13 @@ class AudioEngine implements PlaybackEngine {
   Duration? _variantSwapPosition;
   bool _variantSwapWasPlaying = false;
 
+  @override
   Future<void> skipNext() {
     _skipRequested = true;
     return _player.seekToNext();
   }
 
+  @override
   Future<void> skipPrevious() {
     _skipRequested = true;
     return _player.seekToPrevious();
@@ -413,7 +415,9 @@ class AudioEngine implements PlaybackEngine {
 
   bool _skipRequested = false;
 
+  @override
   bool get hasNext => _player.hasNext;
+  @override
   bool get hasPrevious => _player.hasPrevious;
 
   Future<void> stop() => _player.stop();

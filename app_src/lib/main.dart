@@ -98,9 +98,9 @@ import 'widgets/spectrum.dart';
 import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
 import 'player/playback_ticker.dart';
+import 'player/player_controller.dart';
 import 'player/track_loader.dart';
 import 'player/queue_mode.dart';
-import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
 
 Future<void>? _audioInit;
@@ -474,14 +474,15 @@ class _HomeShellState extends State<HomeShell>
 
   StorageAccess _notificationAccess = StorageAccess.unknown;
 
-  double _volume = 1.0;
-  double _volumeBeforeMute = 1.0;
-  bool get _muted => _volume <= 0.0;
+  // Transport state lives in PlayerController now. These keep the shell's
+  // twenty-five reads unchanged; the writes go through one object instead of
+  // being spread over setState closures.
+  double get _volume => _player.volume;
 
   final SleepTimer _sleep = SleepTimer();
 
   /// Armed from the player, spent on completion, dropped by a manual skip.
-  bool _stopAfterTrack = false;
+  bool get _stopAfterTrack => _player.stopAfterTrack;
 
   final ValueNotifier<Duration?> _sleepLeft = ValueNotifier(null);
   AppTab _tab = AppTab.home;
@@ -813,8 +814,16 @@ class _HomeShellState extends State<HomeShell>
 
   bool _needsSetup = false;
 
-  bool _playing = false;
+  bool get _playing => _player.playing;
   AudioEngine? _audio;
+
+  late final PlayerController _player = PlayerController(
+    state: widget.state,
+    loader: _loader,
+    engine: () => _audio,
+    reload: ({Duration? startAt, bool autoPlay = true}) =>
+        _loadCurrentTrack(startAt: startAt, autoPlay: autoPlay),
+  );
 
   late final TrackLoader _loader = TrackLoader(
     state: widget.state,
@@ -898,7 +907,7 @@ class _HomeShellState extends State<HomeShell>
         unawaited(e.setVolume(_volume));
         widget.state.setSleeping(false);
         if (mounted) {
-          setState(() => _playing = false);
+          setState(() => _player.setPlaying(false));
           _syncProgressTicker();
         }
       case SleepAction.none:
@@ -906,14 +915,22 @@ class _HomeShellState extends State<HomeShell>
     }
   }
 
-  String? _loadedTrackId;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _player.addListener(_onPlayerChanged);
 
     unawaited(_load());
+  }
+
+  /// Playing, volume and stop-after-this-track all arrive here now, so a repaint
+  /// no longer depends on which call site remembered to ask for one.
+  void _onPlayerChanged() {
+    if (!mounted) return;
+    setState(() {});
+    _syncProgressTicker();
   }
 
   bool _inFront = true;
@@ -1020,9 +1037,8 @@ class _HomeShellState extends State<HomeShell>
         }
       }
 
-      if (ok) _loadedTrackId = _loader.loadedTrackId;
 
-      if (!ok) _playing = false;
+      if (!ok) _player.setPlaying(false);
       _syncProgressTicker();
     });
     return ok;
@@ -1207,8 +1223,7 @@ class _HomeShellState extends State<HomeShell>
 
     final savedVolume = resume?.volume;
     if (savedVolume != null) {
-      _volume = savedVolume;
-      _volumeBeforeMute = savedVolume > 0 ? savedVolume : 1.0;
+      _player.restoreVolume(savedVolume);
       widget.state.setRestoredVolume(savedVolume);
     }
 
@@ -1218,7 +1233,7 @@ class _HomeShellState extends State<HomeShell>
     _audio!.onPlayingChanged = (playing) {
       if (playing) unawaited(_ensureNotificationPermission());
       if (mounted && _playing != playing) {
-        setState(() => _playing = playing);
+        setState(() => _player.setPlaying(playing));
 
         _syncProgressTicker();
 
@@ -1234,10 +1249,10 @@ class _HomeShellState extends State<HomeShell>
       final finished = widget.state.currentTrack;
 
       if (_stopAfterTrack) {
-        _stopAfterTrack = false;
+        _player.setStopAfterTrack(false);
         if (finished != null) _closeOutPlay(finished);
         widget.state.stopAtEnd();
-        if (mounted) setState(() => _playing = false);
+        if (mounted) setState(() => _player.setPlaying(false));
         _syncProgressTicker();
         return;
       }
@@ -1261,7 +1276,7 @@ class _HomeShellState extends State<HomeShell>
           }
 
           widget.state.stopAtEnd();
-          if (mounted) setState(() => _playing = false);
+          if (mounted) setState(() => _player.setPlaying(false));
           _syncProgressTicker();
       }
     };
@@ -1364,97 +1379,13 @@ class _HomeShellState extends State<HomeShell>
     }
   }
 
-  Future<void> _togglePlay() async {
-    final engine = _audio;
-    if (engine == null) return;
-    if (_playing) {
-      await engine.pause();
+  // Transport lives in PlayerController; the shell only names the callbacks the
+  // interface already binds.
+  Future<void> _togglePlay() => _player.togglePlay();
 
-      if (mounted) _shellChanged(() => _playing = false);
-      return;
-    }
+  Future<void> _skipNext() => _player.skipNext();
 
-    if (widget.state.queueEnded) {
-      // Parked at the queue's end: play() alone reads as a dead button.
-      final id = widget.state.currentTrack?.id;
-      if (id != null) widget.state.playTrackNow(id);
-      final started = await _loadCurrentTrack(startAt: Duration.zero);
-      if (mounted) _shellChanged(() => _playing = started);
-      _syncProgressTicker();
-      return;
-    }
-
-    if (!engine.isPlaying && _loadedTrackId != widget.state.currentTrack?.id) {
-      final started = await _loadCurrentTrack();
-      if (mounted) _shellChanged(() => _playing = started);
-      return;
-    }
-    await engine.play();
-    if (mounted) _shellChanged(() => _playing = true);
-    _syncProgressTicker();
-  }
-
-  bool _skipPending = false;
-
-  Future<void> _skipNext() async {
-    final engine = _audio;
-    if (engine == null || _skipPending) return;
-    // A skip is a request to move on, not to stop where we land.
-    if (_stopAfterTrack) setState(() => _stopAfterTrack = false);
-
-    if (!engine.hasNext) {
-      if (canStepOutsideEngine(
-        widget.state.queue,
-        repeatAll: widget.state.repeatMode == playqueue.RepeatMode.all,
-        forward: true,
-      )) {
-        _skipPending = true;
-
-        try {
-          widget.state.nextTrack();
-          await _loadCurrentTrack();
-        } finally {
-          _skipPending = false;
-        }
-      }
-      return;
-    }
-    _skipPending = true;
-    try {
-      await engine.skipNext();
-    } finally {
-      _skipPending = false;
-    }
-  }
-
-  Future<void> _skipPrevious() async {
-    final engine = _audio;
-    if (engine == null || _skipPending) return;
-    if (_stopAfterTrack) setState(() => _stopAfterTrack = false);
-    if (!engine.hasPrevious) {
-      if (canStepOutsideEngine(
-        widget.state.queue,
-        repeatAll: widget.state.repeatMode == playqueue.RepeatMode.all,
-        forward: false,
-      )) {
-        _skipPending = true;
-
-        try {
-          widget.state.previousTrack();
-          await _loadCurrentTrack();
-        } finally {
-          _skipPending = false;
-        }
-      }
-      return;
-    }
-    _skipPending = true;
-    try {
-      await engine.skipPrevious();
-    } finally {
-      _skipPending = false;
-    }
-  }
+  Future<void> _skipPrevious() => _player.skipPrevious();
 
   Future<void> _persistPlaces(PlaceBook book) async {
     await _stores.savePlaces(book);
@@ -1466,6 +1397,8 @@ class _HomeShellState extends State<HomeShell>
     _downloads.removeListener(_onDownloadProblem);
     _themeSession.dispose();
     _ticker.dispose();
+    _player.removeListener(_onPlayerChanged);
+    _player.dispose();
 
     _shellTick.dispose();
 
@@ -1709,12 +1642,8 @@ class _HomeShellState extends State<HomeShell>
         _setVolume(_volume - kVolumeStep);
 
       case ShortcutCommand.mute:
-        if (_muted) {
-          _setVolume(_volumeBeforeMute <= 0 ? 1.0 : _volumeBeforeMute);
-        } else {
-          _volumeBeforeMute = _volume;
-          _setVolume(0);
-        }
+        _player.toggleMute();
+        _shellTick.value++;
 
       case ShortcutCommand.seekForward:
         _seekBy(kSeekStep);
@@ -1841,25 +1770,13 @@ class _HomeShellState extends State<HomeShell>
     });
   }
 
+  /// The volume slider repaints off [_shellTick]; the level is the controller's.
   void _setVolume(double v) {
-    final clamped = v.clamp(0.0, 1.0);
-    if (clamped > 0) _volumeBeforeMute = clamped;
-
-    _volume = clamped;
+    _player.setVolume(v);
     _shellTick.value++;
-    unawaited(_audio?.setVolume(clamped) ?? Future<void>.value());
   }
 
-  void _seekBy(Duration delta) {
-    final engine = _audio;
-    if (engine == null) return;
-    final total = widget.state.duration.value;
-    final from = widget.state.position.value;
-    var target = from + delta;
-    if (target < Duration.zero) target = Duration.zero;
-    if (total != null && target > total) target = total;
-    unawaited(engine.seek(target));
-  }
+  void _seekBy(Duration delta) => unawaited(_player.seekBy(delta));
 
   final List<AppTab> _history = [];
   int _historyAt = -1;
@@ -3082,7 +2999,7 @@ class _HomeShellState extends State<HomeShell>
         _saveDebounce = null;
         unawaited(_stores.saveSnapshot(widget.state.snapshot(volume: _volume)));
         setState(() {
-          _playing = false;
+          _player.setPlaying(false);
           _panel = PlayerPanel.none;
         });
       },
@@ -3607,7 +3524,7 @@ children: [
                     onStopAfterTrack: (v) {
                       // The player is a pushed route; setState here would not
                       // repaint it. _shellChanged bumps the tick it listens to.
-                      _shellChanged(() => _stopAfterTrack = v);
+                      _player.setStopAfterTrack(v);
                       _toast(v
                           ? l10nOf(context).shellStoppingAfter
                           : l10nOf(context).shellStopAfterOff);

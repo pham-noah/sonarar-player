@@ -5,10 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/library/library_repository.dart';
 import 'package:sonarar/library/track.dart';
-import 'package:sonarar/playback/loop_controller.dart';
-import 'package:sonarar/player/engine_window.dart';
-import 'package:sonarar/player/playback_engine.dart';
 import 'package:sonarar/player/track_loader.dart';
+
+import 'fake_engine.dart';
 
 Track _t(int n) => Track(
       id: 't$n',
@@ -20,107 +19,6 @@ Track _t(int n) => Track(
       cover: 'covers/t$n.jpg',
       gainDb: 0,
     );
-
-/// Records what the loader asked for, and answers what the test scripts.
-class FakeEngine implements PlaybackEngine {
-  final List<String> calls = [];
-
-  List<EngineEntry>? queued;
-  int? queuedIndex;
-  String? singlePath;
-  Duration? soughtTo;
-  int? soughtIndex;
-  double volume = 1;
-
-  bool setQueueAnswer = true;
-  bool loadAnswer = true;
-  bool matchesAnswer = false;
-
-  final Duration _position = Duration.zero;
-  bool _playing = false;
-  String? _path;
-  LoopController? _loop;
-
-  @override
-  Duration get position => _position;
-
-  @override
-  Duration? get duration => null;
-
-  @override
-  bool get isPlaying => _playing;
-
-  @override
-  String? get playingPath => _path;
-
-  @override
-  LoopController? get loop => _loop;
-
-  @override
-  set loop(LoopController? value) {
-    _loop = value;
-    calls.add('loop');
-  }
-
-  @override
-  bool queueMatches(List<String> paths) {
-    calls.add('queueMatches');
-    return matchesAnswer;
-  }
-
-  @override
-  Future<bool> setQueue(List<EngineEntry> items, {required int initialIndex}) async {
-    calls.add('setQueue');
-    queued = items;
-    queuedIndex = initialIndex;
-    return setQueueAnswer;
-  }
-
-  @override
-  Future<bool> loadAndPlay(
-    String absolutePath, {
-    Duration? startAt,
-    bool autoPlay = true,
-    String title = '',
-    String artist = '',
-    String album = '',
-    Uri? coverUri,
-  }) async {
-    calls.add('loadAndPlay');
-    singlePath = absolutePath;
-    return loadAnswer;
-  }
-
-  @override
-  Future<void> seekToIndex(int index) async {
-    calls.add('seekToIndex');
-    soughtIndex = index;
-  }
-
-  @override
-  Future<void> seek(Duration to) async {
-    calls.add('seek');
-    soughtTo = to;
-  }
-
-  @override
-  Future<void> play() async {
-    calls.add('play');
-    _playing = true;
-  }
-
-  @override
-  Future<void> pause() async {
-    calls.add('pause');
-    _playing = false;
-  }
-
-  @override
-  Future<void> setVolume(double value) async {
-    calls.add('setVolume');
-    volume = value;
-  }
-}
 
 class _Harness {
   _Harness(this.state, this.repo, this.engine, this.loader);

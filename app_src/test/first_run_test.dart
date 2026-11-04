@@ -124,6 +124,38 @@ void main() {
             'to do nothing');
   });
 
+  testWidgets('the START button wears the chosen layout palette, not the fallback',
+      (tester) async {
+    tester.view.physicalSize = _phone;
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+
+    final skin = skinFor(SkinId.crimson);
+    // A glass presentation whose palette is deliberately not the skin's own.
+    final presented = presentationFor(LayoutKind.glass, skin, paletteIndex: 2);
+
+    await tester.pumpWidget(MaterialApp(
+      home: PresentationScope(
+        presentation: presented,
+        child: Material(
+          child: FirstRunScreen(
+            skin: skin,
+            prefs: AppPrefs.initial.copyWith(layoutId: 'glass', paletteIndex: 2),
+            layoutId: LayoutKind.glass,
+            onPrefs: (_) {},
+            onDone: () {},
+          ),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    final label = tester.widget<Text>(find.text('START LISTENING'));
+    expect(label.style?.color, presented.palette.onAccent,
+        reason: 'the first run was built outside the PresentationScope, so it fell '
+            'back to the skin and the button kept the old accent after a layout pick');
+  });
+
   testWidgets('the song-list tiles follow the layout until he picks one',
       (tester) async {
     await _pump(tester, layout: LayoutKind.solid);

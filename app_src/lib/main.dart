@@ -3458,12 +3458,19 @@ class _HomeShellState extends State<HomeShell>
     }
 
     if (_needsSetup) {
-      return FirstRunScreen(
-        skin: skin,
-        prefs: _prefs,
-        layoutId: decode.layoutFromPrefs(_prefs.layoutId),
-        onPrefs: _setPrefs,
-        onDone: () => setState(() => _needsSetup = false),
+      // Inside the scope, like every other screen: without it the first run fell
+      // back to the skin's own presentation, so the layout you had just picked
+      // showed up in the background but not in the START button, which kept the
+      // old palette's accent.
+      return PresentationScope(
+        presentation: widget.state.presentation,
+        child: FirstRunScreen(
+          skin: skin,
+          prefs: _prefs,
+          layoutId: decode.layoutFromPrefs(_prefs.layoutId),
+          onPrefs: _setPrefs,
+          onDone: () => setState(() => _needsSetup = false),
+        ),
       );
     }
 

@@ -12,6 +12,7 @@ import '../library/bonds.dart';
 import '../library/exclusions.dart';
 import '../library/playlists.dart';
 import '../library/play_log.dart';
+import '../library/tag_layer.dart';
 import '../library/tag_overrides.dart';
 import '../library/track.dart';
 import '../library/weather_variants.dart';
@@ -289,39 +290,32 @@ class AppState extends ChangeNotifier {
     return false;
   }
 
-  TagOverrides _tags = TagOverrides();
-  TagOverrides get tagOverrides => _tags;
+  /// The raw library, the tag overrides and the retitled copy are one object now;
+  /// the getters below keep every read in this class unchanged.
+  final TagLayer _tagLayer = TagLayer();
 
-  List<Track> _rawLibrary = const [];
-  List<Track> get rawLibrary => _rawLibrary;
+  TagOverrides get tagOverrides => _tagLayer.overrides;
+
+  List<Track> get rawLibrary => _tagLayer.raw;
 
   void setTagOverrides(TagOverrides overrides) {
-    _tags = overrides;
-    _reapplyOverrides();
+    _tagLayer.replaceOverrides(overrides);
     notifyListeners();
   }
 
   void setTagOverride(String trackId, TagField field, String value) {
-    _tags.set(trackId, field, value);
-    _reapplyOverrides();
+    _tagLayer.override(trackId, field, value);
     notifyListeners();
   }
 
   void clearTagOverride(String trackId, TagField field) {
-    _tags.clearField(trackId, field);
-    _reapplyOverrides();
+    _tagLayer.clear(trackId, field);
     notifyListeners();
   }
 
   void clearAllTagOverrides() {
-    _tags.clearAll();
-    _reapplyOverrides();
+    _tagLayer.clearAll();
     notifyListeners();
-  }
-
-  void _reapplyOverrides() {
-    if (_rawLibrary.isEmpty) return;
-    _library = List<Track>.unmodifiable(_tags.applyAll(_rawLibrary));
   }
 
   BondState _bondState = BondState();
@@ -634,7 +628,7 @@ class AppState extends ChangeNotifier {
     return true;
   }
 
-  List<Track> _library = const [];
+  List<Track> get _library => _tagLayer.library;
   List<Track> get library => _library;
 
   PlaylistContext? _playlistCtx;
@@ -1396,8 +1390,7 @@ class AppState extends ChangeNotifier {
   Track? get currentTrack => _queue?.current;
 
   void attachLibrary(List<Track> tracks, {PlaybackSnapshot? resume}) {
-    _rawLibrary = List<Track>.unmodifiable(tracks);
-    _library = List<Track>.unmodifiable(_tags.applyAll(_rawLibrary));
+    _tagLayer.replaceRaw(tracks);
 
     // A library arriving without a snapshot must not reset playback.
     if (resume == null && _queue?.current != null) {

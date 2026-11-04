@@ -2,6 +2,7 @@ library;
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/services.dart' show rootBundle;
 
 import '../core/constants.dart';
@@ -96,7 +97,9 @@ class LibraryRepository {
         _loadedFrom = 'bundled:$kBundledManifest';
         return;
       }
-    } catch (_) {
+    } catch (e) {
+      // The demo library is a convenience; a build without it is not an error.
+      debugPrint('[Sonarar][LIB] bundled manifest failed: $e');
     }
 
     _tracks = const [];

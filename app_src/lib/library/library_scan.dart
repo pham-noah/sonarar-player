@@ -11,16 +11,20 @@ import 'dart:io';
 class LibraryScan {
   LibraryScan._(this.root, this._files, this._byName, this.scannedAt);
 
+  /// [files] are relative paths, `/`-separated. Sizes are deliberately not
+  /// kept: reading each one cost a stat syscall per file on the walk, and
+  /// nothing ever asked for them back.
+  ///
   /// Indexes by basename on the way in, because a rename is the one mismatch
   /// worth resolving and doing it lazily would put the walk's cost on the
   /// first missing track instead of on the walk.
   factory LibraryScan.files(
     String root,
-    Map<String, int> files,
+    Set<String> files,
     DateTime scannedAt,
   ) {
     final byName = <String, List<String>>{};
-    for (final path in files.keys) {
+    for (final path in files) {
       (byName[_basename(path)] ??= <String>[]).add(path);
     }
     return LibraryScan._(root, files, byName, scannedAt);
@@ -29,15 +33,15 @@ class LibraryScan {
   /// An empty scan for a root that could not be read; resolution falls back to
   /// the stored path.
   const LibraryScan.unreadable(this.root)
-      : _files = const {},
+      : _files = const <String>{},
         _byName = const {},
         scannedAt = null;
 
   final String root;
   final DateTime? scannedAt;
 
-  /// Relative path (always `/`-separated, no leading slash) to byte size.
-  final Map<String, int> _files;
+  /// Relative paths, always `/`-separated with no leading slash.
+  final Set<String> _files;
   final Map<String, List<String>> _byName;
 
   static const Set<String> audioExtensions = {
@@ -63,12 +67,11 @@ class LibraryScan {
 
   int get fileCount => _files.length;
 
-  bool get hasAudio => _files.keys.any(isAudio);
+  bool get hasAudio => _files.any(isAudio);
 
   /// Files that look like music. The manifest is still what makes a track; this
   /// is only for noticing what the manifest has not been told about.
-  List<String> get audioFiles =>
-      _files.keys.where(isAudio).toList(growable: false);
+  List<String> get audioFiles => _files.where(isAudio).toList(growable: false);
 
   static bool isAudio(String relative) {
     final dot = relative.lastIndexOf('.');
@@ -81,8 +84,9 @@ class LibraryScan {
   ///
   /// Symlinks are not followed — a link loop would turn a library walk into a
   /// hang, and the files a link points at are reachable at their real path.
+  /// The walk lists names only; it does not stat each file.
   static Future<LibraryScan> of(String root, {DateTime? now}) async {
-    final files = <String, int>{};
+    final files = <String>{};
     try {
       final dir = Directory(root);
       if (!await dir.exists()) return const LibraryScan.unreadable('');
@@ -90,11 +94,7 @@ class LibraryScan {
         if (entity is! File) continue;
         final relative = _relativeTo(root, entity.path);
         if (relative.isEmpty) continue;
-        try {
-          files[relative] = await entity.length();
-        } on FileSystemException {
-          // Vanished between the listing and the stat. Not our problem.
-        }
+        files.add(relative);
       }
     } on FileSystemException {
       return const LibraryScan.unreadable('');
@@ -109,7 +109,7 @@ class LibraryScan {
   }
 
   /// True when the file the manifest names is still at the path it names.
-  bool holds(String relative) => _files.containsKey(_normalise(relative));
+  bool holds(String relative) => _files.contains(_normalise(relative));
 
   /// Where a track's file is *now*, or null when it is nowhere.
   ///
@@ -120,7 +120,7 @@ class LibraryScan {
   String? resolve(String relative) {
     if (!isReadable) return null;
     final wanted = _normalise(relative);
-    if (_files.containsKey(wanted)) return _absolute(wanted);
+    if (_files.contains(wanted)) return _absolute(wanted);
     final candidates = _byName[_basename(wanted)];
     if (candidates == null || candidates.length != 1) return null;
     return _absolute(candidates.single);
@@ -131,7 +131,7 @@ class LibraryScan {
   String? resolveRelative(String relative) {
     if (!isReadable) return null;
     final wanted = _normalise(relative);
-    if (_files.containsKey(wanted)) return wanted;
+    if (_files.contains(wanted)) return wanted;
     final candidates = _byName[_basename(wanted)];
     if (candidates == null || candidates.length != 1) return null;
     return candidates.single;

@@ -269,8 +269,7 @@ class AppState extends ChangeNotifier {
     final base = _engine.playlist(_library, ctx, excluded: _excluded.ids);
     if (base.isEmpty) return false;
 
-    // ignore: avoid_print
-    print(
+    debugPrint(
       '[Sonarar][QUEUE] context switch admitted ${base.length} '
       'of ${_library.length} (excluded=${_excluded.ids.length})',
     );
@@ -422,8 +421,7 @@ class AppState extends ChangeNotifier {
     final ids = playlist.trackIds.toSet();
     final tracks = _library.where((t) => ids.contains(t.id)).toList();
     if (tracks.isEmpty) {
-      // ignore: avoid_print
-      print(
+      debugPrint(
         '[Sonarar][PLAYPRESS] "${playlist.name}" has ${ids.length} ids, '
         'NONE of them in the ${_library.length}-track library',
       );
@@ -1108,8 +1106,7 @@ class AppState extends ChangeNotifier {
     final q = PlayQueue(source: lead, shuffle: _queue?.isShuffled ?? false);
     if (keep != null) q.jumpTo(keep);
     if (lead.length != ordered.length) {
-      // ignore: avoid_print
-      print(
+      debugPrint(
         '[Sonarar][QUEUEPROBE] makeQueue: rule list had ${ordered.length}, '
         'built ${lead.length} (library=${_library.length})',
       );
@@ -1465,8 +1462,7 @@ class AppState extends ChangeNotifier {
 
   void _probeQueue(String site, int len) {
     if (len < 3) {
-      // ignore: avoid_print
-      print(
+      debugPrint(
         '[Sonarar][QUEUEPROBE] $site built a queue of $len '
         '(library=${_library.length})',
       );
@@ -1586,21 +1582,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  AutoAdvance autoAdvanceAction() {
-    if (_repeat == RepeatMode.one) return AutoAdvance.replay;
-    final decision = advanceFor(
-      mode: _mode,
-      repeatOne: false,
-      repeatAll: _repeat == RepeatMode.all,
-      hasNext: _queue != null && _queue!.index + 1 < _queue!.length,
-    );
-    if (decision == AutoAdvanceMode.stop) return AutoAdvance.stop;
-    final q = _queue;
-    if (q == null) return AutoAdvance.stop;
-    if (_repeat == RepeatMode.all) return AutoAdvance.next;
-
-    return q.index + 1 < q.length ? AutoAdvance.next : AutoAdvance.stop;
-  }
+  /// What happens when the current track ends.
+  ///
+  /// [advanceFor] is the only place that decides this; asking it directly is
+  /// what keeps this from being a second, slightly different copy of the rules.
+  AutoAdvanceMode autoAdvanceAction() => advanceFor(
+        mode: _mode,
+        repeatOne: _repeat == RepeatMode.one,
+        repeatAll: _repeat == RepeatMode.all,
+        hasNext: _queue != null && _queue!.index + 1 < _queue!.length,
+      );
 
   void nextTrack() {
     final q = _queue;

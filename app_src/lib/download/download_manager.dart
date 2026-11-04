@@ -187,7 +187,8 @@ class DownloadManager extends ChangeNotifier {
     if (job == null) return;
     try {
       await Ytdlp.cancel(job.videoId);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][DL] cancel failed: ${job.videoId}: $e');
     }
   }
 
@@ -251,7 +252,9 @@ class DownloadManager extends ChangeNotifier {
     if (await file.length() == 0) {
       try {
         await file.delete();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[Sonarar][DL] empty file failed to delete: ${file.path}: $e');
+      }
       return;
     }
 
@@ -298,7 +301,8 @@ class DownloadManager extends ChangeNotifier {
           job.bytes = total;
           notifyListeners();
         }
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[Sonarar][DL] byte count failed: ${job.videoId}: $e');
       }
     });
   }

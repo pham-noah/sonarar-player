@@ -243,7 +243,8 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         if (mounted && total > 0 && _busy.contains(key)) {
           setState(() => _bytes[key] = total);
         }
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[Sonarar][IMPORT] byte poll failed: $key: $e');
       } finally {
         pollTick = false;
       }
@@ -317,7 +318,9 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           if (await f.length() == 0) {
             try {
               await f.delete();
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[Sonarar][IMPORT] empty file failed to delete: $e');
+            }
             failed++;
             continue;
           }

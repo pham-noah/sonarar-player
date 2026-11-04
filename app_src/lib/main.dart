@@ -18,6 +18,7 @@ import 'context/weather_codes.dart';
 import 'core/build_info.dart';
 import 'core/app_state.dart';
 import 'player/art_warmer.dart';
+import 'player/queue_mode.dart';
 import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
@@ -110,35 +111,28 @@ final diagLog = DiagLog();
 Future<void> main() async {
   final tMain = DateTime.now();
   WidgetsFlutterBinding.ensureInitialized();
-  // ignore: avoid_print
-  print('[Sonarar][MAIN] binding=${DateTime.now().difference(tMain).inMilliseconds}ms');
+  debugPrint('[Sonarar][MAIN] binding=${DateTime.now().difference(tMain).inMilliseconds}ms');
 
   diagLog.attach();
 
   var fullErrorsPrinted = 0;
   FlutterError.onError = (details) {
-    // ignore: avoid_print
-    print('[Sonarar][FLUTTER_ERROR] ${details.exceptionAsString()}');
-    // ignore: avoid_print
-    print('[Sonarar][FLUTTER_ERROR] context=${details.context}');
+    debugPrint('[Sonarar][FLUTTER_ERROR] ${details.exceptionAsString()}');
+    debugPrint('[Sonarar][FLUTTER_ERROR] context=${details.context}');
     if (fullErrorsPrinted < 3) {
       fullErrorsPrinted++;
-      // ignore: avoid_print
-      print('[Sonarar][FLUTTER_ERROR] full:\n${details.toString()}');
+      debugPrint('[Sonarar][FLUTTER_ERROR] full:\n${details.toString()}');
     }
 
     final stack = details.stack;
     if (stack != null) {
-      // ignore: avoid_print
-      print('[Sonarar][FLUTTER_ERROR] stack:\n$stack');
+      debugPrint('[Sonarar][FLUTTER_ERROR] stack:\n$stack');
     }
     FlutterError.presentError(details);
   };
   PlatformDispatcher.instance.onError = (error, stack) {
-    // ignore: avoid_print
-    print('[Sonarar][UNCAUGHT] $error');
-    // ignore: avoid_print
-    print('[Sonarar][UNCAUGHT] stack:\n$stack');
+    debugPrint('[Sonarar][UNCAUGHT] $error');
+    debugPrint('[Sonarar][UNCAUGHT] stack:\n$stack');
     return true;
   };
 
@@ -160,8 +154,7 @@ Future<void> main() async {
 
       androidStopForegroundOnPause: false,
       );
-      // ignore: avoid_print
-      print('[Sonarar][MAIN] audio_service READY in ${DateTime.now().difference(tAudio).inMilliseconds}ms '
+      debugPrint('[Sonarar][MAIN] audio_service READY in ${DateTime.now().difference(tAudio).inMilliseconds}ms '
           '(started after the first frame)');
     }();
     await _audioInit;
@@ -174,16 +167,14 @@ Future<void> main() async {
     onDetach: () => unawaited(diagLog.flush()),
   );
 
-  // ignore: avoid_print
-  print('[Sonarar][MAIN] pre_runApp=${DateTime.now().difference(tMain).inMilliseconds}ms');
+  debugPrint('[Sonarar][MAIN] pre_runApp=${DateTime.now().difference(tMain).inMilliseconds}ms');
 
   var firstFrameLogged = false;
   WidgetsBinding.instance.addTimingsCallback((timings) {
     if (firstFrameLogged) return;
     firstFrameLogged = true;
     final t = timings.last;
-    // ignore: avoid_print
-    print('[Sonarar][FRAME] first frame build=${t.buildDuration.inMilliseconds}ms '
+    debugPrint('[Sonarar][FRAME] first frame build=${t.buildDuration.inMilliseconds}ms '
         'raster=${t.rasterDuration.inMilliseconds}ms '
         'at=${DateTime.now().difference(tMain).inMilliseconds}ms');
   });
@@ -630,8 +621,7 @@ class _HomeShellState extends State<HomeShell>
       _askedStorage = true;
       _storageAccess = await StoragePermission.request();
       if (mounted) setState(() {});
-      // ignore: avoid_print
-      print('[Sonarar] storage after request=$_storageAccess');
+      debugPrint('[Sonarar] storage after request=$_storageAccess');
       // The library was read before the grant, so re-read it now, not next launch.
       if (_storageAccess == StorageAccess.granted) await _rereadLibrary();
     }
@@ -1023,11 +1013,9 @@ class _HomeShellState extends State<HomeShell>
     final order = widget.state.queue?.order ?? const <Track>[];
 
     if (order.length < 3) {
-      // ignore: avoid_print
-      print('[Sonarar][SHORTQUEUE] order=${order.length} track=${track.id} '
+      debugPrint('[Sonarar][SHORTQUEUE] order=${order.length} track=${track.id} '
           'want=${widget.state.currentTrack?.id}');
-      // ignore: avoid_print
-      print('[Sonarar][SHORTQUEUE] stack:\n${StackTrace.current}');
+      debugPrint('[Sonarar][SHORTQUEUE] stack:\n${StackTrace.current}');
     }
     final at = order.indexWhere((t) => t.id == track.id);
     final start = at < 0 ? 0 : (at ~/ chunk) * chunk;
@@ -1056,24 +1044,21 @@ class _HomeShellState extends State<HomeShell>
     }
     final idx = playable.indexWhere((e) => e.path == path);
 
-    // ignore: avoid_print
-    print('[Sonarar][WINDOW] ${playable.length} of ${window.length} files exist; '
+    debugPrint('[Sonarar][WINDOW] ${playable.length} of ${window.length} files exist; '
         'want=$path '
         'sample=${window.isEmpty ? "none" : _repo.absoluteFor(window.first) ?? "null"}');
 
     bool ok;
 
     if (playable.isEmpty) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] none of the ${window.length} window files exist; '
+      debugPrint('[Sonarar][LOAD] none of the ${window.length} window files exist; '
           'keeping the current queue. first=${window.isEmpty ? "none" : window.first.file}');
       _fileMissing = true;
       return false;
     }
 
     if (idx < 0) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] not-in-window: window=${window.length} '
+      debugPrint('[Sonarar][LOAD] not-in-window: window=${window.length} '
           'playable=${playable.length} want=$path '
           'first=${playable.isEmpty ? "none" : playable.first.path}');
       final coverPath = _repo.coverPathFor(track);
@@ -1108,8 +1093,7 @@ class _HomeShellState extends State<HomeShell>
     _shellChanged(() {
       _fileMissing = !ok;
       if (!ok) {
-        // ignore: avoid_print
-        print('[Sonarar] could not load the current track — the player will '
+        debugPrint('[Sonarar] could not load the current track — the player will '
             'report it as missing.');
 
         if (!_skippingMissing) {
@@ -1119,8 +1103,7 @@ class _HomeShellState extends State<HomeShell>
               widget.state.queue?.next(wrap: false);
           _skippingMissing = false;
           if (steppedTo != null) {
-            // ignore: avoid_print
-            print('[Sonarar] stepping over an unloadable track');
+            debugPrint('[Sonarar] stepping over an unloadable track');
             // ignore: discarded_futures
             _loadCurrentTrack(autoPlay: _playing);
             return;
@@ -1145,14 +1128,12 @@ class _HomeShellState extends State<HomeShell>
     _lastPhase = now;
     if (since != null) _phaseCosts[label] = since;
     if (mounted) setState(() {});
-    // ignore: avoid_print
-    print('[Sonarar] boot ${(progress * 100).round()}% $label'
+    debugPrint('[Sonarar] boot ${(progress * 100).round()}% $label'
         '${since == null ? '' : ' (+${since}ms)'}');
     if (progress >= 1.0) {
       final ranked = _phaseCosts.entries.toList()
         ..sort((a, b) => b.value.compareTo(a.value));
-      // ignore: avoid_print
-      print('[Sonarar] boot TOTAL '
+      debugPrint('[Sonarar] boot TOTAL '
           '${ranked.fold<int>(0, (sum, e) => sum + e.value)}ms — slowest: '
           '${ranked.take(3).map((e) => '${e.key}=${e.value}ms').join(', ')}');
     }
@@ -1163,19 +1144,16 @@ class _HomeShellState extends State<HomeShell>
 
     _storageAccess = await StoragePermission.status();
     _notificationAccess = await StoragePermission.notificationStatus();
-    // ignore: avoid_print
-    print('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
+    debugPrint('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
     if (mounted) setState(() {});
-    // ignore: avoid_print
-    print('[Sonarar] storage after request=$_storageAccess');
+    debugPrint('[Sonarar] storage after request=$_storageAccess');
 
     _boot(0.18, 'reading your library');
     _musicRoot = await MusicRoot.read();
     _repo.root = _musicRoot;
     await _repo.load();
     _boot(0.52, 'found ${_repo.tracks.length} tracks');
-    // ignore: avoid_print
-    print('[Sonarar] library root=${_repo.libraryRoot} '
+    debugPrint('[Sonarar] library root=${_repo.libraryRoot} '
         'from=${_repo.loadedFrom ?? "none"} '
         'tracks=${_repo.tracks.length} '
         'accessDenied=${_repo.accessDenied}');
@@ -1336,16 +1314,16 @@ class _HomeShellState extends State<HomeShell>
       }
 
       switch (widget.state.autoAdvanceAction()) {
-        case AutoAdvance.next:
+        case AutoAdvanceMode.next:
           widget.state.advance(automatic: true);
           // ignore: discarded_futures
           _loadCurrentTrack();
-        case AutoAdvance.replay:
+        case AutoAdvanceMode.replay:
 
           if (finished != null) _closeOutPlay(finished);
           // ignore: discarded_futures
           _loadCurrentTrack(autoPlay: true);
-        case AutoAdvance.stop:
+        case AutoAdvanceMode.stop:
 
           if (widget.state.refillWhenQueueEnds && widget.state.refillFromContext()) {
             // ignore: discarded_futures
@@ -1379,20 +1357,17 @@ class _HomeShellState extends State<HomeShell>
     if (const bool.fromEnvironment('sonarar_audiotest')) {
       final engine = _audio;
       final t = widget.state.currentTrack;
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] loaded=$loaded track=${t?.title ?? "none"} '
+      debugPrint('[Sonarar][AUDIO] loaded=$loaded track=${t?.title ?? "none"} '
           'path=${t == null ? "n/a" : _repo.absoluteFor(t)}');
 
       if (engine != null && loaded) {
         final t = widget.state.currentTrack;
         final path = _repo.absoluteFor(t!)!;
-        // ignore: avoid_print
-        print('[Sonarar][AUDIO] probe path=$path');
+        debugPrint('[Sonarar][AUDIO] probe path=$path');
         unawaited(engine.play());
         for (var i = 1; i <= 8; i++) {
           await Future<void>.delayed(const Duration(seconds: 1));
-          // ignore: avoid_print
-          print('[Sonarar][AUDIO] +${i}s playing=${engine.isPlaying} '
+          debugPrint('[Sonarar][AUDIO] +${i}s playing=${engine.isPlaying} '
               'pos=${engine.position.inMilliseconds}ms '
               'dur=${engine.duration?.inMilliseconds ?? -1}ms');
         }
@@ -1404,8 +1379,7 @@ class _HomeShellState extends State<HomeShell>
         await engine.play();
         for (var i = 1; i <= 4; i++) {
           await Future<void>.delayed(const Duration(seconds: 1));
-          // ignore: avoid_print
-          print('[Sonarar][AUDIO] NEXT +${i}s title=${t2?.title ?? "none"} '
+          debugPrint('[Sonarar][AUDIO] NEXT +${i}s title=${t2?.title ?? "none"} '
               'playing=${engine.isPlaying} '
               'pos=${engine.position.inMilliseconds}ms');
         }
@@ -1418,8 +1392,7 @@ class _HomeShellState extends State<HomeShell>
 
     _ctx.startTimers(weatherRefresh: _prefs.weatherRefresh);
 
-    // ignore: avoid_print
-    print('[Sonarar] library=${_repo.tracks.length} '
+    debugPrint('[Sonarar] library=${_repo.tracks.length} '
 
         'from=${_repo.loadedFrom ?? "none"} '
         'resume=${resume == null ? "none" : (resume.isStale ? "stale" : resume.trackId)} '
@@ -2962,16 +2935,14 @@ class _HomeShellState extends State<HomeShell>
         dynamicBlurb: _dynamicBlurb(),
 
         onPlayPlaylist: (p) {
-          // ignore: avoid_print
-          print('[Sonarar][PLAYPRESS] id=${p.id} name="${p.name}" '
+          debugPrint('[Sonarar][PLAYPRESS] id=${p.id} name="${p.name}" '
               'tracks=${p.trackIds.length} library=${widget.state.library.length} '
               'dynamicMix=${widget.state.dynamicMix()?.length ?? -1}');
           if (widget.state.playPlaylist(p)) {
             // ignore: discarded_futures
             _loadCurrentTrack();
           } else {
-            // ignore: avoid_print
-            print('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
+            debugPrint('[Sonarar][PLAYPRESS] REFUSED — nothing playable');
             _toast(l10nOf(context).shellPlaylistNothingPlayable);
           }
         },

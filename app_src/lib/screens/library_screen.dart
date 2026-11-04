@@ -227,6 +227,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   late Map<String, List<Track>> _byArtist = groupByArtist(widget.tracks);
 
+  /// Id to track, rebuilt with [_byArtist]: a playlist row asks for one cover
+  /// by id, and rebuilding the index per row per frame was O(playlists×tracks).
+  late Map<String, Track> _tracksById = _indexTracks(widget.tracks);
+
+  static Map<String, Track> _indexTracks(List<Track> tracks) =>
+      {for (final t in tracks) t.id: t};
+
   int get _artistCount => _byArtist.length;
 
   @override
@@ -242,6 +249,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
     if (old.tracks != widget.tracks || !setEquals(old.likedIds, widget.likedIds)) {
       _byArtist = groupByArtist(widget.tracks);
+      _tracksById = _indexTracks(widget.tracks);
 
       _sortedArtistsCache = null;
       _applyFilter();
@@ -1149,8 +1157,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   ImageProvider? _coverOfFirst(Playlist p) {
     if (p.isEmpty) return null;
-    final byId = {for (final t in widget.tracks) t.id: t};
-    final t = byId[p.trackIds.first];
+    final t = _tracksById[p.trackIds.first];
     return t == null ? null : _coverOf(t);
   }
 

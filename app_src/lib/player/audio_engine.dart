@@ -3,7 +3,7 @@ library;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/foundation.dart' show VoidCallback, debugPrint;
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -150,8 +150,7 @@ class AudioEngine {
         ? 'first'
         : '${now.difference(_lastLoadAt!).inMilliseconds}ms since #${_loadSeq - 1}';
     _lastLoadAt = now;
-    // ignore: avoid_print
-    print('[Sonarar][LOAD] #$_loadSeq $gap items=${items.length}');
+    debugPrint('[Sonarar][LOAD] #$_loadSeq $gap items=${items.length}');
 
     try {
       await _player.setAudioSource(
@@ -161,17 +160,14 @@ class AudioEngine {
       );
     } catch (e, st) {
       if (_superseded(generation)) {
-        // ignore: avoid_print
-        print('[Sonarar][LOAD] #$_loadSeq superseded mid-setup, ignored');
+        debugPrint('[Sonarar][LOAD] #$_loadSeq superseded mid-setup, ignored');
         return false;
       }
 
       _loadFailed = true;
       _queuePaths = const [];
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] #$_loadSeq FAILED: $e');
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] stack:\n$st');
+      debugPrint('[Sonarar][LOAD] #$_loadSeq FAILED: $e');
+      debugPrint('[Sonarar][AUDIO] stack:\n$st');
       return false;
     }
 
@@ -180,8 +176,7 @@ class AudioEngine {
     notePlayIntent();
 
     if (_superseded(generation)) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] #$_loadSeq superseded after setup, ignored');
+      debugPrint('[Sonarar][LOAD] #$_loadSeq superseded after setup, ignored');
       return false;
     }
 
@@ -189,8 +184,7 @@ class AudioEngine {
     await _reapplyRepeatMode();
 
     if (_superseded(generation)) {
-      // ignore: avoid_print
-      print('[Sonarar][LOAD] #$_loadSeq superseded during repeat re-assert, ignored');
+      debugPrint('[Sonarar][LOAD] #$_loadSeq superseded during repeat re-assert, ignored');
       return false;
     }
 
@@ -213,8 +207,7 @@ class AudioEngine {
   }) async {
     if (!await File(absolutePath).exists()) {
       _loadFailed = true;
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] not found: $absolutePath');
+      debugPrint('[Sonarar][AUDIO] not found: $absolutePath');
       return false;
     }
     try {
@@ -253,7 +246,6 @@ class AudioEngine {
       return true;
     } catch (e) {
       _loadFailed = true;
-      // ignore: avoid_print
 
       String probe;
       try {
@@ -268,8 +260,7 @@ class AudioEngine {
       } catch (e) {
         probe = 'NOT READABLE: ${e.runtimeType}: $e';
       }
-      // ignore: avoid_print
-      print('[Sonarar][AUDIO] load failed: $absolutePath\n'
+      debugPrint('[Sonarar][AUDIO] load failed: $absolutePath\n'
           '  error: ${e.runtimeType}: $e\n'
           '  probe: $probe');
       return false;
@@ -293,7 +284,8 @@ class AudioEngine {
     try {
       // Engine loop never reports completion, so repeats went uncounted.
       await _player.setLoopMode(LoopMode.off);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][AUDIO] repeat re-assert failed: $e');
     }
   }
 
@@ -444,8 +436,7 @@ class AudioEngine {
       final intended = _intendedIndex;
       _intendedIndex = null;
 
-      // ignore: avoid_print
-      print('[Sonarar][SKIP] index=$index intended=$intended '
+      debugPrint('[Sonarar][SKIP] index=$index intended=$intended '
           'same_path=${path == _lastReportedPath} playing=${_player.playing}');
 
       if (path == _lastReportedPath) return;
@@ -558,7 +549,8 @@ class AudioEngine {
     await _player.pause();
     try {
       await _player.setVolume(restoredLevel(_targetVolume));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][AUDIO] volume restore failed: $e');
     }
   }
 

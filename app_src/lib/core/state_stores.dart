@@ -2,6 +2,7 @@ library;
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../context/places.dart';
@@ -80,7 +81,8 @@ class StateStores {
       try {
         if (!await dir.exists()) await dir.create(recursive: true);
         return dir.path;
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[Sonarar][STATE] state dir failed: $dir: $e');
       }
     }
     if (Platform.isAndroid) {
@@ -95,41 +97,48 @@ class StateStores {
     required Map<String, Duration> bookmarks,
     required Set<String> favoriteIds,
   }) async {
-    await _guard(() => exclusions.save({for (final id in excludedIds) id: true}));
+    await _guard('save exclusions', () => exclusions.save({for (final id in excludedIds) id: true}));
     await _guard(
+      'save bookmarks',
       () => this.bookmarks.save({for (final e in bookmarks.entries) e.key: e.value}),
     );
-    await _guard(() => favorites.save({for (final id in favoriteIds) id: true}));
+    await _guard('save favorites', () => favorites.save({for (final id in favoriteIds) id: true}));
   }
 
   Future<void> saveListsNow(PlaylistsView lists) =>
-      _guard(() => playlists.save(lists));
+      _guard('save playlists', () => playlists.save(lists));
 
-  Future<void> savePrefs(AppPrefs next) => _guard(() => prefs.save(next));
+  Future<void> savePrefs(AppPrefs next) => _guard('save prefs', () => prefs.save(next));
 
-  Future<void> savePlaces(PlaceBook book) => _guard(() => places.save(book));
+  Future<void> savePlaces(PlaceBook book) => _guard('save places', () => places.save(book));
 
   Future<void> savePlaylists(PlaylistsView lists) =>
-      _guard(() => playlists.save(lists));
+      _guard('save playlists', () => playlists.save(lists));
 
   Future<void> saveTags(TagOverrides overrides) =>
-      _guard(() => tags.save(overrides));
+      _guard('save tags', () => tags.save(overrides));
 
-  Future<void> saveBonds(BondState state) => _guard(() => bonds.save(state));
+  Future<void> saveBonds(BondState state) => _guard('save bonds', () => bonds.save(state));
 
   Future<void> saveRules(ContextRules rules) =>
-      _guard(() => this.rules.save(rules));
+      _guard('save rules', () => this.rules.save(rules));
 
   Future<void> saveLoopPoints(Map<String, LoopPoints> points) =>
-      _guard(() => loopPoints.save(points));
+      _guard('save loop points', () => loopPoints.save(points));
 
   Future<void> saveSnapshot(PlaybackSnapshot snap) =>
-      _guard(() => snapshot.save(snap));
+      _guard('save snapshot', () => snapshot.save(snap));
 
-  static Future<void> _guard(Future<void> Function() write) async {
+  /// Runs one write and reports the failure instead of hiding it.
+  ///
+  /// Everything saved here is state the user made — excluded tracks, loop
+  /// points, playlists — so a write that cannot land is the one failure worth
+  /// putting in front of them, named in [what]'s words.
+  static Future<void> _guard(String what, Future<void> Function() write) async {
     try {
       await write();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Sonarar][STATE] $what failed: $e');
     }
   }
 }

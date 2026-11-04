@@ -117,8 +117,6 @@ class AppState extends ChangeNotifier {
   String? get playingFrom => _playingFrom;
   String? _playingFrom;
 
-  void setPlayingFrom(String? name) => _playingFrom = name;
-
   QueueMode _mode = QueueMode.dynamic;
   QueueMode get mode => _mode;
 
@@ -357,6 +355,7 @@ class AppState extends ChangeNotifier {
   void setContextRules(ContextRules rules) {
     _writtenRules = rules;
     _rebuildRules();
+    notifyListeners();
   }
 
   ContextRules _writtenRules = ContextRules.empty;
@@ -365,9 +364,15 @@ class AppState extends ChangeNotifier {
   PlaceBook _places = PlaceBook.empty;
   PlaceBook get places => _places;
 
+  /// Replaces the known places, and the rules derived from them.
+  ///
+  /// Notifies like every other mutation here. Which setters were quiet used to be
+  /// something a caller had to remember, and the failure it invited was a panel
+  /// drawing yesterday's places.
   void setPlaces(PlaceBook book) {
     _places = book;
     _rebuildRules();
+    notifyListeners();
   }
 
   void _rebuildRules() {

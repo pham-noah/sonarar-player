@@ -1,43 +1,26 @@
 library;
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-class _Fade {
-  Timer? _timer;
-  Completer<void>? _done;
-
-  Future<void> fade({
-    int steps = 3,
-    Duration tick = const Duration(milliseconds: 1),
-  }) {
-    cancel();
-    final done = Completer<void>();
-    _done = done;
-    var i = 0;
-    _timer = Timer.periodic(tick, (t) {
-      i++;
-      if (i >= steps) {
-        t.cancel();
-        _timer = null;
-        _done = null;
-        if (!done.isCompleted) done.complete();
-      }
-    });
-    return done.future;
-  }
-
-  void cancel() {
-    _timer?.cancel();
-    _timer = null;
-    final done = _done;
-    _done = null;
-
-    if (done != null && !done.isCompleted) done.complete();
-  }
-}
+/// The fade moved out of the engine, and so did what this file used to check.
+///
+/// It held a `_Fade` copy of the engine's timer/completer logic and tested *that* —
+/// which meant it would pass while the real engine was broken — plus three guards
+/// on `audio_engine.dart`'s internals (`_fadeDone`, `_fadingOut`, `from * (i / steps)`).
+///
+/// The fade is `FadeEnvelope` now and is tested behaviourally in
+/// `test/player/fade_envelope_test.dart`. Each guarantee this file carried, and
+/// where it lives now:
+///
+///   a fade that runs to the end completes      → "a fade walks from where the level is"
+///   a cancelled fade completes, not hangs      → "cancelling lets whoever is waiting carry on"
+///   a second fade releases the first           → "the newest fade wins"
+///   cancelling twice is harmless               → "cancelling lets whoever is waiting carry on"
+///   the fade-out steps DOWN from the level     → "a fade starts from the level actually playing"
+///
+/// One guarantee is still about the engine itself, and stays here.
 
 String _engineSource() {
   final f = File('lib/player/audio_engine.dart');
@@ -48,63 +31,21 @@ String _engineSource() {
 }
 
 void main() {
-  test('a fade that runs to the end completes', () async {
-    final f = _Fade();
-    await f.fade(steps: 3).timeout(const Duration(seconds: 2));
-  });
-
-  test('a CANCELLED fade completes rather than hanging', () async {
-    final f = _Fade();
-    final pending = f.fade(steps: 1000, tick: const Duration(milliseconds: 50));
-    f.cancel();
-    await pending.timeout(
-      const Duration(seconds: 2),
-      onTimeout: () => fail('the cancelled fade stranded its caller'),
-    );
-  });
-
-  test('starting a SECOND fade releases the first', () async {
-    final f = _Fade();
-    final first = f.fade(steps: 1000, tick: const Duration(milliseconds: 50));
-    final second = f.fade(steps: 3);
-    await first.timeout(
-      const Duration(seconds: 2),
-      onTimeout: () => fail('the superseded fade stranded its caller'),
-    );
-    await second.timeout(const Duration(seconds: 2));
-  });
-
-  test('cancelling twice is harmless', () {
-    final f = _Fade();
-    f.cancel();
-    f.cancel();
-  });
-
   group('the engine itself', () {
-    test('_cancelFade completes the in-flight fade', () {
+    test('has exactly ONE fade, the shared envelope', () {
       final src = _engineSource();
-      expect(src.contains('Completer<void>? _fadeDone'), isTrue,
-          reason: 'the fade completion is not tracked, so it cannot be released');
-      final cancel = src.substring(
-        src.indexOf('void _cancelFade()'),
-        src.indexOf('void _cancelFade()') + 700,
-      );
-      expect(cancel.contains('done.complete()'), isTrue,
-          reason: 'cancelling a fade does not complete it — awaiting callers hang');
-    });
 
-    test('the fade-out has its own guard, not _wantPlay', () {
-      final src = _engineSource();
-      expect(src.contains('_fadingOut = true'), isTrue,
-          reason: 'the fade-out has no dedicated flag, so it is guarding itself again');
-      expect(src.contains('if (!_wantPlay && i != steps) break;'), isFalse,
-          reason: 'the fade-out is using _wantPlay as its own re-entry guard');
-    });
+      expect(src.contains('Timer.periodic'), isFalse,
+          reason: 'the engine has grown its own fade timer again — two fades with '
+              'different cancel rules is how "the sleep fade sometimes keeps going" happens');
 
-    test('the fade-out steps DOWN from the playing level', () {
-      final src = _engineSource();
-      expect(src.contains('from * (i / steps)'), isTrue,
-          reason: 'the fade-out jumps to full volume instead of stepping down from the current level');
+      expect(src.contains('_fadingOut'), isFalse,
+          reason: 'the engine has a second cancel flag again, instead of the fade '
+              'object completing its own waiter');
+
+      expect(src.contains('_fade.fadeTo('), isTrue,
+          reason: 'the loop fade does not go through FadeEnvelope, so cancelling a '
+              'fade-out and cancelling any other fade behave differently');
     });
   });
 }

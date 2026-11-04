@@ -9,6 +9,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
 import 'engine_window.dart';
+import 'fade_envelope.dart';
 import 'playback_engine.dart';
 import 'playback_intent.dart';
 import 'volume_policy.dart';
@@ -329,48 +330,19 @@ class AudioEngine implements PlaybackEngine {
         : (d > const Duration(seconds: 12) ? const Duration(seconds: 12) : d);
   }
 
-  Timer? _fadeTimer;
+  /// The fade lives in its own object now; it only needs to set and read the
+  /// engine's level, which is all the two callbacks are.
+  late final FadeEnvelope _fade = FadeEnvelope(
+    applyVolume: (v) {
+      // The fade is fire-and-forget; the engine reports its own failures.
+      unawaited(_player.setVolume(v));
+    },
+    readVolume: () => _player.volume,
+  );
 
-  Completer<void>? _fadeDone;
+  void _cancelFade() => _fade.cancel();
 
-  bool _fadingOut = false;
-
-  void _cancelFade() {
-    _fadeTimer?.cancel();
-    _fadeTimer = null;
-    _fadingOut = false;
-    final done = _fadeDone;
-    _fadeDone = null;
-
-    if (done != null && !done.isCompleted) done.complete();
-  }
-
-  Future<void> _fadeTo(double to, Duration over) async {
-    _cancelFade();
-    if (over <= Duration.zero) {
-      await _player.setVolume(to.clamp(0.0, 1.0));
-      return;
-    }
-    const steps = 24;
-    final from = _player.volume;
-    final step = over.inMilliseconds ~/ steps;
-    var i = 0;
-    final done = Completer<void>();
-    _fadeDone = done;
-    _fadeTimer = Timer.periodic(Duration(milliseconds: step.clamp(8, 500)), (t) {
-      i++;
-      final f = (i / steps).clamp(0.0, 1.0);
-      // ignore: discarded_futures
-      _player.setVolume((from + (to - from) * f).clamp(0.0, 1.0));
-      if (i >= steps) {
-        t.cancel();
-        _fadeTimer = null;
-        _fadeDone = null;
-        if (!done.isCompleted) done.complete();
-      }
-    });
-    return done.future;
-  }
+  Future<void> _fadeTo(double to, Duration over) => _fade.fadeTo(to, over);
 
   Future<Duration?> beginVariantSwap() async {
     if (_variantSwapPosition != null) return _variantSwapPosition;
@@ -548,23 +520,15 @@ class AudioEngine implements PlaybackEngine {
   Future<void> _fadeThenStop() async {
     _wantPlay = false;
 
-    _fadingOut = true;
-    const steps = 20;
-    final gap = Duration(milliseconds: loop?.points?.fade.inMilliseconds != null
-        ? (loop!.points!.fade.inMilliseconds / steps).round().clamp(50, 2000)
-        : 400);
-
-    final from = _player.volume;
-    for (var i = steps; i >= 0; i--) {
-      if (!_fadingOut) break;
-      try {
-        await _player.setVolume((from * (i / steps)).clamp(0.0, 1.0));
-      } catch (_) {
-        break;
-      }
-      await Future<void>.delayed(gap);
-    }
-    _fadingOut = false;
+    // The loop's own fade length, or 400ms when it has none. This used to be a
+    // second fade loop with its own step count and its own cancel flag; it is the
+    // same fade as everywhere else now, so cancelling behaves the same way.
+    final over = Duration(
+      milliseconds: loop?.points?.fade.inMilliseconds != null
+          ? loop!.points!.fade.inMilliseconds.clamp(50, 2000)
+          : 400,
+    );
+    await _fade.fadeTo(0, over);
     await _player.pause();
     try {
       await _player.setVolume(restoredLevel(_targetVolume));

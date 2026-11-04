@@ -98,6 +98,7 @@ import 'widgets/spectrum.dart';
 import 'player/spectrum_builder.dart';
 import 'player/audio_route.dart';
 import 'player/engine_window.dart';
+import 'player/playback_ticker.dart';
 import 'player/queue_mode.dart';
 import 'player/queue.dart' as playqueue show RepeatMode;
 import 'screens/home_screen.dart';
@@ -814,11 +815,9 @@ class _HomeShellState extends State<HomeShell>
 
   bool _playing = false;
   AudioEngine? _audio;
-  Timer? _progress;
+  late final PlaybackTicker _ticker = PlaybackTicker(_onProgressTick);
 
-  final _tickerWanted = ValueNotifier<bool>(false);
-
-  bool get tickerRunning => _progress != null;
+  bool get tickerRunning => _ticker.isRunning;
 
   @visibleForTesting
   bool debugWantTicker = false;
@@ -851,61 +850,52 @@ class _HomeShellState extends State<HomeShell>
 
   bool _skippingMissing = false;
 
-  void _syncProgressTicker() {
-    final wanted = _playing || _sleep.isRunning || debugWantTicker;
-    _tickerWanted.value = wanted;
-    if (wanted && _progress == null) {
-      _startProgressTicker();
-    } else if (!wanted && _progress != null) {
-      _progress!.cancel();
-      _progress = null;
+  void _syncProgressTicker() => _ticker.sync(
+        run: _playing || _sleep.isRunning || debugWantTicker,
+      );
+
+  /// One tick of the player's clock.
+  void _onProgressTick() {
+    final e = _audio;
+    if (e == null) return;
+    final st = widget.state;
+
+    final now = DateTime.now();
+    if (_playing) {
+      _sleep.resume(now);
+    } else {
+      _sleep.pause(now);
     }
-  }
+    _sleepLeft.value = _sleep.remaining(now);
 
-  void _startProgressTicker() {
-    _progress?.cancel();
-    _progress = Timer.periodic(const Duration(milliseconds: 250), (_) {
-      final e = _audio;
-      if (e == null) return;
-      final st = widget.state;
+    if (!_playing) return;
 
-      final now = DateTime.now();
-      if (_playing) {
-        _sleep.resume(now);
-      } else {
-        _sleep.pause(now);
-      }
-      _sleepLeft.value = _sleep.remaining(now);
+    st.position.value = e.position;
+    _lastPlayedId = st.currentTrack?.id;
+    _lastPlayedMs = e.position.inMilliseconds;
 
-      if (_playing) {
-        st.position.value = e.position;
-        _lastPlayedId = st.currentTrack?.id;
-        _lastPlayedMs = e.position.inMilliseconds;
+    final trackLength = st.currentTrack?.duration;
+    st.duration.value = trackLength ?? e.duration;
+    _durationOrZero.value = trackLength ?? e.duration ?? Duration.zero;
 
-        final trackLength = st.currentTrack?.duration;
-        st.duration.value = trackLength ?? e.duration;
-        _durationOrZero.value = trackLength ?? e.duration ?? Duration.zero;
+    unawaited(e.tickLoop());
 
-        unawaited(e.tickLoop());
+    final sleep = _sleep.tick(now);
+    switch (sleep.action) {
+      case SleepAction.fadeTo:
+        unawaited(e.setVolume(_volume * sleep.volume));
+      case SleepAction.stop:
+        unawaited(e.pause());
 
-        final sleep = _sleep.tick(now);
-        switch (sleep.action) {
-          case SleepAction.fadeTo:
-            unawaited(e.setVolume(_volume * sleep.volume));
-          case SleepAction.stop:
-            unawaited(e.pause());
-
-            unawaited(e.setVolume(_volume));
-            widget.state.setSleeping(false);
-            if (mounted) {
-              setState(() => _playing = false);
-              _syncProgressTicker();
-            }
-          case SleepAction.none:
-            break;
+        unawaited(e.setVolume(_volume));
+        widget.state.setSleeping(false);
+        if (mounted) {
+          setState(() => _playing = false);
+          _syncProgressTicker();
         }
-      }
-    });
+      case SleepAction.none:
+        break;
+    }
   }
 
   String? _loadedTrackId;
@@ -1520,7 +1510,7 @@ class _HomeShellState extends State<HomeShell>
     _disposed = true;
     _downloads.removeListener(_onDownloadProblem);
     _themeSession.dispose();
-    _tickerWanted.dispose();
+    _ticker.dispose();
 
     _shellTick.dispose();
 
@@ -1535,7 +1525,6 @@ class _HomeShellState extends State<HomeShell>
 
     _ctx.dispose();
     _durationOrZero.dispose();
-    _progress?.cancel();
 
     _routeAnimation?.removeStatusListener(_onPlayerRouteStatus);
     _routeAnimation = null;

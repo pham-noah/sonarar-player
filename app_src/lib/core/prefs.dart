@@ -30,6 +30,7 @@ class AppPrefs {
     this.showRomaji = true,
     this.dynamicByDefault = true,
     this.layoutId = 'persona',
+    this.paletteIndex = 0,
     this.refillWhenQueueEnds = false,
     this.libraryIsGrid,
     this.activePresetId,
@@ -109,6 +110,14 @@ class AppPrefs {
 
   final String layoutId;
 
+  /// Which palette of the chosen layout to wear. Solid and Glass each ship a
+  /// list of their own; Persona's colours are skins, so this stays 0 there.
+  ///
+  /// It has to be a preference: the layout is applied again on every preference
+  /// change, so a palette held only in AppState was reset to the first one the
+  /// moment anything else was toggled.
+  final int paletteIndex;
+
 
   final String? languageSkinId;
 
@@ -179,6 +188,7 @@ class AppPrefs {
     bool? libraryIsGrid,
     bool clearLibraryGrid = false,
     String? layoutId,
+    int? paletteIndex,
     String? activePresetId,
     String? languageSkinId,
     bool clearLanguageSkin = false,
@@ -224,6 +234,7 @@ class AppPrefs {
         libraryIsGrid:
             clearLibraryGrid ? null : (libraryIsGrid ?? this.libraryIsGrid),
         layoutId: layoutId ?? this.layoutId,
+        paletteIndex: paletteIndex ?? this.paletteIndex,
         activePresetId:
             clearPreset ? null : (activePresetId ?? initial.activePresetId),
 
@@ -278,6 +289,7 @@ class AppPrefs {
 
         if (libraryIsGrid != null) 'library_is_grid': libraryIsGrid,
         'layout_id': layoutId,
+        if (paletteIndex != 0) 'palette': paletteIndex,
 
         if (activePresetId != null) 'active_preset': activePresetId,
 
@@ -346,6 +358,7 @@ class AppPrefs {
       layoutId: (raw['layout_id'] is String && (raw['layout_id'] as String).isNotEmpty)
           ? raw['layout_id'] as String
           : initial.layoutId,
+      paletteIndex: raw['palette'] is num ? (raw['palette'] as num).toInt() : 0,
 
       activePresetId: _str(raw['active_preset']),
       languageSkinId: _str(raw['language_skin']),

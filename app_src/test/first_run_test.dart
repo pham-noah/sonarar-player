@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/constants.dart';
+import 'package:sonarar/l10n/script.dart';
+import 'package:sonarar/theme/slab.dart';
 import 'package:sonarar/core/prefs.dart';
 import 'package:sonarar/screens/first_run_screen.dart';
 import 'package:sonarar/theme/layout.dart';
@@ -87,6 +89,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(seen?.layoutId, 'glass',
         reason: 'the layout tile did not reach the prefs — the page would appear to do nothing');
+  });
+
+  testWidgets('a COLOUR pick is recorded too, and reaches the prefs', (tester) async {
+    tester.view.physicalSize = _phone;
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+
+    AppPrefs? seen;
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: FirstRunScreen(
+          skin: skinFor(SkinId.crimson),
+          prefs: AppPrefs.initial,
+          layoutId: LayoutKind.solid,
+          onPrefs: (next) => seen = next,
+          onDone: () {},
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    // The second palette of the Solid list. The chips used to be drawn with an
+    // empty onTap, so on a fresh install the colour you pressed was never the
+    // colour you got.
+    final chips = find.byType(SkinChip);
+    expect(chips, findsWidgets);
+    final second = kSolidPalettes[1].name;
+    await tester.tap(find.text(capsFor(tester.element(chips.first), second)));
+    await tester.pumpAndSettle();
+
+    expect(seen?.paletteIndex, 1,
+        reason: 'the colour tile did not reach the prefs — the page would appear '
+            'to do nothing');
   });
 
   testWidgets('the song-list tiles follow the layout until he picks one',

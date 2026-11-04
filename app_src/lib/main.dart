@@ -451,7 +451,10 @@ class _HomeShellState extends State<HomeShell>
   }
 
   void _applyLayoutPref() =>
-      widget.state.setLayout(decode.layoutFromPrefs(_prefs.layoutId));
+      widget.state.setLayout(
+        decode.layoutFromPrefs(_prefs.layoutId),
+        paletteIndex: _prefs.paletteIndex,
+      );
 
   void _syncPresetToPrefs() {
     _setPrefs(_prefs.copyWith(

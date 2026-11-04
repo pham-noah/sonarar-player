@@ -96,8 +96,11 @@ class FirstRunScreen extends StatelessWidget {
                   SkinChip(
                     skin: skin,
                     label: capsFor(context, entry.name),
-                    selected: i == 0,
-                    onTap: () {},
+                    // These were drawn but not wired: `selected: i == 0` and an
+                    // empty onTap, so on a fresh install the colour you picked was
+                    // never the colour you got.
+                    selected: prefs.paletteIndex % palettes.length == i,
+                    onTap: () => onPrefs(prefs.copyWith(paletteIndex: i)),
                   ),
               ],
             ),

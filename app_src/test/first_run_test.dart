@@ -43,6 +43,9 @@ Future<AppPrefs> _pump(
   return current;
 }
 
+/// Chips render their label through the app-wide caps rule.
+String capsForAny(String s) => s.toUpperCase();
+
 void main() {
   testWidgets('it renders at a real phone width without overflow', (tester) async {
     await _pump(tester);
@@ -122,6 +125,37 @@ void main() {
     expect(seen?.paletteIndex, 1,
         reason: 'the colour tile did not reach the prefs — the page would appear '
             'to do nothing');
+  });
+
+  testWidgets('on Persona a colour pick is stored as a SKIN, not a palette',
+      (tester) async {
+    tester.view.physicalSize = _phone;
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+
+    AppPrefs? latest;
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: FirstRunScreen(
+          skin: skinFor(SkinId.abyss),
+          prefs: AppPrefs.initial.copyWith(layoutId: 'sonar'),
+          layoutId: LayoutKind.sonar,
+          onPrefs: (p) => latest = p,
+          onDone: () {},
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    // The second skin in kAllSkins, whatever it is: press its chip.
+    final second = kAllSkins[1];
+    await tester.tap(find.text(capsForAny(second.displayName)));
+    await tester.pumpAndSettle();
+
+    expect(latest?.skinId, second.id.name,
+        reason: 'Persona draws from skinId; paletteIndex is a preference it never reads');
+    expect(latest?.paletteIndex, 0,
+        reason: 'the palette index belongs to Solid and Glass');
   });
 
   testWidgets('the START button wears the chosen layout palette, not the fallback',

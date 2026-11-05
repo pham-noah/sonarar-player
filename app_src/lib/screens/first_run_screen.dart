@@ -99,8 +99,17 @@ class FirstRunScreen extends StatelessWidget {
                     // These were drawn but not wired: `selected: i == 0` and an
                     // empty onTap, so on a fresh install the colour you picked was
                     // never the colour you got.
-                    selected: prefs.paletteIndex % palettes.length == i,
-                    onTap: () => onPrefs(prefs.copyWith(paletteIndex: i)),
+                    // Persona draws from its skin, not from a palette index: writing
+                    // paletteIndex there stored a preference the layout never read,
+                    // which is why the chip could be pressed and nothing recoloured.
+                    selected: layoutId == LayoutKind.sonar
+                        ? prefs.skinId == kAllSkins[i].id.name
+                        : prefs.paletteIndex % palettes.length == i,
+                    onTap: () => onPrefs(
+                      layoutId == LayoutKind.sonar
+                          ? prefs.copyWith(skinId: kAllSkins[i].id.name)
+                          : prefs.copyWith(paletteIndex: i),
+                    ),
                   ),
               ],
             ),

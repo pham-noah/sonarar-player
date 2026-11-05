@@ -327,7 +327,7 @@ class AppState extends ChangeNotifier {
   }
 
   void resetBonds({DateTime? at}) {
-    _bondState.config = _bondState.config.withResetAt(at ?? DateTime.now());
+    _bondState.reset(at: at);
     notifyListeners();
   }
 

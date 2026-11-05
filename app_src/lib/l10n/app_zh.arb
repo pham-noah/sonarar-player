@@ -944,5 +944,6 @@
       }
     }
   },
-  "personalizeTabLook": "外观"
+  "personalizeTabLook": "外观",
+  "downloadsNotInThisBuild": "此版本不包含下载功能。"
 }

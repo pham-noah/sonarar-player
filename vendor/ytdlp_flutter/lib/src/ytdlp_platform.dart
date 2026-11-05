@@ -29,6 +29,10 @@ abstract class YtdlpPlatform {
     void Function(YtdlpProgress progress)? onProgress,
   });
 
+  /// What this build can do. Backends that always ship an engine keep the
+  /// default; Android overrides it because a lite build ships none.
+  Future<YtdlpCapabilities> capabilities() async => const YtdlpCapabilities();
+
   /// Cancel a running download. Returns true if a task was found.
   Future<bool> cancel(String taskId);
 

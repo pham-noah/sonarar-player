@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 
 import '../core/diag_log.dart';
+import 'capability.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/library_repository.dart';
 import '../library/storage_permission.dart';
@@ -87,13 +88,27 @@ Future<void> ensureDownloadReady(Directory dir, {DiagLog? log}) async {
 }
 
 class DownloadManager extends ChangeNotifier {
+  /// False in a lite build, where the engine is not in the APK at all.
+  ///
+  /// Overridable so a test can exercise both builds without one; production
+  /// always takes the compile-time constant.
+  bool get canDownload => _downloadsAvailable;
+
+  /// What to tell someone who asked anyway — a stale bookmark, a deep link, an
+  /// imported playlist that came with a video id.
+  static const String notInThisBuild =
+      'Downloads are not part of this build.';
+
   DownloadManager({
     required this.repo,
     required this.downloadDirOf,
     required this.manifestOf,
     this.onFiled,
     this.log,
-  });
+    bool? downloadsAvailable,
+  }) : _downloadsAvailable = downloadsAvailable ?? kDownloadsCompiledIn;
+
+  final bool _downloadsAvailable;
 
   /// Stage-by-stage trace. A native crash in yt-dlp leaves nothing behind but
   /// the last line written here, which is the whole point of it.
@@ -131,6 +146,14 @@ class DownloadManager extends ChangeNotifier {
   bool _running = false;
 
   DownloadJob? get current => _current;
+
+  /// The single place that decides a job may run. Everything else assumes it.
+  bool _refuseIfNoEngine() {
+    if (canDownload) return false;
+    _lastIssue = const DownloadIssue.failed(notInThisBuild);
+    notifyListeners();
+    return true;
+  }
 
   List<DownloadJob> get queue => List.unmodifiable(_queue);
 
@@ -170,6 +193,7 @@ class DownloadManager extends ChangeNotifier {
   }
 
   void enqueue(DownloadJob job) {
+    if (_refuseIfNoEngine()) return;
     if (contains(job.videoId)) return;
     _errors.remove(job.videoId);
     _queue.add(job);

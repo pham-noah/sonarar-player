@@ -944,5 +944,6 @@
       }
     }
   },
-  "personalizeTabLook": "外観"
+  "personalizeTabLook": "外観",
+  "downloadsNotInThisBuild": "このビルドにはダウンロード機能が含まれていません。"
 }

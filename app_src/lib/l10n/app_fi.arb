@@ -944,5 +944,6 @@
       }
     }
   },
-  "personalizeTabLook": "ULKOASU"
+  "personalizeTabLook": "ULKOASU",
+  "downloadsNotInThisBuild": "Lataukset eivät kuulu tähän versioon."
 }

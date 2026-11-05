@@ -1,3 +1,4 @@
+import java.util.Base64
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -37,6 +38,23 @@ android {
         versionName = flutter.versionName
     }
 
+    // A lite build compiles the download engine out: no CPython runtime, no
+    // download UI. Both halves read the SAME --dart-define, read here out of the
+    // property Flutter forwards to Gradle, so the APK cannot carry the engine
+    // while the Dart side believes it does not (or the other way round).
+    val dartDefines: List<String> =
+        (project.findProperty("dart-defines") as String?)
+            ?.split(",")
+            ?.map { encoded: String ->
+                try {
+                    String(Base64.getDecoder().decode(encoded))
+                } catch (e: Exception) {
+                    ""
+                }
+            }
+            ?: emptyList()
+    val engineLite = dartDefines.contains("SONARAR_DOWNLOADS=false")
+
     packaging {
         jniLibs {
             excludes += listOf(
@@ -48,6 +66,9 @@ android {
                 // vendored plugin treats its absence as a capability.
                 "lib/arm64-v8a/libffmpeg.zip.so",
             )
+            if (engineLite) {
+                excludes += listOf("lib/arm64-v8a/libpython.zip.so")
+            }
             keepDebugSymbols += listOf("**/libpython.zip.so")
 
             useLegacyPackaging = true

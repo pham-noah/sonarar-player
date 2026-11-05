@@ -45,6 +45,16 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
     @Volatile
     private var ffmpegError: String? = null
 
+    /// The engine itself (the CPython runtime yt-dlp runs on) is missing in a lite
+    /// build. That is also a capability: the download UI is compiled out, and if
+    /// anything still reaches the channel it gets a named exception instead of the
+    /// whole app falling over at init.
+    @Volatile
+    private var engineReady = false
+
+    @Volatile
+    private var engineError: String? = null
+
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         context = binding.applicationContext
         channel = MethodChannel(binding.binaryMessenger, "ytdlp_flutter")
@@ -77,6 +87,7 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
                     ?: return result.error("BAD_ARGS", "url is required", null)
                 runAsync(result) {
                     ensureInit()
+                    requireEngine()
                     val request = YoutubeDLRequest(url).apply {
                         addOption("--dump-single-json")
                         addOption("--no-playlist")
@@ -95,6 +106,7 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
                 val audioFormat = call.argument<String>("audioFormat")
                 runAsync(result) {
                     ensureInit()
+                    requireEngine()
                     downloadAudio(url, outputDir, taskId, format, audioFormat)
                 }
             }
@@ -106,6 +118,8 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
             "capabilities" -> runAsync(result) {
                 ensureInit()
                 mapOf(
+                    "engine" to engineReady,
+                    "engineError" to engineError,
                     "ffmpeg" to ffmpegReady,
                     "ffmpegError" to ffmpegError,
                     "updated" to lastUpdateStatus,
@@ -118,6 +132,7 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
             }
             "update" -> runAsync(result) {
                 ensureInit()
+                requireEngine()
                 val status = YoutubeDL.getInstance()
                     .updateYoutubeDL(context, YoutubeDL.UpdateChannel.STABLE)
                 status?.name ?: "unknown"
@@ -126,10 +141,32 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
+    /// Every call that needs yt-dlp goes through this, so a lite build fails with
+    /// one sentence instead of a stack trace from inside the library.
+    private fun requireEngine() {
+        if (!engineReady) {
+            throw IllegalStateException(
+                "engine-unavailable: ${engineError ?: "no Python runtime is bundled in this build"}"
+            )
+        }
+    }
+
     @Synchronized
     private fun ensureInit() {
         if (initialized) return
-        YoutubeDL.getInstance().init(context)
+        // Whole engine optional: a lite build ships no Python runtime.
+        engineReady = try {
+            YoutubeDL.getInstance().init(context)
+            true
+        } catch (e: Throwable) {
+            engineError = e.message ?: e.javaClass.simpleName
+            Log.i("ytdlp_flutter", "engine not bundled ($engineError); downloads are unavailable")
+            false
+        }
+        if (!engineReady) {
+            initialized = true
+            return
+        }
         // Optional on purpose: the download path asks yt-dlp for one audio stream
         // and never transcodes, so ffmpeg is only needed for merging and HLS.
         // When it is missing, those requests fail with a message instead of

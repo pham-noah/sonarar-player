@@ -567,6 +567,25 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     if (hit.localCoverPath != null || _local.any((l) => l.id == hit.id && l.thumbnailUrl == null)) {
       return _localRow(skin, hit);
     }
+    // A lite build has no engine: offering a tap that cannot work is worse than
+    // saying so once per row.
+    if (!widget.downloads.canDownload) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.download_for_offline_outlined, size: 18, color: skin.secondary(0.6)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l10nOf(context).downloadsNotInThisBuild,
+                style: TextStyle(color: skin.secondary(0.6), fontSize: LayoutSpec.fontFloor),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     // Read the live job, never a snapshot of it.
     final job = widget.downloads.jobFor(hit.id);
     final p = job?.fraction;

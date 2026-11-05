@@ -944,5 +944,6 @@
       }
     }
   },
-  "personalizeTabLook": "NGOẠI HÌNH"
+  "personalizeTabLook": "NGOẠI HÌNH",
+  "downloadsNotInThisBuild": "Bản dựng này không có tính năng tải xuống."
 }

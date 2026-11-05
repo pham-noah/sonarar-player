@@ -20,6 +20,9 @@ class Ytdlp {
   /// download/extract binaries or boot the embedded interpreter.
   static Future<void> init() => _platform.init();
 
+  /// What this build can do (engine present, ffmpeg present, versions).
+  static Future<YtdlpCapabilities> capabilities() => _platform.capabilities();
+
   /// Fetch metadata for [url] without downloading anything.
   static Future<VideoInfo> getVideoInfo(String url) =>
       _platform.getVideoInfo(url);

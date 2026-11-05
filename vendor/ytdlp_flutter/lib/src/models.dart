@@ -45,6 +45,46 @@ class VideoInfo {
 
 /// Download progress. Not every backend can fill every field: Android's
 /// youtubedl-android reports a percentage and ETA, macOS/iOS report bytes.
+/// What this build can actually do, asked before promising anything.
+///
+/// A lite build ships no Python runtime and no ffmpeg; both are reported here
+/// so the app can hide a download button instead of failing after the tap.
+class YtdlpCapabilities {
+  const YtdlpCapabilities({
+    this.engine = true,
+    this.engineError,
+    this.ffmpeg = false,
+    this.ffmpegError,
+    this.updated = 'unknown',
+    this.version = 'unknown',
+  });
+
+  /// The yt-dlp engine itself (needs the Python runtime on Android).
+  final bool engine;
+  final String? engineError;
+
+  /// Whether post-processing (merge, transcode, HLS) is available.
+  final bool ffmpeg;
+  final String? ffmpegError;
+
+  /// Result of the last in-place yt-dlp update, and the engine version.
+  final String updated;
+  final String version;
+
+  factory YtdlpCapabilities.fromMap(Map<Object?, Object?> m) => YtdlpCapabilities(
+        engine: m['engine'] as bool? ?? true,
+        engineError: m['engineError'] as String?,
+        ffmpeg: m['ffmpeg'] as bool? ?? false,
+        ffmpegError: m['ffmpegError'] as String?,
+        updated: m['updated'] as String? ?? 'unknown',
+        version: m['version'] as String? ?? 'unknown',
+      );
+
+  @override
+  String toString() =>
+      'YtdlpCapabilities(engine: $engine, ffmpeg: $ffmpeg, version: $version)';
+}
+
 class YtdlpProgress {
   const YtdlpProgress({
     this.fraction,

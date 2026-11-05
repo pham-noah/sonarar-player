@@ -88,6 +88,12 @@ class MethodChannelYtdlp extends YtdlpPlatform {
   }
 
   @override
+  Future<YtdlpCapabilities> capabilities() async {
+    final m = await _channel.invokeMapMethod<Object?, Object?>('capabilities');
+    return YtdlpCapabilities.fromMap(m ?? const {});
+  }
+
+  @override
   Future<String> update() async {
     return await _channel.invokeMethod<String>('update') ?? 'unknown';
   }

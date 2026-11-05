@@ -57,14 +57,15 @@ android {
 
     packaging {
         jniLibs {
+            // abiFilters decides which architectures ship. Listing them here as well
+            // meant a debug build asking for x86_64 got an APK with no x86_64 libs
+            // at all - the build succeeded and the app died on launch.
             excludes += listOf(
-                "lib/x86/**",
-                "lib/x86_64/**",
-                "lib/armeabi-v7a/**",
                 // 36 MB of ffmpeg for a step the app never runs: the download path
                 // asks for one audio stream and keeps its own container. The
                 // vendored plugin treats its absence as a capability.
                 "lib/arm64-v8a/libffmpeg.zip.so",
+                "lib/x86_64/libffmpeg.zip.so",
             )
             if (engineLite) {
                 excludes += listOf("lib/arm64-v8a/libpython.zip.so")
@@ -76,6 +77,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Emulator and device: the engine's Python payload ships for x86_64 too,
+            // so the download path can be exercised without a phone.
+            ndk {
+                abiFilters += listOf("arm64-v8a", "x86_64")
+            }
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true

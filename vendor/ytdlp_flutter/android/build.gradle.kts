@@ -77,6 +77,10 @@ dependencies {
     // `implementation`, so it is not on this module's compile classpath. Declared
     // here because this plugin writes the python payload's staleness marker.
     implementation("io.github.junkfood02.youtubedl-android:common:0.18.1")
+    // ZipInputStream writes a symlink as a file holding its target path, which is
+    // how Python's zlib ends up 13 bytes long and unable to load. Commons Compress
+    // reads the unix mode so links can be recreated.
+    implementation("org.apache.commons:commons-compress:1.26.2")
     implementation("io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")

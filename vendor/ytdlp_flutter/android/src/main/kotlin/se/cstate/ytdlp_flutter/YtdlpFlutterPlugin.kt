@@ -16,7 +16,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.io.File
 import java.util.concurrent.ExecutorService
-import java.util.zip.ZipInputStream
+import android.system.Os
+import org.apache.commons.compress.archivers.zip.ZipFile
 import java.util.concurrent.Executors
 
 /**
@@ -179,9 +180,8 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
         }
         pythonDir.mkdirs()
 
-        ZipInputStream(zip.inputStream().buffered()).use { zin ->
-            var entry = zin.nextEntry
-            while (entry != null) {
+        ZipFile.builder().setFile(zip).get().use { zf ->
+            for (entry in zf.entries) {
                 val out = File(pythonDir, entry.name)
                 // Zip-slip guard: an archive must never write outside its own tree.
                 require(out.canonicalPath.startsWith(pythonDir.canonicalPath)) {
@@ -189,11 +189,21 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
                 }
                 if (entry.isDirectory) {
                     out.mkdirs()
-                } else {
-                    out.parentFile?.mkdirs()
-                    out.outputStream().use { zin.copyTo(it) }
+                    continue
                 }
-                entry = zin.nextEntry
+                out.parentFile?.mkdirs()
+                if (entry.isUnixSymlink) {
+                    // The interpreter's lib dir is a web of links (libz.so.1 ->
+                    // libz.so.1.3.1). Written as a plain file, the link's target
+                    // path becomes 13 bytes of "ELF" and Python loses zlib.
+                    val target = zf.getInputStream(entry).bufferedReader().readText().trim()
+                    if (out.exists()) out.delete()
+                    Os.symlink(target, out.absolutePath)
+                } else {
+                    zf.getInputStream(entry).use { input ->
+                        out.outputStream().use { input.copyTo(it) }
+                    }
+                }
             }
         }
 

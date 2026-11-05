@@ -8,6 +8,8 @@ import 'package:sonarar/library/library_repository.dart';
 /// queueing a job it can never run would spin a progress ring for ever and send
 /// yt-dlp into a Python runtime that is not there.
 void main() {
+  // installEngine asks the plugin for the device ABI before downloading.
+  TestWidgetsFlutterBinding.ensureInitialized();
   DownloadManager manager({required bool available, bool fetchable = true}) {
     final dir = Directory.systemTemp.createTempSync('sonarar_cap');
     addTearDown(() => dir.deleteSync(recursive: true));

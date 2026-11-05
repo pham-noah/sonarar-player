@@ -144,6 +144,9 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun capabilitiesMap(): Map<String, Any?> = mapOf(
+        // The engine archive is architecture-specific, so the caller has to know
+        // which one this device needs before it downloads 14 MB of the wrong one.
+        "abi" to android.os.Build.SUPPORTED_ABIS.firstOrNull(),
         "engine" to engineReady,
         "engineError" to engineError,
         "ffmpeg" to ffmpegReady,

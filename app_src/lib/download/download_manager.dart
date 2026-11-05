@@ -195,8 +195,16 @@ class DownloadManager extends ChangeNotifier {
     _installing = true;
     notifyListeners();
     try {
+      // Ask first: the archive is architecture-specific, and installing 14 MB of
+      // the wrong interpreter fails at init with nothing useful to say.
+      final abi = (await Ytdlp.capabilities()).abi;
+      final source = engineSourceFor(abi);
+      if (source == null) {
+        debugPrint('[Sonarar][DL] no engine archive for abi $abi');
+        return false;
+      }
       final loader = EngineLoader(
-        source: kHostedEngine,
+        source: source,
         readCache: () async => null,
         writeCache: (_) async {},
         download: download ?? _httpDownload,

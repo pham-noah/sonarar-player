@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/download/capability.dart';
 import 'package:sonarar/download/engine_loader.dart';
 
 /// The engine archive is 14 MB and lands in app storage as an interpreter that
@@ -120,5 +121,35 @@ void main() {
     );
 
     expect(await l.ensure(), EngineInstall.failed);
+  });
+
+  group('the archive matches the device', () {
+    test('arm64 phones get the arm64 interpreter', () {
+      expect(engineSourceFor('arm64-v8a')?.sha256,
+          '7edecb6c9bd3a94456168d44911d8aea9f917bedef90c320a29500d92ac3eb62');
+    });
+
+    test('x86_64 gets its own, not the arm one', () {
+      expect(engineSourceFor('x86_64')?.sha256,
+          '27caa316e09681ada860fdb6b35c1914e541e266e674141361758ac127fe2f15',
+          reason: 'this is what makes an emulator install meaningful instead of a fake failure');
+    });
+
+    test('a 32-bit device falls back to its family rather than nothing', () {
+      expect(engineSourceFor('armeabi-v7a'), isNotNull);
+      expect(engineSourceFor('x86'), isNotNull);
+    });
+
+    test('an architecture with no archive is refused, not guessed at', () {
+      expect(engineSourceFor('mips64'), isNull);
+      expect(engineSourceFor(null), isNull);
+    });
+
+    test('every hosted archive declares a hash and a size the app can trust', () {
+      for (final e in kHostedEngines.entries) {
+        expect(e.value.sha256.length, 64, reason: 'a short hash would verify anything');
+        expect(e.value.url.toString(), contains('.zip'));
+      }
+    });
   });
 }

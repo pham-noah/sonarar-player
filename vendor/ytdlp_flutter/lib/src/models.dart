@@ -57,6 +57,7 @@ class YtdlpCapabilities {
     this.ffmpegError,
     this.updated = 'unknown',
     this.version = 'unknown',
+    this.abi,
   });
 
   /// The yt-dlp engine itself (needs the Python runtime on Android).
@@ -71,6 +72,10 @@ class YtdlpCapabilities {
   final String updated;
   final String version;
 
+  /// The device's primary ABI, e.g. `arm64-v8a` or `x86_64`. The engine archive
+  /// has to match it.
+  final String? abi;
+
   factory YtdlpCapabilities.fromMap(Map<Object?, Object?> m) => YtdlpCapabilities(
         engine: m['engine'] as bool? ?? true,
         engineError: m['engineError'] as String?,
@@ -78,11 +83,12 @@ class YtdlpCapabilities {
         ffmpegError: m['ffmpegError'] as String?,
         updated: m['updated'] as String? ?? 'unknown',
         version: m['version'] as String? ?? 'unknown',
+        abi: m['abi'] as String?,
       );
 
   @override
   String toString() =>
-      'YtdlpCapabilities(engine: $engine, ffmpeg: $ffmpeg, version: $version)';
+      'YtdlpCapabilities(engine: $engine, ffmpeg: $ffmpeg, version: $version, abi: $abi)';
 }
 
 class YtdlpProgress {

@@ -23,7 +23,6 @@ import '../library/dynamic_playlist.dart';
 import '../library/dynamic_mix_resolver.dart';
 import '../rules/context_change.dart';
 import '../rules/context_rules.dart';
-import '../rules/place_rules.dart';
 import '../player/queue_mode.dart';
 import '../rules/rules_engine.dart';
 import '../theme/layout.dart';
@@ -31,6 +30,8 @@ import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import '../theme/theme_preset.dart';
 import '../theme/skin_policy.dart';
+
+import 'context_cluster.dart';
 
 class AppState extends ChangeNotifier {
   AppState();
@@ -337,26 +338,29 @@ class AppState extends ChangeNotifier {
     return ok;
   }
 
-  ContextRules _contextRules = ContextRules.empty;
-  ContextRules get contextRules => _contextRules;
+  /// The context domain — rules, places, manual mode, the last reading — is one
+  /// object now; the getters below keep every read in this class unchanged.
+  final ContextCluster _context = ContextCluster();
 
-  ManualMode? _manualMode;
+  ContextRules get _contextRules => _context.rules;
 
-  ManualMode? get manualMode => _manualMode;
+  ContextRules get contextRules => _context.rules;
 
-  ContextBand? _manualBandAtEntry;
+  ContextRules get writtenRules => _context.writtenRules;
+
+  PlaceBook get places => _context.places;
+
+  ManualMode? get manualMode => _context.manualMode;
+
+  PlaylistContext? get _playlistCtx => _context.playlistContext;
+
+  PlayContext? get _lastContext => _context.lastContext;
 
   void setContextRules(ContextRules rules) {
-    _writtenRules = rules;
+    _context.setRules(rules);
     _rebuildRules();
     notifyListeners();
   }
-
-  ContextRules _writtenRules = ContextRules.empty;
-  ContextRules get writtenRules => _writtenRules;
-
-  PlaceBook _places = PlaceBook.empty;
-  PlaceBook get places => _places;
 
   /// Replaces the known places, and the rules derived from them.
   ///
@@ -364,19 +368,18 @@ class AppState extends ChangeNotifier {
   /// something a caller had to remember, and the failure it invited was a panel
   /// drawing yesterday's places.
   void setPlaces(PlaceBook book) {
-    _places = book;
+    _context.setPlaces(book);
     _rebuildRules();
     notifyListeners();
   }
 
   void _rebuildRules() {
-    _contextRules = withPlaceRules(_writtenRules, _places);
     _invalidateDynamic();
 
     _derivedFrom = null;
-    final ctx = _playlistCtx;
+    final ctx = _context.playlistContext;
     if (ctx != null) {
-      _applyPlaylistContext(ctx, rule: _contextRules.firstMatch(ctx));
+      _applyPlaylistContext(ctx, rule: _context.rules.firstMatch(ctx));
     }
     notifyListeners();
   }
@@ -398,21 +401,16 @@ class AppState extends ChangeNotifier {
   }
 
   void enterMode(ManualMode mode) {
-    final base = _lastContext;
-    if (base == null) return;
-    _manualMode = mode;
-    _manualBandAtEntry = base.band;
+    if (!_context.enterMode(mode)) return;
     notifyListeners();
-    updateContext(base);
+    updateContext(_context.lastContext!);
   }
 
   void exitMode() {
-    if (_manualMode == null) return;
-    _manualMode = null;
-    _manualBandAtEntry = null;
+    if (!_context.exitMode()) return;
     _derivedFrom = null;
     notifyListeners();
-    final base = _lastContext;
+    final base = _context.lastContext;
     if (base != null) updateContext(base);
   }
 
@@ -631,8 +629,6 @@ class AppState extends ChangeNotifier {
   List<Track> get _library => _tagLayer.library;
   List<Track> get library => _library;
 
-  PlaylistContext? _playlistCtx;
-
   PlaylistContext? _derivedFrom;
 
   bool _sleeping = false;
@@ -653,10 +649,9 @@ class AppState extends ChangeNotifier {
   String? _lastSituationTag;
 
   String? get situationTag => _lastSituationTag;
-  PlaylistContext? get playlistContext => _playlistCtx;
+  PlaylistContext? get playlistContext => _context.playlistContext;
 
   SkinPreference _pref = const SkinPreference();
-  PlayContext? _lastContext;
 
   Skin _skin = kSkinAbyss;
 
@@ -877,50 +872,18 @@ class AppState extends ChangeNotifier {
   SkinPreference get preference => _pref;
 
   void updateContext(PlayContext incoming) {
-    final clockBand = incoming.band;
-    if (_manualMode != null &&
-        _manualBandAtEntry != null &&
-        clockBand != _manualBandAtEntry) {
-      _manualMode = null;
-      _manualBandAtEntry = null;
-    }
-
-    final ctx = _manualMode == null
-        ? incoming
-        : PlayContext(
-            band: _manualMode!.band,
-            localHour: incoming.localHour,
-            mode: _manualMode,
-            placeId: incoming.placeId,
-
-            sky: incoming.sky,
-            whereabouts: incoming.whereabouts,
-          );
+    final previous = _context.lastContext;
+    final decision = _context.update(incoming, honourClock: _clockOn);
 
     final resolved = _policy.resolve(
-      ctx: ctx,
+      ctx: decision.context,
       pref: _pref,
-      previousCtx: _lastContext,
+      previousCtx: previous,
     );
 
-    final bandChanged = _lastContext != null && _lastContext!.band != ctx.band;
-    if (bandChanged && _preset == null) _pref = const SkinPreference();
+    if (decision.bandChanged && _preset == null) _pref = const SkinPreference();
 
-    _lastContext = ctx;
-
-    final playlistCtx = PlaylistContext(
-      band: ctx.band,
-
-      sky: ctx.sky,
-      whereabouts: ctx.whereabouts,
-      localHour: ctx.localHour,
-      mode: ctx.mode,
-
-      placeId: ctx.placeId,
-    );
-    _playlistCtx = playlistCtx;
-    final rule = _contextRules.firstMatch(playlistCtx, honourClock: _clockOn);
-
+    final rule = decision.rule;
     final nextId = _preset != null
         ? _preset!.skinId
         : ((!_clockOn || !_autoSkin)
@@ -935,11 +898,11 @@ class AppState extends ChangeNotifier {
       notifyListeners();
     }
 
-    _applyPlaylistContext(playlistCtx, rule: rule);
+    _applyPlaylistContext(decision.playlist, rule: rule);
   }
 
   void _applyPlaylistContext(PlaylistContext ctx, {ContextRule? rule}) {
-    _playlistCtx = ctx;
+    _context.setPlaylistContext(ctx);
 
     _invalidateDynamic();
 

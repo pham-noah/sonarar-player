@@ -69,6 +69,9 @@ Future<AppUpdate?> checkForUpdate(
   // a caller that forgets it turns a release title without `+NN` into a check
   // that never fires — the version comparison needs both sides.
   String currentVersion = appVersionName,
+  /// Whether this build carries its download engine. Decides which asset is
+  /// offered; null keeps the old "whatever arm64 APK exists" behaviour.
+  bool? engineBundled,
   http.Client? client,
 }) async {
   if (!kSelfUpdate) return null;
@@ -85,7 +88,7 @@ Future<AppUpdate?> checkForUpdate(
 
     final tag = body['tag_name'];
     final name = body['name'];
-    final asset = _apkAsset(body['assets']);
+    final asset = _apkAsset(body['assets'], engineBundled: engineBundled);
     if (tag is! String || asset == null) return null;
 
     // A release title usually carries the build (`0.2.2+22`); early ones did
@@ -112,8 +115,13 @@ Future<AppUpdate?> checkForUpdate(
   }
 }
 
-/// The arm64 build, when there is one; otherwise the only APK on the release.
-(String, int)? _apkAsset(Object? assets) {
+/// The arm64 build of the *same kind* as this one, when there is one.
+///
+/// Two builds ship: one with the download engine inside and one without. Offering a
+/// lite install the full APK would quietly reinstall the 14 MB the user never wanted,
+/// so the asset has to match the build asking — the engine archive is fetched on
+/// demand precisely so nobody downloads it by accident.
+(String, int)? _apkAsset(Object? assets, {bool? engineBundled}) {
   if (assets is! List) return null;
   final apks = [
     for (final a in assets)
@@ -121,8 +129,19 @@ Future<AppUpdate?> checkForUpdate(
         a,
   ];
   if (apks.isEmpty) return null;
-  final arm64 = apks.where((a) => (a['name'] as String).contains('arm64')).toList();
-  final chosen = arm64.isNotEmpty ? arm64.first : apks.first;
+
+  bool named(Map a, String token) => (a['name'] as String).contains(token);
+  final arm64 = apks.where((a) => named(a, 'arm64')).toList();
+  final pool = arm64.isNotEmpty ? arm64 : apks;
+
+  // A build that fetches its engine takes the lite asset; a full build takes the
+  // plain one. Falling back to whatever exists keeps an older release usable.
+  var chosen = pool.first;
+  if (engineBundled != null) {
+    final want = engineBundled ? 'full' : 'lite';
+    final match = pool.where((a) => named(a, want)).toList();
+    if (match.isNotEmpty) chosen = match.first;
+  }
   final url = chosen['browser_download_url'];
   if (url is! String) return null;
   final size = chosen['size'];

@@ -2,6 +2,36 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.3 — 2026-11-05
+
+### Changed
+
+- **The APK is 15 MB instead of 62.** 36 MB of it was ffmpeg for a step the downloads
+  never ran, and 14 MB was a CPython runtime for yt-dlp. ffmpeg is gone (the download
+  path asks for one audio stream and keeps its container), and the interpreter is
+  fetched **once, on the first download** — after which this build behaves exactly like
+  the old 62 MB one. One APK for everyone; no lite/full split to choose between.
+- **The engine archive matches the device.** arm64 and x86_64 archives are published
+  and picked by ABI, so x86 tablets, Chromebooks and emulators work too.
+
+### Fixed
+
+- **Downloads could not run at all in a build without the bundled engine**, and the
+  install path had a bug that only appears on a real download: `ZipInputStream` writes
+  a symlink as a text file, so the interpreter's `libz.so.1` became 13 bytes and Python
+  died with `zlib not available`. Installs recreate symlinks now.
+- **Persona's first-run colour chips stored a preference that layout never read** —
+  pressing CRIMSON moved the selection and left every accent cyan. Persona writes
+  `skinId`; Solid and Glass keep their palette index.
+- **An update would have reinstalled the engine a lite user avoided**: the release now
+  offers the asset matching the build that asked.
+
+### Verified on a device
+
+A fresh install of this APK on an x86_64 emulator: search rows offer "Set up downloads",
+one tap installs the engine, the rows become download controls, and a track lands on
+disk (6 MB webm + cover + manifest entry) with ffmpeg absent throughout.
+
 ## 0.3.2 — 2026-11-04
 
 ### Added

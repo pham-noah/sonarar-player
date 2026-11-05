@@ -1,7 +1,7 @@
 name: sonarar
 description: "Sonarar — a personal music player that already knows what you want."
 publish_to: 'none'
-version: 0.3.2+32
+version: 0.3.3+33
 
 environment:
   sdk: ^3.13.0

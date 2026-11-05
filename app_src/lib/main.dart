@@ -24,6 +24,7 @@ import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
 import 'core/legal.dart';
+import 'download/capability.dart';
 import 'update/update_service.dart';
 import 'update/update_ui.dart';
 import 'l10n/app_localizations.dart';
@@ -509,7 +510,9 @@ class _HomeShellState extends State<HomeShell>
   /// The update flow, shared by the bar and the Settings row: one check, one
   /// download, one sheet, so the two entry points cannot disagree.
   late final UpdateUi _updates = UpdateUi(
-    check: () => checkForUpdate(appVersionCode, currentVersion: appVersionName),
+    check: () => checkForUpdate(appVersionCode,
+            currentVersion: appVersionName,
+            engineBundled: kDownloadsCompiledIn),
     fetch: (update, onProgress) async {
       final downloads = await getDownloadsDirectory();
       if (downloads == null) return null;

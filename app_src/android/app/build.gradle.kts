@@ -57,16 +57,22 @@ android {
 
     packaging {
         jniLibs {
-            // abiFilters decides which architectures ship. Listing them here as well
-            // meant a debug build asking for x86_64 got an APK with no x86_64 libs
-            // at all - the build succeeded and the app died on launch.
+            // This list is the authority on architectures, not abiFilters: with only
+            // abiFilters set, a release build shipped all three ABIs (70.6 MB) and a
+            // debug build asking for x86_64 got an APK with no x86_64 libs at all.
+            // -PsonararX86 (or ORG_GRADLE_PROJECT_sonararX86=1) keeps x86_64 for
+            // emulator builds; release never sets it.
+            val allowX86 = (project.findProperty("sonararX86") as String?) == "1"
             excludes += listOf(
+                "lib/x86/**",
+                "lib/armeabi-v7a/**",
                 // 36 MB of ffmpeg for a step the app never runs: the download path
                 // asks for one audio stream and keeps its own container. The
                 // vendored plugin treats its absence as a capability.
                 "lib/arm64-v8a/libffmpeg.zip.so",
                 "lib/x86_64/libffmpeg.zip.so",
             )
+            if (!allowX86) excludes += listOf("lib/x86_64/**")
             if (engineLite) {
                 excludes += listOf("lib/arm64-v8a/libpython.zip.so")
             }

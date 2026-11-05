@@ -23,6 +23,7 @@ import '../widgets/stagger_in.dart';
 
 import '../theme/slab.dart';
 import '../l10n/app_localizations.dart';
+import '../download/capability.dart';
 import '../update/update_service.dart';
 import '../update/update_sheet.dart';
 import '../update/update_ui.dart';
@@ -188,7 +189,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _checkResult = null;
     });
     final check = widget.checkUpdate ??
-        () => checkForUpdate(appVersionCode, currentVersion: appVersionName);
+        () => checkForUpdate(appVersionCode,
+            currentVersion: appVersionName,
+            engineBundled: kDownloadsCompiledIn);
     final update = await check();
     if (!mounted) return;
     setState(() {

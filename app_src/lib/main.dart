@@ -524,8 +524,10 @@ class _HomeShellState extends State<HomeShell>
 
   bool _disposed = false;
 
+  /// Pushed routes repaint for the queue too: they show it, and they are not
+  /// rebuilt by the shell any more.
   late final Listenable _routeListenable =
-      Listenable.merge([widget.state, _shellTick]);
+      Listenable.merge([widget.state, widget.state.queueChanges, _shellTick]);
 
   /// Every shell mutation goes through here so pushed routes repaint: setState only
   /// rebuilds the shell's own subtree, while the player lives on its own route and
@@ -1242,6 +1244,9 @@ class _HomeShellState extends State<HomeShell>
     await _refreshDerivedPlaylists();
 
     widget.state.addListener(_onStateChanged);
+    // A queue edit is not a reason to rebuild the shell, but the engine and the
+    // saved snapshot still have to hear about it.
+    widget.state.queueChanges.addListener(_onStateChanged);
     _downloads.addListener(_onDownloadProblem);
 
     final savedVolume = resume?.volume;
@@ -1442,6 +1447,7 @@ class _HomeShellState extends State<HomeShell>
 
     unawaited(_audio?.dispose() ?? Future<void>.value());
     widget.state.removeListener(_onStateChanged);
+    widget.state.queueChanges.removeListener(_onStateChanged);
     super.dispose();
   }
 
@@ -2980,7 +2986,9 @@ class _HomeShellState extends State<HomeShell>
     );
   }
 
-  Widget _miniPlayerBar(Skin skin) => MiniPlayerHost(
+  Widget _miniPlayerBar(Skin skin) => ListenableBuilder(
+        listenable: widget.state.queueChanges,
+        builder: (context, _) => MiniPlayerHost(
       skin: skin,
 
       presentation: widget.state.presentation,
@@ -3036,7 +3044,8 @@ class _HomeShellState extends State<HomeShell>
       onOpenQueue: _openQueueAsPage,
 
       onDragToQueue: _queueFromDrag,
-    );
+      ),
+      );
 
   /// The place this tab is, for per-place pictures. Settings has none of its
   /// own and wears the default.
@@ -3421,7 +3430,11 @@ class _HomeShellState extends State<HomeShell>
 
   Widget _playerBody(BuildContext context, Skin skin) {
     final current = _repo.tracks.isEmpty ? null : _repo.tracks.first;
-    return Stack(
+    // The player draws the queue: up next, shuffle, repeat. It listens to the
+    // queue directly now, so a reorder redraws this and not the whole shell.
+    return ListenableBuilder(
+      listenable: widget.state.queueChanges,
+      builder: (context, _) => Stack(
 children: [
   PlayerScreen(view: PlayerView(
                     state: widget.state,
@@ -3521,7 +3534,6 @@ children: [
                     shuffled: widget.state.isShuffled,
                     onShuffle: () {
                       widget.state.toggleShuffle();
-                      if (mounted) _shellChanged(() {});
 
                       // ignore: discarded_futures
                       _rebuildEngineQueueKeepingPosition();
@@ -3529,7 +3541,6 @@ children: [
                     repeatMode: widget.state.repeatMode,
                     onCycleRepeat: () {
                       widget.state.cycleRepeat();
-                      if (mounted) _shellChanged(() {});
                     },
 
                     onNext: () {
@@ -3608,7 +3619,8 @@ children: [
     ),
   ),
         ],
-      );
+      ),
+    );
   }
 
   Widget _inlinePanel(BuildContext context, Skin skin) {

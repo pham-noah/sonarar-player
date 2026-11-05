@@ -1344,11 +1344,23 @@ class AppState extends ChangeNotifier {
     skinListenable.dispose();
     position.dispose();
     duration.dispose();
+    _queueChanges.dispose();
     super.dispose();
   }
 
   PlayQueue? _queue;
   PlayQueue? get queue => _queue;
+
+  /// Fires when the queue changed but nothing else did.
+  ///
+  /// A reorder, a removal, a shuffle: the shell rebuilt its whole tree for each of
+  /// them, because one notifier spoke for every domain. Widgets that draw the queue
+  /// listen to this; the rest of the app does not have to.
+  final ChangeNotifier _queueChanges = ChangeNotifier();
+
+  Listenable get queueChanges => _queueChanges;
+
+  void _queueEdited() => _queueChanges.notifyListeners();
 
   Track? get currentTrack => _queue?.current;
 
@@ -1504,14 +1516,14 @@ class AppState extends ChangeNotifier {
       RepeatMode.all => RepeatMode.one,
       RepeatMode.one => RepeatMode.off,
     };
-    notifyListeners();
+    _queueEdited();
     _repeatChanged();
   }
 
   void setRepeat(RepeatMode mode) {
     if (_repeat == mode) return;
     _repeat = mode;
-    notifyListeners();
+    _queueEdited();
     _repeatChanged();
   }
 
@@ -1532,7 +1544,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null) return;
     q.setShuffle(!q.isShuffled);
-    notifyListeners();
+    _queueEdited();
   }
 
   bool _ended = false;
@@ -1615,7 +1627,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null) return false;
     if (!q.move(from, to)) return false;
-    notifyListeners();
+    _queueEdited();
     return true;
   }
 
@@ -1634,7 +1646,13 @@ class AppState extends ChangeNotifier {
     if (q == null) return false;
     final wasCurrent = q.current?.id == trackId;
     if (!q.remove(trackId)) return false;
-    notifyListeners();
+    // Removing what is playing is a track change, not a queue edit: the shell has
+    // to follow it to whatever plays next.
+    if (wasCurrent) {
+      notifyListeners();
+    } else {
+      _queueEdited();
+    }
 
     return wasCurrent;
   }
@@ -1644,7 +1662,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null) return false;
     if (!q.insertAt(at, track)) return false;
-    notifyListeners();
+    _queueEdited();
     return true;
   }
 
@@ -1652,7 +1670,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null) return 0;
     final dropped = q.clearUpcoming();
-    if (dropped > 0) notifyListeners();
+    if (dropped > 0) _queueEdited();
     return dropped;
   }
 
@@ -1662,7 +1680,7 @@ class AppState extends ChangeNotifier {
     _queue = PlayQueue(source: tracks, shuffle: false);
     _source = QueueSource.fixed;
     _ended = false;
-    notifyListeners();
+    _queueEdited();
     return true;
   }
 
@@ -1670,7 +1688,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null) return false;
     if (!q.append(track)) return false;
-    notifyListeners();
+    _queueEdited();
     return true;
   }
 
@@ -1678,7 +1696,7 @@ class AppState extends ChangeNotifier {
     final q = _queue;
     if (q == null) return false;
     q.playNext(track);
-    notifyListeners();
+    _queueEdited();
     return true;
   }
 

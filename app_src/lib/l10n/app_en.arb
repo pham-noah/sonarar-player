@@ -1368,5 +1368,9 @@
   "downloadsNotInThisBuild": "Downloads are not part of this build.",
   "@downloadsNotInThisBuild": {
     "description": "Shown instead of a download control in builds without the download engine."
+  },
+  "downloadsSetup": "Set up downloads (one-time 14 MB)",
+  "@downloadsSetup": {
+    "description": "Offered instead of a download control when the engine is fetched on demand."
   }
 }

@@ -33,6 +33,11 @@ abstract class YtdlpPlatform {
   /// default; Android overrides it because a lite build ships none.
   Future<YtdlpCapabilities> capabilities() async => const YtdlpCapabilities();
 
+  /// Install an engine archive that the app fetched at runtime, then report the
+  /// new capabilities. Android only: the other backends carry their own binary.
+  Future<YtdlpCapabilities> installEngine(String zipPath) =>
+      throw UnsupportedError('installEngine is Android-only');
+
   /// Cancel a running download. Returns true if a task was found.
   Future<bool> cancel(String taskId);
 

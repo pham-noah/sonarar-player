@@ -8,7 +8,7 @@ import 'package:sonarar/library/library_repository.dart';
 /// queueing a job it can never run would spin a progress ring for ever and send
 /// yt-dlp into a Python runtime that is not there.
 void main() {
-  DownloadManager manager({required bool available}) {
+  DownloadManager manager({required bool available, bool fetchable = true}) {
     final dir = Directory.systemTemp.createTempSync('sonarar_cap');
     addTearDown(() => dir.deleteSync(recursive: true));
     final m = DownloadManager(
@@ -16,7 +16,7 @@ void main() {
       downloadDirOf: () => dir,
       manifestOf: () => null,
       downloadsAvailable: available,
-    );
+    )..engineFetchable = fetchable;
     addTearDown(m.dispose);
     return m;
   }
@@ -31,8 +31,32 @@ void main() {
 
     expect(m.canDownload, isFalse);
     expect(m.contains('jNQXAC9IVRw'), isFalse, reason: 'a queued job would never move');
-    expect(m.lastIssue?.detail, DownloadManager.notInThisBuild,
-        reason: 'the row has to say why, not just stop');
+    expect(m.lastIssue?.detail, DownloadManager.engineNeeded,
+        reason: 'a lite build can download, it just has to fetch the engine first');
+    expect(m.needsEngine, isTrue);
+  });
+
+  test('a build that can neither run nor fetch the engine says so', () {
+    final m = manager(available: false, fetchable: false);
+
+    m.enqueue(job());
+
+    expect(m.downloadsCompiledOut, isTrue);
+    expect(m.needsEngine, isFalse);
+    expect(m.lastIssue?.detail, DownloadManager.notInThisBuild);
+  });
+
+  test('after the engine is installed a lite build downloads normally', () async {
+    final m = manager(available: false);
+    expect(m.canDownload, isFalse);
+
+    // The loader is injected here; the real one fetches 14 MB.
+    final ok = await m.installEngine(
+      download: (_) async => throw Exception('network off in tests'),
+    );
+
+    expect(ok, isFalse, reason: 'a failed fetch must not claim the engine is there');
+    expect(m.canDownload, isFalse);
   });
 
   test('with the engine the gate lets it through', () {

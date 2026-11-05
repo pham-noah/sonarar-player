@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import com.yausername.ffmpeg.FFmpeg
 import com.yausername.youtubedl_android.YoutubeDL
+import com.yausername.youtubedl_common.SharedPrefsHelper
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
@@ -15,6 +16,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.io.File
 import java.util.concurrent.ExecutorService
+import java.util.zip.ZipInputStream
 import java.util.concurrent.Executors
 
 /**
@@ -115,20 +117,20 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
                     ?: return result.error("BAD_ARGS", "taskId is required", null)
                 result.success(YoutubeDL.getInstance().destroyProcessById(taskId))
             }
+            // Install an engine the APK does not carry (a lite build fetching it
+            // once). Answers with the same map as capabilities so the caller learns
+            // immediately whether the engine came up.
+            "installEngine" -> {
+                val zipPath = call.argument<String>("zipPath")
+                    ?: return result.error("BAD_ARGS", "zipPath is required", null)
+                runAsync(result) {
+                    installEngine(File(zipPath))
+                    capabilitiesMap()
+                }
+            }
             "capabilities" -> runAsync(result) {
                 ensureInit()
-                mapOf(
-                    "engine" to engineReady,
-                    "engineError" to engineError,
-                    "ffmpeg" to ffmpegReady,
-                    "ffmpegError" to ffmpegError,
-                    "updated" to lastUpdateStatus,
-                    "version" to try {
-                        YoutubeDL.getInstance().version(context) ?: "unknown"
-                    } catch (e: Exception) {
-                        "unknown"
-                    },
-                )
+                capabilitiesMap()
             }
             "update" -> runAsync(result) {
                 ensureInit()
@@ -139,6 +141,67 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
             }
             else -> result.notImplemented()
         }
+    }
+
+    private fun capabilitiesMap(): Map<String, Any?> = mapOf(
+        "engine" to engineReady,
+        "engineError" to engineError,
+        "ffmpeg" to ffmpegReady,
+        "ffmpegError" to ffmpegError,
+        "updated" to lastUpdateStatus,
+        "version" to if (!engineReady) {
+            "unknown"
+        } else {
+            try {
+                YoutubeDL.getInstance().version(context) ?: "unknown"
+            } catch (e: Exception) {
+                "unknown"
+            }
+        },
+    )
+
+    /// Unpack an engine archive fetched at runtime into exactly where the library
+    /// looks for it, then record the marker it checks.
+    ///
+    /// The library treats a payload as stale when its byte length differs from the
+    /// value stored under "pythonLibVersion" - it is not a version string at all,
+    /// it is File.length(). Recording the real length of the archive we installed is
+    /// therefore the whole contract, and it cannot drift when the archive changes.
+    @Synchronized
+    private fun installEngine(zip: File) {
+        require(zip.isFile) { "engine archive missing: ${zip.absolutePath}" }
+        val pythonDir = File(File(context.noBackupFilesDir, "youtubedl-android"), "packages/python")
+        if (pythonDir.exists() && !pythonDir.deleteRecursively()) {
+            throw IllegalStateException("could not clear the old engine at $pythonDir")
+        }
+        pythonDir.mkdirs()
+
+        ZipInputStream(zip.inputStream().buffered()).use { zin ->
+            var entry = zin.nextEntry
+            while (entry != null) {
+                val out = File(pythonDir, entry.name)
+                // Zip-slip guard: an archive must never write outside its own tree.
+                require(out.canonicalPath.startsWith(pythonDir.canonicalPath)) {
+                    "engine archive escapes its directory: ${entry.name}"
+                }
+                if (entry.isDirectory) {
+                    out.mkdirs()
+                } else {
+                    out.parentFile?.mkdirs()
+                    out.outputStream().use { zin.copyTo(it) }
+                }
+                entry = zin.nextEntry
+            }
+        }
+
+        SharedPrefsHelper.update(context, "pythonLibVersion", zip.length().toString())
+        Log.i("ytdlp_flutter", "engine installed from ${zip.name} (${zip.length()} bytes)")
+
+        // Forget the old verdict and try again with the payload in place.
+        initialized = false
+        engineReady = false
+        engineError = null
+        ensureInit()
     }
 
     /// Every call that needs yt-dlp goes through this, so a lite build fails with

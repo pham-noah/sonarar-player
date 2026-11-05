@@ -88,6 +88,13 @@ class MethodChannelYtdlp extends YtdlpPlatform {
   }
 
   @override
+  Future<YtdlpCapabilities> installEngine(String zipPath) async {
+    final m = await _channel
+        .invokeMapMethod<Object?, Object?>('installEngine', {'zipPath': zipPath});
+    return YtdlpCapabilities.fromMap(m ?? const {});
+  }
+
+  @override
   Future<YtdlpCapabilities> capabilities() async {
     final m = await _channel.invokeMapMethod<Object?, Object?>('capabilities');
     return YtdlpCapabilities.fromMap(m ?? const {});

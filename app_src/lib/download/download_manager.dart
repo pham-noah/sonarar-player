@@ -8,6 +8,7 @@ import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 
 import '../core/diag_log.dart';
 import 'capability.dart';
+import 'engine_loader.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/library_repository.dart';
 import '../library/storage_permission.dart';
@@ -88,16 +89,28 @@ Future<void> ensureDownloadReady(Directory dir, {DiagLog? log}) async {
 }
 
 class DownloadManager extends ChangeNotifier {
-  /// False in a lite build, where the engine is not in the APK at all.
+  /// True when a download can run *now*: the engine is either compiled in or has
+  /// been fetched. A lite build before its first install answers false.
   ///
-  /// Overridable so a test can exercise both builds without one; production
-  /// always takes the compile-time constant.
-  bool get canDownload => _downloadsAvailable;
+  /// Overridable so a test can exercise both builds; production takes the
+  /// compile-time constant.
+  bool get canDownload => _downloadsAvailable || _engineReady;
+
+  /// A lite build that can fetch its engine: downloads are late, not absent.
+  bool get needsEngine => !_downloadsAvailable && !_engineReady && engineFetchable;
+
+  /// A build that can never download, because it can neither run nor fetch the
+  /// engine.
+  bool get downloadsCompiledOut => !_downloadsAvailable && !engineFetchable;
 
   /// What to tell someone who asked anyway — a stale bookmark, a deep link, an
   /// imported playlist that came with a video id.
   static const String notInThisBuild =
       'Downloads are not part of this build.';
+
+  /// A lite build can download, but only after the engine has been fetched.
+  static const String engineNeeded =
+      'Downloads need a one-time 14 MB engine.';
 
   DownloadManager({
     required this.repo,
@@ -106,7 +119,11 @@ class DownloadManager extends ChangeNotifier {
     this.onFiled,
     this.log,
     bool? downloadsAvailable,
-  }) : _downloadsAvailable = downloadsAvailable ?? kDownloadsCompiledIn;
+  })  : _downloadsAvailable = downloadsAvailable ?? kDownloadsCompiledIn,
+        // A build that was told it has no engine must not claim one, whatever the
+        // compile-time default says - otherwise the gate opens for a build that
+        // cannot possibly download.
+        _engineReady = downloadsAvailable ?? kDownloadsCompiledIn;
 
   final bool _downloadsAvailable;
 
@@ -147,10 +164,88 @@ class DownloadManager extends ChangeNotifier {
 
   DownloadJob? get current => _current;
 
+  /// Whether the engine has to be fetched before a download can run.
+  ///
+  /// A full build ships it, so this is false there and stays false. A lite build
+  /// starts needing it and stops once [installEngine] has succeeded, which is the
+  /// only difference the rest of the app sees.
+
+  /// A full build starts with the engine in place; a lite build does not.
+  late bool _engineReady;
+
+
+
+  /// A lite build fetches its engine on demand. Cleared only to model a build
+  /// that genuinely cannot download at all.
+  bool engineFetchable = true;
+
+  bool _installing = false;
+
+  bool get installingEngine => _installing;
+
+  /// Fetch and install the engine once. Returns true when it is usable.
+  ///
+  /// The loader verifies the sha256 before anything is unzipped, so a truncated
+  /// download fails here rather than half-installing over a working engine.
+  Future<bool> installEngine({
+    Future<List<int>> Function(Uri url)? download,
+    void Function(double fraction)? onProgress,
+  }) async {
+    if (_engineReady || _installing) return _engineReady;
+    _installing = true;
+    notifyListeners();
+    try {
+      final loader = EngineLoader(
+        source: kHostedEngine,
+        readCache: () async => null,
+        writeCache: (_) async {},
+        download: download ?? _httpDownload,
+        install: (path) async {
+          final caps = await Ytdlp.installEngine(path);
+          _engineReady = caps.engine;
+          return caps.engine;
+        },
+        probe: () async => _engineReady,
+        onProgress: onProgress,
+      );
+      final result = await loader.ensure();
+      _engineReady = result == EngineInstall.ready || result == EngineInstall.alreadyThere;
+      return _engineReady;
+    } on Exception catch (e) {
+      // Offline, DNS failure, a 404 on the asset: all of it is "no engine yet",
+      // and none of it may escape as an unhandled future from a button press.
+      debugPrint('[Sonarar][DL] engine install failed: $e');
+      return false;
+    } finally {
+      _installing = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<int>> _httpDownload(Uri url) async {
+    final client = HttpClient();
+    try {
+      final req = await client.getUrl(url);
+      final res = await req.close();
+      if (res.statusCode != 200) {
+        throw HttpException('engine download failed: ${res.statusCode}', uri: url);
+      }
+      final out = <int>[];
+      await for (final chunk in res) {
+        out.addAll(chunk);
+      }
+      return out;
+    } finally {
+      client.close(force: true);
+    }
+  }
+
   /// The single place that decides a job may run. Everything else assumes it.
   bool _refuseIfNoEngine() {
     if (canDownload) return false;
-    _lastIssue = const DownloadIssue.failed(notInThisBuild);
+    _lastIssue = DownloadIssue.failed(
+      needsEngine ? engineNeeded : notInThisBuild,
+    );
     notifyListeners();
     return true;
   }

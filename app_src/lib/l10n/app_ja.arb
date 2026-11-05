@@ -945,5 +945,6 @@
     }
   },
   "personalizeTabLook": "外観",
-  "downloadsNotInThisBuild": "このビルドにはダウンロード機能が含まれていません。"
+  "downloadsNotInThisBuild": "このビルドにはダウンロード機能が含まれていません。",
+  "downloadsSetup": "ダウンロードを準備（14MB・初回のみ）"
 }

@@ -73,6 +73,10 @@ android {
 dependencies {
     // Bundled Python + yt-dlp (runtime-updatable) + FFmpeg for -x extraction.
     implementation("io.github.junkfood02.youtubedl-android:library:0.18.1")
+    // SharedPrefsHelper lives in `common`, which `library` declares as
+    // `implementation`, so it is not on this module's compile classpath. Declared
+    // here because this plugin writes the python payload's staleness marker.
+    implementation("io.github.junkfood02.youtubedl-android:common:0.18.1")
     implementation("io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")

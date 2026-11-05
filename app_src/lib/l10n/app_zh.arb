@@ -945,5 +945,6 @@
     }
   },
   "personalizeTabLook": "外观",
-  "downloadsNotInThisBuild": "此版本不包含下载功能。"
+  "downloadsNotInThisBuild": "此版本不包含下载功能。",
+  "downloadsSetup": "启用下载（一次性 14 MB）"
 }

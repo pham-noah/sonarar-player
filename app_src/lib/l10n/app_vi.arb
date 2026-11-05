@@ -945,5 +945,6 @@
     }
   },
   "personalizeTabLook": "NGOẠI HÌNH",
-  "downloadsNotInThisBuild": "Bản dựng này không có tính năng tải xuống."
+  "downloadsNotInThisBuild": "Bản dựng này không có tính năng tải xuống.",
+  "downloadsSetup": "Thiết lập tải xuống (14 MB một lần)"
 }

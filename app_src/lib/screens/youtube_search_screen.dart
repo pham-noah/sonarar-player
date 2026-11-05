@@ -567,9 +567,46 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     if (hit.localCoverPath != null || _local.any((l) => l.id == hit.id && l.thumbnailUrl == null)) {
       return _localRow(skin, hit);
     }
-    // A lite build has no engine: offering a tap that cannot work is worse than
-    // saying so once per row.
-    if (!widget.downloads.canDownload) {
+    // A build that can fetch its engine offers that instead of a dead control.
+    if (widget.downloads.needsEngine) {
+      return InkWell(
+        onTap: () {
+          // The manager notifies when the install finishes, so the row becomes a
+          // real download control without this widget tracking anything.
+          unawaited(widget.downloads.installEngine());
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Row(
+            children: [
+              Icon(Icons.cloud_download_outlined, size: 18, color: skin.accent),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10nOf(context).downloadsSetup,
+                  style: TextStyle(
+                    color: skin.textPrimary,
+                    fontSize: LayoutSpec.fontFloor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (widget.downloads.installingEngine)
+                SizedBox(
+                  width: 40,
+                  child: LinearProgressIndicator(
+                    minHeight: 3,
+                    color: skin.accent,
+                    backgroundColor: skin.secondary(0.2),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+    // And a build that can never download says so, once per row.
+    if (widget.downloads.downloadsCompiledOut) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(

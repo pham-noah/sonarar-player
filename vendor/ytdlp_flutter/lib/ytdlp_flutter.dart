@@ -20,6 +20,10 @@ class Ytdlp {
   /// download/extract binaries or boot the embedded interpreter.
   static Future<void> init() => _platform.init();
 
+  /// Install a downloaded engine archive and re-probe. Android only.
+  static Future<YtdlpCapabilities> installEngine(String zipPath) =>
+      _platform.installEngine(zipPath);
+
   /// What this build can do (engine present, ffmpeg present, versions).
   static Future<YtdlpCapabilities> capabilities() => _platform.capabilities();
 

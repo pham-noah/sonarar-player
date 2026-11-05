@@ -945,5 +945,6 @@
     }
   },
   "personalizeTabLook": "ULKOASU",
-  "downloadsNotInThisBuild": "Lataukset eivät kuulu tähän versioon."
+  "downloadsNotInThisBuild": "Lataukset eivät kuulu tähän versioon.",
+  "downloadsSetup": "Ota lataukset käyttöön (14 Mt kerran)"
 }

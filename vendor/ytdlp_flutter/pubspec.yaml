@@ -1,0 +1,36 @@
+name: ytdlp_flutter
+description: >-
+  Run yt-dlp on-device from Flutter. Android via youtubedl-android (bundled
+  Python + updatable yt-dlp), macOS via the official self-updating yt-dlp
+  binary, iOS via an embedded CPython running a bundled yt-dlp.
+version: 0.1.0
+homepage: https://pub.dev/packages/ytdlp_flutter
+repository: https://github.com/statecs/ytdlp_flutter
+issue_tracker: https://github.com/statecs/ytdlp_flutter/issues
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path_provider: ^2.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: se.cstate.ytdlp_flutter
+        pluginClass: YtdlpFlutterPlugin
+      ios:
+        pluginClass: YtdlpFlutterPlugin
+        dartPluginClass: YtdlpIos
+      macos:
+        pluginClass: YtdlpFlutterPlugin
+        dartPluginClass: YtdlpMacos

@@ -43,8 +43,12 @@ android {
                 "lib/x86/**",
                 "lib/x86_64/**",
                 "lib/armeabi-v7a/**",
+                // 36 MB of ffmpeg for a step the app never runs: the download path
+                // asks for one audio stream and keeps its own container. The
+                // vendored plugin treats its absence as a capability.
+                "lib/arm64-v8a/libffmpeg.zip.so",
             )
-            keepDebugSymbols += listOf("**/libpython.zip.so", "**/libffmpeg.zip.so")
+            keepDebugSymbols += listOf("**/libpython.zip.so")
 
             useLegacyPackaging = true
         }

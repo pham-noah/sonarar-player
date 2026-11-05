@@ -821,10 +821,9 @@ packages:
   ytdlp_flutter:
     dependency: "direct main"
     description:
-      name: ytdlp_flutter
-      sha256: "07c4922482066370eb614358f6acfea00be86d200378f73d6cdfb75a11e5ae83"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../vendor/ytdlp_flutter"
+      relative: true
+    source: path
     version: "0.1.0"
 sdks:
   dart: ">=3.13.0 <4.0.0"

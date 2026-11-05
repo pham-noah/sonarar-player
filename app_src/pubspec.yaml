@@ -47,3 +47,10 @@ flutter:
     - assets/brand/
     - assets/legal/
     - assets/themes/
+
+# Vendored to make the ffmpeg payload optional: the published plugin calls
+# FFmpeg.init unguarded, which turns "we do not ship 36 MB we never use" into
+# "init fails and downloads never work".
+dependency_overrides:
+  ytdlp_flutter:
+    path: ../vendor/ytdlp_flutter

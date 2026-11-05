@@ -855,7 +855,7 @@
   "shellLikedTrack": "已喜欢 — {track}",
   "shellSavedPlaylist": "已保存“{name}”",
   "queueSaveAsPlaylist": "存为播放列表",
-  "queueClearUpcoming": "清除待播",
+  "queueClearUpcoming": "清除",
   "queueNothingYet": "队列还是空的。",
   "whyNotThisOne": "不是这首？",
   "playerQueueCount": "队列（{count}）",

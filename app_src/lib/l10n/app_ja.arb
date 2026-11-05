@@ -855,7 +855,7 @@
   "shellLikedTrack": "お気に入り — {track}",
   "shellSavedPlaylist": "「{name}」を保存しました",
   "queueSaveAsPlaylist": "プレイリストとして保存",
-  "queueClearUpcoming": "待機中をすべて消す",
+  "queueClearUpcoming": "クリア",
   "queueNothingYet": "キューはまだ空です。",
   "whyNotThisOne": "これは違う？",
   "playerQueueCount": "キュー（{count}）",

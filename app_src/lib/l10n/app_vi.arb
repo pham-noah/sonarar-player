@@ -855,7 +855,7 @@
   "shellLikedTrack": "Đã thích — {track}",
   "shellSavedPlaylist": "Đã lưu \"{name}\"",
   "queueSaveAsPlaylist": "LƯU THÀNH DANH SÁCH",
-  "queueClearUpcoming": "XOÁ PHẦN SẮP PHÁT",
+  "queueClearUpcoming": "XOÁ",
   "queueNothingYet": "Hàng đợi còn trống.",
   "whyNotThisOne": "KHÔNG PHẢI BÀI NÀY?",
   "playerQueueCount": "Hàng đợi ({count})",

@@ -855,7 +855,7 @@
   "shellLikedTrack": "Tykkäät — {track}",
   "shellSavedPlaylist": "Tallennettu \"{name}\"",
   "queueSaveAsPlaylist": "Tallenna soittolistana",
-  "queueClearUpcoming": "Tyhjennä tulevat",
+  "queueClearUpcoming": "Tyhjennä",
   "queueNothingYet": "Jonossa ei ole vielä mitään.",
   "whyNotThisOne": "Ei tämä?",
   "playerQueueCount": "Jono ({count})",

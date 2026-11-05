@@ -20,6 +20,7 @@ import 'context/weather_codes.dart';
 import 'core/build_info.dart';
 import 'core/app_state.dart';
 import 'player/art_warmer.dart';
+import 'core/bootstrapper.dart';
 import 'core/constants.dart';
 import 'core/music_root.dart';
 import 'core/diag_log.dart';
@@ -106,6 +107,7 @@ import 'player/playback_ticker.dart';
 import 'player/player_controller.dart';
 import 'player/track_loader.dart';
 import 'player/queue_mode.dart';
+import 'player/snapshot.dart';
 import 'screens/home_screen.dart';
 
 Future<void>? _audioInit;
@@ -1069,28 +1071,30 @@ class _HomeShellState extends State<HomeShell>
     return ok;
   }
 
-  DateTime? _lastPhase;
-  final Map<String, int> _phaseCosts = {};
+  /// The boot sequence. It prints the phase log itself; the shell only repaints.
+  late final Bootstrapper _bootstrapper =
+      Bootstrapper(onPhase: (_) => _bootRepaint());
 
-  void _boot(double progress, String label) {
-    final now = DateTime.now();
-    final since = _lastPhase == null ? null : now.difference(_lastPhase!).inMilliseconds;
-    _lastPhase = now;
-    if (since != null) _phaseCosts[label] = since;
+  void _bootRepaint() {
     if (mounted) setState(() {});
-    debugPrint('[Sonarar] boot ${(progress * 100).round()}% $label'
-        '${since == null ? '' : ' (+${since}ms)'}');
-    if (progress >= 1.0) {
-      final ranked = _phaseCosts.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      debugPrint('[Sonarar] boot TOTAL '
-          '${ranked.fold<int>(0, (sum, e) => sum + e.value)}ms — slowest: '
-          '${ranked.take(3).map((e) => '${e.key}=${e.value}ms').join(', ')}');
-    }
   }
 
+  /// The snapshot read at 0.74 and used again when the first track is loaded.
+  PlaybackSnapshot? _resume;
+
   Future<void> _load() async {
-    _boot(0.02, 'checking permissions');
+    await _bootstrapper.run([
+      _bootPermissions,
+      _bootLibrary,
+      _bootSavedState,
+      _bootRestorePlace,
+      _bootPlaylists,
+      _bootFinish,
+    ]);
+  }
+
+  Future<bool> _bootPermissions(Bootstrapper boot) async {
+    boot.note(0.02, 'checking permissions');
 
     // Nothing in this group needs another's answer, and each is a platform round
     // trip: the two permission reads, the chosen music root, and the state
@@ -1111,17 +1115,23 @@ class _HomeShellState extends State<HomeShell>
     _stores = stores;
     debugPrint('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
     if (mounted) setState(() {});
+    return true;
+  }
 
-    _boot(0.18, 'reading your library');
+  Future<bool> _bootLibrary(Bootstrapper boot) async {
+    boot.note(0.18, 'reading your library');
     _repo.root = _musicRoot;
     await _repo.load();
-    _boot(0.52, 'found ${_repo.tracks.length} tracks');
+    boot.note(0.52, 'found ${_repo.tracks.length} tracks');
     debugPrint('[Sonarar] library root=${_repo.libraryRoot} '
         'from=${_repo.loadedFrom ?? "none"} '
         'tracks=${_repo.tracks.length} '
         'accessDenied=${_repo.accessDenied}');
+    return true;
+  }
 
-    _boot(0.60, 'opening your saved state');
+  Future<bool> _bootSavedState(Bootstrapper boot) async {
+    boot.note(0.60, 'opening your saved state');
     widget.state.libraryRoot = _repo.libraryRoot;
 
     unawaited(_refreshHomeRails());
@@ -1180,7 +1190,11 @@ class _HomeShellState extends State<HomeShell>
       bookmarks: marks,
       favoriteIds: favoriteIds.keys,
     );
-    _boot(0.74, 'restoring your place');
+    return true;
+  }
+
+  Future<bool> _bootRestorePlace(Bootstrapper boot) async {
+    boot.note(0.74, 'restoring your place');
     // The theme presets are a different file from the snapshot; read them while
     // the snapshot is coming back instead of after it.
     final presetsRead = _stores.themePresets.load();
@@ -1192,6 +1206,10 @@ class _HomeShellState extends State<HomeShell>
         resume.queueMode == 'fixed' ? QueueMode.fixed : QueueMode.dynamic,
       );
     }
+
+    // The snapshot is read here and used again when the track is loaded; keeping
+    // it on the shell is what lets the phases stay separate.
+    _resume = resume;
 
     final libraryIds = widget.state.library.map((t) => t.id).toSet();
     widget.state.pruneToLibrary(libraryIds);
@@ -1224,7 +1242,7 @@ class _HomeShellState extends State<HomeShell>
       }
     }
     if (_prefs.activePresetId == null) {
-      if (!mounted) return;
+      if (!mounted) return false;
       final savedLabel = l10nOf(context).commonSaved;
       final savedSkin = decode.skinFromPrefs(_prefs.skinId);
       final savedWords = decode.skinFromPrefs(_prefs.languageSkinId);
@@ -1239,7 +1257,11 @@ class _HomeShellState extends State<HomeShell>
         ));
       }
     }
-    _boot(0.88, 'building playlists');
+    return true;
+  }
+
+  Future<bool> _bootPlaylists(Bootstrapper boot) async {
+    boot.note(0.88, 'building playlists');
     _publishContext();
     await _refreshDerivedPlaylists();
 
@@ -1249,7 +1271,7 @@ class _HomeShellState extends State<HomeShell>
     widget.state.queueChanges.addListener(_onStateChanged);
     _downloads.addListener(_onDownloadProblem);
 
-    final savedVolume = resume?.volume;
+    final savedVolume = _resume?.volume;
     if (savedVolume != null) {
       _player.restoreVolume(savedVolume);
       widget.state.setRestoredVolume(savedVolume);
@@ -1257,7 +1279,13 @@ class _HomeShellState extends State<HomeShell>
 
     await _audioReady;
     _audio = AudioEngine()..listen();
+    _wireEngine();
+    return true;
+  }
 
+  /// The engine's callbacks: what playing changed, what the platform moved, what
+  /// happens when a track ends, and where repeat is asserted.
+  void _wireEngine() {
     _audio!.onPlayingChanged = (playing) {
       if (playing) unawaited(_ensureNotificationPermission());
       if (mounted && _playing != playing) {
@@ -1313,7 +1341,10 @@ class _HomeShellState extends State<HomeShell>
       // ignore: discarded_futures
       _audio?.setRepeatMode(widget.state.repeatMode);
     };
+  }
 
+  Future<bool> _bootFinish(Bootstrapper boot) async {
+    final resume = _resume;
     final resumeAt = (resume != null && !resume.isStale && resume.positionMs > 0)
         ? Duration(milliseconds: resume.positionMs)
         : null;
@@ -1327,35 +1358,7 @@ class _HomeShellState extends State<HomeShell>
         await _loadCurrentTrack(startAt: resumeAt, autoPlay: autoStart);
 
     if (const bool.fromEnvironment('sonarar_audiotest')) {
-      final engine = _audio;
-      final t = widget.state.currentTrack;
-      debugPrint('[Sonarar][AUDIO] loaded=$loaded track=${t?.title ?? "none"} '
-          'path=${t == null ? "n/a" : _repo.absoluteFor(t)}');
-
-      if (engine != null && loaded) {
-        final t = widget.state.currentTrack;
-        final path = _repo.absoluteFor(t!)!;
-        debugPrint('[Sonarar][AUDIO] probe path=$path');
-        unawaited(engine.play());
-        for (var i = 1; i <= 8; i++) {
-          await Future<void>.delayed(const Duration(seconds: 1));
-          debugPrint('[Sonarar][AUDIO] +${i}s playing=${engine.isPlaying} '
-              'pos=${engine.position.inMilliseconds}ms '
-              'dur=${engine.duration?.inMilliseconds ?? -1}ms');
-        }
-        await engine.pause();
-
-        widget.state.nextTrack();
-        await Future<void>.delayed(const Duration(milliseconds: 900));
-        final t2 = widget.state.currentTrack;
-        await engine.play();
-        for (var i = 1; i <= 4; i++) {
-          await Future<void>.delayed(const Duration(seconds: 1));
-          debugPrint('[Sonarar][AUDIO] NEXT +${i}s title=${t2?.title ?? "none"} '
-              'playing=${engine.isPlaying} '
-              'pos=${engine.position.inMilliseconds}ms');
-        }
-      }
+      await _audioSelfTest(loaded);
     }
 
     _publishContext();
@@ -1372,14 +1375,13 @@ class _HomeShellState extends State<HomeShell>
         'art=${widget.state.art?.key ?? "none"} '
         'band=${widget.state.playlistContext?.band.name ?? "none"} '
         'playlist=${widget.state.queue?.length ?? 0} '
-
         'storage=${_storageAccess.name} '
         'volume=${_volume.toStringAsFixed(2)} '
         'shuffle=${widget.state.queue?.isShuffled ?? false}');
 
-    if (!mounted) return;
+    if (!mounted) return false;
 
-    _boot(1.0, 'ready');
+    boot.note(1.0, 'ready');
     setState(() {
       _loading = false;
       if (!_tabSettled) {
@@ -1405,8 +1407,41 @@ class _HomeShellState extends State<HomeShell>
         }
       });
     }
+    return true;
   }
 
+  /// `--dart-define=sonarar_audiotest`: play the first track, then the next, and
+  /// print what the engine reports. Off in every shipping build.
+  Future<void> _audioSelfTest(bool loaded) async {
+    final engine = _audio;
+    final t = widget.state.currentTrack;
+    debugPrint('[Sonarar][AUDIO] loaded=$loaded track=${t?.title ?? "none"} '
+        'path=${t == null ? "n/a" : _repo.absoluteFor(t)}');
+
+    if (engine == null || !loaded) return;
+
+    final path = _repo.absoluteFor(t!)!;
+    debugPrint('[Sonarar][AUDIO] probe path=$path');
+    unawaited(engine.play());
+    for (var i = 1; i <= 8; i++) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+      debugPrint('[Sonarar][AUDIO] +${i}s playing=${engine.isPlaying} '
+          'pos=${engine.position.inMilliseconds}ms '
+          'dur=${engine.duration?.inMilliseconds ?? -1}ms');
+    }
+    await engine.pause();
+
+    widget.state.nextTrack();
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final t2 = widget.state.currentTrack;
+    await engine.play();
+    for (var i = 1; i <= 4; i++) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+      debugPrint('[Sonarar][AUDIO] NEXT +${i}s title=${t2?.title ?? "none"} '
+          'playing=${engine.isPlaying} '
+          'pos=${engine.position.inMilliseconds}ms');
+    }
+  }
   // Transport lives in PlayerController; the shell only names the callbacks the
   // interface already binds.
   Future<void> _togglePlay() => _player.togglePlay();

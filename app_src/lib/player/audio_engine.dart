@@ -14,6 +14,7 @@ import 'interruption_policy.dart';
 import 'queue_edit.dart';
 import 'playback_engine.dart';
 import 'playback_intent.dart';
+import 'transport_state.dart';
 import 'volume_policy.dart';
 
 import '../playback/loop_controller.dart';
@@ -34,7 +35,7 @@ class AudioEngine implements PlaybackEngine {
         begin: event.begin,
         type: event.type,
         pausedByInterruption: _pausedByInterruption,
-        wantPlay: _wantPlay,
+        wantPlay: _transport.wantsPlay,
       )) {
         case InterruptionAction.duck:
           unawaited(_player.setVolume(ducked(_targetVolume)));
@@ -76,17 +77,12 @@ class AudioEngine implements PlaybackEngine {
   @override
   Duration? get duration => _player.duration;
 
-  bool _wantPlay = false;
+  /// What the transport wants; the five flags it replaced are documented there.
+  final TransportState _transport = TransportState();
 
-  bool _playOutstanding = false;
-
-  int _playRetries = 0;
-
-  bool _suppressNextCompletion = false;
-
-  void notePlayIntent() {
-    _wantPlay = true;
-  }
+  /// Playing is wanted, but no request is in flight — a queue was handed over, or
+  /// an interruption ended.
+  void notePlayIntent() => _transport.noteIntent();
 
   bool _loadFailed = false;
 
@@ -241,9 +237,7 @@ class AudioEngine implements PlaybackEngine {
       return false;
     }
 
-    _wantPlay = true;
-
-    notePlayIntent();
+    _transport.noteIntent();
 
     if (_superseded(generation)) {
       debugPrint('[Sonarar][LOAD] #$_loadSeq superseded after setup, ignored');
@@ -309,9 +303,7 @@ class AudioEngine implements PlaybackEngine {
       }
 
       if (autoPlay) {
-        _wantPlay = true;
-        _playOutstanding = true;
-        _playRetries = 0;
+        _transport.onPlayRequested();
         unawaited(_player.play());
       }
       return true;
@@ -340,9 +332,7 @@ class AudioEngine implements PlaybackEngine {
 
   @override
   Future<void> play() async {
-    _wantPlay = true;
-    _playOutstanding = true;
-    _playRetries = 0;
+    _transport.onPlayRequested();
     // ignore: discarded_futures
     unawaited(_player.play());
   }
@@ -363,9 +353,7 @@ class AudioEngine implements PlaybackEngine {
 
   @override
   Future<void> pause() {
-    _wantPlay = false;
-    _playOutstanding = false;
-    _playRetries = 0;
+    _transport.onPauseRequested();
     return _player.pause();
   }
 
@@ -436,17 +424,15 @@ class AudioEngine implements PlaybackEngine {
 
   @override
   Future<void> skipNext() {
-    _skipRequested = true;
+    _transport.onSkipRequested();
     return _player.seekToNext();
   }
 
   @override
   Future<void> skipPrevious() {
-    _skipRequested = true;
+    _transport.onSkipRequested();
     return _player.seekToPrevious();
   }
-
-  bool _skipRequested = false;
 
   @override
   bool get hasNext => _player.hasNext;
@@ -505,16 +491,13 @@ class AudioEngine implements PlaybackEngine {
       if (platformMoved) {
         final st = _player.playerState;
 
-        if (_skipRequested) {
-          _wantPlay = true;
-          _skipRequested = false;
-        } else if (st.processingState != ProcessingState.completed) {
-          _wantPlay = st.playing;
-        }
+        _transport.onSourceChanged(
+          platformMoved: true,
+          platformPlaying: st.playing,
+          platformCompleted: st.processingState == ProcessingState.completed,
+        );
 
         _wantIndex = index;
-
-        _suppressNextCompletion = true;
       }
 
       onSourceChanged?.call(path);
@@ -526,45 +509,18 @@ class AudioEngine implements PlaybackEngine {
         onPlayingChanged?.call(state.playing);
       }
       if (state.processingState == ProcessingState.completed) {
-        if (!shouldReportCompletion(
-          loadFailed: _loadFailed,
-          suppressNext: _suppressNextCompletion,
-        )) {
-          _suppressNextCompletion = false;
-          if (_loadFailed) _wantPlay = false;
-          return;
-        }
-        _suppressNextCompletion = false;
+        if (!_transport.onCompletedEvent(loadFailed: _loadFailed)) return;
         onCompleted?.call();
-        _wantPlay = false;
         return;
       }
 
-      switch (nextPlayAction(
+      final action = _transport.actionFor(
         playing: state.playing,
-        outstanding: _playOutstanding,
-        retries: _playRetries,
-        completed: false,
-
         loading: state.processingState == ProcessingState.loading ||
             state.processingState == ProcessingState.buffering,
-      )) {
-        case PlayAction.reissuePlay:
-          _playRetries++;
-          unawaited(_player.play());
-        case PlayAction.giveUp:
-
-          _playOutstanding = false;
-          _wantPlay = false;
-        case PlayAction.adoptPlaying:
-          _playOutstanding = false;
-          _playRetries = 0;
-        case PlayAction.adoptStopped:
-
-          _wantPlay = false;
-        case PlayAction.none:
-          break;
-      }
+      );
+      _transport.apply(action);
+      if (action == PlayAction.reissuePlay) unawaited(_player.play());
 
       final want = _wantIndex;
       if (want != null &&
@@ -579,7 +535,7 @@ class AudioEngine implements PlaybackEngine {
   LoopController? loop;
 
   Future<void> _fadeThenStop() async {
-    _wantPlay = false;
+    _transport.stopRequested();
 
     // The loop's own fade length, or 400ms when it has none. This used to be a
     // second fade loop with its own step count and its own cancel flag; it is the
@@ -609,7 +565,7 @@ class AudioEngine implements PlaybackEngine {
       case LoopAction.seekToLoopStart:
         await seek(c.points!.loopStart!);
       case LoopAction.fadeOut:
-        if (_wantPlay) await _fadeThenStop();
+        if (_transport.wantsPlay) await _fadeThenStop();
       case LoopAction.none:
         break;
     }

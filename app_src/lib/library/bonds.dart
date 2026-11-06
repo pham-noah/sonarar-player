@@ -115,6 +115,12 @@ class BondState {
 
   static const int kNoteRank = 3;
 
+  /// The counters start again from now. The notes are not the counters, so they
+  /// stay.
+  void reset({DateTime? at}) {
+    config = config.withResetAt(at ?? DateTime.now());
+  }
+
   void prune(Set<String> libraryIds) =>
       _notes.removeWhere((id, _) => !libraryIds.contains(id));
 

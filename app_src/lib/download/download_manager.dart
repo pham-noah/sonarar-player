@@ -97,7 +97,8 @@ class DownloadManager extends ChangeNotifier {
   bool get canDownload => _downloadsAvailable || _engineReady;
 
   /// A lite build that can fetch its engine: downloads are late, not absent.
-  bool get needsEngine => !_downloadsAvailable && !_engineReady && engineFetchable;
+  bool get needsEngine =>
+      !_downloadsAvailable && !_engineReady && engineFetchable;
 
   /// A build that can never download, because it can neither run nor fetch the
   /// engine.
@@ -105,12 +106,10 @@ class DownloadManager extends ChangeNotifier {
 
   /// What to tell someone who asked anyway — a stale bookmark, a deep link, an
   /// imported playlist that came with a video id.
-  static const String notInThisBuild =
-      'Downloads are not part of this build.';
+  static const String notInThisBuild = 'Downloads are not part of this build.';
 
   /// A lite build can download, but only after the engine has been fetched.
-  static const String engineNeeded =
-      'Downloads need a one-time 14 MB engine.';
+  static const String engineNeeded = 'Downloads need a one-time 14 MB engine.';
 
   DownloadManager({
     required this.repo,
@@ -119,11 +118,11 @@ class DownloadManager extends ChangeNotifier {
     this.onFiled,
     this.log,
     bool? downloadsAvailable,
-  })  : _downloadsAvailable = downloadsAvailable ?? kDownloadsCompiledIn,
-        // A build that was told it has no engine must not claim one, whatever the
-        // compile-time default says - otherwise the gate opens for a build that
-        // cannot possibly download.
-        _engineReady = downloadsAvailable ?? kDownloadsCompiledIn;
+  }) : _downloadsAvailable = downloadsAvailable ?? kDownloadsCompiledIn,
+       // A build that was told it has no engine must not claim one, whatever the
+       // compile-time default says - otherwise the gate opens for a build that
+       // cannot possibly download.
+       _engineReady = downloadsAvailable ?? kDownloadsCompiledIn;
 
   final bool _downloadsAvailable;
 
@@ -173,8 +172,6 @@ class DownloadManager extends ChangeNotifier {
   /// A full build starts with the engine in place; a lite build does not.
   late bool _engineReady;
 
-
-
   /// A lite build fetches its engine on demand. Cleared only to model a build
   /// that genuinely cannot download at all.
   bool engineFetchable = true;
@@ -182,6 +179,18 @@ class DownloadManager extends ChangeNotifier {
   bool _installing = false;
 
   bool get installingEngine => _installing;
+
+  /// Why the last engine fetch failed, in the words of whatever failed.
+  ///
+  /// "It didn't work" was the whole of what a person could see before this, and the
+  /// answer can be one of five things: no archive for the ABI, a checksum mismatch, a
+  /// download that never finished, an install that could not unpack, or an engine that
+  /// unpacked but would not start (which the plugin explains itself).
+  String? _engineFailure;
+
+  String? get engineFailure => _engineFailure;
+
+  String? _installedReason;
 
   /// Fetch and install the engine once. Returns true when it is usable.
   ///
@@ -200,6 +209,7 @@ class DownloadManager extends ChangeNotifier {
       final abi = (await Ytdlp.capabilities()).abi;
       final source = engineSourceFor(abi);
       if (source == null) {
+        _engineFailure = 'no archive for $abi';
         debugPrint('[Sonarar][DL] no engine archive for abi $abi');
         return false;
       }
@@ -211,17 +221,30 @@ class DownloadManager extends ChangeNotifier {
         install: (path) async {
           final caps = await Ytdlp.installEngine(path);
           _engineReady = caps.engine;
+          // The plugin knows why: a missing library, a payload that would not start.
+          if (!caps.engine) _installedReason = caps.engineError;
           return caps.engine;
         },
         probe: () async => _engineReady,
         onProgress: onProgress,
       );
       final result = await loader.ensure();
-      _engineReady = result == EngineInstall.ready || result == EngineInstall.alreadyThere;
+      _engineReady =
+          result == EngineInstall.ready || result == EngineInstall.alreadyThere;
+      if (!_engineReady) {
+        _engineFailure = switch (result) {
+          EngineInstall.badArchive => 'the download did not match its checksum',
+          EngineInstall.failed =>
+            _installedReason ?? 'the archive would not install',
+          _ => _engineFailure,
+        };
+        debugPrint('[Sonarar][DL] engine not ready: $_engineFailure');
+      }
       return _engineReady;
     } on Exception catch (e) {
       // Offline, DNS failure, a 404 on the asset: all of it is "no engine yet",
       // and none of it may escape as an unhandled future from a button press.
+      _engineFailure = e.toString();
       debugPrint('[Sonarar][DL] engine install failed: $e');
       return false;
     } finally {
@@ -236,7 +259,10 @@ class DownloadManager extends ChangeNotifier {
       final req = await client.getUrl(url);
       final res = await req.close();
       if (res.statusCode != 200) {
-        throw HttpException('engine download failed: ${res.statusCode}', uri: url);
+        throw HttpException(
+          'engine download failed: ${res.statusCode}',
+          uri: url,
+        );
       }
       final out = <int>[];
       await for (final chunk in res) {
@@ -380,7 +406,9 @@ class DownloadManager extends ChangeNotifier {
       try {
         await file.delete();
       } catch (e) {
-        debugPrint('[Sonarar][DL] empty file failed to delete: ${file.path}: $e');
+        debugPrint(
+          '[Sonarar][DL] empty file failed to delete: ${file.path}: $e',
+        );
       }
       return;
     }

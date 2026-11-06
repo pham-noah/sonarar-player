@@ -196,17 +196,39 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                out
-                    ? l10n.downloadsNotInThisBuild
-                    : (_setupFailed
-                          ? l10n.downloadsSetupFailed
-                          : l10n.downloadsSetup),
-                style: TextStyle(
-                  color: _setupFailed ? skin.accent : skin.textPrimary,
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    out
+                        ? l10n.downloadsNotInThisBuild
+                        : (_setupFailed
+                              ? l10n.downloadsSetupFailed
+                              : l10n.downloadsSetup),
+                    style: TextStyle(
+                      color: _setupFailed ? skin.accent : skin.textPrimary,
+                      fontSize: LayoutSpec.fontFloor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  // The stage that failed, in whatever words it used. Without this
+                  // the banner was a dead end: "it didn't work" was all anyone could
+                  // tell me, because all the app said was that it hadn't.
+                  if (_setupFailed && widget.downloads.engineFailure != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        widget.downloads.engineFailure!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: skin.textSecondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             if (installing)

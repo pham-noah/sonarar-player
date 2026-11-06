@@ -2,6 +2,7 @@ library;
 
 import '../l10n/l10n.dart';
 import '../l10n/script.dart';
+
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
@@ -66,174 +67,186 @@ class QueuePanel extends StatelessWidget {
     final currentAt = state.queueIndex;
     final hasQueue = order.isNotEmpty && currentAt >= 0;
 
-    return ColoredBox(
-      color: skin.background,
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: SizedBox(height: padding.resolve(TextDirection.ltr).top),
-            ),
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SizedBox(height: padding.resolve(TextDirection.ltr).top),
+          ),
 
-            if (onSaveAsPlaylist != null && hasQueue)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 14,
-                    left: padding.resolve(TextDirection.ltr).left,
-                    right: padding.resolve(TextDirection.ltr).right,
-                  ),
-                  child: Row(
-                    children: [
+          if (onSaveAsPlaylist != null && hasQueue)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: 14,
+                  left: padding.resolve(TextDirection.ltr).left,
+                  right: padding.resolve(TextDirection.ltr).right,
+                ),
+                child: Row(
+                  children: [
+                    Pressable(
+                      key: queueSaveKey,
+                      onTap: onSaveAsPlaylist!,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.playlist_add_rounded,
+                            size: 18,
+                            color: skin.accent,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            capsFor(
+                              context,
+                              l10nOf(context).queueSaveAsPlaylist,
+                            ),
+                            style: TextStyle(
+                              fontSize: LayoutSpec.fontLabel,
+                              letterSpacing: trackingFor(context, 1.5),
+                              fontWeight: FontWeight.w800,
+                              color: skin.accent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (onClearUpcoming != null &&
+                        order.length > currentAt + 1) ...[
+                      const SizedBox(width: 22),
                       Pressable(
-                        key: queueSaveKey,
-                        onTap: onSaveAsPlaylist!,
+                        key: queueClearUpcomingKey,
+                        onTap: onClearUpcoming!,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.playlist_add_rounded, size: 18, color: skin.accent),
+                            Icon(
+                              Icons.playlist_remove_rounded,
+                              size: 18,
+                              color: skin.textSecondary,
+                            ),
                             const SizedBox(width: 8),
                             Text(
-                              capsFor(context, l10nOf(context).queueSaveAsPlaylist),
+                              capsFor(
+                                context,
+                                l10nOf(context).queueClearUpcoming,
+                              ),
                               style: TextStyle(
                                 fontSize: LayoutSpec.fontLabel,
                                 letterSpacing: trackingFor(context, 1.5),
                                 fontWeight: FontWeight.w800,
-                                color: skin.accent,
+                                color: skin.textSecondary,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      if (onClearUpcoming != null && order.length > currentAt + 1) ...[
-                        const SizedBox(width: 22),
-                        Pressable(
-                          key: queueClearUpcomingKey,
-                          onTap: onClearUpcoming!,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.playlist_remove_rounded,
-                                  size: 18, color: skin.textSecondary),
-                              const SizedBox(width: 8),
-                              Text(
-                                capsFor(context, l10nOf(context).queueClearUpcoming),
-                                style: TextStyle(
-                                  fontSize: LayoutSpec.fontLabel,
-                                  letterSpacing: trackingFor(context, 1.5),
-                                  fontWeight: FontWeight.w800,
-                                  color: skin.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
+                  ],
+                ),
+              ),
+            ),
+
+          if (!hasQueue)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: padding.resolve(TextDirection.ltr).left,
+                ),
+                child: Text(
+                  l10nOf(context).queueNothingYet,
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontBase,
+                    color: skin.textSecondary,
+                    height: 1.35,
                   ),
                 ),
               ),
+            )
+          else
+            SliverPadding(
+              padding: EdgeInsets.only(
+                left: padding.resolve(TextDirection.ltr).left,
+                right: padding.resolve(TextDirection.ltr).right,
 
-            if (!hasQueue)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: padding.resolve(TextDirection.ltr).left,
-                  ),
-                  child: Text(
-                    l10nOf(context).queueNothingYet,
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontBase,
-                      color: skin.textSecondary,
-                      height: 1.35,
-                    ),
-                  ),
-                ),
-              )
-            else
-              SliverPadding(
-                padding: EdgeInsets.only(
-                  left: padding.resolve(TextDirection.ltr).left,
-                  right: padding.resolve(TextDirection.ltr).right,
+                bottom: PresentationScope.of(
+                  context,
+                  fallback: skin,
+                ).arrangement.bottomClearance,
+              ),
+              sliver: SliverReorderableList(
+                itemCount: order.length,
 
-                  bottom: PresentationScope.of(context, fallback: skin)
-                      .arrangement
-                      .bottomClearance,
-                ),
-                sliver: SliverReorderableList(
-                  itemCount: order.length,
+                // ignore: deprecated_member_use
+                onReorder: (from, to) {
+                  if (to > from) to -= 1;
+                  if (to != from) {
+                    if (!state.moveInQueue(from, to)) return;
 
-                  // ignore: deprecated_member_use
-                  onReorder: (from, to) {
-                    if (to > from) to -= 1;
-                    if (to != from) {
+                    if (onReorder != null) {
+                      onReorder!(from, to);
+                    } else {
+                      onReload?.call();
+                    }
+                  }
+                },
+                itemBuilder: (context, i) {
+                  final t = order[i];
+                  final isCurrent = i == currentAt;
+                  final row = SwipeableQueueRow(
+                    skin: skin,
+                    track: t,
+                    isCurrent: isCurrent,
+                    index: i,
+                    upNextLength: order.length,
+                    cover: coverFor?.call(t),
+                    isPlaying: isPlaying,
+                    onTogglePlay: onTogglePlay,
+
+                    onTap: onPlay == null ? null : () => onPlay!(t),
+
+                    onMove: (from, to) {
                       if (!state.moveInQueue(from, to)) return;
-
                       if (onReorder != null) {
                         onReorder!(from, to);
                       } else {
                         onReload?.call();
                       }
-                    }
-                  },
-                  itemBuilder: (context, i) {
-                    final t = order[i];
-                    final isCurrent = i == currentAt;
-                    final row = SwipeableQueueRow(
-                      skin: skin,
-                      track: t,
-                      isCurrent: isCurrent,
-                      index: i,
-                      upNextLength: order.length,
-                      cover: coverFor?.call(t),
-                      isPlaying: isPlaying,
-                      onTogglePlay: onTogglePlay,
+                    },
+                    onRemove: () {
+                      final slot = state.queueOrder.indexWhere(
+                        (x) => x.id == t.id,
+                      );
+                      if (slot < 0) return;
+                      final currentChanged = state.removeFromQueue(t.id);
+                      onRemoved?.call(t, slot);
+                      if (currentChanged) {
+                        (onReloadAfterRemove ?? onReload)?.call();
+                      }
+                    },
+                    onReloadAfterRemove: () {},
+                  );
+                  return StaggerIn(
+                    key: ValueKey(t.id),
+                    index: i,
+                    style: StaggerStyle.drop,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
 
-                      onTap: onPlay == null ? null : () => onPlay!(t),
-
-                      onMove: (from, to) {
-                        if (!state.moveInQueue(from, to)) return;
-                        if (onReorder != null) {
-                          onReorder!(from, to);
-                        } else {
-                          onReload?.call();
-                        }
-                      },
-                      onRemove: () {
-                        final slot = state.queueOrder.indexWhere((x) => x.id == t.id);
-                        if (slot < 0) return;
-                        final currentChanged = state.removeFromQueue(t.id);
-                        onRemoved?.call(t, slot);
-                        if (currentChanged) {
-                          (onReloadAfterRemove ?? onReload)?.call();
-                        }
-                      },
-                      onReloadAfterRemove: () {},
-                    );
-                    return StaggerIn(
-                      key: ValueKey(t.id),
-                      index: i,
-                      style: StaggerStyle.drop,
-                      child: Padding(
-
-                        padding: const EdgeInsets.only(bottom: 6),
-
-                        child: isCurrent
-                            ? row
-
-                            : ReorderableDelayedDragStartListener(
-                                index: i,
-                                child: row,
-                              ),
-                      ),
-                    );
-                  },
-                ),
+                      child: isCurrent
+                          ? row
+                          : ReorderableDelayedDragStartListener(
+                              index: i,
+                              child: row,
+                            ),
+                    ),
+                  );
+                },
               ),
+            ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
-          ],
-        ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
       ),
     );
   }

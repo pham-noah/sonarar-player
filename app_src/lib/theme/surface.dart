@@ -7,15 +7,7 @@ import 'package:flutter/material.dart';
 import 'layout.dart';
 import 'layout_kit.dart';
 
-enum SurfaceRole {
-  panel,
-
-  card,
-
-  bar,
-
-  sheet,
-}
+enum SurfaceRole { panel, card, bar, sheet }
 
 class Surface extends StatelessWidget {
   const Surface({
@@ -58,13 +50,15 @@ class Surface extends StatelessWidget {
     final resolvedRadius = radius ?? mat.radii[role] ?? 4.0;
     final resolvedPadding = padding ?? EdgeInsets.zero;
 
-    final baseFill = fill ??
-        (active && mat.activeFillIsAccent ? pal.accent : pal.surface);
+    final baseFill =
+        fill ?? (active && mat.activeFillIsAccent ? pal.accent : pal.surface);
 
     final content = Container(
       padding: resolvedPadding,
       decoration: BoxDecoration(
-        color: isGlassMaterial(mat) ? _glassTint(pal, role, baseFill) : baseFill,
+        color: isGlassMaterial(mat)
+            ? _glassTint(pal, role, baseFill)
+            : baseFill,
         borderRadius: BorderRadius.circular(resolvedRadius),
         border: border ?? _borderFor(pal, mat, active),
         boxShadow: _shadowFor(pal, role, mat),
@@ -115,10 +109,26 @@ class Surface extends StatelessWidget {
     const lr = 0.2126, lg = 0.7152, lb = 0.0722;
     final inv = 1.0 - s;
     return <double>[
-      inv * lr + s, inv * lg,     inv * lb,     0, 0,
-      inv * lr,     inv * lg + s, inv * lb,     0, 0,
-      inv * lr,     inv * lg,     inv * lb + s, 0, 0,
-      0,            0,            0,            1, 0,
+      inv * lr + s,
+      inv * lg,
+      inv * lb,
+      0,
+      0,
+      inv * lr,
+      inv * lg + s,
+      inv * lb,
+      0,
+      0,
+      inv * lr,
+      inv * lg,
+      inv * lb + s,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
     ];
   }
 
@@ -228,7 +238,6 @@ class Surface extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(resolvedRadius),
       child: BackdropFilter(
-
         filter: ui.ImageFilter.compose(
           outer: ui.ColorFilter.matrix(_saturationMatrix(1.8)),
           inner: ui.ImageFilter.blur(sigmaX: 24, sigmaY: 24),
@@ -247,20 +256,41 @@ class Surface extends StatelessWidget {
       SurfaceRole.panel => 1.0,
       SurfaceRole.sheet => 1.0,
     };
-    return baseFill.withValues(alpha: a * strength);
+
+    // A panel is read, not looked through. At the palette's own alpha the player
+    // behind it showed through as ghost text — two sets of words on top of one
+    // another, which is what "hard to see" meant. A bar or a card is small enough
+    // to stay glassy; the sheet that covers half the screen is not.
+    final floor = switch (role) {
+      SurfaceRole.panel => 0.88,
+      _ => 0.0,
+    };
+
+    return baseFill.withValues(alpha: (a * strength).clamp(floor, 1.0));
   }
 
   static List<BoxShadow> _shadowFor(
-      LayoutPalette pal, SurfaceRole role, MaterialKit mat) {
+    LayoutPalette pal,
+    SurfaceRole role,
+    MaterialKit mat,
+  ) {
     if (isGlassMaterial(mat)) {
       return const [
-        BoxShadow(color: Color(0x59000000), blurRadius: 28, offset: Offset(0, 8)),
+        BoxShadow(
+          color: Color(0x59000000),
+          blurRadius: 28,
+          offset: Offset(0, 8),
+        ),
       ];
     }
     if (pal.shadow.a == 0) return const [];
     if (mat.castShadow && !isGlassMaterial(mat) && mat.slant) {
       return [
-        BoxShadow(color: pal.shadow, blurRadius: 22, offset: const Offset(0, 6)),
+        BoxShadow(
+          color: pal.shadow,
+          blurRadius: 22,
+          offset: const Offset(0, 6),
+        ),
       ];
     }
     final blur = switch (role) {

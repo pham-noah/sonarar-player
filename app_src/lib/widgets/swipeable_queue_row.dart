@@ -137,9 +137,13 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
       padding: const EdgeInsets.fromLTRB(6, 6, 12, 6),
       decoration: BoxDecoration(
 
-        color: widget.reordering
+        // The sheet underneath is the surface. Rows sat on a fill of the room's
+        // background, which in Glass is black — a stack of black cards on frosted
+        // glass. Transparent reads the same on an opaque sheet and correct on a
+        // glassy one.
+        color: widget.reordering || _hovered && !widget.isCurrent
             ? skin.panel
-            : (_hovered && !widget.isCurrent ? skin.panel : skin.background),
+            : Colors.transparent,
         border: Border.all(
           color: widget.isCurrent
               ? skin.accent

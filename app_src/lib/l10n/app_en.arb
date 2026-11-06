@@ -1014,7 +1014,7 @@
   "@queueSaveAsPlaylist": {
     "placeholders": {}
   },
-  "queueClearUpcoming": "Clear upcoming",
+  "queueClearUpcoming": "Clear",
   "@queueClearUpcoming": {
     "placeholders": {}
   },

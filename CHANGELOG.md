@@ -2,6 +2,32 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.6 — 2026-11-06
+
+### Fixed
+
+- **The engine install no longer deletes itself.** The download arrived, matched its
+  checksum and unpacked — and then the library threw "Failed to initialize" and took it
+  away again. The staleness marker ytdl-android checks is not a version string: it is
+  the byte length of `libpython.zip.so` in the APK's native lib directory, and a lite
+  build removes that archive to stay small, so the marker read `0`. Writing our own
+  archive's length made every lite install look stale; the library deleted the payload
+  just unpacked and tried to unzip a file that was not in the APK. The marker now
+  records what the library will actually see, so it keeps the payload we installed.
+
+  This was arm64-only because arm64 is the ABI the lite build strips the archive from —
+  on x86_64 the bundled archive happened to make the marker line up.
+
+### Verified
+
+- Reproduced on an x86_64 emulator by removing the bundled archive from the build, so
+  it had the phone's exact shape (0 archives in the APK): launch logged
+  `engine not bundled (failed to initialize)`, the tap downloaded and installed
+  (`engine installed from libpython.zip.so (14302766 bytes); library marker 0`), and
+  `yt-dlp update: DONE` followed — the engine running.
+- `flutter analyze`: 0 issues. `flutter test`: 1,971 passed, 0 failed.
+
+
 ## 0.3.5 — 2026-11-06
 
 ### Fixed

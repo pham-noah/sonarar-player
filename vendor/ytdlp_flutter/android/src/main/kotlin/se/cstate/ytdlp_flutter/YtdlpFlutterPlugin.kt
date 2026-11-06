@@ -211,8 +211,24 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
             }
         }
 
-        SharedPrefsHelper.update(context, "pythonLibVersion", zip.length().toString())
-        Log.i("ytdlp_flutter", "engine installed from ${zip.name} (${zip.length()} bytes)")
+        // The library's staleness check is not a version string: it is
+        // File(nativeLibraryDir, "libpython.zip.so").length(), and 0 when this build
+        // ships no engine there. Recording OUR archive's length made a lite build look
+        // stale forever - the library then deleted the payload we had just unpacked and
+        // tried to unzip a file that is not in the APK, which is what it reports as
+        // "Failed to initialize". arm64 ships no bundled archive, so arm64 was the only
+        // architecture that failed, and it failed every time.
+        val bundled = File(context.applicationInfo.nativeLibraryDir, "libpython.zip.so")
+        SharedPrefsHelper.update(
+            context,
+            "pythonLibVersion",
+            bundled.length().toString()
+        )
+        Log.i(
+            "ytdlp_flutter",
+            "engine installed from ${zip.name} (${zip.length()} bytes); " +
+                "library marker ${bundled.length()} (bundled archive ${if (bundled.exists()) "present" else "absent"})"
+        )
 
         // Forget the old verdict and try again with the payload in place.
         initialized = false

@@ -4,5 +4,5 @@ library;
 ///
 /// Read from a constant rather than a plugin: one number, no dependency, and a
 /// test fails if it drifts from `pubspec.yaml`.
-const String appVersionName = '0.3.4';
-const int appVersionCode = 34;
+const String appVersionName = '0.3.5';
+const int appVersionCode = 35;

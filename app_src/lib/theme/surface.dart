@@ -247,7 +247,16 @@ class Surface extends StatelessWidget {
     );
   }
 
-  Color _glassTint(LayoutPalette pal, SurfaceRole role, Color baseFill) {
+  /// The tint a glass surface actually paints, for a test that wants to reason
+  /// about legibility without a screenshot.
+  @visibleForTesting
+  static Color glassTintFor(
+    LayoutPalette pal,
+    SurfaceRole role,
+    Color baseFill,
+  ) => Surface._glassTint(pal, role, baseFill);
+
+  static Color _glassTint(LayoutPalette pal, SurfaceRole role, Color baseFill) {
     final a = baseFill.a;
 
     final strength = switch (role) {
@@ -257,16 +266,26 @@ class Surface extends StatelessWidget {
       SurfaceRole.sheet => 1.0,
     };
 
-    // A panel is read, not looked through. At the palette's own alpha the player
-    // behind it showed through as ghost text — two sets of words on top of one
-    // another, which is what "hard to see" meant. A bar or a card is small enough
-    // to stay glassy; the sheet that covers half the screen is not.
+    // A panel is read, not looked through. At the palette's own alpha whatever is
+    // behind it — a bright cover, the player's own controls — was still there to read
+    // through the text. Bars and cards are small enough to stay glassy; a sheet that
+    // covers half the screen has to hold its own colour.
     final floor = switch (role) {
-      SurfaceRole.panel => 0.88,
+      SurfaceRole.panel => 0.96,
       _ => 0.0,
     };
 
-    return baseFill.withValues(alpha: (a * strength).clamp(floor, 1.0));
+    // Glass paints a wash — in the Glass palettes `surface` is white at 20% — and a
+    // wash is only legible while the room under it is dark. Over a bright cover the
+    // sheet went pale and the text, which is near-white, disappeared into it. So the
+    // sheet carries the room's colour: the wash over `background`, held at the floor.
+    // A bar or a card is small and sits on something known; a sheet is read over
+    // whatever is behind it.
+    final base = role == SurfaceRole.panel
+        ? Color.alphaBlend(baseFill, pal.background)
+        : baseFill;
+
+    return base.withValues(alpha: (a * strength).clamp(floor, 1.0));
   }
 
   static List<BoxShadow> _shadowFor(

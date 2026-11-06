@@ -2,6 +2,36 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.5 — 2026-11-06
+
+### Fixed
+
+- **Panel text survives a bright cover.** In Glass the sheet's fill is a white wash at
+  20%, and a wash only reads while the room under it is dark — so over a bright album
+  cover the sheet went pale and the near-white text disappeared into it. The sheet now
+  carries the room's own colour under the wash, held almost solid, which is the same
+  colour on any backdrop. Both glass skins are tested for AA text against it.
+- **The engine fetch retries a short read** before giving up. A reset connection hands
+  back half an archive; the checksum is the only thing that notices, and "the fetch
+  failed" is a poor answer to a carrier hiccup. `EngineLoader` re-reads once.
+- **A failed engine install says which stage failed.** `DownloadManager.engineFailure`
+  records one of: no archive for the ABI, a checksum mismatch, a cut-short download, an
+  archive that would not install, or the plugin's own `engineError` — and the search
+  banner prints it under the sentence, so a report of "it didn't work" carries the
+  reason with it.
+- **An old engine payload that cannot be deleted no longer blocks the install.** The
+  plugin used to abort; it now unpacks over it.
+- The download buffer is filled once instead of copied on every chunk — 14 MB collected
+  in 64 KB pieces was gigabytes of copying that read as a hang.
+
+### Verified
+
+- `flutter analyze`: 0 issues. `flutter test`: 1,971 passed, 0 failed.
+- On an x86_64 emulator the whole fetch path works: the tap downloads the 14,302,766-
+  byte archive, matches its pinned sha256, and unpacks it (`engine installed from
+  libpython.zip.so`). Whatever fails on arm64 now names its stage on screen.
+
+
 ## 0.3.4 — 2026-11-06
 
 ### Fixed

@@ -6,7 +6,11 @@ import 'package:crypto/crypto.dart';
 
 /// Where the engine archive comes from, and what it must hash to.
 class EngineSource {
-  const EngineSource({required this.url, required this.sha256, required this.version});
+  const EngineSource({
+    required this.url,
+    required this.sha256,
+    required this.version,
+  });
 
   final Uri url;
 
@@ -34,6 +38,7 @@ class EngineLoader {
     required this.install,
     required this.probe,
     this.onProgress,
+    this.retriesOnMismatch = 1,
   });
 
   final EngineSource source;
@@ -53,25 +58,37 @@ class EngineLoader {
 
   final void Function(double fraction)? onProgress;
 
+  /// How many extra downloads a checksum mismatch is worth. A reset connection hands
+  /// back half an archive; the checksum is the only thing that notices, and telling
+  /// the person "it failed" for a carrier hiccup is a poor answer.
+  final int retriesOnMismatch;
+
   Future<EngineInstall> ensure() async {
     if (await probe()) return EngineInstall.alreadyThere;
 
-    var bytes = await readCache();
-    if (bytes != null && sha256.convert(bytes).toString() != source.sha256) {
-      // A half-written cache from a killed download: refetch rather than unzip it.
-      bytes = null;
-    }
-    bytes ??= await download(source.url);
-    await writeCache(bytes);
+    final cached = await readCache();
+    var payload =
+        cached != null && sha256.convert(cached).toString() == source.sha256
+        // A half-written cache from a killed download is refetched rather than unzipped.
+        ? cached
+        : await download(source.url);
 
-    if (sha256.convert(bytes).toString() != source.sha256) {
-      return EngineInstall.badArchive;
+    var attempts = 0;
+    while (sha256.convert(payload).toString() != source.sha256) {
+      if (attempts++ >= retriesOnMismatch) {
+        await writeCache(payload);
+        return EngineInstall.badArchive;
+      }
+      // A reset connection hands back half an archive, and the checksum is the only
+      // thing that notices. One more read over a fresh connection is cheap.
+      payload = await download(source.url);
     }
+    await writeCache(payload);
 
     final dir = await Directory.systemTemp.createTemp('sonarar_engine');
     final file = File('${dir.path}/libpython.zip.so');
     try {
-      await file.writeAsBytes(bytes, flush: true);
+      await file.writeAsBytes(payload, flush: true);
       final ok = await install(file.path);
       return ok ? EngineInstall.ready : EngineInstall.failed;
     } finally {

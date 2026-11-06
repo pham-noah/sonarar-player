@@ -176,7 +176,11 @@ class YtdlpFlutterPlugin : FlutterPlugin, MethodCallHandler {
         require(zip.isFile) { "engine archive missing: ${zip.absolutePath}" }
         val pythonDir = File(File(context.noBackupFilesDir, "youtubedl-android"), "packages/python")
         if (pythonDir.exists() && !pythonDir.deleteRecursively()) {
-            throw IllegalStateException("could not clear the old engine at $pythonDir")
+            // A payload written by an older build can hold links this build cannot
+            // remove. Refusing here means the install never succeeds on that device
+            // again; unpacking over it costs nothing, because every file the library
+            // reads is one this archive writes.
+            Log.i("ytdlp_flutter", "could not clear the old engine at $pythonDir; unpacking over it")
         }
         pythonDir.mkdirs()
 

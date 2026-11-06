@@ -2,6 +2,7 @@ library;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:ytdlp_flutter/ytdlp_flutter.dart';
@@ -254,7 +255,11 @@ class DownloadManager extends ChangeNotifier {
   }
 
   Future<List<int>> _httpDownload(Uri url) async {
-    final client = HttpClient();
+    // A phone on a bad connection has to fail, not hang: the button must be able to
+    // report something.
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 30)
+      ..idleTimeout = const Duration(seconds: 30);
     try {
       final req = await client.getUrl(url);
       final res = await req.close();
@@ -264,11 +269,26 @@ class DownloadManager extends ChangeNotifier {
           uri: url,
         );
       }
-      final out = <int>[];
+
+      // Fill once. `addAll` into a growing list copies everything collected so far on
+      // every chunk — for a 14 MB archive that is gigabytes of copying and reads as a
+      // hang before the checksum ever gets a say.
+      final builder = BytesBuilder(copy: false);
       await for (final chunk in res) {
-        out.addAll(chunk);
+        builder.add(chunk);
       }
-      return out;
+      final bytes = builder.takeBytes();
+
+      // A short read is what the checksum catches later; catching it here says which
+      // of the two it was.
+      final declared = res.contentLength;
+      if (declared > 0 && bytes.length != declared) {
+        throw HttpException(
+          'engine download was cut short: ${bytes.length} of $declared bytes',
+          uri: url,
+        );
+      }
+      return bytes;
     } finally {
       client.close(force: true);
     }

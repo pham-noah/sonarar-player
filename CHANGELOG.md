@@ -2,6 +2,50 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.4 — 2026-11-06
+
+### Fixed
+
+- **Glass panels read like panels again.** The queue was the odd one out: it painted the
+  room's background over the frosted sheet, so it was a flat black box under a grey
+  header, and its rows were black cards on glass. The sheet is the surface now, and the
+  rows sit on it the way This Track and Audio always did. Panels also hold more of their
+  own colour, so text no longer competes with the player moving underneath.
+- **"Clear upcoming" is just "Clear".** It sits under a header that already says UP NEXT,
+  on the only screen it appears. The other five languages lose the same redundancy.
+
+### Changed
+
+- **Queue edits stopped redrawing the app.** A reorder, a removal, a shuffle or a repeat
+  change now repaints the queue and the player only, instead of rebuilding the whole
+  shell — the shell had been compensating by hand with its own `setState` after every
+  shuffle, which is what a missing distinction looks like.
+
+### Under the hood
+
+The five refactors from the 0.4 plan, each with its own tests:
+
+- `PlayQueue` keeps one list of tracks instead of a play order and a shadow source list
+  edited in parallel, so a track cannot be in one and missing from the other. Clearing
+  what is up next is final now; a play-next survives a shuffle toggle.
+- `AppPrefs` states each key once — default, decoder, range, old name — and `fromJson`
+  and `copyWith` resolve through the same table, so a value cannot be clamped on one
+  path and not the other.
+- The transport's five booleans are one state with four phases, and each flag's reason
+  is written down where it is now enforced.
+- `AppState`'s bonds and context domains are objects that derive what they can, the
+  context's rules from the places they come from.
+- `main._load()` is a list of named boot steps, with the phase log generated rather than
+  printed by hand.
+
+### Verified on an emulator
+
+A debug x86_64 build, Glass: the boot log still prints the same seven phases with their
+timings; shuffle from the mini player and repeat from the player repaint from the queue
+notifier alone; removing a queue row closes the list up, UNDO restores it to the same
+slot, and a skip moves the title, the up-next line and the queue badge.
+
+
 ## 0.3.3 — 2026-11-05
 
 ### Changed

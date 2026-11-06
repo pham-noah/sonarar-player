@@ -1,6 +1,7 @@
 library;
 
 import '../l10n/script.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -52,7 +53,8 @@ class SearchHit {
   final String? localCoverPath;
 
   bool isOfficialGiven(Set<String> vouchedChannels) =>
-      looksLikeOfficialRelease || vouchedChannels.contains(channel.toLowerCase());
+      looksLikeOfficialRelease ||
+      vouchedChannels.contains(channel.toLowerCase());
 
   bool get looksLikeOfficialRelease {
     final t = title.toLowerCase();
@@ -146,10 +148,84 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   final _yt = YoutubeExplode();
 
   List<SearchHit> _hits = const [];
+
+  /// Set when the engine fetch failed. The button used to swallow it, so "it didn't
+  /// work" was the whole of what a person could see.
+  bool _setupFailed = false;
+
+  static const Key downloadsSetupBannerKey = Key('downloads-setup-banner');
+
+  Future<void> _installEngine() async {
+    if (_setupFailed && mounted) setState(() => _setupFailed = false);
+    final ok = await widget.downloads.installEngine();
+    if (!mounted) return;
+    setState(() => _setupFailed = !ok);
+    if (!ok) {
+      debugPrint('[Sonarar][DL] engine setup failed from the search banner');
+      toast(context, l10nOf(context).downloadsSetupFailed);
+    }
+  }
+
+  Widget _setupBanner(Skin skin) {
+    final downloads = widget.downloads;
+    final out = downloads.downloadsCompiledOut;
+    final installing = downloads.installingEngine;
+    final l10n = l10nOf(context);
+
+    return GestureDetector(
+      key: downloadsSetupBannerKey,
+      onTap: out || installing ? null : _installEngine,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(20, 4, 20, 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: skin.panel,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: _setupFailed ? skin.accent : skin.secondary(0.28),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              _setupFailed
+                  ? Icons.error_outline_rounded
+                  : Icons.cloud_download_outlined,
+              size: 18,
+              color: _setupFailed ? skin.accent : skin.textSecondary,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                out
+                    ? l10n.downloadsNotInThisBuild
+                    : (_setupFailed
+                          ? l10n.downloadsSetupFailed
+                          : l10n.downloadsSetup),
+                style: TextStyle(
+                  color: _setupFailed ? skin.accent : skin.textPrimary,
+                  fontSize: LayoutSpec.fontFloor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            if (installing)
+              SizedBox(
+                width: 40,
+                child: LinearProgressIndicator(
+                  minHeight: 3,
+                  color: skin.accent,
+                  backgroundColor: skin.secondary(0.2),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   bool _searching = false;
   String? _error;
-
-
 
   List<SearchHit> _local = const [];
 
@@ -184,14 +260,16 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         }
       }
       if (!all) continue;
-      hits.add(SearchHit(
-        id: t.id,
-        title: t.title,
-        channel: t.artist,
-        duration: t.duration,
-        thumbnailUrl: null,
-        localCoverPath: widget.repo.coverPathFor(t),
-      ));
+      hits.add(
+        SearchHit(
+          id: t.id,
+          title: t.title,
+          channel: t.artist,
+          duration: t.duration,
+          thumbnailUrl: null,
+          localCoverPath: widget.repo.coverPathFor(t),
+        ),
+      );
     }
 
     hits.sort((a, b) {
@@ -208,9 +286,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   Set<String> _vouched = {};
 
   static Set<String> _vouchChannels(List<SearchHit> hits) => {
-        for (final h in hits)
-          if (h.looksLikeOfficialRelease) h.channel.toLowerCase(),
-      };
+    for (final h in hits)
+      if (h.looksLikeOfficialRelease) h.channel.toLowerCase(),
+  };
 
   Set<String> _inLibrary() {
     final dynamic st = widget.state;
@@ -258,8 +336,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
   Future<void> _openImport() async {
     if (!widget.online) {
-      setState(() => _error =
-          l10nOf(context).ytNetworkOff);
+      setState(() => _error = l10nOf(context).ytNetworkOff);
       return;
     }
     final dir = await _downloadDir();
@@ -296,9 +373,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         _local = local;
         _hits = const [];
         _searching = false;
-        _error = local.isEmpty
-            ? l10nOf(context).ytNetworkOffNoMatch
-            : null;
+        _error = local.isEmpty ? l10nOf(context).ytNetworkOffNoMatch : null;
       });
       return;
     }
@@ -350,22 +425,22 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
   void _download(SearchHit hit) {
     if (!widget.online) {
-      setState(() => _error =
-          l10nOf(context).ytNetworkOff);
+      setState(() => _error = l10nOf(context).ytNetworkOff);
       return;
     }
     if (widget.officialOnly && !hit.isOfficialGiven(_vouched)) {
-      setState(() => _error =
-          l10nOf(context).ytNotOfficialSkipped);
+      setState(() => _error = l10nOf(context).ytNotOfficialSkipped);
       return;
     }
-    widget.downloads.enqueue(DownloadJob(
-      videoId: hit.id,
-      title: hit.title,
-      channel: hit.channel,
-      thumbnailUrl: hit.thumbnailUrl,
-      duration: hit.duration,
-    ));
+    widget.downloads.enqueue(
+      DownloadJob(
+        videoId: hit.id,
+        title: hit.title,
+        channel: hit.channel,
+        thumbnailUrl: hit.thumbnailUrl,
+        duration: hit.duration,
+      ),
+    );
   }
 
   @override
@@ -377,7 +452,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     final dynamic st = widget.state;
     final art = st.artForSurface(SurfaceId.search);
     return Stack(
-
       clipBehavior: chrome.backdropClip,
       children: [
         Positioned(
@@ -398,7 +472,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
                 AppScreenHeader(
                   skin: skin,
                   title: l10nOf(context).librarySearch,
@@ -408,73 +481,89 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
                   child: Row(
                     children: [
-                    Expanded(
-                    child: TextField(
-                    controller: _ctl,
-                    onChanged: _onQueryChanged,
-                    onSubmitted: (_) => _search(),
-                    textInputAction: TextInputAction.search,
-                    cursorColor: skin.accent,
-                    style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary),
-                    decoration: InputDecoration(
-                      hintText: l10nOf(context).ytSearchHint,
-                      hintStyle: TextStyle(color: skin.textSecondary, fontSize: LayoutSpec.fontSmall),
-                      filled: true,
-                      fillColor: skin.panel,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: skin.secondary(0.35),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(color: skin.accent, width: 2),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.search_rounded, color: skin.accent),
-                        onPressed: _search,
-                      ),
-                    ),
-                    ),
-                    ),
-                    if (!widget.allowNetwork && widget.onSearchOnline != null) ...[
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () => widget.onSearchOnline!(!widget.searchOnline),
-                        child: Container(
-                          width: 52,
-                          height: 52,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: widget.searchOnline
-                                  ? skin.accent
-                                  : skin.secondary(0.5),
-                              width: widget.searchOnline ? 2 : 1,
-                            ),
-                            color: widget.searchOnline
-                                ? skin.accentAt(0.14)
-                                : null,
+                      Expanded(
+                        child: TextField(
+                          controller: _ctl,
+                          onChanged: _onQueryChanged,
+                          onSubmitted: (_) => _search(),
+                          textInputAction: TextInputAction.search,
+                          cursorColor: skin.accent,
+                          style: TextStyle(
+                            fontSize: LayoutSpec.fontSmall,
+                            color: skin.textPrimary,
                           ),
-                          child: Tooltip(
-                            message: widget.searchOnline
-                                ? l10nOf(context).ytSearchingOnline
-                                : l10nOf(context).ytNetworkOnSearchOnly,
-                            child: Icon(
-                              widget.searchOnline
-                                  ? Icons.wifi_rounded
-                                  : Icons.wifi_off_rounded,
-                              color: widget.searchOnline
-                                  ? skin.accent
-                                  : skin.textSecondary,
-                              size: 22,
+                          decoration: InputDecoration(
+                            hintText: l10nOf(context).ytSearchHint,
+                            hintStyle: TextStyle(
+                              color: skin.textSecondary,
+                              fontSize: LayoutSpec.fontSmall,
+                            ),
+                            filled: true,
+                            fillColor: skin.panel,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: BorderSide(
+                                color: skin.secondary(0.35),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: BorderSide(
+                                color: skin.accent,
+                                width: 2,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Icons.search_rounded,
+                                color: skin.accent,
+                              ),
+                              onPressed: _search,
                             ),
                           ),
                         ),
                       ),
-                    ],
+                      if (!widget.allowNetwork &&
+                          widget.onSearchOnline != null) ...[
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () =>
+                              widget.onSearchOnline!(!widget.searchOnline),
+                          child: Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: widget.searchOnline
+                                    ? skin.accent
+                                    : skin.secondary(0.5),
+                                width: widget.searchOnline ? 2 : 1,
+                              ),
+                              color: widget.searchOnline
+                                  ? skin.accentAt(0.14)
+                                  : null,
+                            ),
+                            child: Tooltip(
+                              message: widget.searchOnline
+                                  ? l10nOf(context).ytSearchingOnline
+                                  : l10nOf(context).ytNetworkOnSearchOnly,
+                              child: Icon(
+                                widget.searchOnline
+                                    ? Icons.wifi_rounded
+                                    : Icons.wifi_off_rounded,
+                                color: widget.searchOnline
+                                    ? skin.accent
+                                    : skin.textSecondary,
+                                size: 22,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -485,13 +574,19 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     height: 44,
                     child: OutlinedButton.icon(
                       onPressed: _openImport,
-                      icon: Icon(Icons.playlist_add_rounded, color: skin.accent),
-                      label: Text(l10nOf(context).ytImportPlaylist,
-                          style: TextStyle(
-                              fontSize: LayoutSpec.fontFloor,
-                              letterSpacing: trackingFor(context, 1.2),
-                              fontWeight: FontWeight.w800,
-                              color: skin.accent)),
+                      icon: Icon(
+                        Icons.playlist_add_rounded,
+                        color: skin.accent,
+                      ),
+                      label: Text(
+                        l10nOf(context).ytImportPlaylist,
+                        style: TextStyle(
+                          fontSize: LayoutSpec.fontFloor,
+                          letterSpacing: trackingFor(context, 1.2),
+                          fontWeight: FontWeight.w800,
+                          color: skin.accent,
+                        ),
+                      ),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: skin.accentAt(0.6)),
                       ),
@@ -505,32 +600,45 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   ),
                 if (_error != null)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     child: Text(
                       _error!,
-                      style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.accent),
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor,
+                        color: skin.accent,
+                      ),
                     ),
                   ),
+                if (widget.downloads.needsEngine ||
+                    widget.downloads.downloadsCompiledOut)
+                  _setupBanner(skin),
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.only(
-                      bottom: PresentationScope.of(context, fallback: skin)
-                          .arrangement
-                          .bottomClearance,
+                      bottom: PresentationScope.of(
+                        context,
+                        fallback: skin,
+                      ).arrangement.bottomClearance,
                     ),
-                    itemCount: _local.length + _hits.length + (_local.isEmpty ? 0 : 1),
+                    itemCount:
+                        _local.length + _hits.length + (_local.isEmpty ? 0 : 1),
                     itemBuilder: (context, i) {
                       if (_local.isNotEmpty) {
                         if (i == 0) {
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(20, 4, 20, 6),
-                            child: Text(l10nOf(context).ytInLibrary,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  letterSpacing: trackingFor(context, 1.4),
-                                  fontWeight: FontWeight.w900,
-                                  color: skin.textSecondary,
-                                )),
+                            child: Text(
+                              l10nOf(context).ytInLibrary,
+                              style: TextStyle(
+                                fontSize: 13,
+                                letterSpacing: trackingFor(context, 1.4),
+                                fontWeight: FontWeight.w900,
+                                color: skin.textSecondary,
+                              ),
+                            ),
                           );
                         }
                         final j = i - 1;
@@ -540,13 +648,15 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         if (k == 0) {
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
-                            child: Text(l10nOf(context).ytOnYoutube,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  letterSpacing: trackingFor(context, 1.4),
-                                  fontWeight: FontWeight.w900,
-                                  color: skin.textSecondary,
-                                )),
+                            child: Text(
+                              l10nOf(context).ytOnYoutube,
+                              style: TextStyle(
+                                fontSize: 13,
+                                letterSpacing: trackingFor(context, 1.4),
+                                fontWeight: FontWeight.w900,
+                                color: skin.textSecondary,
+                              ),
+                            ),
                           );
                         }
                         return _row(skin, _hits[k - 1]);
@@ -564,64 +674,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   }
 
   Widget _row(Skin skin, SearchHit hit) {
-    if (hit.localCoverPath != null || _local.any((l) => l.id == hit.id && l.thumbnailUrl == null)) {
+    if (hit.localCoverPath != null ||
+        _local.any((l) => l.id == hit.id && l.thumbnailUrl == null)) {
       return _localRow(skin, hit);
-    }
-    // A build that can fetch its engine offers that instead of a dead control.
-    if (widget.downloads.needsEngine) {
-      return InkWell(
-        onTap: () {
-          // The manager notifies when the install finishes, so the row becomes a
-          // real download control without this widget tracking anything.
-          unawaited(widget.downloads.installEngine());
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Row(
-            children: [
-              Icon(Icons.cloud_download_outlined, size: 18, color: skin.accent),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  l10nOf(context).downloadsSetup,
-                  style: TextStyle(
-                    color: skin.textPrimary,
-                    fontSize: LayoutSpec.fontFloor,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              if (widget.downloads.installingEngine)
-                SizedBox(
-                  width: 40,
-                  child: LinearProgressIndicator(
-                    minHeight: 3,
-                    color: skin.accent,
-                    backgroundColor: skin.secondary(0.2),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      );
-    }
-    // And a build that can never download says so, once per row.
-    if (widget.downloads.downloadsCompiledOut) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          children: [
-            Icon(Icons.download_for_offline_outlined, size: 18, color: skin.secondary(0.6)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                l10nOf(context).downloadsNotInThisBuild,
-                style: TextStyle(color: skin.secondary(0.6), fontSize: LayoutSpec.fontFloor),
-              ),
-            ),
-          ],
-        ),
-      );
     }
     // Read the live job, never a snapshot of it.
     final job = widget.downloads.jobFor(hit.id);
@@ -630,7 +685,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     final done = _libraryIds.contains(hit.id);
     // The reason a download died is kept per video, so the row can say it
     // instead of the ring simply stopping.
-    final issue = done || downloading ? null : widget.downloads.errorFor(hit.id);
+    final issue = done || downloading
+        ? null
+        : widget.downloads.errorFor(hit.id);
     final l10n = l10nOf(context);
     final failure = issue == null
         ? null
@@ -646,9 +703,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
       child: Row(
         children: [
-
           GestureDetector(
-            onTap: (done && widget.onPlay != null && _libraryIds.contains(hit.id))
+            onTap:
+                (done && widget.onPlay != null && _libraryIds.contains(hit.id))
                 ? () => widget.onPlay!(hit.id)
                 : null,
             child: ClipRRect(
@@ -661,9 +718,11 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     : Image.network(
                         hit.thumbnailUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(color: skin.panel),
-                        loadingBuilder: (_, child, progress) =>
-                            progress == null ? child : Container(color: skin.panel),
+                        errorBuilder: (_, __, ___) =>
+                            Container(color: skin.panel),
+                        loadingBuilder: (_, child, progress) => progress == null
+                            ? child
+                            : Container(color: skin.panel),
                       ),
               ),
             ),
@@ -673,16 +732,24 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(hit.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary)),
+                Text(
+                  hit.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontSmall,
+                    color: skin.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Row(
                   children: [
                     if (widget.officialOnly) ...[
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
                         decoration: BoxDecoration(
                           color: hit.isOfficialGiven(_vouched)
                               ? skin.accentAt(0.22)
@@ -694,12 +761,16 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                           ),
                         ),
                         child: Text(
-                          hit.isOfficialGiven(_vouched) ? l10nOf(context).ytOfficial : l10nOf(context).ytNotOfficial,
+                          hit.isOfficialGiven(_vouched)
+                              ? l10nOf(context).ytOfficial
+                              : l10nOf(context).ytNotOfficial,
                           style: TextStyle(
                             fontSize: LayoutSpec.fontMicro,
                             fontWeight: FontWeight.w900,
                             letterSpacing: trackingFor(context, 0.6),
-                            color: hit.isOfficialGiven(_vouched) ? skin.accent : skin.textSecondary,
+                            color: hit.isOfficialGiven(_vouched)
+                                ? skin.accent
+                                : skin.textSecondary,
                           ),
                         ),
                       ),
@@ -710,7 +781,10 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         '${hit.channel} · ${_mmss(hit.duration)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary),
+                        style: TextStyle(
+                          fontSize: LayoutSpec.fontFloor,
+                          color: skin.textSecondary,
+                        ),
                       ),
                     ),
                   ],
@@ -748,7 +822,10 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 ? IconButton(
                     key: const Key('search-play'),
                     onPressed: () => widget.onPlay!(hit.id),
-                    icon: Icon(Icons.play_circle_fill_rounded, color: skin.accent),
+                    icon: Icon(
+                      Icons.play_circle_fill_rounded,
+                      color: skin.accent,
+                    ),
                     tooltip: l10nOf(context).ytPlayThis,
                   )
                 : Icon(Icons.check_circle_rounded, color: skin.accent)
@@ -767,9 +844,13 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
           else if (widget.officialOnly && !hit.isOfficialGiven(_vouched))
             Tooltip(
               message: l10nOf(context).ytNotOfficialBadge,
-              child: Icon(Icons.block_rounded,
-                  color: skin.secondary(0.5)),
+              child: Icon(Icons.block_rounded, color: skin.secondary(0.5)),
             )
+          else if (widget.downloads.needsEngine ||
+              widget.downloads.downloadsCompiledOut)
+            // The banner above the list is where this is dealt with. A live icon per
+            // row was thirty buttons that all did nothing.
+            Icon(Icons.download_rounded, color: skin.secondary(0.35))
           else
             IconButton(
               onPressed: () => _download(hit),
@@ -797,10 +878,13 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 height: 42,
                 child: cover == null
                     ? Container(color: skin.panel)
-                    : Image.file(File(cover),
+                    : Image.file(
+                        File(cover),
                         fit: BoxFit.cover,
                         cacheWidth: 168,
-                        errorBuilder: (_, __, ___) => Container(color: skin.panel)),
+                        errorBuilder: (_, __, ___) =>
+                            Container(color: skin.panel),
+                      ),
               ),
             ),
             const SizedBox(width: 12),
@@ -808,15 +892,25 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(hit.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textPrimary)),
+                  Text(
+                    hit.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontSmall,
+                      color: skin.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text('${hit.channel} · ${_mmss(hit.duration)}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
+                  Text(
+                    '${hit.channel} · ${_mmss(hit.duration)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontFloor,
+                      color: skin.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),

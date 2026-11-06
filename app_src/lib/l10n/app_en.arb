@@ -1373,4 +1373,10 @@
   "@downloadsSetup": {
     "description": "Offered instead of a download control when the engine is fetched on demand."
   }
+, 
+  "downloadsSetupFailed": "Couldn't fetch the engine. Check the connection and try again."
+, 
+  "@downloadsSetupFailed": {
+    "description": "Shown when the one-time engine download fails."
+  }
 }

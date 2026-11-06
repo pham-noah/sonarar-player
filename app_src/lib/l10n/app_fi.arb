@@ -946,5 +946,7 @@
   },
   "personalizeTabLook": "ULKOASU",
   "downloadsNotInThisBuild": "Lataukset eivät kuulu tähän versioon.",
-  "downloadsSetup": "Ota lataukset käyttöön (14 Mt kerran)"
+  "downloadsSetup": "Ota lataukset käyttöön (14 Mt kerran)"
+, 
+  "downloadsSetupFailed": "Moottorin nouto ei onnistunut. Tarkista yhteys ja yritä uudelleen."
 }

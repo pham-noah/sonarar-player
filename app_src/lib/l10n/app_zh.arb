@@ -946,5 +946,7 @@
   },
   "personalizeTabLook": "外观",
   "downloadsNotInThisBuild": "此版本不包含下载功能。",
-  "downloadsSetup": "启用下载（一次性 14 MB）"
+  "downloadsSetup": "启用下载（一次性 14 MB）"
+, 
+  "downloadsSetupFailed": "无法获取引擎。请检查网络后重试。"
 }

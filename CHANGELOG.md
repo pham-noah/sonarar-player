@@ -2,7 +2,7 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
-## Unreleased
+## 0.3.7 — 2026-11-09
 
 ### Fixed
 

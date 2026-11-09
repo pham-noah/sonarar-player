@@ -33,8 +33,8 @@ Every release is signed with the same project key, so they install over each oth
 cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is a store-signed build — that
 signature is not this one, so it cannot upgrade over a GitHub build.
 
-If a download will not install, check its size first: a 65 MB file that stopped halfway gives the same
-"could not parse the package" message as a bad build.
+If an install fails with "could not parse the package", check the download first: a file that stopped
+halfway fails exactly like a bad build.
 
 ## Getting music onto the phone
 
@@ -43,15 +43,15 @@ which is what makes a large collection cheap to scan and keeps covers, gain and 
 the audio.
 
 ```bash
-python3 tools/build_library.py           # dry run: inventory the PC folder into reports/
-python3 tools/execute_library.py --resume  # build audio, covers, gain and the manifest
-python3 tools/sync_library.py --check    # show what the phone is missing
-python3 tools/sync_library.py            # push only the changed files over adb
+python3 tools/build_library.py              # dry run: inventory the PC folder into reports/
+python3 tools/execute_library.py --resume   # build audio, covers, gain and the manifest
+python3 tools/sync_library.py --check       # show what the phone is missing
+python3 tools/sync_library.py               # push only the changed files over adb
 ```
 
 The app reads `library_manifest.json` from the folder its empty state names. `sync_library.py`
-compares sizes, never writes to the PC, and deletes from the phone only with `--prune`. It also carries
-`spectrum/<id>.bin`, which is what the visualiser draws.
+compares sizes, never writes to the PC, and deletes from the phone only with `--prune`. It also
+carries `spectrum/<id>.bin`, which is what the visualiser draws.
 
 ## Features
 
@@ -60,27 +60,24 @@ compares sizes, never writes to the PC, and deletes from the phone only with `--
   stop-after-this-track, bookmarks and per-track loop points.
 - **Queue** — drag to reorder, swipe to remove with an undo, clear upcoming, save the queue as a
   playlist, and play-next that leaves the current track alone.
-- **Library** — playlists, Fusion to merge two, browsing by playlist, artist and song, search and swipe
-  actions, a compendium that counts what you have heard, history by day and hour, and lyrics with
-  romaji readings: full for Korean, kana-only for Japanese, since reading kanji aloud would mean
-  shipping a 32 MB dictionary.
+- **Library** — playlists, Fusion to merge two, browsing by playlist, artist and song, search and
+  swipe actions, a compendium that counts what you have heard, history by day and hour, and lyrics
+  with romaji readings: full for Korean, kana-only for Japanese.
 - **Look** — six skins (Abyss, Amber, Crimson, Minimal, Mono, Bloom), three layout families (Sonar,
   Solid, Glass), and a visualiser drawn from per-track spectrum data kept beside the audio. A track
   with no spectrum file shows no bars.
 - **Languages** — English, Tiếng Việt, Suomi, 简体中文 and 日本語, chosen in Settings or followed from
-  the phone. Caps and letter-spacing follow the script, so a caseless language is neither shouted nor
-  tracked. Adding one is a single ARB file; [docs/localization.md](docs/localization.md) has the steps.
-- **Personalize** — one screen for the whole look: themes, layout, song-list shape, accent, motion,
-  the picture behind each place and its framing, art folders, and Home section order. Settings keeps
-  behaviour only.
-- **Themes own the look** — skin, layout, accent, backdrop, Home order, every per-place picture, the art
-  bundle and its framing. Editing anything edits the theme you are wearing, so switching away and back
-  returns your version. The file is written once the hand stops moving, not on every tick.
-- **Art folders** — a folder of pictures in `Music/Sonarar/art/` becomes a bundle, each picture a frame.
-  RESCAN picks up folders added while the app is open; ADJUST drags, zooms, rotates, mirrors or fades
-  any picture, and the framing follows that picture everywhere.
-- **Optional network** — weather from Open-Meteo, nearby places from Overpass, and YouTube playlist
-  downloads through yt-dlp into the same library format.
+  the phone. Adding one is a single ARB file; [docs/localization.md](docs/localization.md) has the
+  steps.
+- **Personalize** — one screen for the whole look: theme, layout, song-list shape, accent, motion, the
+  picture behind each place and its framing, art folders, and Home order. Settings keeps behaviour
+  only. A theme owns everything it shows, so switching away and back returns your version.
+- **Art folders** — a folder of pictures in `Music/Sonarar/art/` becomes a bundle, each picture a
+  frame. RESCAN picks up folders added while the app is open; ADJUST drags, zooms, rotates, mirrors or
+  fades any picture, and the framing follows it everywhere.
+- **Optional network** — weather (Open-Meteo), nearby places (Overpass, OpenStreetMap tiles), lyrics
+  (LRCLIB), the update check (GitHub), and YouTube playlist downloads through yt-dlp into the same
+  library format.
 
 ## Context engine
 
@@ -113,7 +110,15 @@ flutter analyze --fatal-infos && flutter test
 
 The APK is unsigned unless `android/key.properties` (gitignored) names a `storeFile`,
 `storePassword`, `keyAlias` and `keyPassword`. `--target-platform=android-arm64` is not optional: the
-default build packages two more ABIs that no phone runs and that make up most of the file size.
+default build packages two more ABIs that no phone runs.
+
+Releases ship the **lite** build, which downloads the engine on first use. Omit the define and the
+14 MB engine is packaged into the APK:
+
+```bash
+flutter build apk --release --target-platform=android-arm64 \
+  --dart-define=SONARAR_DOWNLOADS=false
+```
 
 ## Updates
 
@@ -130,9 +135,10 @@ Places is switched on; with Places off the GPS is never touched. The microphone 
 one thing: the spectrum probe attaches a system `Visualizer`, which Android gates behind it. It is
 asked for from that probe screen, and playback does not use it.
 
-The build contains no analytics, tracking or advertising. Its only network calls are weather
-(`api.open-meteo.com`), a coarse position fallback (`ipapi.co`), nearby places (Overpass), and YouTube
-downloads on request. None of them carry an account.
+The build contains no analytics, tracking or advertising. Its network calls are weather
+(`api.open-meteo.com`), a coarse position fallback (`ipapi.co`), places (`overpass-api.de`,
+`tile.openstreetmap.org`), lyrics (`lrclib.net`), the update check (`api.github.com`), and YouTube
+(`www.youtube.com`, `i.ytimg.com`) for playlist search and downloads. None of them carry an account.
 
 ## Licence
 

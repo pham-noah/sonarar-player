@@ -74,7 +74,7 @@ class SettingsScreen extends StatefulWidget {
   final Future<AppUpdate?> Function()? checkUpdate;
 
   /// The update flow, when the shell has one. Present means the row opens the
-  /// sheet; absent means the old one-line answer, which is what a bare test sees.
+  /// sheet; absent means no update flow is wired, which is what a bare test sees.
   final UpdateUi? updateUi;
 
   final bool showTitle;

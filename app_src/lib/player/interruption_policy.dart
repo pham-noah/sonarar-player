@@ -1,12 +1,9 @@
 /// What an audio-focus event means for playback.
 ///
-/// The rules lived inside a nested `switch` in the engine's stream listener, where
-/// the only way to test them was to raise a real interruption on a real device —
-/// which is how "a phone call ducks the music and then it never comes back" ships.
-/// They are a function now: give it the event and the two facts that matter, and
-/// it answers with the one thing the engine should do.
+/// The rules are a pure function: give it the event and the two facts that
+/// matter, and it answers with the one thing the engine should do.
 ///
-/// The two facts are the ones the old code reached into the engine for:
+/// The two facts:
 ///
 ///  * `pausedByInterruption` — did the platform pause this, or did the user?
 ///    A pause the user asked for must stay paused when the call ends.

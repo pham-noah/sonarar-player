@@ -884,8 +884,7 @@ class _HomeShellState extends State<HomeShell>
   @visibleForTesting
   bool get debugLibraryListOpen => _libraryListOpen;
 
-  /// Whether the boot sequence still owns the screen. A shell that never
-  /// finishes booting is stuck on the splash; this is how a test tells.
+  /// Whether the boot sequence still owns the screen.
   @visibleForTesting
   bool get debugLoading => _loading;
 
@@ -957,8 +956,8 @@ class _HomeShellState extends State<HomeShell>
     unawaited(_load());
   }
 
-  /// Playing, volume and stop-after-this-track all arrive here now, so a repaint
-  /// no longer depends on which call site remembered to ask for one.
+  /// Playing, volume and stop-after-this-track all arrive here, so one listener
+  /// drives the repaint.
   void _onPlayerChanged() {
     if (!mounted) return;
     setState(() {});
@@ -1098,9 +1097,8 @@ class _HomeShellState extends State<HomeShell>
         _bootFinish,
       ]);
     } catch (e, stack) {
-      // A boot step that throws used to leave the shell on its progress screen
-      // forever. A music player that opens to an empty library is a bad day; one
-      // that never opens at all is a broken app.
+      // A boot step that throws must still leave a usable shell; without this the
+      // progress screen stays up forever.
       debugPrint('[Sonarar][BOOT] failed: $e\n$stack');
       if (!mounted) return;
       setState(() {
@@ -1113,10 +1111,9 @@ class _HomeShellState extends State<HomeShell>
   Future<bool> _bootPermissions(Bootstrapper boot) async {
     boot.note(0.02, 'checking permissions');
 
-    // Nothing in this group needs another's answer, and each is a platform round
-    // trip: the two permission reads, the chosen music root, and the state
-    // directory. Waiting for them one at a time was four round trips in series
-    // for no reason. The state lives under the default root, not the chosen one:
+    // None of these needs another's answer and each is a platform round trip, so
+    // they run together. The state lives under the default root, not the chosen
+    // one:
     // plays, playlists and themes are not music, and changing the music folder
     // must not move them.
     final (storage, notifications, root, stores) = await (
@@ -3278,8 +3275,7 @@ class _HomeShellState extends State<HomeShell>
                 children: [_tabBackdrop(skin), _tabContentArrival(skin)],
               ),
             ),
-            // The offer used to exist only in the docked frame, so a user on the
-            // Solid or Glass layout was never told there was an update.
+            // The offer belongs in every layout, not only the docked frame.
             Positioned(
               top: 0,
               left: 0,

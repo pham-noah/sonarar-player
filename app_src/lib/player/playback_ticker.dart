@@ -1,10 +1,8 @@
 /// The clock the player runs on: one periodic timer, started when there is
 /// something worth watching and stopped when there is not.
 ///
-/// The shell used to carry this as a `Timer?`, a `ValueNotifier<bool>` nobody
-/// listened to, and a getter, with start and stop logic spread across three
-/// methods. It is one object now, and the timer factory is injectable so the
-/// start/stop/replace behaviour can be tested without waiting on wall time.
+/// One object owns start, stop and replace, and the timer factory is injectable so
+/// that behaviour can be tested without waiting on wall time.
 library;
 
 import 'dart:async';

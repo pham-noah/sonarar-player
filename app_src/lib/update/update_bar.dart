@@ -14,8 +14,7 @@ import 'update_ui.dart';
 ///
 /// It reads the shell's one [UpdateUi] — the same object the update sheet and the
 /// Settings row use — so it cannot claim a version the sheet has already
-/// withdrawn. It used to keep its own copy of the found update and listen to a
-/// global notifier, which is two answers to one question.
+/// withdrawn.
 ///
 /// When there is nothing newer it draws nothing at all — no empty row, no
 /// reserved space.

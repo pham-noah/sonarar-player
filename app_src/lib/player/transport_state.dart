@@ -1,13 +1,11 @@
 /// The transport's state, as one state instead of five booleans.
 ///
-/// The engine used to carry `_wantPlay`, `_playOutstanding`, `_playRetries`,
-/// `_skipRequested` and `_suppressNextCompletion` as independent flags, so every
-/// combination of them was representable — including ones that cannot happen: a skip
-/// that is not playing, a retry count for a play that was never issued, a
-/// suppressed completion with nothing to suppress. This says which combinations are
-/// real and makes the rest unrepresentable.
+/// Independent flags make every combination representable — including ones that
+/// cannot happen: a skip that is not playing, a retry count for a play that was
+/// never issued, a suppressed completion with nothing to suppress. This says which
+/// combinations are real and makes the rest unrepresentable.
 ///
-/// What each flag was for, written down before it was removed:
+/// The events it is built from:
 ///
 /// - `_wantPlay` — the app's intent. It survives a queue load (the platform will
 ///   start when it is ready) and is cleared by a pause, by giving up on a play that

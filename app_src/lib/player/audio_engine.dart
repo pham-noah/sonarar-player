@@ -537,9 +537,8 @@ class AudioEngine implements PlaybackEngine {
   Future<void> _fadeThenStop() async {
     _transport.stopRequested();
 
-    // The loop's own fade length, or 400ms when it has none. This used to be a
-    // second fade loop with its own step count and its own cancel flag; it is the
-    // same fade as everywhere else now, so cancelling behaves the same way.
+    // The loop's own fade length, or 400 ms when it has none, on the same fade
+    // path as everything else so cancelling behaves the same way.
     final over = Duration(
       milliseconds: loop?.points?.fade.inMilliseconds != null
           ? loop!.points!.fade.inMilliseconds.clamp(50, 2000)

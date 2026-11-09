@@ -89,8 +89,7 @@ class ContextCluster {
     _rules = withPlaceRules(_writtenRules, _places);
   }
 
-  /// True when a mode was pinned. False when there is no context to pin it to yet,
-  /// which is what the app's own guard used to be.
+  /// True when a mode was pinned. False when there is no context to pin it to yet.
   bool enterMode(ManualMode mode) {
     final base = _lastContext;
     if (base == null) return false;

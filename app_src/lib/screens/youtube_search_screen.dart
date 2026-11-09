@@ -149,8 +149,8 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
   List<SearchHit> _hits = const [];
 
-  /// Set when the engine fetch failed. The button used to swallow it, so "it didn't
-  /// work" was the whole of what a person could see.
+  /// Set when the engine fetch failed. A failure has to be visible, or "it didn't
+  /// work" is all a person can see.
   bool _setupFailed = false;
 
   static const Key downloadsSetupBannerKey = Key('downloads-setup-banner');

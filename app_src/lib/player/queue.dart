@@ -56,9 +56,7 @@ enum InsertPolicy {
 /// [rank] is a sort key, not a second copy of the order: it is the only memory the
 /// queue keeps of where the track sat before a shuffle, so that turning shuffle off
 /// has something to return to. Because it lives on the entry, the queue has one list
-/// of tracks and no membership invariant to keep in sync by hand — a track cannot be
-/// in the play order and missing from the source, which is what the old `_source` +
-/// `_order` pair made possible.
+/// of tracks and no membership invariant to keep in sync by hand.
 class _Slot {
   _Slot(this.track, this.rank);
 
@@ -83,9 +81,8 @@ class PlayQueue {
 
   /// One entry per track id, first occurrence wins.
   ///
-  /// Ids are what `jumpTo`, `restoreOrder` and `replaceCurrent` resolve against,
-  /// so a queue holding two copies of one id can only ever mean the first of
-  /// them — the second is unreachable and makes edits land on the wrong row.
+  /// Ids are what `jumpTo`, `restoreOrder` and `replaceCurrent` resolve against, so
+  /// a second copy of an id is unreachable and makes edits land on the wrong row.
   static List<Track> _uniqueById(Iterable<Track> tracks) {
     final seen = <String>{};
     return [
@@ -144,8 +141,8 @@ class PlayQueue {
 
   /// Puts the queue into rank order, then shuffles it when that is the mode.
   ///
-  /// Everything that used to rebuild the play order from the source list goes
-  /// through here: the ranks are the source order, with the edits already applied.
+  /// Every rebuild of the play order goes through here: the ranks are the source
+  /// order, with the edits already applied.
   void _arrange() {
     final ordered = [for (var i = 0; i < _entries.length; i++) (i, _entries[i])]
       ..sort((a, b) {
@@ -303,8 +300,7 @@ class PlayQueue {
   /// Swaps the playing track for [replacement] without moving anything.
   ///
   /// One write to the slot that is playing, plus dropping any second copy that was
-  /// already queued. The old version rebuilt both lists around this, which is where
-  /// the index arithmetic lived.
+  /// already queued.
   bool replaceCurrent(Track replacement) {
     final at = _index;
     if (at < 0 || at >= _entries.length) return false;

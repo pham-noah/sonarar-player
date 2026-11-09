@@ -1,9 +1,7 @@
 /// The sheet the update check answers in.
 ///
-/// The offer used to be a strip that downloaded the moment you touched it and then
-/// threw the file at the installer: no size, no notes, no progress worth watching,
-/// and nothing to say when a download failed. This is the same offer as a real
-/// flow — the version, what changed, how big it is, then Download, then Install.
+/// The offer is a real flow: the version, what changed, how big it is, then
+/// Download, then Install — and something to say when a download fails.
 library;
 
 import 'package:flutter/material.dart';

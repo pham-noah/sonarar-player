@@ -79,10 +79,8 @@ class Track {
   /// `Duration(microseconds:)` overflows.
   static const int maxDurationMs = 100 * Duration.millisecondsPerDay;
 
-  /// What the manifest says the length is, in the only shapes that mean
-  /// anything: a finite, positive number of seconds. A hand-edited or truncated
-  /// file can say `-12`, `"long"` or `1e400`; none of those is a reason to bring
-  /// the library down, so they read as unknown.
+  /// A finite, positive number of seconds, or unknown. `-12`, `"long"` and
+  /// `1e400` all read as unknown instead of bringing the library down.
   static Duration durationOf(Object? raw) {
     if (raw is! num || !raw.isFinite) return Duration.zero;
     final ms = raw * 1000;
@@ -121,11 +119,9 @@ class Track {
 
   /// Parses a manifest without trusting a single field in it.
   ///
-  /// A manifest that cannot be read is an empty library, not a crash: it is
-  /// written by a build script over adb and can be interrupted halfway. Two
-  /// entries claiming the same id would make `jumpTo`, playlists and the queue
-  /// disagree about which track they mean, so the first one wins and the rest
-  /// are reported.
+  /// A manifest that cannot be read is an empty library, not a crash. Duplicate
+  /// ids would make `jumpTo`, playlists and the queue disagree about which track
+  /// they mean, so the first one wins and the rest are reported.
   static List<Track> listFromManifest(String manifestJson) {
     final root = jsonDecode(manifestJson);
     if (root is! Map) return const [];

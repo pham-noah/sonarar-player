@@ -364,9 +364,8 @@ class AppState extends ChangeNotifier {
 
   /// Replaces the known places, and the rules derived from them.
   ///
-  /// Notifies like every other mutation here. Which setters were quiet used to be
-  /// something a caller had to remember, and the failure it invited was a panel
-  /// drawing yesterday's places.
+  /// Notifies like every other mutation here, so no screen has to remember to ask
+  /// again.
   void setPlaces(PlaceBook book) {
     _context.setPlaces(book);
     _rebuildRules();
@@ -714,8 +713,8 @@ class AppState extends ChangeNotifier {
     if (next.encode() == _personalization.encode()) return;
     _personalization = next;
     _stashActiveTheme();
-    // The palette carries the accent, and it is cached: without this the drawer
-    // and every Sheet kept painting the old colour until the layout changed.
+    // The palette carries the accent and is cached; drop it so nothing keeps
+    // painting the previous one.
     _presentationCache = null;
     // Anything listening to the skin as a value has to see the new accent too.
     skinListenable.value = _accented(_skin);

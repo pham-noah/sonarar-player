@@ -70,7 +70,7 @@ Future<AppUpdate?> checkForUpdate(
   // that never fires — the version comparison needs both sides.
   String currentVersion = appVersionName,
   /// Whether this build carries its download engine. Decides which asset is
-  /// offered; null keeps the old "whatever arm64 APK exists" behaviour.
+  /// offered; null accepts whatever arm64 APK exists.
   bool? engineBundled,
   http.Client? client,
 }) async {
@@ -153,13 +153,10 @@ Future<AppUpdate?> checkForUpdate(
 
 /// The digest a release publishes for [assetName], if it publishes one.
 ///
-/// One digest is unambiguous. A release that publishes two — lite and full —
-/// must not have the digest of one checked against the other, which is what a
-/// first-match reader did: it deleted the APK it had just downloaded and never
-/// offered the update again. With several digests the one on the asset's own
-/// line wins, then the one on a `full`/`lite` line matching the asset; an
-/// ambiguous body yields null, which accepts the download on size alone rather
-/// than on a digest belonging to another file.
+/// One digest is unambiguous. A release that publishes two — lite and full — must
+/// not have one file's digest checked against the other: with several digests the
+/// one on the asset's own line wins, then the one on a matching `full`/`lite`
+/// line. An ambiguous body yields null and the download is verified on size alone.
 String? _digestIn(Object? body, {String? assetName}) {
   if (body is! String) return null;
   final matches = RegExp(

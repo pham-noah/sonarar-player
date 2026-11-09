@@ -470,10 +470,9 @@ class LyricsService {
 
   /// The file a track's cached lyrics live in.
   ///
-  /// A track id is a manifest string, not a filename: used raw it can carry a
-  /// separator or climb out of the cache folder. Ids that are already safe keep
-  /// their readable name; anything else is hashed, so the cache always stays
-  /// inside `lyrics/` and two ids cannot collide into one file.
+  /// A track id is a manifest string, not a filename. Safe ids keep their readable
+  /// name; anything else is hashed, so the cache stays inside `lyrics/` and two
+  /// ids cannot collide into one file.
   static String _cacheKey(String trackId) {
     final safe = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$').hasMatch(trackId);
     return safe ? trackId : sha1.convert(utf8.encode(trackId)).toString();

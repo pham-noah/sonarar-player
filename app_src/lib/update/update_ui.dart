@@ -1,10 +1,7 @@
 /// One update check, from "is there anything?" to "install it".
 ///
-/// The check used to be a bar you tapped, which downloaded immediately and handed
-/// the file to the system installer — no notes, no size, no choice, and nowhere to
-/// say why a download failed. This is the state behind a proper sheet: the phases
-/// are explicit, and checking, downloading and installing are injected so each can
-/// be driven in a test without a network or an installer.
+/// The phases are explicit, and checking, downloading and installing are injected
+/// so each can be driven in a test without a network or an installer.
 library;
 
 import 'dart:io';

@@ -6,12 +6,9 @@ import 'dart:io';
 /// One preference: its key in the file, what it reads as when the file is silent,
 /// how a value in the file is understood, and where its range is enforced.
 ///
-/// A key used to be written out in five places — the field, `copyWith`, `toJson`,
-/// `fromJson`, and the screen that reads it — and the three that touch the file
-/// disagreed: the decoder took a junk value as its default while `copyWith` clamped
-/// it, so a number could be written at one range and read back at another. The
-/// tolerance is stated once, here, and both `fromJson` and `copyWith` come through
-/// it.
+/// The tolerance is stated once, here: `fromJson` and `copyWith` resolve through
+/// the same row, so a value cannot be written at one range and read back at
+/// another.
 class PrefKey<T> implements PrefRow {
   PrefKey(
     this.name, {
@@ -38,7 +35,8 @@ class PrefKey<T> implements PrefRow {
   /// like absent: a hand-edited file must not stop a launch.
   final T? Function(Object? value) decode;
 
-  /// The names this key used to be written under. An old file is read, not migrated.
+  /// The names this key was written under before a rename. An old file is read,
+  /// not migrated.
   final List<String> legacy;
 
   /// The range, in the one place that both the decoder and `copyWith` pass through.

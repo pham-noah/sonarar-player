@@ -1,14 +1,12 @@
 /// Puts the current track into the engine, and says whether it got there.
 ///
-/// This is the part of the shell that used to be `_loadCurrentTrack`: resolve the
-/// file, hand the engine the window of the queue around it, and pick the right
-/// one of the engine's three ways in (seek inside the queue it already holds, set
-/// a new queue, or play a single file that is not in the window).
+/// Resolve the file, hand the engine the window of the queue around it, and pick
+/// one of its three ways in: seek inside the queue it holds, set a new queue, or
+/// play a single file that is not in the window.
 ///
-/// What it deliberately does **not** do is decide what the interface shows or what
-/// to play after a failure — stepping over an unloadable track is a UI decision,
-/// so it stays in the shell. That split is what lets the loading rules be tested
-/// against a fake engine instead of a widget tree.
+/// It deliberately does **not** decide what the interface shows or what to play
+/// after a failure — stepping over an unloadable track is a UI decision. That
+/// split is what lets the loading rules be tested against a fake engine.
 library;
 
 import 'dart:async';
@@ -141,9 +139,8 @@ class TrackLoader {
         ok = true;
       } else if (await e.editQueue(playable, keepPlaying: path)) {
         // The queue moved under a track that did not. Editing the queue in place
-        // keeps the platform player running; setQueue would stop it — the music
-        // drops for a moment and comes back, which is what a queue edit used to
-        // sound like.
+        // keeps the platform player running; setQueue would stop it and the music
+        // would drop for a moment.
         ok = true;
       } else {
         ok = await e.setQueue(playable, initialIndex: idx);

@@ -1,10 +1,8 @@
 /// The smallest set of edits that turns one engine queue into another.
 ///
-/// Changing a queue entry used to mean handing just_audio a whole new
-/// [ConcatenatingAudioSource], which tears the platform player down — the music
-/// stops for a moment and comes back where it was. The queue supports being
-/// edited in place (`move` was already used for reordering), so the fix is to say
-/// what actually changed and apply only that.
+/// Handing just_audio a new [ConcatenatingAudioSource] tears the platform player
+/// down; the queue can be edited in place, so say what changed and apply only
+/// that.
 ///
 /// The diff is a pure function on purpose: `insert`/`removeAt`/`move` against a
 /// live player cannot be unit-tested, but *which* edits to make can, and that is
@@ -56,7 +54,7 @@ class QueueMove extends QueueEdit {
 /// are never shifted by a removal above them. Insertions then walk forward and
 /// only add what is missing. Whatever is left out of order is moved into place.
 /// Every edit is stated against the list as it stands *when that edit is applied*,
-/// which is what lets a caller replay them in order.
+/// so a caller can replay them in order.
 List<QueueEdit> queueEditsFor({
   required List<String> from,
   required List<EngineEntry> to,

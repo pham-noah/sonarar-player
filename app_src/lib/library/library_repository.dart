@@ -41,9 +41,8 @@ class LibraryRepository {
 
   static const String _sep = '/';
 
-  /// A path under the library root, or null when [relative] tries to climb out
-  /// of it. The manifest is a document from elsewhere — a PC build script, a
-  /// hand edit — so `../` in it must not become a read anywhere on the device.
+  /// A path under the library root, or null when [relative] climbs out of it.
+  /// `../` in a manifest must not become a read anywhere on the device.
   String? _underRoot(String relative) {
     final normalised = _relativeUnderRoot(relative);
     if (normalised == null) return null;

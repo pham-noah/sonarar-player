@@ -2,6 +2,39 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## Unreleased
+
+### Fixed
+
+- **A half-written library cannot freeze the app any more.** A truncated or wrong-typed
+  `library_manifest.json` used to throw out of the library read, and the boot sequence that
+  called it was not guarded, so the app sat on "reading your library" forever. The manifest
+  reader now skips what it cannot understand (first duplicate id wins), the repository treats
+  an unreadable manifest as an empty library, and the boot sequence catches any step that
+  fails and still shows the shell.
+- **The same tolerance for the files read at launch.** A `"loop_count": "3"` in
+  `loop_points.json` or a `"completion_points": "6"` in `bonds.json` threw at boot; both read
+  as defaults now. Lyrics survive a row whose fields are not strings, a cache entry whose
+  values are not numbers, and a timestamp like `[1e308:00]` (refused instead of overflowing);
+  a cached lyric file is written inside `lyrics/` even when the track id is a path.
+- **The update check offers the right digest.** When a release published a digest for more
+  than one APK, the first one was used for whichever build was offered, so the other build
+  deleted its own download and never updated. The digest is now taken from the offered
+  asset's line (or its `full`/`lite` line), and an ambiguous body verifies on size alone
+  rather than against another file's hash. Prerelease tags are no longer auto-installed.
+- **Ids and paths are unique and contained.** The queue dedupes on construction, on
+  `replaceSource` and on every insert; a manifest cannot name a file outside the library
+  folder; a playlist no longer keeps empty track ids; a negative duration reads as unknown.
+- The README's install line names the build it actually ships.
+
+### Verified
+
+- `flutter analyze`: 0 issues. `flutter test`: 2,130 passed, 4 skipped, 0 failed —
+  including 159 adversarial probes (`flutter test --tags adversarial`) over hostile
+  manifests, queues, caches, prefs, playlists, release documents and layouts at 2× text.
+- The boot harness now really boots: every test in `shell_harness_test.dart` reaches
+  `boot 100% ready` and the loaded-state assertion checks the splash is gone.
+
 ## 0.3.6 — 2026-11-06
 
 ### Fixed

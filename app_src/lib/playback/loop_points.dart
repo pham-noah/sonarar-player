@@ -60,12 +60,13 @@ class LoopPoints {
       return Duration(milliseconds: ms < 0 ? 0 : ms);
     }
 
+    final rawCount = json['loop_count'];
     return LoopPoints(
       trackId: id,
       introEnd: ms('intro_end_ms'),
       loopStart: ms('loop_start_ms'),
       loopEnd: ms('loop_end_ms'),
-      loopCount: (json['loop_count'] as num?)?.toInt() ?? 0,
+      loopCount: rawCount is num ? rawCount.toInt() : 0,
       fade: fadeOf(json['fade_ms']),
     );
   }

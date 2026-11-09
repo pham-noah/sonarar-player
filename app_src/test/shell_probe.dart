@@ -21,6 +21,8 @@ class HomeShellStateProbe {
     switch (member) {
       case 'tickerRunning':
         return d.tickerRunning;
+      case 'loading':
+        return d.debugLoading;
       case 'debugCurrentPanel':
         return d.debugCurrentPanel;
       case 'debugOpenPanel':

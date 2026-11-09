@@ -90,6 +90,9 @@ Future<AppUpdate?> checkForUpdate(
     final name = body['name'];
     final asset = _apkAsset(body['assets'], engineBundled: engineBundled);
     if (tag is! String || asset == null) return null;
+    // `releases/latest` normally hides prereleases, but a beta published without
+    // the flag would otherwise be installed over a stable build by itself.
+    if (_isPrerelease(tag)) return null;
 
     // A release title usually carries the build (`0.2.2+22`); early ones did
     // not, and a check that gives up on those silently never fires. Use the
@@ -106,7 +109,7 @@ Future<AppUpdate?> checkForUpdate(
       sizeBytes: asset.$2,
       notesUrl: body['html_url'] is String ? body['html_url'] as String : '',
       notes: body['body'] is String ? body['body'] as String : '',
-      sha256: _digestIn(body['body']),
+      sha256: _digestIn(body['body'], assetName: asset.$3),
     );
   } catch (_) {
     return null;
@@ -121,7 +124,7 @@ Future<AppUpdate?> checkForUpdate(
 /// lite install the full APK would quietly reinstall the 14 MB the user never wanted,
 /// so the asset has to match the build asking — the engine archive is fetched on
 /// demand precisely so nobody downloads it by accident.
-(String, int)? _apkAsset(Object? assets, {bool? engineBundled}) {
+(String, int, String)? _apkAsset(Object? assets, {bool? engineBundled}) {
   if (assets is! List) return null;
   final apks = [
     for (final a in assets)
@@ -145,18 +148,63 @@ Future<AppUpdate?> checkForUpdate(
   final url = chosen['browser_download_url'];
   if (url is! String) return null;
   final size = chosen['size'];
-  return (url, size is int ? size : 0);
+  return (url, size is int ? size : 0, chosen['name'] as String);
 }
 
-/// The digest a release publishes for its APK, if it publishes one.
-String? _digestIn(Object? body) {
+/// The digest a release publishes for [assetName], if it publishes one.
+///
+/// One digest is unambiguous. A release that publishes two — lite and full —
+/// must not have the digest of one checked against the other, which is what a
+/// first-match reader did: it deleted the APK it had just downloaded and never
+/// offered the update again. With several digests the one on the asset's own
+/// line wins, then the one on a `full`/`lite` line matching the asset; an
+/// ambiguous body yields null, which accepts the download on size alone rather
+/// than on a digest belonging to another file.
+String? _digestIn(Object? body, {String? assetName}) {
   if (body is! String) return null;
-  final match = RegExp(
+  final matches = RegExp(
     r'sha-?256[:\s=]+([a-fA-F0-9]{64})',
     caseSensitive: false,
-  ).firstMatch(body);
-  return match?.group(1)?.toLowerCase();
+  ).allMatches(body).toList();
+  if (matches.isEmpty) return null;
+  if (matches.length == 1) return matches.first.group(1)!.toLowerCase();
+
+  /// The digest's own line and the line above it: releases name the file on one
+  /// line and put the hash on the next.
+  String contextOf(RegExpMatch m) {
+    final lineStart = body.lastIndexOf('\n', m.start) + 1;
+    final aboveStart = lineStart <= 0
+        ? 0
+        : body.lastIndexOf('\n', lineStart - 2) + 1;
+    var end = body.indexOf('\n', m.end);
+    if (end < 0) end = body.length;
+    return body.substring(aboveStart, end).toLowerCase();
+  }
+
+  String? pick(bool Function(String line) test) {
+    for (final match in matches) {
+      if (test(contextOf(match))) return match.group(1)!.toLowerCase();
+    }
+    return null;
+  }
+
+  final name = assetName?.toLowerCase();
+  if (name != null) {
+    final byName = pick((line) => line.contains(name));
+    if (byName != null) return byName;
+    for (final token in const ['full', 'lite']) {
+      if (name.contains(token)) {
+        final byToken = pick((line) => line.contains(token));
+        if (byToken != null) return byToken;
+      }
+    }
+  }
+  return null;
 }
+
+/// `v1.2.3-beta.1` is a prerelease, whatever the GitHub flag says.
+bool _isPrerelease(String tag) =>
+    RegExp(r'^\s*v?\d+\.\d+\.\d+-').hasMatch(tag);
 
 /// True when [tag] names a version above [current].
 bool _isNewer(String tag, String current) {

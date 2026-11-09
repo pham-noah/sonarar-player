@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
 class LyricLine {
@@ -39,6 +40,9 @@ class LyricLine {
     return [for (final at in stamps) LyricLine(at, text)];
   }
 
+  /// Longer than any song, and safely below the point where `round()` throws.
+  static const double _maxStampMs = 100 * 60 * 60 * 1000;
+
   static Duration? _stamp(String stamp) {
     final parts = stamp.split(':');
     if (parts.length < 2 || parts.length > 3) return null;
@@ -55,7 +59,9 @@ class LyricLine {
     final ms = nums.length == 2
         ? nums[0] * 60000 + nums[1] * 1000
         : nums[0] * 3600000 + nums[1] * 60000 + nums[2] * 1000;
-    if (ms.isNaN || ms < 0) return null;
+    // `[1e308:00]` is a finite double whose milliseconds are not an int; a
+    // stamp past any song is a broken line, not a position.
+    if (!ms.isFinite || ms < 0 || ms > _maxStampMs) return null;
     return Duration(milliseconds: ms.round());
   }
 }
@@ -327,12 +333,12 @@ class LyricsService {
 
     // LRCLIB tags instrumentals; saying "no lyrics" for one is a wrong answer.
     if (hit['instrumental'] == true &&
-        ((hit['syncedLyrics'] as String?)?.isEmpty ?? true) &&
-        ((hit['plainLyrics'] as String?)?.isEmpty ?? true)) {
+        (_text(hit['syncedLyrics'])?.isEmpty ?? true) &&
+        (_text(hit['plainLyrics'])?.isEmpty ?? true)) {
       return const Lyrics(lines: [], instrumental: true, source: 'lrclib');
     }
 
-    final synced = hit['syncedLyrics'] as String?;
+    final synced = _text(hit['syncedLyrics']);
     if (synced != null && synced.isNotEmpty) {
       final lines = <LyricLine>[];
       for (final raw in synced.split('\n')) {
@@ -347,7 +353,7 @@ class LyricsService {
       }
     }
 
-    final plain = hit['plainLyrics'] as String?;
+    final plain = _text(hit['plainLyrics']);
     if (plain != null && plain.isNotEmpty) {
       return Lyrics(lines: const [], plain: plain, source: 'lrclib (plain)');
     }
@@ -403,7 +409,12 @@ class LyricsService {
     Map<String, dynamic>? farPlain;
     for (final row in rows) {
       if (row is! Map) continue;
-      final map = row.cast<String, dynamic>();
+      final Map<String, dynamic> map;
+      try {
+        map = row.cast<String, dynamic>();
+      } on TypeError {
+        continue;
+      }
       final name = normaliseQuery('${map['trackName'] ?? ''}');
       // Always: a row whose title is a different song is not this song, no
       // matter how well the artist field matches.
@@ -423,19 +434,19 @@ class LyricsService {
         // A video runs longer than the track it contains.
         final window = duration.inSeconds < 90 ? 20 : duration.inSeconds * 0.2;
         if (gap > window) {
-          final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;
+          final hasSynced = _text(map['syncedLyrics'])?.isNotEmpty ?? false;
           if (hasSynced) {
             farSynced ??= map;
-          } else if ((map['plainLyrics'] as String?)?.isNotEmpty ?? false) {
+          } else if (_text(map['plainLyrics'])?.isNotEmpty ?? false) {
             farPlain ??= map;
           }
           continue;
         }
       }
-      final hasSynced = (map['syncedLyrics'] as String?)?.isNotEmpty ?? false;
+      final hasSynced = _text(map['syncedLyrics'])?.isNotEmpty ?? false;
       if (hasSynced) {
         synced ??= map;
-      } else if ((map['plainLyrics'] as String?)?.isNotEmpty ?? false) {
+      } else if (_text(map['plainLyrics'])?.isNotEmpty ?? false) {
         plain ??= map;
       }
     }
@@ -444,6 +455,8 @@ class LyricsService {
 
   /// Same song title across the punctuation and spacing the two sides disagree
   /// about: "あぶく（OFFICIAL VIDEO）" against "あぶく".
+  static String? _text(Object? value) => value is String ? value : null;
+
   bool _sameTitle(String a, String b) {
     String squeeze(String v) => v
         .toLowerCase()
@@ -455,10 +468,21 @@ class LyricsService {
     return x == y || x.contains(y) || y.contains(x);
   }
 
+  /// The file a track's cached lyrics live in.
+  ///
+  /// A track id is a manifest string, not a filename: used raw it can carry a
+  /// separator or climb out of the cache folder. Ids that are already safe keep
+  /// their readable name; anything else is hashed, so the cache always stays
+  /// inside `lyrics/` and two ids cannot collide into one file.
+  static String _cacheKey(String trackId) {
+    final safe = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$').hasMatch(trackId);
+    return safe ? trackId : sha1.convert(utf8.encode(trackId)).toString();
+  }
+
   String? _cachePath(String trackId) {
     final dir = cacheDirectory;
     if (dir == null) return null;
-    return '$dir/lyrics/$trackId.json';
+    return '$dir/lyrics/${_cacheKey(trackId)}.json';
   }
 
   Future<Lyrics?> _readCache(String trackId) async {
@@ -470,18 +494,19 @@ class LyricsService {
       final map = jsonDecode(await file.readAsString());
       if (map is! Map) return null;
       final lines = <LyricLine>[];
-      for (final raw in (map['lines'] as List? ?? const [])) {
-        if (raw is List && raw.length == 2) {
-          lines.add(LyricLine(
-            Duration(milliseconds: (raw[0] as num).toInt()),
-            raw[1] as String,
-          ));
-        }
+      final rawLines = map['lines'];
+      for (final entry in rawLines is List ? rawLines : const []) {
+        if (entry is! List || entry.length != 2) continue;
+        final at = entry[0];
+        final text = entry[1];
+        if (at is! num || !at.isFinite || text is! String) continue;
+        if (at < 0 || at > LyricLine._maxStampMs) continue;
+        lines.add(LyricLine(Duration(milliseconds: at.toInt()), text));
       }
       return Lyrics(
         lines: lines,
-        plain: map['plain'] as String?,
-        source: map['source'] as String?,
+        plain: _text(map['plain']),
+        source: _text(map['source']),
       );
     } on FormatException {
       return null;

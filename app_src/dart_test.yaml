@@ -4,4 +4,8 @@ tags:
 
   live:
 
+  # QA probes that assert what the app should survive, not what it does today.
+  # Define the tag so `flutter test --tags adversarial` runs only these.
+  adversarial:
+
 exclude_tags: live

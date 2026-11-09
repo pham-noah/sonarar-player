@@ -39,12 +39,33 @@ class LibraryRepository {
 
   bool get isEmpty => _tracks.isEmpty;
 
-  String get _sep => '/';
+  static const String _sep = '/';
 
-  String _underRoot(String relative) {
-    final normalised = relative.replaceAll('/', _sep).replaceAll(r'\', _sep);
+  /// A path under the library root, or null when [relative] tries to climb out
+  /// of it. The manifest is a document from elsewhere — a PC build script, a
+  /// hand edit — so `../` in it must not become a read anywhere on the device.
+  String? _underRoot(String relative) {
+    final normalised = _relativeUnderRoot(relative);
+    if (normalised == null) return null;
     return '$_libraryRoot$_sep$normalised';
   }
+
+  static String? _relativeUnderRoot(String relative) {
+    final out = <String>[];
+    for (final segment in relative.replaceAll(r'\', _sep).split(_sep)) {
+      if (segment.isEmpty || segment == '.') continue;
+      if (segment == '..') {
+        if (out.isEmpty) return null;
+        out.removeLast();
+        continue;
+      }
+      out.add(segment);
+    }
+    return out.isEmpty ? null : out.join(_sep);
+  }
+
+  /// The root-relative name of the manifest, which this class chose itself.
+  String get _manifestPath => '$_libraryRoot$_sep$kManifestFileName';
 
   /// Set before [load] when the folder lives somewhere other than the default.
   String? _root;
@@ -58,10 +79,18 @@ class LibraryRepository {
     _libraryRoot = await _resolveRoot();
     _scan = await LibraryScan.of(_libraryRoot!);
 
-    final external = File(_underRoot(kManifestFileName));
+    final external = File(_manifestPath);
     try {
       if (await external.exists()) {
-        final parsed = Track.listFromManifest(await external.readAsString());
+        // A manifest that is truncated or wrong-typed is an empty library with
+        // a line in the log, not a boot that never finishes.
+        List<Track> parsed;
+        try {
+          parsed = Track.listFromManifest(await external.readAsString());
+        } catch (e) {
+          debugPrint('[Sonarar][LIB] manifest unreadable: $e');
+          parsed = const [];
+        }
         if (parsed.isNotEmpty) {
           _tracks = parsed;
           _loadedFrom = external.path;

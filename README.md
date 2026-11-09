@@ -27,7 +27,7 @@ music.
 
 Take the latest APK from [Releases](../../releases) and open it on the device.
 
-**0.3.1** (versionCode 31) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
+**0.3.6** (versionCode 36) · Android 7.0+ (API 24) · arm64-v8a only · `com.noah.sonarar`
 
 Every release is signed with the same project key, so they install over each other. A 32-bit phone
 cannot run it. The [F-Droid recipe](store/fdroid/com.noah.sonarar.yml) is a store-signed build — that

@@ -36,6 +36,20 @@ void _fakePlatform() {
     }
   });
 
+  // The pigeon-generated wakelock API speaks BasicMessageChannel, not
+  // MethodChannel: a MethodChannel mock corrupts its reply ("Message
+  // corrupted"). Answer with the one-element envelope pigeon expects.
+  const codec = StandardMessageCodec();
+  for (final name in const [
+    'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle',
+    'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.enabled',
+  ]) {
+    messenger.setMockMessageHandler(
+      name,
+      (message) async => codec.encodeMessage(<Object?>[null]),
+    );
+  }
+
   for (final name in const [
     'dev.fluttercommunity.plus/wakelock',
     'com.ryanheise.just_audio_background',
@@ -54,14 +68,30 @@ Future<void> _boot(WidgetTester tester) async {
   addTearDown(tester.view.reset);
 
   await tester.pumpWidget(const SonararApp());
-  for (var i = 0; i < 12; i++) {
-    await tester.pump(const Duration(milliseconds: 250));
+  // Boot does real disk I/O between steps, and the widget test's clock does not
+  // advance it. Alternate a real event loop with a frame pump until the shell
+  // says it has finished loading, so these tests observe a booted app rather
+  // than a splash.
+  final shell = find.byType(HomeShell, skipOffstage: false);
+  final deadline = DateTime.now().add(const Duration(seconds: 25));
+  while (DateTime.now().isBefore(deadline)) {
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
+    await tester.pump(const Duration(milliseconds: 100));
+    if (shell.evaluate().isNotEmpty &&
+        HomeShellStateProbe.shellCall(tester, 'loading') == false) {
+      return;
+    }
   }
 }
 
 void main() {
   setUp(() {
     _sandbox = Directory.systemTemp.createTempSync('sonarar-harness-');
+    // A cached asset future created in one test's fake clock hangs the next
+    // boot at "restoring your place".
+    rootBundle.clear();
     _fakePlatform();
   });
   tearDown(() {
@@ -86,6 +116,8 @@ void main() {
     expect(tester.takeException(), isNull,
         reason: 'the boot path threw — this is the blank-window symptom');
     expect(find.byType(HomeShell), findsOneWidget);
+    expect(HomeShellStateProbe.shellCall(tester, 'loading'), isFalse,
+        reason: 'boot never finished — the shell is still on the splash');
   });
 
   testWidgets('the QUEUE is never a stub', (tester) async {

@@ -34,9 +34,12 @@ class BondConfig {
     if (raw is! Map) return const BondConfig();
     final reset = raw['reset_at'];
     return BondConfig(
-      completionPoints:
-          (raw['completion_points'] as num?)?.toInt() ?? 6,
-      earlySkipPenalty: (raw['early_skip_penalty'] as num?)?.toInt() ?? 3,
+      completionPoints: raw['completion_points'] is num
+          ? (raw['completion_points'] as num).toInt()
+          : 6,
+      earlySkipPenalty: raw['early_skip_penalty'] is num
+          ? (raw['early_skip_penalty'] as num).toInt()
+          : 3,
       resetAt: reset is String ? DateTime.tryParse(reset) : null,
     );
   }

@@ -1,8 +1,10 @@
 library;
 
-import 'variants.dart';
-
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart' show debugPrint;
+
+import 'variants.dart';
 
 enum QueueSource {
   fixed,
@@ -73,41 +75,81 @@ class Track {
   bool matchesTerms(List<String> terms) =>
       terms.isEmpty || terms.every(searchBlob.contains);
 
+  /// Longer than any real recording; also far below the point where
+  /// `Duration(microseconds:)` overflows.
+  static const int maxDurationMs = 100 * Duration.millisecondsPerDay;
+
+  /// What the manifest says the length is, in the only shapes that mean
+  /// anything: a finite, positive number of seconds. A hand-edited or truncated
+  /// file can say `-12`, `"long"` or `1e400`; none of those is a reason to bring
+  /// the library down, so they read as unknown.
+  static Duration durationOf(Object? raw) {
+    if (raw is! num || !raw.isFinite) return Duration.zero;
+    final ms = raw * 1000;
+    if (!ms.isFinite || ms <= 0) return Duration.zero;
+    if (ms >= maxDurationMs) return const Duration(milliseconds: maxDurationMs);
+    return Duration(milliseconds: ms.round());
+  }
+
+  static double? gainOf(Object? raw) =>
+      raw is num && raw.isFinite ? raw.toDouble() : null;
+
+  static String? tagOf(Object? raw) {
+    if (raw is! String) return null;
+    final trimmed = raw.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
   static Track fromJson(Map<String, dynamic> json) {
-    final rawDuration = json['duration_s'];
+    final romaji = tagOf(json['romaji']);
+    final variant = tagOf(json['variant']);
     return Track(
       id: (json['id'] ?? '').toString(),
       title: (json['title'] ?? 'Untitled').toString(),
       artist: (json['artist'] ?? 'Unknown Artist').toString(),
       album: (json['album'] ?? '').toString(),
-      duration: Duration(
-        milliseconds: ((rawDuration is num ? rawDuration : 0) * 1000).round(),
-      ),
+      duration: durationOf(json['duration_s']),
       file: (json['file'] ?? '').toString(),
       cover: (json['cover'] ?? '').toString(),
-      gainDb: (json['gain_db'] as num?)?.toDouble(),
+      gainDb: gainOf(json['gain_db']),
 
-      romaji: (json['romaji'] as String?)?.trim().isEmpty ?? true
-          ? null
-          : (json['romaji'] as String).trim(),
-
-      variantOf: (json['variant_of'] as String?)?.trim().isEmpty ?? true
-          ? null
-          : (json['variant_of'] as String).trim(),
-      variantTag: isKnownVariantTag((json['variant'] as String?)?.trim())
-          ? (json['variant'] as String).trim()
-          : null,
+      romaji: romaji,
+      variantOf: tagOf(json['variant_of']),
+      variantTag: isKnownVariantTag(variant) ? variant : null,
     );
   }
 
+  /// Parses a manifest without trusting a single field in it.
+  ///
+  /// A manifest that cannot be read is an empty library, not a crash: it is
+  /// written by a build script over adb and can be interrupted halfway. Two
+  /// entries claiming the same id would make `jumpTo`, playlists and the queue
+  /// disagree about which track they mean, so the first one wins and the rest
+  /// are reported.
   static List<Track> listFromManifest(String manifestJson) {
-    final root = jsonDecode(manifestJson) as Map<String, dynamic>;
+    final root = jsonDecode(manifestJson);
+    if (root is! Map) return const [];
     final raw = root['tracks'];
     if (raw is! List) return const [];
-    return raw
-        .whereType<Map<String, dynamic>>()
-        .map(Track.fromJson)
-        .where((t) => t.file.isNotEmpty)
-        .toList(growable: false);
+
+    final out = <Track>[];
+    final seen = <String>{};
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final Track track;
+      try {
+        track = Track.fromJson(entry.cast<String, dynamic>());
+      } catch (e) {
+        debugPrint('[Sonarar][LIB] skipping unreadable track entry: $e');
+        continue;
+      }
+      if (track.file.isEmpty) continue;
+      if (!seen.add(track.id)) {
+        debugPrint('[Sonarar][LIB] duplicate track id "${track.id}" ignored');
+        continue;
+      }
+      out.add(track);
+    }
+    return List<Track>.unmodifiable(out);
   }
 }

@@ -95,7 +95,12 @@ class Playlist {
     return Playlist(
       id: id,
       name: name,
-      trackIds: [for (final t in ids) if (seen.add(t)) t],
+      // An empty id can never resolve to a track; keeping it would leave an
+      // unplayable row in the playlist and inflate its length.
+      trackIds: [
+        for (final t in ids)
+          if (t.isNotEmpty && seen.add(t)) t,
+      ],
       createdAt: json['created_at'] is num ? (json['created_at']! as num).toInt() : null,
       updatedAt: json['updated_at'] is num ? (json['updated_at']! as num).toInt() : null,
     );

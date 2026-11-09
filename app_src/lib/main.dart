@@ -884,6 +884,11 @@ class _HomeShellState extends State<HomeShell>
   @visibleForTesting
   bool get debugLibraryListOpen => _libraryListOpen;
 
+  /// Whether the boot sequence still owns the screen. A shell that never
+  /// finishes booting is stuck on the splash; this is how a test tells.
+  @visibleForTesting
+  bool get debugLoading => _loading;
+
   @visibleForTesting
   void debugFinishLoading() {
     if (!_loading) return;
@@ -1083,14 +1088,26 @@ class _HomeShellState extends State<HomeShell>
   PlaybackSnapshot? _resume;
 
   Future<void> _load() async {
-    await _bootstrapper.run([
-      _bootPermissions,
-      _bootLibrary,
-      _bootSavedState,
-      _bootRestorePlace,
-      _bootPlaylists,
-      _bootFinish,
-    ]);
+    try {
+      await _bootstrapper.run([
+        _bootPermissions,
+        _bootLibrary,
+        _bootSavedState,
+        _bootRestorePlace,
+        _bootPlaylists,
+        _bootFinish,
+      ]);
+    } catch (e, stack) {
+      // A boot step that throws used to leave the shell on its progress screen
+      // forever. A music player that opens to an empty library is a bad day; one
+      // that never opens at all is a broken app.
+      debugPrint('[Sonarar][BOOT] failed: $e\n$stack');
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _tabSettled = true;
+      });
+    }
   }
 
   Future<bool> _bootPermissions(Bootstrapper boot) async {

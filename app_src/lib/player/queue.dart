@@ -74,10 +74,24 @@ class PlayQueue {
     bool shuffle = false,
   }) : _random = random ?? Random() {
     _shuffle = shuffle;
+    final unique = _uniqueById(source);
     _entries.addAll([
-      for (var i = 0; i < source.length; i++) _Slot(source[i], i.toDouble()),
+      for (var i = 0; i < unique.length; i++) _Slot(unique[i], i.toDouble()),
     ]);
     _arrange();
+  }
+
+  /// One entry per track id, first occurrence wins.
+  ///
+  /// Ids are what `jumpTo`, `restoreOrder` and `replaceCurrent` resolve against,
+  /// so a queue holding two copies of one id can only ever mean the first of
+  /// them — the second is unreachable and makes edits land on the wrong row.
+  static List<Track> _uniqueById(Iterable<Track> tracks) {
+    final seen = <String>{};
+    return [
+      for (final track in tracks)
+        if (seen.add(track.id)) track,
+    ];
   }
 
   final Random _random;
@@ -219,11 +233,12 @@ class PlayQueue {
 
   void replaceSource(List<Track> source, {bool keepPlaying = false}) {
     final playing = keepPlaying ? current : null;
+    final unique = _uniqueById(source);
     _entries
       ..clear()
       ..addAll([
-        for (var i = 0; i < source.length; i++)
-          _Slot(source[i], i.toDouble()),
+        for (var i = 0; i < unique.length; i++)
+          _Slot(unique[i], i.toDouble()),
       ]);
     if (!keepPlaying) _index = 0;
     _arrange();
@@ -334,15 +349,15 @@ class PlayQueue {
   }) {
     if (tracks.isEmpty) return;
 
-    var arriving = tracks;
+    var arriving = _uniqueById(tracks);
     if (policy != InsertPolicy.blind) {
-      final wanted = {for (final t in tracks) t.id};
+      final wanted = {for (final t in arriving) t.id};
       if (policy == InsertPolicy.move) {
         final playingId = current?.id;
         final wasAt = _index;
         // Promoting the playing track would pull the index out from playback.
         if (playingId != null && wanted.contains(playingId)) {
-          arriving = [for (final t in tracks) if (t.id != playingId) t];
+          arriving = [for (final t in arriving) if (t.id != playingId) t];
           wanted.remove(playingId);
           if (arriving.isEmpty) return;
         }

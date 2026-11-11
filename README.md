@@ -8,6 +8,8 @@ and can shape what it plays around your location, the weather and the time of da
 
 No account, no cloud, no upload, no analytics, no tracking, no advertising.
 
+[Discord](https://discord.gg/tz42eZyNtD) — questions, bug reports and release news.
+
 ## Screens
 
 <p align="center">

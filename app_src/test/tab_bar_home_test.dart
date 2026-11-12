@@ -37,13 +37,13 @@ void main() {
     expect(find.text('HOME'), findsNothing,
         reason: 'a tab that opens onto an empty page is worse than no tab');
     expect(find.text('LIBRARY'), findsOneWidget);
-    expect(find.text('SEARCH'), findsOneWidget);
+    expect(find.text('SETTINGS'), findsOneWidget);
   });
 
   testWidgets('the remaining tabs still share the bar', (tester) async {
     await _pump(tester, showHome: false);
     final library = tester.getRect(find.text('LIBRARY'));
-    final search = tester.getRect(find.text('SEARCH'));
-    expect(library.center.dx, lessThan(search.center.dx));
+    final settings = tester.getRect(find.text('SETTINGS'));
+    expect(library.center.dx, lessThan(settings.center.dx));
   });
 }

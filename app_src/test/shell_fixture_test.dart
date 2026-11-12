@@ -231,8 +231,12 @@ void main() {
   group('TAPS reach the app — the class of bug a hand finds', () {
     testWidgets('switching tabs works and survives the round trip', (tester) async {
       await _pumpShell(tester);
-      for (final label in ['SEARCH', 'LIBRARY', 'HOME']) {
-        final tab = find.text(label);
+      for (final label in ['SETTINGS', 'LIBRARY', 'HOME']) {
+        // Scoped to the bar: Settings draws its own "LIBRARY" band.
+        final tab = find.descendant(
+          of: find.byType(TabBarView2),
+          matching: find.text(label),
+        );
         expect(tab, findsOneWidget, reason: 'the $label tab is not on screen');
         await tester.tap(tab, warnIfMissed: false);
         await tester.pump(const Duration(milliseconds: 400));
@@ -240,8 +244,9 @@ void main() {
             reason: 'switching to $label threw');
       }
 
-      expect(find.text('SETTINGS'), findsNothing,
-          reason: 'SETTINGS is back on the tab row — it belongs in the sidebar now');
+      expect(find.text('SETTINGS'), findsOneWidget,
+          reason: 'the bar lost its settings tab again — it holds the music folder, '
+              'the language and every automatic behaviour');
       expect(find.byType(HomeShell), findsOneWidget);
     });
 

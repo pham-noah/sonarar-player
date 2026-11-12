@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/main.dart';
+import 'package:sonarar/screens/tab_bar_view.dart';
 import 'package:sonarar/screens/player_screen.dart';
 
 import '../shell_probe.dart';
@@ -62,9 +63,21 @@ void main() {
     testWidgets('does not close the app while there is tab history', (tester) async {
       await _boot(tester);
 
-      await tester.tap(find.text('SEARCH'), warnIfMissed: false);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(TabBarView2),
+          matching: find.text('SETTINGS'),
+        ),
+        warnIfMissed: false,
+      );
       await tester.pump(const Duration(milliseconds: 400));
-      await tester.tap(find.text('LIBRARY'), warnIfMissed: false);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(TabBarView2),
+          matching: find.text('LIBRARY'),
+        ),
+        warnIfMissed: false,
+      );
       await tester.pump(const Duration(milliseconds: 400));
 
       _pressBack(tester);

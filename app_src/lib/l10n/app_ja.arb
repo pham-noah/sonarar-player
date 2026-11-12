@@ -958,5 +958,7 @@
   "playerNextAction": "次の曲",
   "playerPreviousAction": "前の曲",
   "playerShuffleAction": "シャッフル",
-  "playerRepeatAction": "リピート"
+  "playerRepeatAction": "リピート",
+  "tabHome": "ホーム",
+  "libraryFindMusic": "オンラインで音楽を探す"
 }

@@ -958,5 +958,7 @@
   "playerNextAction": "下一首",
   "playerPreviousAction": "上一首",
   "playerShuffleAction": "随机播放",
-  "playerRepeatAction": "循环"
+  "playerRepeatAction": "循环",
+  "tabHome": "主页",
+  "libraryFindMusic": "在线找音乐"
 }

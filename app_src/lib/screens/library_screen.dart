@@ -64,6 +64,7 @@ class LibraryScreenView {
     this.likedOrder = const [],
     this.searchRequest = 0,
     this.onChooseFolder,
+    this.onFindMusic,
     this.closeListRequest = 0,
     this.onListOpenChanged,
     this.artistRequest,
@@ -130,6 +131,10 @@ class LibraryScreenView {
   /// Opens the folder picker from the empty library. Without it the empty
   /// state can only name the folder it wanted, which is not an action.
   final VoidCallback? onChooseFolder;
+
+  /// Opens the downloader. A local-first app still has one way to add music
+  /// without a desktop, and it lives beside the library, not in the tab bar.
+  final VoidCallback? onFindMusic;
 
   final int closeListRequest;
 
@@ -686,6 +691,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               // Searching nothing is a dead end; the empty state carries the
               // action instead.
               onSearch: view.tracks.isEmpty ? null : _openSearch,
+              onFindMusic: view.onFindMusic,
             ),
 
             if (_showBrowserBar)
@@ -795,9 +801,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
     /// Shown beside the "+" — the library's search had no door of its own.
     VoidCallback? onSearch,
+
+    /// Opens the downloader.
+    VoidCallback? onFindMusic,
   }) {
     final presentation = PresentationScope.of(context, fallback: skin);
     final heading = title ?? l10nOf(context).libraryTitle;
+    final isAppHeader =
+        presentation.kit.chrome.libraryHeader == HeaderForm.appHeader;
+
+    // A banner is painted in the accent, so an accent-coloured key on it is
+    // invisible — crimson shipped a "+" nobody could see. The band's own text
+    // colour is the one that reads.
+    final actionColour =
+        !isAppHeader && presentation.kit.chrome.sectionBand == SectionBandForm.banner
+            ? skin.background
+            : skin.accent;
 
     Widget? action(IconData icon, Color color, VoidCallback? tap) => tap == null
         ? null
@@ -817,18 +836,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
           );
 
+    final findButton =
+        action(Icons.download_rounded, actionColour, onFindMusic);
     final searchButton =
-        action(Icons.search_rounded, skin.accent, onSearch);
+        action(Icons.search_rounded, actionColour, onSearch);
     final plusButton =
-        action(newPlaylistIcon, skin.accent, onNewPlaylist);
+        action(newPlaylistIcon, actionColour, onNewPlaylist);
     final buttons = <Widget>[
+      if (findButton != null) findButton,
       if (searchButton != null) searchButton,
       if (plusButton != null) plusButton,
     ];
     final trailing =
         buttons.isEmpty ? null : Row(mainAxisSize: MainAxisSize.min, children: buttons);
 
-    if (presentation.kit.chrome.libraryHeader == HeaderForm.appHeader) {
+    if (isAppHeader) {
       return AppScreenHeader(
         skin: skin,
         title: heading,
@@ -1404,6 +1426,32 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           letterSpacing: trackingFor(context, 2),
                           fontWeight: FontWeight.w900,
                           color: skin.onAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              if (view.onFindMusic != null) ...[
+                const SizedBox(height: 10),
+                Semantics(
+                  button: true,
+                  label: l10n.libraryFindMusic,
+                  child: GestureDetector(
+                    onTap: view.onFindMusic,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 13),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: skin.accent, width: 1.5),
+                      ),
+                      child: Text(
+                        l10n.libraryFindMusic,
+                        style: TextStyle(
+                          fontSize: LayoutSpec.fontFloor,
+                          letterSpacing: trackingFor(context, 2),
+                          fontWeight: FontWeight.w900,
+                          color: skin.accent,
                         ),
                       ),
                     ),

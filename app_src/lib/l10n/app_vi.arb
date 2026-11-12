@@ -958,5 +958,7 @@
   "playerNextAction": "Bài tiếp theo",
   "playerPreviousAction": "Bài trước",
   "playerShuffleAction": "Trộn bài",
-  "playerRepeatAction": "Lặp lại"
+  "playerRepeatAction": "Lặp lại",
+  "tabHome": "TRANG CHỦ",
+  "libraryFindMusic": "TÌM NHẠC TRỰC TUYẾN"
 }

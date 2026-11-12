@@ -101,6 +101,16 @@ void main() {
           reason: 'a keyboard search that does not focus the field is a no-op');
     });
 
+    testWidgets('the header keys read against the crimson banner',
+        (tester) async {
+      await _pump(tester);
+
+      final icon = tester.widget<Icon>(find.byIcon(Icons.search_rounded));
+      expect(icon.color, kSkinCrimson.background,
+          reason: 'an accent-coloured key on the accent banner is invisible — '
+              'crimson shipped a "+" nobody could see');
+    });
+
     testWidgets('nothing is offered to search when there is no library',
         (tester) async {
       await _pump(tester, count: 0);

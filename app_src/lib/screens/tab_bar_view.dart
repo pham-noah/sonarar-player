@@ -1,5 +1,6 @@
 library;
 
+import '../l10n/l10n.dart';
 import '../l10n/script.dart';
 import 'dart:async';
 
@@ -13,7 +14,10 @@ import '../theme/motion.dart';
 import '../theme/skin.dart';
 import '../theme/surface.dart';
 
-enum AppTab { home, library, search, settings }
+/// The three places the app has. Downloads are not one of them: a tab that
+/// opens onto "no network" or "the engine is not installed" is a dead end
+/// standing in the bar, so the downloader is a page the Library opens.
+enum AppTab { home, library, settings }
 
 class TabBarView2 extends StatelessWidget {
   const TabBarView2({
@@ -70,12 +74,13 @@ class TabBarView2 extends StatelessWidget {
   }
 
   Widget _row(BuildContext context, LayoutPalette pal) {
+    final l10n = l10nOf(context);
     return Row(
         children: [
 
-          if (showHome) _tab(context, AppTab.home, Icons.home_rounded, 'HOME'),
-          _tab(context, AppTab.library, Icons.library_music_rounded, 'LIBRARY'),
-          _tab(context, AppTab.search, Icons.search_rounded, 'SEARCH'),
+          if (showHome) _tab(context, AppTab.home, Icons.home_rounded, l10n.tabHome),
+          _tab(context, AppTab.library, Icons.library_music_rounded, l10n.libraryTitle),
+          _tab(context, AppTab.settings, Icons.settings_rounded, l10n.settingsTitle),
 
         ],
     );

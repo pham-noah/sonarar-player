@@ -313,6 +313,10 @@ class _HomeShellState extends State<HomeShell>
 
   late final StateStores _stores;
 
+  /// False until boot has opened the stores. The shell can be up before that
+  /// (a boot step that throws still shows the app), and Settings reads them.
+  bool _storesReady = false;
+
   /// Downloads is where a user already knows to look for a file they own, and
   /// it is the one folder the file pickers of other apps open by default.
   String get _backupDirectory => Platform.isAndroid
@@ -1127,6 +1131,7 @@ class _HomeShellState extends State<HomeShell>
     _notificationAccess = notifications;
     _musicRoot = root;
     _stores = stores;
+    _storesReady = true;
     debugPrint('[Sonarar] storage status=$_storageAccess notifications=$_notificationAccess');
     if (mounted) setState(() {});
     return true;
@@ -2319,8 +2324,10 @@ class _HomeShellState extends State<HomeShell>
         updateUi: _updates,
         section: SettingsSection.behaviour,
         musicRoot: _musicRoot,
-        stateDirectory: _stores.directory,
-        downloadDirectory: _backupDirectory,
+        // Null until the stores are open: Settings hides its backup block
+        // rather than reading a field that boot never filled.
+        stateDirectory: _storesReady ? _stores.directory : null,
+        downloadDirectory: _storesReady ? _backupDirectory : null,
         appVersion: appVersionName,
         onOpenMusicFolder: _openMusicFolder,
         prefs: _prefs,
@@ -2757,7 +2764,6 @@ class _HomeShellState extends State<HomeShell>
   Widget _tabContent(AppTab tab, Skin skin) => switch (tab) {
         AppTab.home => _homeTab(skin),
         AppTab.library => _libraryTab(skin),
-        AppTab.search => _searchTab(skin),
         AppTab.settings => _settingsTab(skin),
       };
   /// The home tab, wired. `_tabContent` is the routing; this is the wiring.
@@ -2820,6 +2826,7 @@ class _HomeShellState extends State<HomeShell>
 
         onManage: _openLibraryManagement,
         onChooseFolder: _openMusicFolder,
+        onFindMusic: _openDownloads,
 
         onDragToQueue: widget.state.queue == null ? null : _queueFromDrag,
         likedIds: widget.state.favorites.ids,
@@ -2925,8 +2932,11 @@ class _HomeShellState extends State<HomeShell>
 
         isPlaying: _playing,
       ));
-  /// The search tab, wired. `_tabContent` is the routing; this is the wiring.
-  Widget _searchTab(Skin skin) => YoutubeSearchScreen(
+  /// The downloader, wired. It is a page the Library opens rather than a tab:
+  /// its search needs the network and a 14 MB engine, so it cannot promise
+  /// anything from a permanent seat in the bar.
+  Widget _downloadsPage(Skin skin, {VoidCallback? onBack}) => YoutubeSearchScreen(
+        onBack: onBack,
         state: widget.state,
         headerMark: _brandMark(),
         repo: _repo,
@@ -2965,13 +2975,38 @@ class _HomeShellState extends State<HomeShell>
             : File(
                 '${_repo.libraryRoot}${Platform.pathSeparator}$kManifestFileName'),
       );
+  void _openDownloads() {
+    // ignore: discarded_futures
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => PresentationScope(
+          presentation: widget.state.presentation,
+          // The screen paints its own backdrop and header; it only needs the
+          // Material ancestor a Scaffold provides now that it is not a tab.
+          child: Scaffold(
+            backgroundColor: widget.state.uiSkin.background,
+            body: ListenableBuilder(
+              listenable: _routeListenable,
+              builder: (_, __) => _downloadsPage(
+                widget.state.uiSkin,
+                onBack: () => Navigator.of(ctx).maybePop(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   /// The settings tab, wired. `_tabContent` is the routing; this is the wiring.
   Widget _settingsTab(Skin skin) => SettingsScreen(
         updateUi: _updates,
         state: widget.state,
         musicRoot: _musicRoot,
-        stateDirectory: _stores.directory,
-        downloadDirectory: _backupDirectory,
+        // Null until the stores are open: Settings hides its backup block
+        // rather than reading a field that boot never filled.
+        stateDirectory: _storesReady ? _stores.directory : null,
+        downloadDirectory: _storesReady ? _backupDirectory : null,
         appVersion: appVersionName,
         onOpenMusicFolder: _openMusicFolder,
         onOpenDiagnostics: () => _openDoor(_InlineDoor.diagnostics),
@@ -3102,7 +3137,6 @@ class _HomeShellState extends State<HomeShell>
   SurfaceId get _surfaceForTab => switch (_tab) {
         AppTab.home => SurfaceId.home,
         AppTab.library => SurfaceId.library,
-        AppTab.search => SurfaceId.search,
         AppTab.settings => SurfaceId.home,
       };
 
@@ -3163,7 +3197,6 @@ class _HomeShellState extends State<HomeShell>
   List<AppTab> get _visibleTabs => [
         if (_homeAvailable) AppTab.home,
         AppTab.library,
-        AppTab.search,
         AppTab.settings,
       ];
 
@@ -3219,7 +3252,7 @@ class _HomeShellState extends State<HomeShell>
 
         // A download in flight belongs with the bar you are already looking at,
         // not in a corner of the top bar you never watch.
-        if (_downloads.isBusy && _tab != AppTab.search)
+        if (_downloads.isBusy)
           Align(
             alignment: Alignment.centerRight,
             child: Padding(

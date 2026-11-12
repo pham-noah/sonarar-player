@@ -8,7 +8,8 @@ import 'package:sonarar/library/track.dart';
 import 'package:sonarar/main.dart';
 import 'package:sonarar/screens/home_screen.dart';
 import 'package:sonarar/screens/library_screen.dart';
-import 'package:sonarar/screens/youtube_search_screen.dart';
+import 'package:sonarar/screens/settings_screen.dart';
+import 'package:sonarar/screens/tab_bar_view.dart';
 import 'package:sonarar/theme/layout.dart';
 import 'package:sonarar/theme/skin_policy.dart';
 
@@ -54,8 +55,13 @@ Future<void> pumpShell(WidgetTester tester, {LayoutKind kind = LayoutKind.glass}
   }
 }
 
+/// Presses a tab. Scoped to the bar: Settings draws its own "LIBRARY" band,
+/// so a bare text finder is ambiguous once that tab is open.
 Future<void> switchTo(WidgetTester tester, String label) async {
-  await tester.tap(find.text(label));
+  await tester.tap(find.descendant(
+    of: find.byType(TabBarView2),
+    matching: find.text(label),
+  ));
   await tester.pumpAndSettle();
 }
 
@@ -76,7 +82,7 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(LibraryScreen, skipOffstage: false), findsNothing,
           reason: 'the Library was built before anyone asked for it');
-      expect(find.text('SEARCH'), findsOneWidget,
+      expect(find.text('SETTINGS'), findsOneWidget,
           reason: 'the tab bar is missing — the labels are what a press finds');
     });
 
@@ -94,10 +100,10 @@ void main() {
 
     testWidgets('a tab visited once is still never REBUILT while hidden', (tester) async {
       await pumpShell(tester);
-      await switchTo(tester, 'SEARCH');
+      await switchTo(tester, 'SETTINGS');
       await switchTo(tester, 'HOME');
 
-      expect(find.byType(YoutubeSearchScreen, skipOffstage: false), findsOneWidget);
+      expect(find.byType(SettingsScreen, skipOffstage: false), findsOneWidget);
     });
   });
 

@@ -958,5 +958,7 @@
   "playerNextAction": "Seuraava kappale",
   "playerPreviousAction": "Edellinen kappale",
   "playerShuffleAction": "Satunnaistoisto",
-  "playerRepeatAction": "Kertaus"
+  "playerRepeatAction": "Kertaus",
+  "tabHome": "KOTI",
+  "libraryFindMusic": "HAE MUSIIKKIA VERKOSTA"
 }

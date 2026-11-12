@@ -108,6 +108,7 @@ class YoutubeSearchScreen extends StatefulWidget {
     this.searchOnline = false,
     this.headerMark,
     this.onSearchOnline,
+    this.onBack,
   });
 
   final dynamic state;
@@ -125,6 +126,10 @@ class YoutubeSearchScreen extends StatefulWidget {
   final Widget? headerMark;
 
   final ValueChanged<bool>? onSearchOnline;
+
+  /// Null when the screen is a tab; a page needs a way out that is not the
+  /// system gesture.
+  final VoidCallback? onBack;
 
   bool get online => allowNetwork || searchOnline;
 
@@ -498,6 +503,18 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   skin: skin,
                   title: l10nOf(context).librarySearch,
                   mark: widget.headerMark,
+                  leading: widget.onBack == null
+                      ? null
+                      : GestureDetector(
+                          onTap: widget.onBack,
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 8),
+                            child: Icon(Icons.arrow_back_rounded,
+                                color: skin.accent, size: 28),
+                          ),
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),

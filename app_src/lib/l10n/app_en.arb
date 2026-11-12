@@ -1395,5 +1395,7 @@
   "playerNextAction": "Next track",
   "playerPreviousAction": "Previous track",
   "playerShuffleAction": "Shuffle",
-  "playerRepeatAction": "Repeat"
+  "playerRepeatAction": "Repeat",
+  "tabHome": "HOME",
+  "libraryFindMusic": "FIND MUSIC ONLINE"
 }

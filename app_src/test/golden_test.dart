@@ -175,7 +175,8 @@ void main() {
         skin: s.skin,
 
         playlists: PlaylistList(),
-        libraryRoot: null)));
+        libraryRoot: null,
+        onFindMusic: () {})));
     await expectLater(
       find.byType(LibraryScreen),
       matchesGoldenFile('goldens/library_crimson.png'));
@@ -195,6 +196,7 @@ void main() {
         skin: s.skin,
         libraryRoot: '/storage/emulated/0/Music/Sonarar',
         onChooseFolder: () {},
+        onFindMusic: () {},
         playlists: PlaylistList())));
     await expectLater(
       find.byType(LibraryScreen),
@@ -213,6 +215,7 @@ void main() {
         tracks: _lib,
         coverPathFor: (_) => null,
         skin: s.skin,
+        onFindMusic: () {},
         playlists: PlaylistList())));
     await tester.tap(find.byIcon(Icons.search_rounded));
     await tester.pumpAndSettle();

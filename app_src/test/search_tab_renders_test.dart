@@ -16,7 +16,8 @@ Track _t(String id) => Track(
 
 void main() {
   for (final id in [SkinId.abyss, SkinId.minimal, SkinId.bloom]) {
-    testWidgets('the SEARCH tab actually shows its field — ${id.name}', (tester) async {
+    testWidgets('the downloader opens from the Library header — ${id.name}',
+        (tester) async {
       tester.view.physicalSize = const Size(420, 860) * 3;
       tester.view.devicePixelRatio = 3.0;
       addTearDown(tester.view.reset);
@@ -35,9 +36,17 @@ void main() {
         await tester.pump(const Duration(milliseconds: 250));
       }
 
-      final searchTab = find.text('SEARCH');
-      expect(searchTab, findsWidgets, reason: 'no SEARCH tab in the shell');
-      await tester.tap(searchTab.first);
+      // The downloader is a page the Library opens, not a tab: a tab that
+      // needs the network and a 14 MB engine cannot promise anything.
+      await tester.tap(find.text('LIBRARY'));
+      for (var i = 0; i < 4; i++) {
+        await tester.pump(const Duration(milliseconds: 250));
+      }
+
+      final findMusic = find.byIcon(Icons.download_rounded);
+      expect(findMusic, findsOneWidget,
+          reason: 'no way to the downloader from the library header');
+      await tester.tap(findMusic);
       for (var i = 0; i < 6; i++) {
         await tester.pump(const Duration(milliseconds: 250));
       }

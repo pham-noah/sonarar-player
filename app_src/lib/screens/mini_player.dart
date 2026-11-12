@@ -1,8 +1,12 @@
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart' hide RepeatMode;
+import 'package:flutter/services.dart';
 
 import '../core/track_labels.dart';
+import '../l10n/l10n.dart';
 import '../core/constants.dart';
 import '../library/track.dart';
 
@@ -106,7 +110,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           final dy = _dragDy;
                           _dragDy = 0;
 
-                          if (v < -220 || dy < -48) widget.onSwipeUp!();
+                          if (v < -220 || dy < -48) {
+                            unawaited(HapticFeedback.lightImpact());
+                            widget.onSwipeUp!();
+                          }
                         },
 
                   onHorizontalDragUpdate:
@@ -122,8 +129,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               _dragDx = 0;
 
                               if (v > 220 || dx > 40) {
+                                unawaited(HapticFeedback.selectionClick());
                                 widget.onSwipePrevious?.call();
                               } else if (v < -220 || dx < -40) {
+                                unawaited(HapticFeedback.selectionClick());
                                 widget.onSwipeNext?.call();
                               }
                             },
@@ -193,13 +202,20 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 widget.onCycleRepeat,
                 active: widget.repeatMode != RepeatMode.off,
                 small: true,
+                semantic: l10nOf(context).playerRepeatAction,
               ),
               _btn(
                 widget.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
                 widget.onPlayPause,
                 big: true,
+                semantic: widget.playing
+                    ? l10nOf(context).playerPauseAction
+                    : l10nOf(context).playerPlayAction,
               ),
-              _btn(Icons.close_rounded, widget.onDisband, active: false, small: true),
+              _btn(Icons.close_rounded, widget.onDisband,
+                  active: false,
+                  small: true,
+                  semantic: l10nOf(context).playerClose),
             ],
           ),
         ],
@@ -355,19 +371,34 @@ class _MiniPlayerState extends State<MiniPlayer> {
     bool active = false,
     bool small = false,
     bool big = false,
+    String? semantic,
   }) {
-    final w = big ? 46.0 : (small ? 36.0 : 40.0);
-    return Pressable(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: w,
-          height: 46,
-          alignment: Alignment.center,
-          child: Icon(
-            icon,
-            size: big ? 28 : (small ? 18 : 22),
-            color: active ? widget.skin.accent : widget.skin.textPrimary,
+    // 48dp for the key you press most, 44 for its neighbours. The bar is 64
+    // high, so the height came free; the width was the only thing hiding.
+    final w = big ? 48.0 : 44.0;
+    final tap = onTap;
+    return Semantics(
+      button: true,
+      enabled: tap != null,
+      label: semantic,
+      excludeSemantics: true,
+      child: Pressable(
+        child: InkWell(
+          onTap: tap == null
+              ? null
+              : () {
+                  unawaited(HapticFeedback.selectionClick());
+                  tap();
+                },
+          child: Container(
+            width: w,
+            height: 48,
+            alignment: Alignment.center,
+            child: Icon(
+              icon,
+              size: big ? 28 : (small ? 18 : 22),
+              color: active ? widget.skin.accent : widget.skin.textPrimary,
+            ),
           ),
         ),
       ),

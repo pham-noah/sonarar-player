@@ -1,7 +1,12 @@
 library;
 
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
+
+import '../l10n/l10n.dart';
 import '../library/track.dart';
 import '../theme/skin.dart';
 import 'cover_play_button.dart';
@@ -82,7 +87,9 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
                   side: SwipeSide.right,
                   progress: -_dx / kRemoveThreshold,
                   icon: Icons.delete_outline_rounded,
-                  label: willRemove ? 'REMOVE' : '',
+                  // The same word the library's swipe-out uses, so it is
+                  // already translated in every locale.
+                  label: willRemove ? l10nOf(context).libraryRemove : '',
                   skin: skin,
                 ),
               ),
@@ -104,14 +111,22 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
                     onHorizontalDragUpdate: _locked
                         ? null
                         : (d) {
+                            final wasArmed = -_dx >= kRemoveThreshold;
                             setState(() {
                               _dx = (_dx + d.delta.dx).clamp(-400.0, 0.0);
                             });
+                            // The threshold is the point of no return; a tick
+                            // is how a finger learns where it is without a
+                            // label.
+                            if (!wasArmed && -_dx >= kRemoveThreshold) {
+                              unawaited(HapticFeedback.mediumImpact());
+                            }
                           },
                     onHorizontalDragEnd: _locked
                         ? null
                         : (_) {
                             if (-_dx >= kRemoveThreshold) {
+                              unawaited(HapticFeedback.mediumImpact());
                               widget.onRemove();
                             }
 
@@ -121,7 +136,18 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
                         ? null
                         : () => setState(() => _dx = 0),
 
-                    child: _content(skin),
+                    // The swipe is invisible to a screen reader, so the same
+                    // removal is offered as an action on the row itself.
+                    child: Semantics(
+                      customSemanticsActions: _locked
+                          ? null
+                          : {
+                              CustomSemanticsAction(
+                                label: l10nOf(context).libraryRemove,
+                              ): widget.onRemove,
+                            },
+                      child: _content(skin),
+                    ),
                     ),
                   ),
                 ),

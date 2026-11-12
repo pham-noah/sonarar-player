@@ -1,9 +1,12 @@
 library;
 
+import 'dart:async';
+
 import '../l10n/l10n.dart';
 import '../l10n/script.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/app_state.dart';
 import '../library/track.dart';
@@ -182,6 +185,7 @@ class QueuePanel extends StatelessWidget {
                   if (to > from) to -= 1;
                   if (to != from) {
                     if (!state.moveInQueue(from, to)) return;
+                    unawaited(HapticFeedback.selectionClick());
 
                     if (onReorder != null) {
                       onReorder!(from, to);
@@ -207,6 +211,7 @@ class QueuePanel extends StatelessWidget {
 
                     onMove: (from, to) {
                       if (!state.moveInQueue(from, to)) return;
+                      unawaited(HapticFeedback.selectionClick());
                       if (onReorder != null) {
                         onReorder!(from, to);
                       } else {

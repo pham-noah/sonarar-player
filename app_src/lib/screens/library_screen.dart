@@ -1,5 +1,7 @@
 library;
 
+import 'dart:async';
+
 import '../l10n/script.dart';
 import 'dart:io';
 
@@ -1752,10 +1754,18 @@ return Stack(
 
       onHorizontalDragUpdate: (widget.onQueue == null && widget.onLike == null)
           ? null
-          : (d) => setState(() {
+          : (d) {
+              final wasArmed = _pending != null;
+              setState(() {
                 _dx = (_dx + d.delta.dx)
                     .clamp(-kSwipeTravelCap, kSwipeTravelCap);
-              }),
+              });
+              // Crossing either threshold arms the gesture; the tick says so
+              // without a label, and the row is still where the finger is.
+              if (!wasArmed && _pending != null) {
+                unawaited(HapticFeedback.selectionClick());
+              }
+            },
       onHorizontalDragCancel: () => setState(() => _dx = 0),
       onHorizontalDragEnd: (_) {
         final action = _pending;
@@ -1763,8 +1773,10 @@ return Stack(
 
         switch (action) {
           case _SwipeAction.queue:
+            unawaited(HapticFeedback.mediumImpact());
             widget.onQueue?.call(track);
           case _SwipeAction.like:
+            unawaited(HapticFeedback.mediumImpact());
             widget.onLike?.call(track);
           case null:
             break;

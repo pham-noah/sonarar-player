@@ -1,0 +1,86 @@
+name: emulator shots
+
+# Run by hand only: this boots a real Android emulator on GitHub's KVM-enabled
+# runner, installs the app and photographs it. It exists because the desk
+# machine has no hardware virtualisation, so the emulator cannot boot locally.
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: app_src
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.6
+          channel: stable
+
+      - name: pub get
+        run: flutter pub get
+
+      # The x86_64 natives are excluded unless the gradle property says
+      # otherwise; the emulator needs them and the phone does not.
+      - name: build x86_64 debug APK
+        run: |
+          echo "sonararX86=1" >> android/gradle.properties
+          flutter build apk --debug --target-platform android-x64 \
+            --dart-define=SONARAR_DOWNLOADS=false
+
+      - name: boot emulator, install, photograph
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          disable-animations: true
+          emulator-options: -no-snapshot -no-boot-anim -gpu swiftshader_indirect
+          script: |
+            set -x
+            mkdir -p artifacts
+            adb install -r build/app/outputs/flutter-apk/app-debug.apk
+            adb shell am start -W -n com.noah.sonarar/.MainActivity
+            sleep 10
+
+            SIZE=$(adb shell wm size | tr -d '\r' | sed 's/.*: //')
+            W=${SIZE%x*}
+            H=${SIZE#*x}
+            echo "screen ${W}x${H}"
+
+            shot() { adb exec-out screencap -p > "artifacts/$1.png"; }
+
+            shot 1-first-run
+
+            # START LISTENING sits near the bottom of the first-run page.
+            adb shell input tap $((W / 2)) $((H * 82 / 100))
+            sleep 6
+            shot 2-home
+
+            # Three tabs, centres at 1/6, 1/2, 5/6 of the width.
+            adb shell input tap $((W / 2)) $((H - 90))
+            sleep 4
+            shot 3-library
+
+            adb shell input tap $((W * 5 / 6)) $((H - 90))
+            sleep 4
+            shot 4-settings
+
+            adb shell input keyevent KEYCODE_BACK
+            sleep 2
+
+            adb exec-out screencap -p > artifacts/5-after-back.png
+            adb logcat -d -s flutter:* > artifacts/logcat.txt || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: emulator-shots
+          path: app_src/artifacts
+          if-no-files-found: warn

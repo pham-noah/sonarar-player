@@ -1,7 +1,10 @@
 library;
 
 import '../l10n/script.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../widgets/pressable.dart';
 
@@ -84,9 +87,17 @@ class TabBarView2 extends StatelessWidget {
     final skew = skin.skewDegrees * (3.14159265 / 180);
 
     return Expanded(
-      child: Pressable(
+      child: Semantics(
+        button: true,
+        selected: active,
+        label: label,
+        excludeSemantics: true,
+        child: Pressable(
         child: InkWell(
-        onTap: () => onSelect(tab),
+        onTap: () {
+          unawaited(HapticFeedback.selectionClick());
+          onSelect(tab);
+        },
         child: Stack(
           children: [
             if (active)
@@ -141,6 +152,7 @@ class TabBarView2 extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
       ),
     );

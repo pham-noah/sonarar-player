@@ -181,6 +181,46 @@ void main() {
       matchesGoldenFile('goldens/library_crimson.png'));
   });
 
+  testWidgets('library — empty, with the folder button', (tester) async {
+    tester.view.physicalSize = size * 3;
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+
+    final s = _stateFor(band: ContextBand.night, hour: 23);
+    await _pump(
+      tester,
+      LibraryScreen(view: LibraryScreenView(
+        tracks: const [],
+        coverPathFor: (_) => null,
+        skin: s.skin,
+        libraryRoot: '/storage/emulated/0/Music/Sonarar',
+        onChooseFolder: () {},
+        playlists: PlaylistList())));
+    await expectLater(
+      find.byType(LibraryScreen),
+      matchesGoldenFile('goldens/library_empty.png'));
+  });
+
+  testWidgets('library — search open', (tester) async {
+    tester.view.physicalSize = size * 3;
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.reset);
+
+    final s = _stateFor(band: ContextBand.night, hour: 23);
+    await _pump(
+      tester,
+      LibraryScreen(view: LibraryScreenView(
+        tracks: _lib,
+        coverPathFor: (_) => null,
+        skin: s.skin,
+        playlists: PlaylistList())));
+    await tester.tap(find.byIcon(Icons.search_rounded));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(LibraryScreen),
+      matchesGoldenFile('goldens/library_search.png'));
+  });
+
   testWidgets('player — with the cover slot filled', (tester) async {
     tester.view.physicalSize = size * 3;
     tester.view.devicePixelRatio = 3.0;

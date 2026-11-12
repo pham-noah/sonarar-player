@@ -2819,6 +2819,7 @@ class _HomeShellState extends State<HomeShell>
         libraryRoot: _repo.libraryRoot,
 
         onManage: _openLibraryManagement,
+        onChooseFolder: _openMusicFolder,
 
         onDragToQueue: widget.state.queue == null ? null : _queueFromDrag,
         likedIds: widget.state.favorites.ids,

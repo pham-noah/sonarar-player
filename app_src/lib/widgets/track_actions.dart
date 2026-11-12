@@ -39,15 +39,13 @@ class TrackActions extends StatelessWidget {
         ),
     ];
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < buttons.length; i++) ...[
-          if (i > 0) const SizedBox(width: 6),
-          buttons[i],
-        ],
-      ],
+    // Six 48dp keys do not fit a 320dp phone in one row; wrapping keeps the
+    // target size instead of shrinking it.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 6,
+      runSpacing: 6,
+      children: buttons,
     );
   }
 }

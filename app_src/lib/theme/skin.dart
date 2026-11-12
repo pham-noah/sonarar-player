@@ -249,11 +249,13 @@ abstract final class LayoutSpec {
   static const double playButtonHeight = 54.0;
 
   static const double spectrumHeight = 110.0;
-  static const double transportButtonWidth = 42.0;
-  static const double transportButtonHeight = 38.0;
+  // Touch targets sit at Android's 48dp minimum: at 42x38 the shuffle and
+  // repeat keys were a 38px band under a thumb that covers 48.
+  static const double transportButtonWidth = 48.0;
+  static const double transportButtonHeight = 48.0;
 
-  static const double secondaryActionWidth = 42.0;
-  static const double secondaryActionHeight = 36.0;
+  static const double secondaryActionWidth = 48.0;
+  static const double secondaryActionHeight = 44.0;
 }
 
   ThemeData themeFor(Skin skin, {Presentation? layout}) {

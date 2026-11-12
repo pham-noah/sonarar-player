@@ -21,6 +21,7 @@ Track _t(int i) => Track(
 
 Future<void> _pump(
   WidgetTester tester, {
+  List<Track>? allTracks,
   List<Track> mostPlayed = const [],
   List<Track> liked = const [],
   Playlist? recent,
@@ -46,7 +47,7 @@ Future<void> _pump(
         libraryPlaylists: library,
         recapTracks: recap,
         recapLabel: 'THIS MONTH',
-        allTracks: [for (var i = 0; i < 40; i++) _t(i)],
+        allTracks: allTracks ?? [for (var i = 0; i < 40; i++) _t(i)],
         onPlay: (_) {},
         onOpenRecap: onOpenRecap ?? () {},
         onOpenRecentPlaylist: () {},
@@ -179,6 +180,15 @@ void main() {
     expect(find.text('ALL MUSIC'), findsNothing,
         reason: 'a library dump under a heading is not what a front page is for');
     expect(find.text('NOTHING HERE YET'), findsNothing);
+  });
+
+  testWidgets('a library too small for the new rail still shows itself',
+      (tester) async {
+    await _pump(tester, allTracks: [for (var i = 0; i < 5; i++) _t(i)]);
+
+    expect(find.text('ALL MUSIC'), findsOneWidget,
+        reason: 'five songs and no play history drew a greeting over an empty page');
+    expect(find.text('Title 0'), findsOneWidget);
   });
 
   testWidgets('nothing on Home renders below the 16px floor', (tester) async {

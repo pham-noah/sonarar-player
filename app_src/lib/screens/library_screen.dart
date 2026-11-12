@@ -61,6 +61,7 @@ class LibraryScreenView {
     this.likedIds = const {},
     this.likedOrder = const [],
     this.searchRequest = 0,
+    this.onChooseFolder,
     this.closeListRequest = 0,
     this.onListOpenChanged,
     this.artistRequest,
@@ -123,6 +124,10 @@ class LibraryScreenView {
   final List<String> likedOrder;
 
   final int searchRequest;
+
+  /// Opens the folder picker from the empty library. Without it the empty
+  /// state can only name the folder it wanted, which is not an action.
+  final VoidCallback? onChooseFolder;
 
   final int closeListRequest;
 
@@ -233,7 +238,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   bool get _playlistsAreGrid => _playlistGrid ?? view.playlistGrid ?? view.grid;
 
-  bool get _searchOnly => view.searchOnly;
+  /// The library's own search screen. It opens from the header, stands open
+  /// when the caller asks for it, and used to exist only behind a keyboard
+  /// shortcut — no phone has one of those.
+  late bool _searchOpen = view.searchOnly;
+
+  bool get _searchOnly => _searchOpen;
 
   Playlist? _openPlaylist;
 
@@ -270,12 +280,23 @@ class _LibraryScreenState extends State<LibraryScreen> {
       _applyFilter();
     }
 
+    if (old.view.searchOnly != view.searchOnly) {
+      _searchOpen = view.searchOnly;
+    }
+
     if (old.view.searchRequest != view.searchRequest) {
-      _searchFocus.requestFocus();
-      _searchController.selection = TextSelection(
-        baseOffset: 0,
-        extentOffset: _searchController.text.length,
-      );
+      // The field only exists once the search screen is open, so the request
+      // opens it and asks for focus on the frame after — focusing a node that
+      // is not in the tree is the same as not asking.
+      _searchOpen = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _searchFocus.requestFocus();
+        _searchController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _searchController.text.length,
+        );
+      });
     }
 
     if (view.closeListRequest != old.view.closeListRequest) {
@@ -294,6 +315,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
     _searchFocus.dispose();
     _listController.dispose();
     super.dispose();
+  }
+
+  void _openSearch() {
+    setState(() => _searchOpen = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _searchFocus.requestFocus();
+    });
+  }
+
+  void _closeSearch() {
+    _searchController.clear();
+    _filter = '';
+    setState(() {
+      _searchOpen = false;
+      _visible = view.tracks;
+    });
   }
 
   void _applyFilter() {
@@ -349,6 +386,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
     _applyFilter();
 
     _applyArtistRequest(view.artistRequest);
+
+    // The tab is built lazily, so a search requested from another screen can
+    // arrive before the first frame — the request has to be honoured here as
+    // well as on a rebuild.
+    if (view.searchRequest > 0) {
+      _searchOpen = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _searchFocus.requestFocus();
+      });
+    }
   }
 
   void _applyArtistRequest(String? artist) {
@@ -406,7 +453,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   _header(
                     skin,
                     title: l10nOf(context).librarySearch,
-                    countLabel: '${_visible.length} found',
+                    countLabel: l10nOf(context).librarySearchFound(_visible.length),
+                    onNewPlaylist: _closeSearch,
+                    newPlaylistIcon: Icons.close_rounded,
                   ),
                   _searchField(skin),
                   const SizedBox(height: 4),
@@ -601,7 +650,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   bool get _showBrowserBar =>
-      _openPlaylist == null && _openArtist == null && view.playlists != null;
+      view.tracks.isNotEmpty &&
+      _openPlaylist == null &&
+      _openArtist == null &&
+      view.playlists != null;
 
   Playlist? get _openListForAdd {
     final opened = _openPlaylist;
@@ -629,6 +681,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
               onNewPlaylist: _plusAction,
               newPlaylistIcon:
                   _plusAddsSongs ? Icons.playlist_add_rounded : Icons.add_rounded,
+              // Searching nothing is a dead end; the empty state carries the
+              // action instead.
+              onSearch: view.tracks.isEmpty ? null : _openSearch,
             ),
 
             if (_showBrowserBar)
@@ -735,34 +790,48 @@ class _LibraryScreenState extends State<LibraryScreen> {
     VoidCallback? onNewPlaylist,
 
     IconData newPlaylistIcon = Icons.add_rounded,
+
+    /// Shown beside the "+" — the library's search had no door of its own.
+    VoidCallback? onSearch,
   }) {
     final presentation = PresentationScope.of(context, fallback: skin);
     final heading = title ?? l10nOf(context).libraryTitle;
 
-    Widget? plus(Color color) => onNewPlaylist == null
+    Widget? action(IconData icon, Color color, VoidCallback? tap) => tap == null
         ? null
         : GestureDetector(
-            onTap: onNewPlaylist,
+            onTap: tap,
 
             child: SizedBox(
               width: 44,
-              height: 34,
+              height: 44,
               child: Center(
                 child: Icon(
-                  newPlaylistIcon,
-                  size: 28,
+                  icon,
+                  size: 26,
                   color: color,
                 ),
               ),
             ),
           );
 
+    final searchButton =
+        action(Icons.search_rounded, skin.accent, onSearch);
+    final plusButton =
+        action(newPlaylistIcon, skin.accent, onNewPlaylist);
+    final buttons = <Widget>[
+      if (searchButton != null) searchButton,
+      if (plusButton != null) plusButton,
+    ];
+    final trailing =
+        buttons.isEmpty ? null : Row(mainAxisSize: MainAxisSize.min, children: buttons);
+
     if (presentation.kit.chrome.libraryHeader == HeaderForm.appHeader) {
       return AppScreenHeader(
         skin: skin,
         title: heading,
         mark: view.headerMark,
-        trailing: plus(skin.accent),
+        trailing: trailing,
       );
     }
 
@@ -777,7 +846,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               skin: skin,
               label: heading,
 
-              trailing: plus(skin.accent),
+              trailing: trailing,
             ),
           ),
         ],
@@ -838,6 +907,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Widget _body(Skin skin) {
     if (_searchOnly) return _list(skin);
+    // With no tracks and no playlists there is nothing to browse: the one
+    // screen worth drawing is the empty state, which carries the folder button.
+    // A playlist the user built outlives the library, so it still browses.
+    if (view.tracks.isEmpty && (view.playlists?.length ?? 0) == 0) {
+      return _list(skin);
+    }
     if (_openPlaylist != null || _openArtist != null) return _filteredList(skin);
     switch (_view) {
       case LibraryView.playlists:
@@ -1284,9 +1359,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget _list(Skin skin, [List<Track>? source, Playlist? inPlaylist]) {
     final rows = source ?? _visible;
     if (view.tracks.isEmpty) {
+      final l10n = l10nOf(context);
+      final root = view.libraryRoot;
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          // The empty library used to name a path and stop there. An empty
+          // state that cannot be acted on is a dead end, so the one control
+          // that fixes it sits under the sentence.
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1294,22 +1374,48 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   size: 64, color: skin.textSecondary),
               const SizedBox(height: 20),
               Text(
-                l10nOf(context).libraryNoLibrary,
+                l10n.libraryEmptyTitle,
                 style: TextStyle(fontSize: LayoutSpec.fontTitle, color: skin.textPrimary),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Expected at:\n${view.libraryRoot ?? ''}',
-                style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
-                l10nOf(context).libraryCopyHint,
+                l10n.libraryEmptyBody,
                 style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
+              if (view.onChooseFolder != null) ...[
+                const SizedBox(height: 22),
+                Semantics(
+                  button: true,
+                  label: l10n.libraryChooseFolder,
+                  child: GestureDetector(
+                    onTap: view.onChooseFolder,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 26, vertical: 15),
+                      color: skin.accent,
+                      child: Text(
+                        l10n.libraryChooseFolder,
+                        style: TextStyle(
+                          fontSize: LayoutSpec.fontFloor,
+                          letterSpacing: trackingFor(context, 2),
+                          fontWeight: FontWeight.w900,
+                          color: skin.onAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              if (root != null && root.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                Text(
+                  '${l10n.settingsMusicFolder}\n$root',
+                  style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ],
           ),
         ),

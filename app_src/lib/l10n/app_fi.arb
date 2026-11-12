@@ -49,7 +49,6 @@
   "settingsSpeedBrisk": "REIPAS",
   "settingsSpeedSnap": "NAPSAKKA",
   "settingsLanguageSystem": "JÄRJESTELMÄ",
-  "libraryCopyHint": "Kopioi musiikkia tietokoneelta tuohon kansioon tai aja tools/sync_library.py, joka siirtää sen sieltä.",
   "librarySearch": "HAKU",
   "libraryPinned": "KIINNITETYT",
   "librarySeeded": "SOVELLUKSEN",
@@ -68,7 +67,6 @@
   "libraryCreate": "LUO",
   "libraryDerivedNote": "Tulee sovelluksen mukana — voit kiinnittää tai nimetä sen uudelleen, mutta et poistaa.",
   "librarySeededNote": "Sovellus tekee sen kuuntelemastasi — voit kiinnittää sen, mutta et nimetä uudelleen tai poistaa.",
-  "libraryNoLibrary": "Laitteelta ei löytynyt kirjastoa.",
   "libraryAddToQueue": "Lisää jonoon",
   "libraryQueue": "JONO",
   "libraryRemove": "POISTA",
@@ -946,7 +944,19 @@
   },
   "personalizeTabLook": "ULKOASU",
   "downloadsNotInThisBuild": "Lataukset eivät kuulu tähän versioon.",
-  "downloadsSetup": "Ota lataukset käyttöön (14 Mt kerran)"
+  "downloadsSetup": "Ota lataukset käyttöön (14 Mt kerran)"
+
 , 
-  "downloadsSetupFailed": "Moottorin nouto ei onnistunut. Tarkista yhteys ja yritä uudelleen."
+  "downloadsSetupFailed": "Moottorin nouto ei onnistunut. Tarkista yhteys ja yritä uudelleen.",
+  "libraryEmptyTitle": "Ei vielä musiikkia",
+  "libraryEmptyBody": "Valitse kansio, jossa musiikkisi on.",
+  "libraryChooseFolder": "VALITSE KANSIO",
+  "librarySearchFound": "Löytyi {count}",
+  "homeAllMusic": "KAIKKI MUSIIKKI",
+  "playerPlayAction": "Toista",
+  "playerPauseAction": "Keskeytä",
+  "playerNextAction": "Seuraava kappale",
+  "playerPreviousAction": "Edellinen kappale",
+  "playerShuffleAction": "Satunnaistoisto",
+  "playerRepeatAction": "Kertaus"
 }

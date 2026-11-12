@@ -49,7 +49,6 @@
   "settingsSpeedBrisk": "きびきび",
   "settingsSpeedSnap": "即座",
   "settingsLanguageSystem": "システム",
-  "libraryCopyHint": "パソコンからそのフォルダに音楽をコピーするか、パソコンで tools/sync_library.py を実行して送り込んでください。",
   "librarySearch": "検索",
   "libraryPinned": "ピン留め",
   "librarySeeded": "自動生成",
@@ -68,7 +67,6 @@
   "libraryCreate": "作成",
   "libraryDerivedNote": "アプリに同梱されています。ピン留めや名前の変更はできますが、削除はできません。",
   "librarySeededNote": "聴いた内容からアプリが作ります。ピン留めはできますが、名前の変更や削除はできません。",
-  "libraryNoLibrary": "この端末にライブラリが見つかりません。",
   "libraryAddToQueue": "キューに追加",
   "libraryQueue": "キュー",
   "libraryRemove": "削除",
@@ -946,7 +944,19 @@
   },
   "personalizeTabLook": "外観",
   "downloadsNotInThisBuild": "このビルドにはダウンロード機能が含まれていません。",
-  "downloadsSetup": "ダウンロードを準備（14MB・初回のみ）"
+  "downloadsSetup": "ダウンロードを準備（14MB・初回のみ）"
+
 , 
-  "downloadsSetupFailed": "エンジンを取得できませんでした。接続を確認してもう一度お試しください。"
+  "downloadsSetupFailed": "エンジンを取得できませんでした。接続を確認してもう一度お試しください。",
+  "libraryEmptyTitle": "まだ曲がありません",
+  "libraryEmptyBody": "音楽が入っているフォルダーを選んでください。",
+  "libraryChooseFolder": "フォルダーを選択",
+  "librarySearchFound": "{count}件",
+  "homeAllMusic": "すべての曲",
+  "playerPlayAction": "再生",
+  "playerPauseAction": "一時停止",
+  "playerNextAction": "次の曲",
+  "playerPreviousAction": "前の曲",
+  "playerShuffleAction": "シャッフル",
+  "playerRepeatAction": "リピート"
 }

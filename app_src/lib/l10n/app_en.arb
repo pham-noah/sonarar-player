@@ -49,7 +49,6 @@
   "settingsSpeedBrisk": "BRISK",
   "settingsSpeedSnap": "SNAP",
   "settingsLanguageSystem": "SYSTEM",
-  "libraryCopyHint": "Copy music into that folder from a PC, or run\ntools/sync_library.py to push it from there.",
   "librarySearch": "SEARCH",
   "libraryPinned": "PINNED",
   "librarySeeded": "SEEDED",
@@ -68,7 +67,6 @@
   "libraryCreate": "CREATE",
   "libraryDerivedNote": "Shipped with the app — pin or rename it, but it cannot be deleted.",
   "librarySeededNote": "Made by the app from what you listen to — pin it, but it cannot be renamed or deleted.",
-  "libraryNoLibrary": "No library found on this device.",
   "libraryAddToQueue": "Add to queue",
   "libraryQueue": "QUEUE",
   "libraryRemove": "REMOVE",
@@ -1378,5 +1376,24 @@
 , 
   "@downloadsSetupFailed": {
     "description": "Shown when the one-time engine download fails."
-  }
+  },
+  "libraryEmptyTitle": "No music yet",
+  "@libraryEmptyTitle": {"description": "Heading on the library screen when no track is known."},
+  "libraryEmptyBody": "Choose the folder your music lives in.",
+  "@libraryEmptyBody": {"description": "One sentence under the empty-library heading naming the one action that fixes it."},
+  "libraryChooseFolder": "CHOOSE A FOLDER",
+  "@libraryChooseFolder": {"description": "Button on the empty library that opens the folder picker."},
+  "librarySearchFound": "{count} found",
+  "@librarySearchFound": {
+    "description": "How many tracks the library search returned.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "homeAllMusic": "ALL MUSIC",
+  "@homeAllMusic": {"description": "Rail on Home that lists the library when no history-derived rail has anything to show."},
+  "playerPlayAction": "Play",
+  "playerPauseAction": "Pause",
+  "playerNextAction": "Next track",
+  "playerPreviousAction": "Previous track",
+  "playerShuffleAction": "Shuffle",
+  "playerRepeatAction": "Repeat"
 }

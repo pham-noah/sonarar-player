@@ -49,7 +49,6 @@
   "settingsSpeedBrisk": "轻快",
   "settingsSpeedSnap": "干脆",
   "settingsLanguageSystem": "系统",
-  "libraryCopyHint": "从电脑把音乐复制到那个文件夹，或在电脑上运行 tools/sync_library.py 推过来。",
   "librarySearch": "搜索",
   "libraryPinned": "已置顶",
   "librarySeeded": "自动生成",
@@ -68,7 +67,6 @@
   "libraryCreate": "创建",
   "libraryDerivedNote": "随应用附带——可以置顶或改名，但不能删除。",
   "librarySeededNote": "由应用根据你的收听自动生成——可以置顶，但不能改名或删除。",
-  "libraryNoLibrary": "这台设备上找不到曲库。",
   "libraryAddToQueue": "加入队列",
   "libraryQueue": "队列",
   "libraryRemove": "移除",
@@ -946,7 +944,19 @@
   },
   "personalizeTabLook": "外观",
   "downloadsNotInThisBuild": "此版本不包含下载功能。",
-  "downloadsSetup": "启用下载（一次性 14 MB）"
+  "downloadsSetup": "启用下载（一次性 14 MB）"
+
 , 
-  "downloadsSetupFailed": "无法获取引擎。请检查网络后重试。"
+  "downloadsSetupFailed": "无法获取引擎。请检查网络后重试。",
+  "libraryEmptyTitle": "还没有音乐",
+  "libraryEmptyBody": "选择存放音乐的文件夹。",
+  "libraryChooseFolder": "选择文件夹",
+  "librarySearchFound": "找到 {count} 首",
+  "homeAllMusic": "全部音乐",
+  "playerPlayAction": "播放",
+  "playerPauseAction": "暂停",
+  "playerNextAction": "下一首",
+  "playerPreviousAction": "上一首",
+  "playerShuffleAction": "随机播放",
+  "playerRepeatAction": "循环"
 }

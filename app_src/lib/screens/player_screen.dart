@@ -1,7 +1,10 @@
 library;
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart' hide RepeatMode;
+import 'package:flutter/services.dart';
 
 import '../l10n/script.dart';
 import '../l10n/l10n.dart';
@@ -942,7 +945,7 @@ class PlayerScreen extends StatelessWidget {
     ],
   );
 
-  Widget _transportRow(Skin skin, double skew) => StaggerIn(
+  Widget _transportRow(BuildContext context, Skin skin, double skew) => StaggerIn(
     index: 0,
     style: StaggerStyle.rise,
 
@@ -959,6 +962,7 @@ class PlayerScreen extends StatelessWidget {
             onTap: view.onShuffle,
             active: view.shuffled,
             compact: true,
+            semantic: l10nOf(context).playerShuffleAction,
           ),
           const SizedBox(width: 7),
           NudgingButton(
@@ -969,10 +973,18 @@ class PlayerScreen extends StatelessWidget {
               skew,
               Icons.skip_previous_rounded,
               onTap: view.onPrevious,
+              semantic: l10nOf(context).playerPreviousAction,
             ),
           ),
           const SizedBox(width: 8),
-          _playButton(skin, skew, playing: view.playing),
+          _playButton(
+            skin,
+            skew,
+            playing: view.playing,
+            semantic: view.playing
+                ? l10nOf(context).playerPauseAction
+                : l10nOf(context).playerPlayAction,
+          ),
           const SizedBox(width: 8),
           NudgingButton(
             direction: 1,
@@ -982,6 +994,7 @@ class PlayerScreen extends StatelessWidget {
               skew,
               Icons.skip_next_rounded,
               onTap: view.onNext,
+              semantic: l10nOf(context).playerNextAction,
             ),
           ),
           const SizedBox(width: 10),
@@ -992,6 +1005,7 @@ class PlayerScreen extends StatelessWidget {
             onTap: view.onCycleRepeat,
             active: view.repeatMode != RepeatMode.off,
             compact: true,
+            semantic: l10nOf(context).playerRepeatAction,
           ),
         ],
       ),
@@ -1014,7 +1028,7 @@ class PlayerScreen extends StatelessWidget {
           _times(skin, skew),
           const SizedBox(height: 14),
         ],
-        _transportRow(skin, skew),
+        _transportRow(context, skin, skew),
 
         const SizedBox(height: 12),
         StaggerIn(
@@ -1629,31 +1643,45 @@ class PlayerScreen extends StatelessWidget {
     VoidCallback? onTap,
     bool active = false,
     bool compact = false,
+    String? semantic,
   }) {
     final w = compact ? 44.0 : LayoutSpec.transportButtonWidth;
-    return Pressable(
-      child: Transform(
-        transform: Matrix4.skewX(-skew),
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            width: w,
-            height: LayoutSpec.transportButtonHeight,
-            decoration: BoxDecoration(
-              color: active ? skin.accent : skin.panel,
-              border: Border.all(
-                color: active
-                    ? skin.accent
-                    : skin.accentAt(0.55),
-                width: 1.5,
+    final tap = onTap;
+    return Semantics(
+      button: true,
+      enabled: tap != null,
+      label: semantic,
+      excludeSemantics: true,
+      child: Pressable(
+        child: Transform(
+          transform: Matrix4.skewX(-skew),
+          child: InkWell(
+            onTap: tap == null
+                ? null
+                : () {
+                    // A key that answers with nothing reads as a missed tap.
+                    unawaited(HapticFeedback.selectionClick());
+                    tap();
+                  },
+            child: Container(
+              width: w,
+              height: LayoutSpec.transportButtonHeight,
+              decoration: BoxDecoration(
+                color: active ? skin.accent : skin.panel,
+                border: Border.all(
+                  color: active
+                      ? skin.accent
+                      : skin.accentAt(0.55),
+                  width: 1.5,
+                ),
               ),
-            ),
-            child: Transform(
-              transform: Matrix4.skewX(skew),
-              child: Icon(
-                icon,
-                size: compact ? 18 : 21,
-                color: active ? skin.onAccent : skin.textPrimary,
+              child: Transform(
+                transform: Matrix4.skewX(skew),
+                child: Icon(
+                  icon,
+                  size: compact ? 20 : 22,
+                  color: active ? skin.onAccent : skin.textPrimary,
+                ),
               ),
             ),
           ),
@@ -1668,43 +1696,60 @@ class PlayerScreen extends StatelessWidget {
     RepeatMode.one => Icons.repeat_one_rounded,
   };
 
-  Widget _playButton(Skin skin, double skew, {required bool playing}) {
-    return Pressable(
-      child: Transform(
-        transform: Matrix4.skewX(-skew),
-        child: InkWell(
-          onTap: view.onPlayPause,
-          child: PopOnChange(
-            keyValue: view.playing,
-            child: Container(
-              width: LayoutSpec.playButtonWidth,
-              height: LayoutSpec.playButtonHeight,
-              decoration: BoxDecoration(
-                color: skin.textPrimary,
-                boxShadow: [
-                  BoxShadow(
-                    color: skin.accentAt(0.42),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Transform(
-                transform: Matrix4.skewX(skew),
-                child: AnimatedSwitcher(
-                  duration: Motion.morph,
-                  switchInCurve: MotionCurve.morph,
-                  switchOutCurve: MotionCurve.morph,
+  Widget _playButton(
+    Skin skin,
+    double skew, {
+    required bool playing,
+    String? semantic,
+  }) {
+    final tap = view.onPlayPause;
+    return Semantics(
+      button: true,
+      enabled: tap != null,
+      label: semantic,
+      excludeSemantics: true,
+      child: Pressable(
+        child: Transform(
+          transform: Matrix4.skewX(-skew),
+          child: InkWell(
+            onTap: tap == null
+                ? null
+                : () {
+                    unawaited(HapticFeedback.selectionClick());
+                    tap();
+                  },
+            child: PopOnChange(
+              keyValue: view.playing,
+              child: Container(
+                width: LayoutSpec.playButtonWidth,
+                height: LayoutSpec.playButtonHeight,
+                decoration: BoxDecoration(
+                  color: skin.textPrimary,
+                  boxShadow: [
+                    BoxShadow(
+                      color: skin.accentAt(0.42),
+                      blurRadius: 30,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Transform(
+                  transform: Matrix4.skewX(skew),
+                  child: AnimatedSwitcher(
+                    duration: Motion.morph,
+                    switchInCurve: MotionCurve.morph,
+                    switchOutCurve: MotionCurve.morph,
 
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: ScaleTransition(scale: animation, child: child),
-                  ),
-                  child: Icon(
-                    view.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    key: ValueKey<bool>(view.playing),
-                    size: 30,
-                    color: skin.background,
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(scale: animation, child: child),
+                    ),
+                    child: Icon(
+                      view.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      key: ValueKey<bool>(view.playing),
+                      size: 30,
+                      color: skin.background,
+                    ),
                   ),
                 ),
               ),

@@ -148,6 +148,37 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sections = <Widget>[
+      for (final section in view.home.visible)
+        ...switch (section) {
+          HomeSection.now => const <Widget>[],
+          HomeSection.continueListening => _continueSection(context),
+          HomeSection.recentlyAdded => _recentSection(context),
+          HomeSection.rediscover => _rediscoverSection(context),
+          HomeSection.jumpBackIn => _jumpBackInSection(context),
+          HomeSection.quickPick => _quickPickSection(context),
+          HomeSection.fromLibrary => _fromLibrarySection(context),
+          HomeSection.recap => _recapSection(context),
+        },
+    ];
+
+    // Every rail above is earned from play history. A small library has no
+    // "new from library" rail either — that one starts above twelve songs — so
+    // a first install showed a greeting over an empty page. Below the floor the
+    // library is the only honest rail; above it the dump is not, and Home is
+    // already drawing its own.
+    final railsEnabled = view.home.visible.any((s) => s != HomeSection.now);
+    final fallback = sections.isEmpty &&
+            railsEnabled &&
+            view.allTracks.isNotEmpty &&
+            view.allTracks.length <= kNewFromLibraryFloor
+        ? <Widget>[
+            _bandText(context, l10nOf(context).homeAllMusic),
+            _coverRail(context, view.allTracks.take(kRailLength).toList()),
+            const SizedBox(height: 22),
+          ]
+        : const <Widget>[];
+
     final list = SafeArea(
       bottom: false,
       child: ListView(
@@ -246,16 +277,8 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 26),
         ],
 
-        for (final section in view.home.visible) ...switch (section) {
-          HomeSection.now => const <Widget>[],
-          HomeSection.continueListening => _continueSection(context),
-          HomeSection.recentlyAdded => _recentSection(context),
-          HomeSection.rediscover => _rediscoverSection(context),
-          HomeSection.jumpBackIn => _jumpBackInSection(context),
-          HomeSection.quickPick => _quickPickSection(context),
-          HomeSection.fromLibrary => _fromLibrarySection(context),
-          HomeSection.recap => _recapSection(context),
-        },
+        ...sections,
+        ...fallback,
 
         ],
       ),

@@ -49,7 +49,6 @@
   "settingsSpeedBrisk": "NHANH",
   "settingsSpeedSnap": "TỨC THÌ",
   "settingsLanguageSystem": "HỆ THỐNG",
-  "libraryCopyHint": "Chép nhạc vào thư mục đó từ máy tính, hoặc chạy tools/sync_library.py để đẩy từ đó sang.",
   "librarySearch": "TÌM KIẾM",
   "libraryPinned": "GHIM",
   "librarySeeded": "TỰ TẠO",
@@ -68,7 +67,6 @@
   "libraryCreate": "TẠO",
   "libraryDerivedNote": "Có sẵn trong ứng dụng — bạn ghim hay đổi tên được, nhưng không xoá được.",
   "librarySeededNote": "Ứng dụng tự tạo từ những gì bạn nghe — ghim được, nhưng không đổi tên hay xoá được.",
-  "libraryNoLibrary": "Không tìm thấy thư viện nhạc trên máy này.",
   "libraryAddToQueue": "Thêm vào hàng đợi",
   "libraryQueue": "HÀNG ĐỢI",
   "libraryRemove": "XOÁ KHỎI",
@@ -946,7 +944,19 @@
   },
   "personalizeTabLook": "NGOẠI HÌNH",
   "downloadsNotInThisBuild": "Bản dựng này không có tính năng tải xuống.",
-  "downloadsSetup": "Thiết lập tải xuống (14 MB một lần)"
+  "downloadsSetup": "Thiết lập tải xuống (14 MB một lần)"
+
 , 
-  "downloadsSetupFailed": "Không tải được engine. Kiểm tra kết nối rồi thử lại."
+  "downloadsSetupFailed": "Không tải được engine. Kiểm tra kết nối rồi thử lại.",
+  "libraryEmptyTitle": "Chưa có nhạc",
+  "libraryEmptyBody": "Chọn thư mục chứa nhạc của bạn.",
+  "libraryChooseFolder": "CHỌN THƯ MỤC",
+  "librarySearchFound": "Tìm thấy {count}",
+  "homeAllMusic": "TẤT CẢ NHẠC",
+  "playerPlayAction": "Phát",
+  "playerPauseAction": "Tạm dừng",
+  "playerNextAction": "Bài tiếp theo",
+  "playerPreviousAction": "Bài trước",
+  "playerShuffleAction": "Trộn bài",
+  "playerRepeatAction": "Lặp lại"
 }

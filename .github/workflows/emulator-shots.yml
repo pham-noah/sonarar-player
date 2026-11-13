@@ -12,7 +12,11 @@ defaults:
 
 jobs:
   shots:
-    runs-on: ubuntu-latest
+    # Ubuntu runners no longer expose KVM ("hardware acceleration is not
+    # available"), and without it the emulator cannot boot. Apple-silicon
+    # runners do accelerate an arm64 image natively, and the phone build is
+    # arm64 anyway.
+    runs-on: macos-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -25,23 +29,18 @@ jobs:
       - name: pub get
         run: flutter pub get
 
-      # The x86_64 natives are excluded unless the gradle property says
-      # otherwise; the emulator needs them and the phone does not.
-      - name: build x86_64 debug APK
-        run: |
-          echo "sonararX86=1" >> android/gradle.properties
-          flutter build apk --debug --target-platform android-x64 \
-            --dart-define=SONARAR_DOWNLOADS=false
+      - name: build arm64 debug APK
+        run: flutter build apk --debug --dart-define=SONARAR_DOWNLOADS=false
 
       - name: boot emulator, install, photograph
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
           target: google_apis
-          arch: x86_64
+          arch: arm64-v8a
           profile: pixel_5
           disable-animations: true
-          emulator-options: -no-snapshot -no-boot-anim -gpu swiftshader_indirect
+          emulator-options: -no-snapshot -no-boot-anim
           script: |
             set -x
             mkdir -p artifacts

@@ -1,8 +1,14 @@
 name: emulator shots
 
-# Run by hand only: this boots a real Android emulator on GitHub's KVM-enabled
-# runner, installs the app and photographs it. It exists because the desk
-# machine has no hardware virtualisation, so the emulator cannot boot locally.
+# Run by hand only: this boots a real Android emulator, installs the app and
+# photographs it. It exists because the desk machine has no hardware
+# virtualisation, so the emulator cannot boot locally.
+#
+# Measured 2026-11-13 — neither free runner has a hypervisor:
+#   ubuntu-latest — "hardware acceleration is not available", falls back to
+#                   -accel off, which never boots;
+#   macos-latest  — "HVF error: HV_UNSUPPORTED", qemu-system-aarch64 exits 1.
+# Kept because the day either runner gets one, this is the whole check.
 on:
   workflow_dispatch:
 

@@ -40,7 +40,10 @@ jobs:
           arch: arm64-v8a
           profile: pixel_5
           disable-animations: true
-          emulator-options: -no-snapshot -no-boot-anim
+          # Supplying options replaces the action's defaults, which include
+          # -no-window and a software GPU. Without them the emulator tries to
+          # open a window on a headless runner and hangs after Vulkan init.
+          emulator-options: -no-window -no-audio -no-snapshot -no-boot-anim -gpu swiftshader_indirect
           script: |
             set -x
             mkdir -p artifacts

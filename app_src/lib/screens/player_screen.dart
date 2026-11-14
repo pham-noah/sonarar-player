@@ -1117,14 +1117,8 @@ class PlayerScreen extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       capsFor(context, l10nOf(context).playerSleepIn(text)),
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontLabel,
-                        letterSpacing: trackingFor(context, 2),
-                        fontWeight: FontWeight.w800,
-                        color: skin.accentInk,
-
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
+                      style: Type.caps(context, color: skin.accentInk)
+  .copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
                     ),
                   ],
                 ),

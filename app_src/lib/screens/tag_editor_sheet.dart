@@ -9,6 +9,7 @@ import '../core/app_state.dart';
 import '../library/tag_overrides.dart';
 import '../library/track.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../widgets/pressable.dart';
 
 class TagEditorSheet extends StatefulWidget {
@@ -195,12 +196,8 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
               Expanded(
                 child: Text(
                   capsFor(context, tagFieldLabel(f)),
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontLabel,
-                    letterSpacing: trackingFor(context, 3),
-                    fontWeight: FontWeight.w800,
-                    color: overridden ? skin.accentInk : skin.textSecondary,
-                  ),
+                  style: Type.caps(context,
+    color: overridden ? skin.accentInk : skin.textSecondary),
                 ),
               ),
               if (overridden)

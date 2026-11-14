@@ -12,6 +12,7 @@ import '../core/app_state.dart';
 import '../library/track.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../widgets/stagger_in.dart';
 import '../widgets/pressable.dart';
 import '../widgets/swipeable_queue_row.dart';
@@ -104,12 +105,7 @@ class QueuePanel extends StatelessWidget {
                               context,
                               l10nOf(context).queueSaveAsPlaylist,
                             ),
-                            style: TextStyle(
-                              fontSize: LayoutSpec.fontLabel,
-                              letterSpacing: trackingFor(context, 1.5),
-                              fontWeight: FontWeight.w800,
-                              color: skin.accentInk,
-                            ),
+                            style: Type.caps(context, color: skin.accentInk),
                           ),
                         ],
                       ),
@@ -134,12 +130,7 @@ class QueuePanel extends StatelessWidget {
                                 context,
                                 l10nOf(context).queueClearUpcoming,
                               ),
-                              style: TextStyle(
-                                fontSize: LayoutSpec.fontLabel,
-                                letterSpacing: trackingFor(context, 1.5),
-                                fontWeight: FontWeight.w800,
-                                color: skin.textSecondary,
-                              ),
+                              style: Type.caps(context, color: skin.textSecondary),
                             ),
                           ],
                         ),

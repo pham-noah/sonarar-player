@@ -83,6 +83,7 @@ import 'screens/diagnostics_screen.dart';
 import 'theme/ambient_backdrop.dart';
 import 'theme/backdrop_layer.dart';
 import 'theme/layout.dart';
+import 'theme/tokens.dart';
 import 'theme/layout_kit.dart';
 
 import 'art/art_bundle.dart';
@@ -2072,7 +2073,7 @@ class _HomeShellState extends State<HomeShell>
                     backgroundColor: widget.state.uiSkin.background,
                     title: Text(
                         capsFor(context, l10nOf(context).commonRemoveQuestion(track.title)),
-                        style: TextStyle(fontSize: LayoutSpec.fontSmall, color: widget.state.skin.textPrimary)),
+                        style: Type.title(context, color: widget.state.skin.textPrimary)),
                     content: Text(
                       l10nOf(context).shellDeleteDownloadNote,
                       style: TextStyle(fontSize: LayoutSpec.fontFloor, color: widget.state.skin.textSecondary),

@@ -487,9 +487,8 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
       builder: (ctx) => AlertDialog(
         backgroundColor: PresentationScope.uiSkin(context, widget.skin).background,
         title: Text(capsFor(context, l10nOf(context).commonRemoveQuestion(src.label)),
-            style: TextStyle(
-                fontSize: LayoutSpec.fontSmall,
-                color: PresentationScope.uiSkin(context, widget.skin).textPrimary)),
+            style: Type.title(context,
+    color: PresentationScope.uiSkin(context, widget.skin).textPrimary)),
         content: Text(l10nOf(context).importFilesStay,
             style: TextStyle(
                 fontSize: LayoutSpec.fontFloor,

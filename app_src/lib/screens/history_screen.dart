@@ -155,12 +155,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             const SizedBox(width: 4),
             Text(
               capsFor(context, '${_monthName(_month.month)} ${h.month.year}'),
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor,
-                fontWeight: FontWeight.w800,
-                letterSpacing: trackingFor(context, 0.8),
-                color: skin.accentInk,
-              ),
+              style: Type.caps(context, color: skin.accentInk),
             ),
             const SizedBox(width: 4),
             _chevron(skin, Icons.chevron_right_rounded, () {

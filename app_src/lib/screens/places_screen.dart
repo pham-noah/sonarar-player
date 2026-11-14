@@ -267,7 +267,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(6),
                     child: Icon(Icons.my_location_rounded,
-                        size: 18, color: skin.accent),
+                        size: 18, color: skin.accentInk),
                   ),
                 ),
               ),
@@ -298,7 +298,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           const SizedBox(height: 8),
           Text(
             l10nOf(context).placesTappedPin,
-            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
+            style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accentInk),
           ),
         ],
 
@@ -311,12 +311,12 @@ class _PlacesScreenState extends State<PlacesScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Row(
                   children: [
-                    Icon(placeIconFor(_hereInside!.icon), size: 14, color: skin.accent),
+                    Icon(placeIconFor(_hereInside!.icon), size: 14, color: skin.accentInk),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         l10nOf(context).placesYouAreIn(_hereInside!.name),
-                        style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
+                        style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accentInk),
                       ),
                     ),
                   ],
@@ -411,7 +411,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                     children: [
 
                       Icon(placeIconFor(place.icon),
-                          size: 15, color: skin.accent),
+                          size: 15, color: skin.accentInk),
                       const SizedBox(width: 7),
                       Text(
                         place.name,
@@ -436,7 +436,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                               fontSize: LayoutSpec.fontMicro,
                               letterSpacing: trackingFor(context, 1),
                               fontWeight: FontWeight.w900,
-                              color: skin.accent,
+                              color: skin.accentInk,
                             ),
                           ),
                         ),
@@ -551,7 +551,7 @@ class _NameSheetState extends State<_NameSheet> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   l10nOf(context).placesDuplicateName,
-                  style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accent),
+                  style: TextStyle(fontSize: LayoutSpec.fontMicro, color: skin.accentInk),
                 ),
               );
             },
@@ -562,7 +562,7 @@ class _NameSheetState extends State<_NameSheet> {
               fontSize: LayoutSpec.fontLabel,
               letterSpacing: trackingFor(context, 3),
               fontWeight: FontWeight.w800,
-              color: skin.accent,
+              color: skin.accentInk,
             ),
           ),
           const SizedBox(height: 4),
@@ -590,7 +590,7 @@ class _NameSheetState extends State<_NameSheet> {
                 fontSize: LayoutSpec.fontMicro,
                 letterSpacing: trackingFor(context, 2),
                 fontWeight: FontWeight.w800,
-                color: skin.accent,
+                color: skin.accentInk,
               ),
             ),
             const SizedBox(height: 6),
@@ -645,7 +645,7 @@ class _NameSheetState extends State<_NameSheet> {
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: trackingFor(context, 2),
               fontWeight: FontWeight.w800,
-              color: skin.accent,
+              color: skin.accentInk,
             ),
           ),
           const SizedBox(height: 8),
@@ -700,7 +700,7 @@ class _NameSheetState extends State<_NameSheet> {
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: trackingFor(context, 2),
               fontWeight: FontWeight.w800,
-              color: skin.accent,
+              color: skin.accentInk,
             ),
           ),
           ValueListenableBuilder<double>(
@@ -817,17 +817,17 @@ class _NameSheetState extends State<_NameSheet> {
             fontSize: LayoutSpec.fontMicro,
             letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
-            color: skin.accent,
+            color: skin.accentInk,
           ),
         ),
         const SizedBox(height: 4),
         TextField(
           controller: ctl,
-          style: TextStyle(fontSize: 15, color: skin.textPrimary),
+          style: TextStyle(fontSize: 16, color: skin.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              fontSize: 15,
+              fontSize: 16,
               color: skin.secondary(0.6),
             ),
             isDense: true,

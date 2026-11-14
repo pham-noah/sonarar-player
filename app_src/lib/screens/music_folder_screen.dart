@@ -108,7 +108,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
         title: Text(
           l10nOf(context).settingsMusicFolder,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 14,
             letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w900,
             color: skin.textPrimary,
@@ -127,7 +127,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       key: const Key('music-folder-up'),
                       onPressed: () => _open(_parent!),
                       icon: Icon(Icons.arrow_upward_rounded,
-                          size: 18, color: skin.accent),
+                          size: 18, color: skin.accentInk),
                     ),
                   Expanded(
                     child: Text(
@@ -196,7 +196,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                               child: Row(
                                 children: [
                                   Icon(Icons.folder_rounded,
-                                      size: 17, color: skin.accent),
+                                      size: 17, color: skin.accentInk),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
@@ -204,7 +204,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        fontSize: 13,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w700,
                                         color: skin.textPrimary,
                                       ),
@@ -229,7 +229,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontMicro,
-                      color: _isLibrary ? skin.accent : skin.textSecondary,
+                      color: _isLibrary ? skin.accentInk : skin.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),

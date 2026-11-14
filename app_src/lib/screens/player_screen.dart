@@ -387,7 +387,7 @@ class PlayerScreen extends StatelessWidget {
                         fontSize: LayoutSpec.fontMicro,
                         letterSpacing: trackingFor(context, 5),
                         fontWeight: FontWeight.w700,
-                        color: pal.accent,
+                        color: pal.accentInk,
                       ),
                     ),
                   if (view.state.arrangement.contextPlateExists) ...[
@@ -522,7 +522,7 @@ class PlayerScreen extends StatelessWidget {
                       _contextLabel(context, skin),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 16,
                         fontWeight: FontWeight.w900,
                         letterSpacing: trackingFor(context, 2),
                         color: skin.background,
@@ -671,7 +671,7 @@ class PlayerScreen extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: skin.textPrimary,
-                                fontSize: 17,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -681,7 +681,7 @@ class PlayerScreen extends StatelessWidget {
                                   ? l10nOf(context).playerAlbumVersion
                                   : variantLabel(v.variantTag!),
                               style: TextStyle(
-                                color: skin.accent,
+                                color: skin.accentInk,
                                 fontSize: LayoutSpec.fontMicro,
                                 letterSpacing: trackingFor(context, 1.6),
                                 fontWeight: FontWeight.w900,
@@ -692,7 +692,7 @@ class PlayerScreen extends StatelessWidget {
                       ),
 
                       if (v.id == current.id)
-                        Icon(Icons.check_rounded, color: skin.accent, size: 20),
+                        Icon(Icons.check_rounded, color: skin.accentInk, size: 20),
                     ],
                   ),
                 ),
@@ -738,7 +738,7 @@ class PlayerScreen extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 34,
                         fontWeight: FontWeight.w900,
                         height: 1.05,
                         letterSpacing: trackingFor(context, -0.5),
@@ -901,7 +901,7 @@ class PlayerScreen extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          fontSize: 30,
+          fontSize: 34,
           fontWeight: FontWeight.w900,
           height: 1.05,
           letterSpacing: trackingFor(context, -0.5),
@@ -1132,7 +1132,7 @@ class PlayerScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.bedtime_rounded, size: 14, color: skin.accent),
+                    Icon(Icons.bedtime_rounded, size: 14, color: skin.accentInk),
                     const SizedBox(width: 6),
                     Text(
                       capsFor(context, l10nOf(context).playerSleepIn(text)),
@@ -1140,7 +1140,7 @@ class PlayerScreen extends StatelessWidget {
                         fontSize: LayoutSpec.fontLabel,
                         letterSpacing: trackingFor(context, 2),
                         fontWeight: FontWeight.w800,
-                        color: skin.accent,
+                        color: skin.accentInk,
 
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
@@ -1175,7 +1175,7 @@ class PlayerScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
                 fontWeight: FontWeight.w700,
-                color: skin.accent,
+                color: skin.accentInk,
               ),
             ),
           ),
@@ -1329,7 +1329,7 @@ class PlayerScreen extends StatelessWidget {
                                   fontSize: LayoutSpec.fontLabel,
                                   letterSpacing: trackingFor(context, 4),
                                   fontWeight: FontWeight.w800,
-                                  color: skin.accent,
+                                  color: skin.accentInk,
                                 ),
                               ),
                             ),
@@ -1535,7 +1535,7 @@ class PlayerScreen extends StatelessWidget {
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: trackingFor(context, 4),
               fontWeight: FontWeight.w800,
-              color: skin.accent,
+              color: skin.accentInk,
             ),
           ),
         ),
@@ -1545,7 +1545,7 @@ class PlayerScreen extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 19,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
             color: skin.textPrimary,
             shadows: const [

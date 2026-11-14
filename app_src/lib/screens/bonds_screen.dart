@@ -151,7 +151,7 @@ class BondsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: LayoutSpec.fontBase,
                     fontWeight: FontWeight.w900,
-                    color: held ? skin.accent : skin.textSecondary,
+                    color: held ? skin.accentInk : skin.textSecondary,
                   ),
                 ),
               ],
@@ -189,7 +189,7 @@ class BondsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       letterSpacing: trackingFor(context, 1),
-                      color: held ? skin.accent : skin.textSecondary,
+                      color: held ? skin.accentInk : skin.textSecondary,
                     ),
                   ),
                 ),
@@ -206,7 +206,7 @@ class BondsScreen extends StatelessWidget {
                               ? Icons.note_add_outlined
                               : Icons.sticky_note_2_rounded,
                           size: 18,
-                          color: skin.accent,
+                          color: skin.accentInk,
                         ),
                       ),
                     ),

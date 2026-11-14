@@ -106,7 +106,7 @@ class LibraryBrowserBar extends StatelessWidget {
                       fontSize: kBrowserChipFont,
                       letterSpacing: trackingFor(context, 0.2),
                       fontWeight: FontWeight.w900,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                   ),
                 ),
@@ -182,7 +182,7 @@ class LibraryBrowserBar extends StatelessWidget {
 
                     color: active
                         ? skin.onAccent
-                        : (here ? skin.accent : skin.textPrimary),
+                        : (here ? skin.accentInk : skin.textPrimary),
                   ),
                 ),
               ),
@@ -275,7 +275,7 @@ class PlaylistRow extends StatelessWidget {
 
             if (pinned) ...[
               const SizedBox(width: 8),
-              Icon(Icons.push_pin_rounded, color: skin.accent, size: 16),
+              Icon(Icons.push_pin_rounded, color: skin.accentInk, size: 16),
             ],
             const SizedBox(width: 12),
             Expanded(
@@ -302,7 +302,7 @@ class PlaylistRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                   ),
                   ],
@@ -313,7 +313,7 @@ class PlaylistRow extends StatelessWidget {
               GestureDetector(
                 onTap: onPlay,
                 child: Icon(Icons.play_arrow_rounded,
-                    color: skin.accent, size: 26),
+                    color: skin.accentInk, size: 26),
               ),
 
           ],

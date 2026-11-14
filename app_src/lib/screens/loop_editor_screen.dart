@@ -118,7 +118,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
                 style: TextStyle(
                   fontSize: 46,
                   fontWeight: FontWeight.w900,
-                  color: skin.accent,
+                  color: skin.accentInk,
                   fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
@@ -292,7 +292,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             value == null ? '—' : _mmss(value),
             style: TextStyle(
               fontSize: LayoutSpec.fontBase,
-              color: value == null ? skin.textSecondary : skin.accent,
+              color: value == null ? skin.textSecondary : skin.accentInk,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),

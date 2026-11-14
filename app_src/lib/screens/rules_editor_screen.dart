@@ -116,7 +116,7 @@ class RulesEditorScreen extends StatelessWidget {
                 fontSize: LayoutSpec.fontLabel,
                 letterSpacing: trackingFor(context, 3),
                 fontWeight: FontWeight.w800,
-                color: skin.accent,
+                color: skin.accentInk,
               ),
             ),
             const SizedBox(height: 6),
@@ -171,7 +171,7 @@ class RulesEditorScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       letterSpacing: trackingFor(context, 1.5),
-                      color: isActive ? skin.accent : skin.textSecondary,
+                      color: isActive ? skin.accentInk : skin.textSecondary,
                     ),
                   ),
                 ],
@@ -191,7 +191,7 @@ class RulesEditorScreen extends StatelessWidget {
             ),
             IconButton(
               onPressed: () => _delete(skin, r),
-              icon: Icon(Icons.delete_outline_rounded, color: skin.accent),
+              icon: Icon(Icons.delete_outline_rounded, color: skin.accentInk),
               tooltip: l10nOf(context).rulesRemoveRule,
             ),
           ],
@@ -446,7 +446,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
             style: TextStyle(
               fontSize: LayoutSpec.fontSmall,
               fontWeight: FontWeight.w700,
-              color: selected ? skin.accent : skin.textPrimary,
+              color: selected ? skin.accentInk : skin.textPrimary,
             ),
           ),
         ),

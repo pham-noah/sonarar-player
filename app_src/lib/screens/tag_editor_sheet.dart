@@ -199,7 +199,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                     fontSize: LayoutSpec.fontLabel,
                     letterSpacing: trackingFor(context, 3),
                     fontWeight: FontWeight.w800,
-                    color: overridden ? skin.accent : skin.textSecondary,
+                    color: overridden ? skin.accentInk : skin.textSecondary,
                   ),
                 ),
               ),

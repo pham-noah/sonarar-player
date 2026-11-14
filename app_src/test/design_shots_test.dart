@@ -10,6 +10,10 @@ library;
 //
 // No device or emulator: every shot is a widget-tree render, so hover and
 // pressed states are injected with real pointer events.
+//
+// The phase has no default on purpose: `flutter test` runs this file too, and a
+// default of `before` meant an ordinary suite run silently overwrote the
+// reference set with the current tree.
 
 import 'dart:io';
 
@@ -30,7 +34,7 @@ import 'package:sonarar/theme/skin_policy.dart';
 import 'shell_probe.dart';
 import 'tolerant_golden.dart';
 
-const String _phase = String.fromEnvironment('PHASE', defaultValue: 'before');
+const String _phase = String.fromEnvironment('PHASE', defaultValue: 'local');
 
 int _boots = 0;
 
@@ -102,6 +106,10 @@ Future<void> _boot(
   await tester.pumpWidget(MaterialApp(
     key: ValueKey<int>(_boots++),
     debugShowCheckedModeBanner: false,
+    // The app's own theme. `main.dart` hands every Material widget its theme,
+    // so a bare MaterialApp here would photograph Material's defaults — the
+    // seeded purple switch and the white ink splash no phone ever shows.
+    theme: themeFor(state.uiSkin, layout: state.presentation),
     home: HomeShell(state: state),
   ));
   // Let the real boot sequence run — it is what loads the bundled demo library,

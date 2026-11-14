@@ -2,8 +2,10 @@ library;
 
 import 'package:flutter/material.dart';
 
+import 'contrast.dart';
 import 'layout.dart';
 import 'personalization.dart';
+import 'tokens.dart';
 
 enum SkinId {
   abyss,
@@ -54,14 +56,44 @@ class Skin {
 
   final Color onAccent;
 
-  /// The faded versions of the three text colours. There are ten different
-  /// alphas in the screens today; every one of them is a decision about
-  /// hierarchy that was made at the call site. They read through here so the
-  /// ladder can be decided in one place later, and so `withValues` stops being
-  /// spelled out a hundred and thirty times.
-  Color secondary(double alpha) => textSecondary.withValues(alpha: alpha);
+  /// The faded versions of the three text colours.
+  ///
+  /// `secondary(a)` is the one that matters: a call site may ask for any alpha,
+  /// but it cannot ask for one that fails contrast, because the request is
+  /// clamped to the theme's own 4.5:1 floor. Those 28 hand-picked alphas used
+  /// to be 28 separate decisions about hierarchy, and on the light skins most of
+  /// them were simply illegible.
+  Color secondary(double alpha) =>
+      textSecondary.withValues(alpha: alpha.clamp(mutedFloor, 1.0));
+
   Color primaryText(double alpha) => textPrimary.withValues(alpha: alpha);
   Color accentAt(double alpha) => accent.withValues(alpha: alpha);
+
+  /// Decoration only: a divider, a scrim, a wash. Never the only edge of a
+  /// control and never text, so it is exempt from the floor above.
+  Color edge(double alpha) => textSecondary.withValues(alpha: alpha);
+
+  /// The quietest this theme's secondary text may go and still be read: 4.5:1
+  /// against its own background.
+  double get mutedFloor => alphaFor(textSecondary, background, 4.5);
+
+  /// Secondary text at that floor. Artist lines, timestamps, inactive tabs.
+  Color get textMuted => textSecondary.withValues(alpha: mutedFloor);
+
+  /// The accent as *ink*: `accent` itself blended toward the text colour until
+  /// it clears 4.5:1 on this background.
+  ///
+  /// The accent is a surface colour — a fill with `onAccent` on it — and on the
+  /// light skins it is 1.88:1 as text, so an accent-coloured label was the least
+  /// legible thing on the screen. Tinting it toward the ink keeps the hue and
+  /// buys the contrast.
+  Color get accentInk => inkFor(accent, textPrimary, background, 4.5);
+
+  /// The only border allowed to delimit a control: 3:1 against the page, the
+  /// threshold for a non-text boundary. `edge()` is for structure nobody has to
+  /// find.
+  Color get borderStrong =>
+      textSecondary.withValues(alpha: alphaFor(textSecondary, background, 3.0));
 
   bool get isLight => background.computeLuminance() > 0.5;
 
@@ -83,6 +115,10 @@ class Skin {
     final light = base.computeLuminance() > 0.5;
     Color mix(Color a, Color b, double t) => Color.lerp(a, b, t)!;
     final ink = light ? const Color(0xFF14110E) : const Color(0xFFF4F1EA);
+    // The quiet ink is *reached*, not guessed: 42% toward the ink is the look,
+    // but on a pale base that is 3.8:1, and every muted label under it would
+    // inherit the failure. `inkFor` only moves as far as the floor needs.
+    final quiet = mix(ink, base, light ? 0.42 : 0.38);
     return Skin(
       id: id,
       displayName: displayName,
@@ -90,7 +126,7 @@ class Skin {
       accent: accent,
       accentDeep: accentDeepFor(accent),
       textPrimary: ink,
-      textSecondary: mix(ink, base, light ? 0.42 : 0.38),
+      textSecondary: inkFor(quiet, ink, base, 4.5),
       panel: mix(base, light ? Colors.white : Colors.black, light ? 0.22 : 0.30),
       onAccent: onAccentFor(accent),
       accentPinned: accentPinned,
@@ -208,6 +244,8 @@ const List<Skin> kAllSkins = [
 
 Skin skinFor(SkinId id) => kAllSkins.firstWhere((s) => s.id == id);
 
+
+
 abstract final class LayoutSpec {
   static const double fontBase = 22.0;
   static const double fontTitle = 34.0;
@@ -255,16 +293,20 @@ abstract final class LayoutSpec {
   static const double transportButtonHeight = 48.0;
 
   static const double secondaryActionWidth = 48.0;
-  static const double secondaryActionHeight = 44.0;
+  /// The minimum height of a secondary action: a chip row, a small button.
+  static const double secondaryActionHeight = 48.0;
 }
 
   ThemeData themeFor(Skin skin, {Presentation? layout}) {
     final palette = layout?.kit.palette;
     if (palette != null) {
       // The palette owns the room; a pinned accent owns the highlights.
-      return _themeFromPalette(palette, accentFrom: skin.accentPinned ? skin : null);
+      return applyTokens(
+        _themeFromPalette(palette, accentFrom: skin.accentPinned ? skin : null),
+        palette,
+      );
     }
-    return _themeFromSkin(skin);
+    return applyTokens(_themeFromSkin(skin), LayoutPalette.fromSkin(skin));
   }
 
 ThemeData _themeFromPalette(LayoutPalette pal, {Skin? accentFrom}) {

@@ -17,6 +17,8 @@
   "settingsOfficialOnly": "仅官方版本",
   "settingsContext": "情境",
   "settingsOffline": "离线",
+  "settingsNeedsNetwork": "需要网络连接",
+  "settingsNeedsWeather": "需要开启天气",
   "settingsTimeOfDay": "时段",
   "settingsWeather": "天气",
   "settingsDynamicMix": "动态混合",

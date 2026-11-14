@@ -173,7 +173,7 @@ class ArtFramingPanel extends StatelessWidget {
             fontSize: LayoutSpec.fontLabel,
             letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
-            color: skin.accent,
+            color: skin.accentInk,
           ),
         ),
         const SizedBox(width: 10),

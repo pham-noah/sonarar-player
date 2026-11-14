@@ -131,7 +131,7 @@ class TrackPanel extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.insights_rounded, size: 18, color: skin.accent),
+                  Icon(Icons.insights_rounded, size: 18, color: skin.accentInk),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -188,7 +188,7 @@ class TrackPanel extends StatelessWidget {
                   icon,
                   size: 20,
                   color: active
-                      ? skin.accent
+                      ? skin.accentInk
                       : enabled
                           ? skin.textSecondary
                           : skin.secondary(0.4),
@@ -214,7 +214,7 @@ class TrackPanel extends StatelessWidget {
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
                       fontWeight: FontWeight.w900,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                   ),
               ],

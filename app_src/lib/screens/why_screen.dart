@@ -113,7 +113,7 @@ class WhyPanel extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Icon(Icons.play_arrow_rounded, color: skin.accent, size: 28),
+                  Icon(Icons.play_arrow_rounded, color: skin.accentInk, size: 28),
                 ],
               ),
             ),

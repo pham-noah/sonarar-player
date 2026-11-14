@@ -138,7 +138,7 @@ class _InlinePanelSheetState extends State<InlinePanelSheet> {
                                 fontSize: LayoutSpec.fontLabel,
                                 letterSpacing: trackingFor(context, 4),
                                 fontWeight: FontWeight.w800,
-                                color: skin.accent,
+                                color: skin.accentInk,
                               ),
                             ),
                           ),

@@ -83,14 +83,14 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
             Icon(
               ok ? Icons.folder_open_rounded : Icons.lock_outline_rounded,
               size: 15,
-              color: ok ? skin.accent : skin.textSecondary,
+              color: ok ? skin.accentInk : skin.textSecondary,
             ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 label,
                 style: TextStyle(
-                  color: ok ? skin.textSecondary : skin.accent,
+                  color: ok ? skin.textSecondary : skin.accentInk,
                   fontSize: LayoutSpec.fontMicro,
                   letterSpacing: trackingFor(context, 0.5),
                 ),
@@ -100,7 +100,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
               Text(
                 l10nOf(context).diagGrant,
                 style: TextStyle(
-                  color: skin.accent,
+                  color: skin.accentInk,
                   fontSize: LayoutSpec.fontMicro,
                   letterSpacing: trackingFor(context, 1.2),
                 ),
@@ -174,11 +174,11 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     child: Row(children: [
-                      Icon(Icons.graphic_eq_rounded, size: 15, color: skin.accent),
+                      Icon(Icons.graphic_eq_rounded, size: 15, color: skin.accentInk),
                       const SizedBox(width: 6),
                       Text(l10nOf(context).diagSpectrum,
                           style: TextStyle(
-                              color: skin.accent,
+                              color: skin.accentInk,
                               fontSize: LayoutSpec.fontMicro,
                               letterSpacing: trackingFor(context, 1.2))),
                     ]),
@@ -192,11 +192,11 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     child: Row(children: [
-                      Icon(Icons.copy_rounded, size: 15, color: skin.accent),
+                      Icon(Icons.copy_rounded, size: 15, color: skin.accentInk),
                       const SizedBox(width: 6),
                       Text(l10nOf(context).diagCopy,
                           style: TextStyle(
-                              color: skin.accent,
+                              color: skin.accentInk,
                               fontSize: LayoutSpec.fontMicro,
                               letterSpacing: trackingFor(context, 1.2))),
                     ]),
@@ -216,7 +216,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                       ? l10nOf(context).diagNothingWrong
                       : l10nOf(context).diagNothingLogged,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: skin.textSecondary, fontSize: 15),
+                  style: TextStyle(color: skin.textSecondary, fontSize: 16),
                 ),
               ),
             )
@@ -244,7 +244,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                           TextSpan(
                             text: l.text,
                             style: TextStyle(
-                              color: l.looksWrong ? skin.accent : skin.textPrimary,
+                              color: l.looksWrong ? skin.accentInk : skin.textPrimary,
                               fontSize: LayoutSpec.fontFloor,
                               height: 1.35,
                               fontFamily: 'monospace',

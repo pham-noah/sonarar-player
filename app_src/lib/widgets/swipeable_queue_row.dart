@@ -212,7 +212,7 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
             ),
           ),
           if (widget.isCurrent)
-            Icon(Icons.graphic_eq_rounded, color: skin.accent, size: 18)
+            Icon(Icons.graphic_eq_rounded, color: skin.accentInk, size: 18)
           else
             Icon(Icons.drag_indicator_rounded,
                 color: skin.secondary(0.55), size: 17),

@@ -19,6 +19,7 @@ import '../core/prefs.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
 import '../theme/theme_preset.dart';
+import '../theme/tokens.dart';
 import '../widgets/stagger_in.dart';
 
 import '../theme/slab.dart';
@@ -162,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 dense: true,
                 onTap: () => Navigator.of(context).pop(entry.key),
                 trailing: entry.key == (prefs!.locale ?? 'system')
-                    ? Icon(Icons.check_rounded, size: 18, color: skin.accent)
+                    ? Icon(Icons.check_rounded, size: 18, color: skin.accentInk)
                     : null,
               ),
             const SizedBox(height: 8),
@@ -267,7 +268,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 skin,
                 l10n.settingsFadeIn,
                 icon: Icons.multitrack_audio_rounded,
-                prefs!.crossfadeSeconds == 0 ? l10n.settingsOff : '${prefs!.crossfadeSeconds}s',
+                prefs!.crossfadeSeconds == 0 ? l10n.settingsOff : '${prefs!.crossfadeSeconds} s',
                 onLess: prefs!.crossfadeSeconds <= 0
                     ? null
                     : () => onPrefsChanged!(
@@ -288,19 +289,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     prefs!.copyWith(sleepTimerMinutes: prefs!.sleepTimerMinutes + 5)),
               ),
 
-              if (prefs!.allowNetwork)
-                _stepper(
-                  skin,
-                  l10n.settingsWeatherEvery,
-                  icon: Icons.cloud_sync_rounded,
-                  '${prefs!.weatherRefreshMinutes}m',
-                  onLess: () => onPrefsChanged!(
-                      prefs!.copyWith(
-                          weatherRefreshMinutes: prefs!.weatherRefreshMinutes - 5)),
-                  onMore: () => onPrefsChanged!(
-                      prefs!.copyWith(
-                          weatherRefreshMinutes: prefs!.weatherRefreshMinutes + 5)),
-                ),
+              _stepper(
+                skin,
+                l10n.settingsWeatherEvery,
+                icon: Icons.cloud_sync_rounded,
+                '${prefs!.weatherRefreshMinutes} min',
+                enabled: prefs!.allowNetwork,
+                note: prefs!.allowNetwork ? null : l10n.settingsNeedsNetwork,
+                onLess: () => onPrefsChanged!(
+                    prefs!.copyWith(
+                        weatherRefreshMinutes: prefs!.weatherRefreshMinutes - 5)),
+                onMore: () => onPrefsChanged!(
+                    prefs!.copyWith(
+                        weatherRefreshMinutes: prefs!.weatherRefreshMinutes + 5)),
+              ),
               if (prefs!.allowNetwork)
                 _toggle(skin, l10n.settingsOfficialOnly, prefs!.officialOnly,
                     icon: Icons.verified_rounded,
@@ -320,13 +322,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _toggle(skin, l10n.settingsDynamicMix, prefs!.contextMix,
                   icon: Icons.shuffle_rounded,
                   (v) => onPrefsChanged!(prefs!.copyWith(contextMix: v))),
-              if (prefs!.allowNetwork)
-                _toggle(skin, l10n.settingsPlaces, prefs!.placesEnabled,
-                    icon: Icons.place_rounded,
-                    (v) => onPrefsChanged!(prefs!.copyWith(placesEnabled: v))),
+              // Gated, not hidden. A row that disappears when its prerequisite
+              // goes off cannot be found again; one that stays and says why can.
+              _toggle(skin, l10n.settingsPlaces, prefs!.placesEnabled,
+                  (v) => onPrefsChanged!(prefs!.copyWith(placesEnabled: v)),
+                  icon: Icons.place_rounded,
+                  enabled: prefs!.allowNetwork,
+                  note: prefs!.allowNetwork ? null : l10n.settingsNeedsNetwork),
               _toggle(skin, l10n.settingsWeatherVariants, prefs!.weatherVariants,
+                  (v) => onPrefsChanged!(prefs!.copyWith(weatherVariants: v)),
                   icon: Icons.swap_horiz_rounded,
-                  (v) => onPrefsChanged!(prefs!.copyWith(weatherVariants: v))),
+                  enabled: prefs!.allowNetwork && prefs!.contextWeather,
+                  // Name the switch that actually unlocks this row: weather is
+                  // gated on network too, so network is the first thing to turn on.
+                  note: !prefs!.allowNetwork
+                      ? l10n.settingsNeedsNetwork
+                      : (prefs!.contextWeather ? null : l10n.settingsNeedsWeather)),
               _toggle(skin, l10n.settingsAutoTheme, prefs!.autoSkin,
                   icon: Icons.palette_outlined,
                   (v) => onPrefsChanged!(prefs!.copyWith(autoSkin: v))),
@@ -534,19 +545,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     bool value,
     ValueChanged<bool> onChanged, {
     IconData? icon,
+    bool enabled = true,
+    String? note,
   }) =>
       KitRow(
-              labelSize: LayoutSpec.fontRow,
+        labelSize: LayoutSpec.fontRow,
         skin: skin,
         label: label,
         icon: icon,
-        trailing: Switch(
+        note: note,
+        enabled: enabled,
+        trailing: KitSwitch(
+          skin: skin,
           value: value,
-          onChanged: onChanged,
-          activeThumbColor: skin.accent,
-          activeTrackColor: skin.accentAt(0.35),
+          onChanged: enabled ? onChanged : null,
         ),
-        onTap: () => onChanged(!value),
+        onTap: enabled ? () => onChanged(!value) : null,
       );
 
   Widget _aboutRow(
@@ -595,7 +609,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Row(
                 children: [
-                  Icon(icon, size: 17, color: skin.accent),
+                  Icon(icon, size: 17, color: skin.accentInk),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -603,7 +617,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: FontWeight.w800,
                         letterSpacing: trackingFor(context, 1),
                         color: skin.textPrimary,
@@ -653,6 +667,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
 
+  /// A row whose value is stepped with two buttons.
+  ///
+  /// The value used to sit in a hard `SizedBox(width: 104)` that reserved a fixed
+  /// slice of the row at every window size. At 320dp that slice was most of the
+  /// row, so the label was cut to `FADE…` / `SLEE…` / `WEA…` while ~90dp of it
+  /// sat empty. Now the label takes what is left (and may wrap to two lines) and
+  /// the value column is a minimum, not a width.
   Widget _stepper(
     Skin skin,
     String label,
@@ -660,54 +681,92 @@ class _SettingsScreenState extends State<SettingsScreen> {
     VoidCallback? onLess,
     VoidCallback? onMore,
     IconData? icon,
+    bool enabled = true,
+    String? note,
   }) =>
       KitRow(
-              labelSize: LayoutSpec.fontRow,
         skin: skin,
         label: label,
+        labelSize: LayoutSpec.fontRow,
         icon: icon,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _stepButton(skin, Icons.remove_rounded, onLess),
-
-            SizedBox(
-              width: 104,
-              child: Center(
-                child: Stamp(
-                  skin: skin,
-                  label: value,
-                  accent: false,
+        note: note,
+        enabled: enabled,
+        // Two 48dp keys and a 64dp value column are 160dp before the label gets
+        // a word. On a 320dp phone that is the whole row — the label broke
+        // "WEATHER" across two lines — and at the top of the system font scale
+        // it is too wide even on a big screen. Below those two cases the
+        // stepper sits under the label it steps.
+        trailing: _stacked(context) ? null : _stepRow(skin, value, onLess, onMore, enabled),
+        below: _stacked(context)
+            ? Padding(
+                padding: const EdgeInsets.only(top: Space.xs),
+                child: Row(
+                  children: [
+                    _stepButton(skin, Icons.remove_rounded, enabled ? onLess : null),
+                    Expanded(child: _stepValue(skin, value, enabled)),
+                    _stepButton(skin, Icons.add_rounded, enabled ? onMore : null),
+                  ],
                 ),
-              ),
-            ),
-            _stepButton(skin, Icons.add_rounded, onMore),
-          ],
+              )
+            : null,
+      );
+
+  /// True when the value column has taken more of the row than the label can
+  /// spare: the smallest supported phone, or the top of the system font scale.
+  bool _stacked(BuildContext context) =>
+      MediaQuery.sizeOf(context).width < 360 ||
+      MediaQuery.textScalerOf(context).scale(LayoutSpec.fontRow) > 20;
+
+  Widget _stepRow(
+    Skin skin,
+    String value,
+    VoidCallback? onLess,
+    VoidCallback? onMore,
+    bool enabled,
+  ) =>
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _stepButton(skin, Icons.remove_rounded, enabled ? onLess : null),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 64),
+            child: _stepValue(skin, value, enabled),
+          ),
+          _stepButton(skin, Icons.add_rounded, enabled ? onMore : null),
+        ],
+      );
+
+  Widget _stepValue(Skin skin, String value, bool enabled) => Center(
+        child: Text(
+          value,
+          maxLines: 1,
+          style: Type.micro(
+            context,
+            color: enabled ? skin.textPrimary : skin.textMuted,
+          ),
         ),
       );
 
+  /// 48dp: at 34×34 these were the two smallest controls in the app, flanking
+  /// the value you press them to change.
   Widget _stepButton(Skin skin, IconData icon, VoidCallback? onTap) {
     final off = onTap == null;
     return Pressable(
       child: InkWell(
         onTap: onTap,
         child: Container(
-          width: 34,
-          height: 34,
+          width: Space.tap,
+          height: Space.tap,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             border: Border.all(
-              color: off
-                  ? skin.secondary(0.25)
-                  : skin.accentAt(0.6),
+              color: off ? skin.edge(0.22) : skin.accentAt(0.55),
             ),
           ),
           child: Icon(
             icon,
             size: 18,
-            color: off
-                ? skin.secondary(0.3)
-                : skin.accent,
+            color: off ? skin.textMuted : skin.accentInk,
           ),
         ),
       ),
@@ -728,7 +787,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             children: [
               Icon(icon,
-                  size: 19, color: active ? skin.onAccent : skin.accent),
+                  size: 19, color: active ? skin.onAccent : skin.accentInk),
               const SizedBox(height: 5),
               FittedBox(
                 fit: BoxFit.scaleDown,

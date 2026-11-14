@@ -61,7 +61,7 @@ class DownloadRing extends StatelessWidget {
                             ? ColoredBox(
                                 color: skin.panel,
                                 child: Icon(Icons.downloading_rounded,
-                                    size: 18, color: skin.accent),
+                                    size: 18, color: skin.accentInk),
                               )
                             : Image(image: coverOf(job)!, fit: BoxFit.cover),
                       ),

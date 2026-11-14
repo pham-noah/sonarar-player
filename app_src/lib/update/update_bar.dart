@@ -88,7 +88,7 @@ class _UpdateBarState extends State<UpdateBar> {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           child: Row(
             children: [
-              Icon(Icons.system_update_rounded, size: 18, color: skin.accent),
+              Icon(Icons.system_update_rounded, size: 18, color: skin.accentInk),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -105,7 +105,7 @@ class _UpdateBarState extends State<UpdateBar> {
               Text(
                 downloading ? '' : capsFor(context, l10nOf(context).updateSheetTitle),
                 style: TextStyle(
-                  color: skin.accent,
+                  color: skin.accentInk,
                   fontSize: LayoutSpec.fontFloor,
                   fontWeight: FontWeight.w900,
                   letterSpacing: trackingFor(context, 1.2),

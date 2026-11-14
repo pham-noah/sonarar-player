@@ -53,7 +53,7 @@ class UpdateSheetBody extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.system_update_rounded, size: 18, color: skin.accent),
+                    Icon(Icons.system_update_rounded, size: 18, color: skin.accentInk),
                     const SizedBox(width: 10),
                     Text(
                       capsFor(context, l10n.updateSheetTitle),

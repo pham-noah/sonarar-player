@@ -7,6 +7,8 @@ import 'dart:ui' show Color;
 
 import '../art/art_spec.dart';
 
+export 'contrast.dart' show contrastRatio;
+
 /// Everything the PERSONALIZE screen owns, in one record.
 ///
 /// The skin still decides the room — background, panel, text, skew. This decides
@@ -639,16 +641,6 @@ Color onAccentFor(Color accent) =>
 Color accentDeepFor(Color accent) {
   final hsl = _toHsl(accent);
   return _fromHsl(hsl.h, hsl.s, (hsl.l - 0.18).clamp(0.05, 0.95));
-}
-
-/// WCAG contrast, 1..21. Used to warn rather than to refuse: the user may want
-/// a low-contrast accent, but they should not get one by accident.
-double contrastRatio(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final hi = math.max(la, lb);
-  final lo = math.min(la, lb);
-  return (hi + 0.05) / (lo + 0.05);
 }
 
 /// Pick an accent out of a photo: the most saturated colour that is neither

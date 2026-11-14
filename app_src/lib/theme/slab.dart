@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'layout.dart';
 import 'skin.dart';
 import 'surface.dart';
+import 'tokens.dart';
 
 class Slab extends StatelessWidget {
   const Slab({
@@ -103,7 +104,7 @@ class SectionLabel extends StatelessWidget {
                 fontSize: LayoutSpec.fontLabel,
                 letterSpacing: trackingFor(context, 4),
                 fontWeight: FontWeight.w800,
-                color: skin.accent,
+                color: skin.accentInk,
               ),
             ),
           ),
@@ -167,20 +168,24 @@ class SkinChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rad = skin.skewDegrees * (3.14159265 / 180) * 0.12;
-    final fg = selected ? skin.accent : skin.textSecondary;
+    // Selected is a fill, unselected is an edge — the same treatment the LAYOUT
+    // chips get, so one screen cannot show two ideas of "chosen". The
+    // silhouette never changes: the border is 1px in both states.
+    final fg = selected ? skin.onAccent : skin.textSecondary;
 
     return GestureDetector(
       onTap: onTap,
       child: Transform(
         transform: Matrix4.skewX(-rad),
         child: Container(
+          constraints: const BoxConstraints(minHeight: Space.tap),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
 
-            borderRadius: BorderRadius.circular(999),
-            color: selected ? skin.accentAt(0.18) : Colors.transparent,
+            borderRadius: BorderRadius.circular(Corners.pill),
+            color: selected ? skin.accent : Colors.transparent,
             border: Border.all(
-              color: selected ? skin.accent : skin.secondary(0.35),
+              color: selected ? skin.accent : skin.borderStrong,
             ),
           ),
           child: Transform(
@@ -199,12 +204,7 @@ class SkinChip extends StatelessWidget {
                     child: Text(
                       label,
                       maxLines: 1,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontLabel,
-                        letterSpacing: trackingFor(context, 1.5),
-                        fontWeight: FontWeight.w900,
-                        color: fg,
-                      ),
+                      style: Type.caps(context, color: fg),
                     ),
                   ),
                 ),

@@ -141,7 +141,7 @@ Widget compendiumRow({
                   style: TextStyle(
                     fontSize: LayoutSpec.fontSmall,
                     fontWeight: FontWeight.w700,
-                    color: playing ? skin.accent : skin.textPrimary,
+                    color: playing ? skin.accentInk : skin.textPrimary,
                   ),
                 ),
                 if (showNote) ...[
@@ -162,7 +162,7 @@ Widget compendiumRow({
           if (onSummon != null)
             IconButton(
               onPressed: () => onSummon(t),
-              icon: Icon(Icons.add_circle_outline_rounded, color: skin.accent, size: 22),
+              icon: Icon(Icons.add_circle_outline_rounded, color: skin.accentInk, size: 22),
               tooltip: l10n.libraryAddToQueue,
             ),
         ],
@@ -304,7 +304,7 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
                   fontWeight: FontWeight.w900,
                   color: dim
                       ? skin.secondary(0.5)
-                      : (playing ? skin.onAccent : skin.accent),
+                      : (playing ? skin.onAccent : skin.accentInk),
                 ),
               ),
             ),

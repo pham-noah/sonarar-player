@@ -1,8 +1,8 @@
 import 'dart:math' as math;
-import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import 'devices.dart';
 import 'pressable.dart';
 
@@ -22,6 +22,7 @@ class KitRow extends StatelessWidget {
     this.onTap,
     this.below,
     this.dense = false,
+    this.enabled = true,
   });
 
   final Skin skin;
@@ -40,20 +41,27 @@ class KitRow extends StatelessWidget {
   /// Tighter padding, for rows that sit on a busy surface.
   final bool dense;
 
+  /// A row whose prerequisite is off: it stays where it was, so the setting
+  /// does not move when something else is switched, but it says so — muted
+  /// label, decoration-only edge, and no callback.
+  final bool enabled;
+
   @override
   Widget build(BuildContext context) {
     final body = Container(
-      padding: EdgeInsets.fromLTRB(12, dense ? 4 : 7, 8, dense ? 4 : 7),
+      padding: EdgeInsets.fromLTRB(12, dense ? Space.xs : Space.sm, 12, dense ? Space.xs : Space.sm),
       decoration: BoxDecoration(
         color: skin.panel,
         border: Border(
           left: BorderSide(color: skin.accentAt(0.7), width: 3),
           // A hairline on the other three sides. Without it the panel and the
-          // page are two dark greys meeting on a soft edge, and the slab — the
-          // one shape this app repeats — stops reading as a plate.
-          top: BorderSide(color: skin.secondary(0.22)),
-          right: BorderSide(color: skin.secondary(0.22)),
-          bottom: BorderSide(color: skin.secondary(0.22)),
+          // page are two greys meeting on a soft edge, and the slab — the one
+          // shape this app repeats — stops reading as a plate. It is
+          // `borderStrong` because a control's edge needs 3:1; the old
+          // 22%-alpha hairline measured 1.77:1 and was effectively invisible.
+          top: BorderSide(color: enabled ? skin.borderStrong : skin.edge(0.22)),
+          right: BorderSide(color: enabled ? skin.borderStrong : skin.edge(0.22)),
+          bottom: BorderSide(color: enabled ? skin.borderStrong : skin.edge(0.22)),
         ),
       ),
       child: Column(
@@ -63,8 +71,8 @@ class KitRow extends StatelessWidget {
           Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 17, color: skin.accent),
-                const SizedBox(width: 10),
+                Icon(icon, size: 18, color: enabled ? skin.accentInk : skin.textMuted),
+                const SizedBox(width: Space.sm),
               ],
               Expanded(
                 child: Column(
@@ -73,25 +81,25 @@ class KitRow extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      maxLines: 1,
+                      // Two lines before an ellipsis: at 320dp a one-line limit
+                      // turned FADE IN into "FADE…" beside an empty 104px slot.
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: labelSize,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: trackingFor(context, 1),
-                        color: skin.textPrimary,
-                      ),
+                      style: Type.row(
+                        context,
+                        color: enabled ? skin.textPrimary : skin.textMuted,
+                      ).copyWith(fontSize: labelSize),
                     ),
                     if (note != null) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: Space.xxs),
                       Text(
                         note!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: Type.bodyBase(context,
+                                color: enabled ? skin.textSecondary : skin.textMuted)
+                            .copyWith(
                           fontSize: math.max(LayoutSpec.fontMicro, labelSize - 4),
-                          height: 1.35,
-                          color: skin.textSecondary,
                         ),
                       ),
                     ],
@@ -99,13 +107,13 @@ class KitRow extends StatelessWidget {
                 ),
               ),
               if (trailing != null) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: Space.xs),
                 trailing!,
               ],
             ],
           ),
           if (below != null) ...[
-            const SizedBox(height: 2),
+            const SizedBox(height: Space.xxs),
             below!,
           ],
         ],
@@ -113,7 +121,7 @@ class KitRow extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: Space.xs),
       child: onTap == null
           ? body
           : Pressable(
@@ -156,12 +164,44 @@ class KitToggle extends StatelessWidget {
     icon: icon,
     dense: dense,
     onTap: () => onChanged(!value),
-    trailing: Switch(
-      value: value,
-      activeThumbColor: skin.accent,
-      onChanged: onChanged,
-    ),
+    trailing: KitSwitch(skin: skin, value: value, onChanged: onChanged),
   );
+}
+
+/// The app's switch, in the app's two states.
+///
+/// Explicit rather than inherited: a `Switch` with only `activeThumbColor` set
+/// leaves the off state to Material, which draws an outline at 21:1 and a knob
+/// that disappears into the track on the light skins. Both states are ours.
+class KitSwitch extends StatelessWidget {
+  const KitSwitch({
+    super.key,
+    required this.skin,
+    required this.value,
+    required this.onChanged,
+    this.semanticLabel,
+  });
+
+  final Skin skin;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+  final String? semanticLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final ink = SwitchInk.ofSkin(skin);
+    return Semantics(
+      label: semanticLabel,
+      toggled: value,
+      child: Switch(
+        value: value,
+        onChanged: onChanged,
+        trackColor: ink.track,
+        thumbColor: ink.thumb,
+        trackOutlineColor: ink.outline,
+      ),
+    );
+  }
 }
 
 /// A row carrying a slider. The value reads on the right, so the row does not
@@ -203,7 +243,7 @@ class KitSlider extends StatelessWidget {
       style: TextStyle(
         fontSize: LayoutSpec.fontFloor,
         fontWeight: FontWeight.w800,
-        color: skin.accent,
+        color: skin.accentInk,
       ),
     ),
     below: Slider(
@@ -226,7 +266,7 @@ class KitTabs<T> extends StatelessWidget {
     required this.selected,
     required this.onSelected,
     this.keyBuilder,
-    this.height = 34,
+    this.height = Space.tap,
   });
 
   final Skin skin;
@@ -256,7 +296,7 @@ class KitTabs<T> extends StatelessWidget {
                   onTap: () => onSelected(entries[i].key),
                   behavior: HitTestBehavior.opaque,
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 140),
+                    duration: StateMotion.settle,
                     curve: Curves.easeOut,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
@@ -264,23 +304,24 @@ class KitTabs<T> extends StatelessWidget {
                           ? skin.accent
                           : Colors.transparent,
                       border: Border.all(
+                        // A control's edge, not a decoration: at 0.35 alpha
+                        // this border measured under 2:1 and the unselected
+                        // tabs read as empty space beside the selected one.
                         color: entries[i].key == selected
                             ? skin.accent
-                            : skin.secondary(0.35),
+                            : skin.borderStrong,
                       ),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(Corners.xs),
                     ),
                     child: Text(
                       entries[i].value,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
-                      style: TextStyle(
+                      style: Type.caps(
+                        context,
                         color: entries[i].key == selected
                             ? skin.onAccent
-                            : skin.textSecondary,
-                        fontSize: LayoutSpec.fontMicro,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: trackingFor(context, 0.8),
+                            : skin.textMuted,
                       ),
                     ),
                   ),
@@ -302,7 +343,7 @@ class KitSegment<T> extends StatelessWidget {
     required this.options,
     required this.selected,
     required this.onSelected,
-    this.height = 36,
+    this.height = Space.tap,
   });
 
   final Skin skin;
@@ -325,23 +366,21 @@ class KitSegment<T> extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 child: Container(
                   alignment: Alignment.center,
-                  constraints: const BoxConstraints(minHeight: 36),
+                  constraints: BoxConstraints(minHeight: Space.tap),
                   decoration: BoxDecoration(
                     color: entry.key == selected ? skin.accent : skin.panel,
                     border: Border.all(
                       color: entry.key == selected
                           ? skin.accent
-                          : skin.secondary(0.35),
+                          : skin.borderStrong,
                     ),
                   ),
                   child: Text(
                     entry.value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontFloor - 1,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: trackingFor(context, 0.6),
+                    style: Type.caps(
+                      context,
                       color: entry.key == selected
                           ? skin.onAccent
                           : skin.textSecondary,

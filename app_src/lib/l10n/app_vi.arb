@@ -17,6 +17,8 @@
   "settingsOfficialOnly": "CHỈ BẢN CHÍNH THỨC",
   "settingsContext": "BỐI CẢNH",
   "settingsOffline": "NGOẠI TUYẾN",
+  "settingsNeedsNetwork": "Cần truy cập mạng",
+  "settingsNeedsWeather": "Cần bật thời tiết",
   "settingsTimeOfDay": "THỜI ĐIỂM",
   "settingsWeather": "THỜI TIẾT",
   "settingsDynamicMix": "TRỘN ĐỘNG",

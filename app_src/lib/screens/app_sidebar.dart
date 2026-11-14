@@ -106,7 +106,7 @@ class AppSidebar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         child: Row(
           children: [
-            Icon(e.icon, size: 22, color: panelSkin.accent),
+            Icon(e.icon, size: 22, color: panelSkin.accentInk),
             const SizedBox(width: 16),
             Expanded(
               child: Text(

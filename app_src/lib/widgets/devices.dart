@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
 import '../theme/layout_kit.dart';
+import '../theme/tokens.dart';
 import 'pressable.dart';
 
 double _rad(Skin skin, [double scale = 1.0]) =>
@@ -175,7 +176,6 @@ class SectionBand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final slant = _rad(skin);
-    final square = slant.abs() < 0.001;
     final form = PresentationScope.of(context, fallback: skin)
         .kit
         .chrome
@@ -188,18 +188,13 @@ class SectionBand extends StatelessWidget {
           child: Row(
             children: [
               Container(width: 3, height: 15, color: skin.accent),
-              const SizedBox(width: 9),
+              const SizedBox(width: Space.sm),
               Expanded(
                 child: Text(
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: trackingFor(context, 0.8),
-                    color: skin.textPrimary,
-                  ),
+                  style: Type.caps(context, color: skin.textPrimary),
                 ),
               ),
               if (trailing != null) trailing!,
@@ -208,12 +203,17 @@ class SectionBand extends StatelessWidget {
         );
 
       case SectionBandForm.banner:
+        // Demoted to a wash: this used to be a full-bleed accent slab with a
+        // hard offset shadow, so a settings page could show four filled bands
+        // of the same weight and the values underneath were the quietest thing
+        // on it. No shadow, a 14% accent fill and accent-coloured ink at micro
+        // caps, which is a heading again rather than a button.
         return Transform(
           transform: Matrix4.skewX(-slant),
           alignment: Alignment.centerLeft,
           child: Container(
             width: double.infinity,
-            color: skin.accent,
+            color: skin.accentAt(0.14),
             padding: const EdgeInsets.fromLTRB(14, 5, 12, 5),
             child: Transform(
               transform: Matrix4.skewX(slant),
@@ -225,12 +225,7 @@ class SectionBand extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: trackingFor(context, square ? 0.6 : 2.4),
-                        color: skin.background,
-                      ),
+                      style: Type.micro(context, color: skin.accentInk),
                     ),
                   ),
                   if (trailing != null) trailing!,
@@ -342,11 +337,11 @@ class BigNumeral extends StatelessWidget {
           '$value',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 21,
+            fontSize: 22,
             fontWeight: FontWeight.w900,
             height: 1.0,
             letterSpacing: trackingFor(context, -0.5),
-            color: dim ? skin.textSecondary : skin.accent,
+            color: dim ? skin.textSecondary : skin.accentInk,
           ),
           ),
         ),

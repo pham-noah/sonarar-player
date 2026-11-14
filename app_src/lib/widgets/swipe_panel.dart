@@ -62,7 +62,7 @@ class SwipePanel extends StatelessWidget {
 
   Widget _icon(double p) => Icon(
         icon,
-        color: skin.accent,
+        color: skin.accentInk,
         size: 22 * p.clamp(0.55, 1.0),
       );
 
@@ -74,7 +74,7 @@ class SwipePanel extends StatelessWidget {
           fontSize: LayoutSpec.fontLabel,
           letterSpacing: trackingFor(context, 2),
           fontWeight: FontWeight.w900,
-          color: skin.accent,
+          color: skin.accentInk,
         ),
       );
 }

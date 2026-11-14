@@ -407,7 +407,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             fontSize: LayoutSpec.fontSmall,
             letterSpacing: trackingFor(context, 2),
             fontWeight: FontWeight.w800,
-            color: skin.accent,
+            color: skin.accentInk,
           ),
         ),
         content: Column(
@@ -439,7 +439,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10nOf(context).importSave, style: TextStyle(color: skin.accent)),
+            child: Text(l10nOf(context).importSave, style: TextStyle(color: skin.accentInk)),
           ),
         ],
       ),
@@ -496,7 +496,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10nOf(context).importKeep, style: TextStyle(color: widget.skin.accent)),
+            child: Text(l10nOf(context).importKeep, style: TextStyle(color: widget.skin.accentInk)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
@@ -542,7 +542,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                 fontSize: LayoutSpec.fontSmall,
                 letterSpacing: trackingFor(context, 2),
                 fontWeight: FontWeight.w800,
-                color: skin.accent,
+                color: skin.accentInk,
               )),
           const SizedBox(height: 4),
           Text(l10nOf(context).importHint,
@@ -552,7 +552,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             Text(_notice!,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontFloor,
-                  color: skin.accent,
+                  color: skin.accentInk,
                   fontWeight: FontWeight.w600,
                 )),
           ],
@@ -583,13 +583,13 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             height: 48,
             child: OutlinedButton.icon(
               onPressed: () => _edit(),
-              icon: Icon(Icons.add_rounded, color: skin.accent),
+              icon: Icon(Icons.add_rounded, color: skin.accentInk),
               label: Text(l10nOf(context).importNewTitle,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontFloor,
                     letterSpacing: trackingFor(context, 1.2),
                     fontWeight: FontWeight.w800,
-                    color: skin.accent,
+                    color: skin.accentInk,
                   )),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: skin.accentAt(0.6)),
@@ -641,7 +641,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                 icon: busy
                     ? const SizedBox(
                         width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : Icon(Icons.download_rounded, color: skin.accent),
+                    : Icon(Icons.download_rounded, color: skin.accentInk),
                 tooltip: l10nOf(context).importRowHint,
               ),
             ],
@@ -665,7 +665,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                     style: TextStyle(
                       fontSize: LayoutSpec.fontFloor,
                       fontWeight: FontWeight.w900,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                   ),
                 ],

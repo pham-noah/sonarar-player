@@ -197,7 +197,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   ? Icons.error_outline_rounded
                   : Icons.cloud_download_outlined,
               size: 18,
-              color: _setupFailed ? skin.accent : skin.textSecondary,
+              color: _setupFailed ? skin.accentInk : skin.textSecondary,
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -212,7 +212,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                               ? l10n.downloadsSetupFailed
                               : l10n.downloadsSetup),
                     style: TextStyle(
-                      color: _setupFailed ? skin.accent : skin.textPrimary,
+                      color: _setupFailed ? skin.accentInk : skin.textPrimary,
                       fontSize: LayoutSpec.fontFloor,
                       fontWeight: FontWeight.w700,
                     ),
@@ -229,7 +229,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: skin.textSecondary,
-                          fontSize: 11,
+                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -512,7 +512,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 8),
                             child: Icon(Icons.arrow_back_rounded,
-                                color: skin.accent, size: 28),
+                                color: skin.accentInk, size: 28),
                           ),
                         ),
                 ),
@@ -559,7 +559,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             suffixIcon: IconButton(
                               icon: Icon(
                                 Icons.search_rounded,
-                                color: skin.accent,
+                                color: skin.accentInk,
                               ),
                               onPressed: _search,
                             ),
@@ -595,7 +595,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                                     ? Icons.wifi_rounded
                                     : Icons.wifi_off_rounded,
                                 color: widget.searchOnline
-                                    ? skin.accent
+                                    ? skin.accentInk
                                     : skin.textSecondary,
                                 size: 22,
                               ),
@@ -615,7 +615,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       onPressed: _openImport,
                       icon: Icon(
                         Icons.playlist_add_rounded,
-                        color: skin.accent,
+                        color: skin.accentInk,
                       ),
                       label: Text(
                         l10nOf(context).ytImportPlaylist,
@@ -623,7 +623,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                           fontSize: LayoutSpec.fontFloor,
                           letterSpacing: trackingFor(context, 1.2),
                           fontWeight: FontWeight.w800,
-                          color: skin.accent,
+                          color: skin.accentInk,
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
@@ -647,7 +647,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       _error!,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontFloor,
-                        color: skin.accent,
+                        color: skin.accentInk,
                       ),
                     ),
                   ),
@@ -672,7 +672,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             child: Text(
                               l10nOf(context).ytInLibrary,
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 14,
                                 letterSpacing: trackingFor(context, 1.4),
                                 fontWeight: FontWeight.w900,
                                 color: skin.textSecondary,
@@ -690,7 +690,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             child: Text(
                               l10nOf(context).ytOnYoutube,
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 14,
                                 letterSpacing: trackingFor(context, 1.4),
                                 fontWeight: FontWeight.w900,
                                 color: skin.textSecondary,
@@ -808,7 +808,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             fontWeight: FontWeight.w900,
                             letterSpacing: trackingFor(context, 0.6),
                             color: hit.isOfficialGiven(_vouched)
-                                ? skin.accent
+                                ? skin.accentInk
                                 : skin.textSecondary,
                           ),
                         ),
@@ -845,7 +845,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: skin.textPrimary,
                       ),
@@ -863,11 +863,11 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                     onPressed: () => widget.onPlay!(hit.id),
                     icon: Icon(
                       Icons.play_circle_fill_rounded,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                     tooltip: l10nOf(context).ytPlayThis,
                   )
-                : Icon(Icons.check_circle_rounded, color: skin.accent)
+                : Icon(Icons.check_circle_rounded, color: skin.accentInk)
           else if (downloading)
             SizedBox(
               key: const Key('row-downloading'),
@@ -893,7 +893,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
           else
             IconButton(
               onPressed: () => _download(hit),
-              icon: Icon(Icons.download_rounded, color: skin.accent),
+              icon: Icon(Icons.download_rounded, color: skin.accentInk),
               tooltip: l10nOf(context).ytDownload,
             ),
         ],
@@ -954,7 +954,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Icon(Icons.play_circle_fill_rounded, color: skin.accent),
+            Icon(Icons.play_circle_fill_rounded, color: skin.accentInk),
           ],
         ),
       ),

@@ -128,7 +128,7 @@ class _BackupSectionState extends State<BackupSection> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
-                        color: widget.skin.accent,
+                        color: widget.skin.accentInk,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

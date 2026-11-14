@@ -2,7 +2,6 @@
 library;
 
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
@@ -157,11 +156,16 @@ Future<void> _shootWidget(
   WidgetTester tester,
   String name,
   Size size,
-  Widget child,
-) async {
+  Widget child, {
+  required AppState state,
+}) async {
   _size(tester, size);
   await tester.pumpWidget(MaterialApp(
     debugShowCheckedModeBanner: false,
+    // The app's own theme, not Material's: a Switch, a Slider and an ink
+    // response all take their colours from it, and a bare MaterialApp would
+    // photograph the defaults instead — colours no phone ever shows.
+    theme: themeFor(state.uiSkin, layout: state.presentation),
     home: Scaffold(body: child),
   ));
   await tester.pump();
@@ -183,6 +187,7 @@ Future<void> _shootShell(
 
   await tester.pumpWidget(MaterialApp(
     debugShowCheckedModeBanner: false,
+    theme: themeFor(state.uiSkin, layout: state.presentation),
     home: HomeShell(state: state),
   ));
   await tester.pump(const Duration(milliseconds: 50));
@@ -255,6 +260,7 @@ void main() {
           onFindMusic: () {},
           playlists: PlaylistList(),
         )),
+        state: s,
       );
     });
 
@@ -263,6 +269,7 @@ void main() {
       _size(tester, size);
       await tester.pumpWidget(MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: themeFor(s.uiSkin, layout: s.presentation),
         home: Scaffold(
           body: LibraryScreen(view: LibraryScreenView(
             tracks: _library(),
@@ -298,6 +305,7 @@ void main() {
           onCycleRepeat: () {},
           repeatMode: RepeatMode.one,
         ),
+        state: s,
       );
     });
 
@@ -314,13 +322,19 @@ void main() {
             cover: MemoryImage(_cover()),
           ),
         ),
+        state: s,
       );
     });
 
     testWidgets('settings light skin $w', (tester) async {
       final s = _state()..chooseSkinManually(SkinId.minimal);
       await _shootWidget(
-          tester, 'settings_minimal', size, SettingsScreen(state: s));
+        tester,
+        'settings_minimal',
+        size,
+        SettingsScreen(state: s),
+        state: s,
+      );
     });
   }
 }

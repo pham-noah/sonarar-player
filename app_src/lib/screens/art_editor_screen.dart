@@ -69,7 +69,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
             onPressed: () => Navigator.of(context).pop(_spec),
             child: Text(
               l10nOf(context).importSave,
-              style: TextStyle(color: skin.accent, fontWeight: FontWeight.w900),
+              style: TextStyle(color: skin.accentInk, fontWeight: FontWeight.w900),
             ),
           ),
         ],
@@ -157,7 +157,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
                           _update(_spec.copyWith(flipX: !_spec.flipX)),
                       icon: Icon(
                         Icons.flip_rounded,
-                        color: skin.accent,
+                        color: skin.accentInk,
                         size: 18,
                       ),
                       label: Text(
@@ -212,7 +212,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
           format(value),
           textAlign: TextAlign.right,
           style: TextStyle(
-            color: skin.accent,
+            color: skin.accentInk,
             fontSize: LayoutSpec.fontFloor - 4,
             fontWeight: FontWeight.w900,
           ),

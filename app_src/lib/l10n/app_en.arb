@@ -17,6 +17,8 @@
   "settingsOfficialOnly": "OFFICIAL ONLY",
   "settingsContext": "CONTEXT",
   "settingsOffline": "OFFLINE",
+  "settingsNeedsNetwork": "Needs network access",
+  "settingsNeedsWeather": "Needs weather on",
   "settingsTimeOfDay": "TIME OF DAY",
   "settingsWeather": "WEATHER",
   "settingsDynamicMix": "DYNAMIC MIX",

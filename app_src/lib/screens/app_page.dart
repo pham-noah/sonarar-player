@@ -74,7 +74,7 @@ class AppPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                     child:
-                        Icon(Icons.arrow_back_rounded, color: resolved.accent, size: 28),
+                        Icon(Icons.arrow_back_rounded, color: resolved.accentInk, size: 28),
                   ),
                 ),
               ),

@@ -106,8 +106,11 @@ void main() {
       await _pump(tester);
 
       final icon = tester.widget<Icon>(find.byIcon(Icons.search_rounded));
-      expect(icon.color, kSkinCrimson.background,
-          reason: 'an accent-coloured key on the accent banner is invisible — '
+      // The banner is a 14% accent wash now, not a fill, so the key is ink:
+      // `skin.background` was a dark glyph on a dark page for crimson and a
+      // white one on cream for Minimal — invisible in both directions.
+      expect(icon.color, kSkinCrimson.accentInk,
+          reason: 'an accent-coloured key on the banner is invisible — '
               'crimson shipped a "+" nobody could see');
     });
 

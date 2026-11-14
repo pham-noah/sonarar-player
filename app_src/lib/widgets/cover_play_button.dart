@@ -66,7 +66,7 @@ class CoverPlayButton extends StatelessWidget {
               alignment: Alignment.center,
               child: Icon(
                 isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                color: skin.accent,
+                color: skin.accentInk,
                 size: size * 0.44,
               ),
             ),
@@ -91,7 +91,7 @@ class CoverPlayButton extends StatelessWidget {
       color: skin.panel,
       child: Icon(
         icon,
-        color: fallbackIconColor ?? skin.accent,
+        color: fallbackIconColor ?? skin.accentInk,
         size: fallbackIconSize ?? size * 0.5,
       ),
     );

@@ -101,7 +101,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                     child: Text(
                       l10nOf(context).commonDone,
                       style: TextStyle(
-                        color: skin.accent,
+                        color: skin.accentInk,
                         fontWeight: FontWeight.w900,
                       ),
                     ),

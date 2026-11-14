@@ -2,6 +2,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import 'contrast.dart';
 import 'layout_kit.dart';
 import 'motion.dart';
 import 'skin.dart';
@@ -72,6 +73,21 @@ class LayoutPalette {
   final List<Color> ambient;
 
   final Color? pageFill;
+
+  /// The three derived roles, computed from this palette's own colours rather
+  /// than pasted per theme: a palette the user built from a photo gets the same
+  /// legibility floors as the nine shipped ones.
+  ///
+  /// 4.5:1 for text, 3:1 for a control's edge — the WCAG thresholds, and the
+  /// reason a muted label on the light palettes is no longer 2.27:1.
+  double get mutedFloor => alphaFor(textSecondary, background, 4.5);
+
+  Color get textMuted => textSecondary.withValues(alpha: mutedFloor);
+
+  Color get accentInk => inkFor(accent, textPrimary, background, 4.5);
+
+  Color get borderStrong =>
+      textSecondary.withValues(alpha: alphaFor(textSecondary, background, 3.0));
 
   @override
   bool operator ==(Object other) =>

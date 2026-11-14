@@ -17,6 +17,8 @@
   "settingsOfficialOnly": "VAIN VIRALLISET",
   "settingsContext": "KONTEKSTI",
   "settingsOffline": "OFFLINE",
+  "settingsNeedsNetwork": "Vaatii verkkoyhteyden",
+  "settingsNeedsWeather": "Vaatii säätilan",
   "settingsTimeOfDay": "VUOROKAUDENAIKA",
   "settingsWeather": "SÄÄ",
   "settingsDynamicMix": "DYNAAMINEN SEKOITUS",

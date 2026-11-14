@@ -207,7 +207,7 @@ class _LyricsViewState extends State<LyricsView> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: skin.accent),
+                      Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: skin.accentInk),
                       const SizedBox(width: 6),
                       Text(
                         l10nOf(context).scopePlayer,
@@ -217,7 +217,7 @@ class _LyricsViewState extends State<LyricsView> {
                           fontSize: LayoutSpec.fontLabel,
                           fontWeight: FontWeight.w900,
                           letterSpacing: trackingFor(context, 1.2),
-                          color: skin.accent,
+                          color: skin.accentInk,
                         ),
                       ),
                     ],
@@ -245,7 +245,7 @@ class _LyricsViewState extends State<LyricsView> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.my_location_rounded, size: 16, color: skin.accent),
+                        Icon(Icons.my_location_rounded, size: 16, color: skin.accentInk),
                         const SizedBox(width: 8),
                         Text(
                           l10nOf(context).lyricsSync,
@@ -253,7 +253,7 @@ class _LyricsViewState extends State<LyricsView> {
                             fontSize: LayoutSpec.fontLabel,
                             fontWeight: FontWeight.w900,
                             letterSpacing: trackingFor(context, 1.4),
-                            color: skin.accent,
+                            color: skin.accentInk,
                           ),
                         ),
                       ],

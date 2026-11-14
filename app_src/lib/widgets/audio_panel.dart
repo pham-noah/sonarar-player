@@ -53,7 +53,7 @@ class AudioPanel extends StatelessWidget {
               onTap: () => onVolume(muted ? 1.0 : 0.0),
               child: Icon(
                 muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-                color: muted ? skin.accent : skin.textSecondary,
+                color: muted ? skin.accentInk : skin.textSecondary,
                 size: 22,
               ),
             ),
@@ -108,7 +108,7 @@ class AudioPanel extends StatelessWidget {
               blurb: _kindLabel(l10nOf(context), o.kind),
 
               trailing: o.active
-                  ? Icon(Icons.check_rounded, color: skin.accent, size: 20)
+                  ? Icon(Icons.check_rounded, color: skin.accentInk, size: 20)
                   : null,
             ),
         ],
@@ -133,7 +133,7 @@ class _SectionLabel extends StatelessWidget {
             fontSize: LayoutSpec.fontMicro,
             letterSpacing: trackingFor(context, 2.2),
             fontWeight: FontWeight.w900,
-            color: skin.accent,
+            color: skin.accentInk,
           ),
         ),
       );

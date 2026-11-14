@@ -157,7 +157,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               child: Icon(
                                 Icons.lyrics_outlined,
                                 size: 15,
-                                color: widget.skin.accent,
+                                color: widget.skin.accentInk,
                               ),
                             ),
                         ],
@@ -373,9 +373,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
     bool big = false,
     String? semantic,
   }) {
-    // 48dp for the key you press most, 44 for its neighbours. The bar is 64
-    // high, so the height came free; the width was the only thing hiding.
-    final w = big ? 48.0 : 44.0;
+    // 48 for every key in the bar: the neighbours were 44 wide, and the height
+    // (48) came free because the bar is 64 high. The width was the only thing
+    // hiding under a thumb.
+    const w = 48.0;
     final tap = onTap;
     return Semantics(
       button: true,
@@ -397,7 +398,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
             child: Icon(
               icon,
               size: big ? 28 : (small ? 18 : 22),
-              color: active ? widget.skin.accent : widget.skin.textPrimary,
+              color: active ? widget.skin.accentInk : widget.skin.textPrimary,
             ),
           ),
         ),

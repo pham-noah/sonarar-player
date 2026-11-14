@@ -46,7 +46,7 @@
     "tabBarInsetBottom": 0.0
   },
   "chrome": {
-    "sectionBand": "banner",
+    "sectionBand": "mark",
     "libraryHeader": "sectionBand",
     "titleForm": "stacked",
     "shellFrame": "docked",

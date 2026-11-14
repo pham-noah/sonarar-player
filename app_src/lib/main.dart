@@ -1921,9 +1921,9 @@ class _HomeShellState extends State<HomeShell>
                   onTap: () => Navigator.of(ctx).pop(p.id),
                 ),
               ListTile(
-                leading: Icon(Icons.add_rounded, color: widget.state.skin.accent),
+                leading: Icon(Icons.add_rounded, color: widget.state.skin.accentInk),
                 title: Text(l10nOf(context).libraryNewPlaylist,
-                    style: TextStyle(color: widget.state.skin.accent)),
+                    style: TextStyle(color: widget.state.skin.accentInk)),
                 onTap: () => Navigator.of(ctx).pop('__new__'),
               ),
             ],
@@ -2081,7 +2081,7 @@ class _HomeShellState extends State<HomeShell>
                       TextButton(
                           onPressed: () => Navigator.of(d).pop(false),
                           child: Text(l10nOf(context).importKeep,
-                              style: TextStyle(color: widget.state.skin.accent))),
+                              style: TextStyle(color: widget.state.skin.accentInk))),
                       TextButton(
                           onPressed: () => Navigator.of(d).pop(true),
                           child: Text(l10nOf(context).libraryRemove,
@@ -3458,7 +3458,7 @@ class _HomeShellState extends State<HomeShell>
         footer: Text(
           'Sonarar',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 14,
             letterSpacing: trackingFor(context, 1.2),
             color: skin.textSecondary,
           ),

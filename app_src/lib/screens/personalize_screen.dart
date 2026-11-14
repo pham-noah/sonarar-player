@@ -135,7 +135,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         onPressed: () => Navigator.of(context).maybePop(),
                         icon: Icon(
                           Icons.arrow_back_rounded,
-                          color: skin.accent,
+                          color: skin.accentInk,
                         ),
                       ),
                       Text(
@@ -297,7 +297,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   l10nOf(context).personalizeTheme,
                                   style: TextStyle(
                                     color: onTheme
-                                        ? skin.accent
+                                        ? skin.accentInk
                                         : skin.textSecondary,
                                     fontSize: LayoutSpec.fontMicro,
                                     fontWeight: FontWeight.w900,
@@ -370,7 +370,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   l10nOf(context).personalizeTheme,
                                   style: TextStyle(
                                     color: onTheme
-                                        ? skin.accent
+                                        ? skin.accentInk
                                         : skin.textSecondary,
                                     fontSize: LayoutSpec.fontMicro,
                                     fontWeight: FontWeight.w900,
@@ -798,7 +798,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             child: Icon(
               Icons.music_note_rounded,
               size: 14,
-              color: skin.accent.withValues(alpha: alpha),
+              color: skin.accentInk.withValues(alpha: alpha),
             ),
           ),
           Expanded(
@@ -1013,7 +1013,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.wallpaper_rounded, color: _skin.accent),
+              leading: Icon(Icons.wallpaper_rounded, color: _skin.accentInk),
               title: Text(
                 _surface == null ? l10nOf(context).photoUseEverywhere : l10nOf(context).photoUseHere,
                 style: TextStyle(color: _skin.textPrimary),
@@ -1021,7 +1021,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               onTap: () => Navigator.of(ctx).pop('here'),
             ),
             ListTile(
-              leading: Icon(Icons.folder_outlined, color: _skin.accent),
+              leading: Icon(Icons.folder_outlined, color: _skin.accentInk),
               title: Text(
                 l10nOf(context).photoPutInFolder,
                 style: TextStyle(color: _skin.textPrimary),
@@ -1126,7 +1126,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: active ? skin.accent : skin.textSecondary,
+                color: active ? skin.accentInk : skin.textSecondary,
                 fontSize: LayoutSpec.fontMicro,
                 fontWeight: FontWeight.w800,
                 letterSpacing: trackingFor(context, 0.4),
@@ -1198,7 +1198,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       child: Text(
                         _b.fromArt ? l10nOf(context).scopeFolder : l10nOf(context).scopePhoto,
                         style: TextStyle(
-                          color: skin.accent,
+                          color: skin.accentInk,
                           fontSize: LayoutSpec.fontMicro,
                           fontWeight: FontWeight.w900,
                           letterSpacing: trackingFor(context, 1.2),
@@ -1546,7 +1546,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 LayoutKind.glass => Icons.blur_on_rounded,
               },
               size: 20,
-              color: active ? skin.onAccent : skin.accent,
+              color: active ? skin.onAccent : skin.accentInk,
             ),
             const SizedBox(height: 6),
             Text(
@@ -1630,7 +1630,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   fontSize: LayoutSpec.fontFloor,
                   fontWeight: FontWeight.w900,
                   letterSpacing: trackingFor(context, 0.8),
-                  color: skin.accent,
+                  color: skin.accentInk,
                 ),
               )
             else if (preset.builtIn)
@@ -1746,7 +1746,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: worn ? skin.accent : skin.textPrimary,
+                    color: worn ? skin.accentInk : skin.textPrimary,
                     fontSize: LayoutSpec.fontFloor - 3,
                     fontWeight: FontWeight.w800,
                     letterSpacing: trackingFor(context, 0.8),
@@ -1908,7 +1908,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             child: Text(
               l10nOf(context).importSave,
               style: TextStyle(
-                color: _skin.accent,
+                color: _skin.accentInk,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -2000,7 +2000,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             child: Text(
               l10nOf(context).themeDelete,
               style: TextStyle(
-                color: _skin.accent,
+                color: _skin.accentInk,
                 fontWeight: FontWeight.w900,
               ),
             ),

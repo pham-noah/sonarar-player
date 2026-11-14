@@ -1,7 +1,6 @@
 library;
 
 import '../l10n/l10n.dart';
-import '../l10n/script.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import '../theme/layout.dart';
 import '../theme/motion.dart';
 import '../theme/skin.dart';
 import '../theme/surface.dart';
+import '../theme/tokens.dart';
 
 /// The three places the app has. Downloads are not one of them: a tab that
 /// opens onto "no network" or "the engine is not installed" is a dead end
@@ -88,7 +88,10 @@ class TabBarView2 extends StatelessWidget {
 
   Widget _tab(BuildContext context, AppTab tab, IconData icon, String label) {
     final active = tab == current;
-    final colour = active ? skin.accent : skin.textSecondary;
+    // The active tab is ink, not a fill: `skin.accent` as a label is 1.88:1 on
+    // Minimal, so the state you are in used to be the least legible thing in the
+    // bar. The fill stays on the 2px underline, where it is a shape.
+    final colour = active ? skin.accentInk : skin.textMuted;
     final skew = skin.skewDegrees * (3.14159265 / 180);
 
     return Expanded(
@@ -113,7 +116,7 @@ class TabBarView2 extends StatelessWidget {
                 right: 16,
                 child: Transform(
                   transform: Matrix4.skewX(-skew),
-                  child: Container(height: 3, color: skin.accent),
+                  child: Container(height: 2, color: skin.accent),
                 ),
               ),
             Center(
@@ -143,12 +146,7 @@ class TabBarView2 extends StatelessWidget {
                       child: Text(
                         label,
                         maxLines: 1,
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontLabel,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: trackingFor(context, 1),
-                          color: colour,
-                        ),
+                        style: Type.caps(context, color: colour),
                       ),
                     ),
                   ),

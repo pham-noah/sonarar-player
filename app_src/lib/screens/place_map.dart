@@ -237,7 +237,7 @@ class NearestReadout extends StatelessWidget {
         style: TextStyle(
           fontSize: LayoutSpec.fontMicro,
           fontWeight: FontWeight.w800,
-          color: skin.accent,
+          color: skin.accentInk,
         ),
       );
     }

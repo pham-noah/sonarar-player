@@ -19,6 +19,7 @@ import '../library/track.dart';
 import '../theme/layout.dart';
 import '../core/time_format.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../theme/layout_kit.dart';
 import '../widgets/panel_bodies.dart';
 import '../widgets/cover_play_button.dart';
@@ -507,7 +508,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ? skin.accentAt(0.92)
               : skin.background.withValues(alpha: 0.45),
           border: Border.all(
-            color: on ? skin.accent : skin.secondary(0.55),
+            color: on ? skin.accent : skin.borderStrong,
           ),
         ),
         child: Text(
@@ -557,7 +558,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.push_pin_rounded, color: skin.accent, size: 14),
+                Icon(Icons.push_pin_rounded, color: skin.accentInk, size: 14),
                 const SizedBox(width: 5),
 
                 Flexible(
@@ -567,12 +568,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     child: Text(
                       l10nOf(context).libraryPinned,
                       maxLines: 1,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontLabel,
-                        letterSpacing: trackingFor(context, 1.4),
-                        fontWeight: FontWeight.w900,
-                        color: skin.accent,
-                      ),
+                      style: Type.caps(context, color: skin.accentInk),
                     ),
                   ),
                 ),
@@ -638,7 +634,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ? skin.accentAt(0.92)
               : skin.background.withValues(alpha: 0.45),
           border: Border.all(
-            color: on ? skin.accent : skin.secondary(0.55),
+            color: on ? skin.accent : skin.borderStrong,
           ),
         ),
         child: Text(
@@ -810,13 +806,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final isAppHeader =
         presentation.kit.chrome.libraryHeader == HeaderForm.appHeader;
 
-    // A banner is painted in the accent, so an accent-coloured key on it is
-    // invisible — crimson shipped a "+" nobody could see. The band's own text
-    // colour is the one that reads.
-    final actionColour =
-        !isAppHeader && presentation.kit.chrome.sectionBand == SectionBandForm.banner
-            ? skin.background
-            : skin.accent;
+    // A banner is now a 14% wash of the accent on the page (P0-5 demoted it from
+    // a solid slab), so its keys are ink either way: `skin.background` was
+    // white-on-cream once the banner stopped being a fill — crimson shipped a "+"
+    // nobody could see, and Minimal shipped two.
+    final actionColour = skin.accentInk;
 
     Widget? action(IconData icon, Color color, VoidCallback? tap) => tap == null
         ? null
@@ -824,8 +818,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
             onTap: tap,
 
             child: SizedBox(
-              width: 44,
-              height: 44,
+              // 48dp: a header key is a key, not a glyph in a corner.
+              width: Space.tap,
+              height: Space.tap,
               child: Center(
                 child: Icon(
                   icon,
@@ -899,12 +894,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
             child: TextField(
               controller: _searchController,
               focusNode: _searchFocus,
+              // The field is an accent surface, so everything on it is
+              // `onAccent`: the ink and the fill are a pair, and textPrimary on
+              // a pale accent (Minimal, Bloom) was the unreadable half of it.
               style: TextStyle(
                 fontSize: LayoutSpec.fontBase,
                 fontWeight: FontWeight.w700,
-                color: skin.textPrimary,
+                color: skin.onAccent,
               ),
-              cursorColor: skin.textPrimary,
+              cursorColor: skin.onAccent,
               onChanged: (v) {
                 _filter = v;
                 _applyFilter();
@@ -913,12 +911,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 hintText: l10nOf(context).librarySearchHint,
                 hintStyle: TextStyle(
                   fontSize: LayoutSpec.fontBase,
-                  color: skin.primaryText(0.66),
+                  color: skin.onAccent.withValues(alpha: 0.72),
                 ),
                 border: InputBorder.none,
                 isDense: true,
                 prefixIcon: Icon(Icons.search_rounded,
-                    color: skin.textPrimary, size: 26),
+                    color: skin.onAccent, size: 26),
                 prefixIconConstraints:
                     const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
@@ -963,7 +961,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
             child: Row(
               children: [
-                Icon(Icons.arrow_back_rounded, color: skin.accent, size: 20),
+                Icon(Icons.arrow_back_rounded, color: skin.accentInk, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -973,7 +971,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
                       fontWeight: FontWeight.w800,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                   ),
                 ),
@@ -1111,7 +1109,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       : Icons.grid_view_rounded,
                   color: view.onPlaylistGrid == null
                       ? skin.secondary(0.4)
-                      : skin.accent,
+                      : skin.accentInk,
                   size: 24,
                 ),
               ),
@@ -1332,7 +1330,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   view.pinnedPlaylistIds.contains(p.id)
                       ? Icons.push_pin_rounded
                       : Icons.push_pin_outlined,
-                  color: view.skin.accent,
+                  color: view.skin.accentInk,
                 ),
                 title: Text(
                   view.pinnedPlaylistIds.contains(p.id)
@@ -1351,7 +1349,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             if (owned)
               ListTile(
                 title: Text(l10nOf(ctx).libraryDeletePrompt(p.name),
-                    style: TextStyle(color: view.skin.accent)),
+                    style: TextStyle(color: view.skin.accentInk)),
                 onTap: () => Navigator.of(ctx).pop('delete'),
               ),
             if (seeded || isDerivedPlaylistId(p.id))
@@ -1447,12 +1445,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       ),
                       child: Text(
                         l10n.libraryFindMusic,
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontFloor,
-                          letterSpacing: trackingFor(context, 2),
-                          fontWeight: FontWeight.w900,
-                          color: skin.accent,
-                        ),
+                        style: Type.caps(context, color: skin.accentInk),
                       ),
                     ),
                   ),
@@ -1653,7 +1646,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               style: TextStyle(
                 fontSize: LayoutSpec.fontLabel,
                 fontWeight: FontWeight.w600,
-                color: playing ? pal.accent : pal.textPrimary,
+                color: playing ? pal.accentInk : pal.textPrimary,
               ),
             ),
             Text(
@@ -1885,7 +1878,7 @@ return Stack(
           ),
           if (isLiked) ...[
             const SizedBox(width: 8),
-            Icon(Icons.favorite_rounded, color: skin.accent, size: 15),
+            Icon(Icons.favorite_rounded, color: skin.accentInk, size: 15),
           ],
           const SizedBox(width: 12),
           Text(
@@ -2016,7 +2009,7 @@ return Stack(
                     addLabel,
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                   ),
                 ],

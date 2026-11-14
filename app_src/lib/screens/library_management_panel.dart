@@ -151,7 +151,7 @@ class LibraryManagementPanel extends StatelessWidget {
               children: [
                 Icon(icon,
                     size: 20,
-                    color: enabled ? skin.accent : skin.secondary(0.4)),
+                    color: enabled ? skin.accentInk : skin.secondary(0.4)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

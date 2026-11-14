@@ -99,7 +99,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     l10nOf(context).historyThinSample(h.totalPlays),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
-                      color: skin.accent,
+                      color: skin.accentInk,
                       height: 1.4,
                     ),
                   ),
@@ -158,7 +158,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 fontSize: LayoutSpec.fontFloor - 1,
                 fontWeight: FontWeight.w900,
                 letterSpacing: trackingFor(context, 0.8),
-                color: skin.accent,
+                color: skin.accentInk,
               ),
             ),
             const SizedBox(width: 4),
@@ -310,7 +310,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     fontSize: LayoutSpec.fontLabel,
                     letterSpacing: trackingFor(context, 2),
                     fontWeight: FontWeight.w900,
-                    color: skin.accent,
+                    color: skin.accentInk,
                   ),
                 ),
               ),
@@ -324,7 +324,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ? Icons.water_drop_rounded
                           : Icons.wb_sunny_rounded,
                       size: 15,
-                      color: skin.accent,
+                      color: skin.accentInk,
                     ),
                     const SizedBox(width: 5),
                     Text(
@@ -392,7 +392,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Text(
               _shortDuration(h.listenedMs),
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 34,
                 fontWeight: FontWeight.w900,
                 letterSpacing: trackingFor(context, -1),
                 color: skin.textPrimary,
@@ -452,7 +452,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   style: TextStyle(
                     fontSize: LayoutSpec.fontLabel,
                     fontWeight: FontWeight.w900,
-                    color: skin.accent,
+                    color: skin.accentInk,
                   ),
                 ),
               ],
@@ -470,7 +470,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       children: [
         Row(
           children: [
-            Icon(Icons.auto_awesome_rounded, size: 14, color: skin.accent),
+            Icon(Icons.auto_awesome_rounded, size: 14, color: skin.accentInk),
             const SizedBox(width: 7),
             Text(
               l10nOf(context).historyShareNew((share * 100).round()),

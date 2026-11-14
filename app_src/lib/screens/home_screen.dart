@@ -18,6 +18,7 @@ import '../library/track.dart';
 import '../theme/layout.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../widgets/art_scrim.dart';
 
 enum HomeTab { home, quickPick, fromLibrary, genre, recap }
@@ -201,7 +202,7 @@ class HomeScreen extends StatelessWidget {
                   : IconButton(
                       key: const Key('open-personalize'),
                       onPressed: view.onOpenPersonalize,
-                      icon: Icon(Icons.tune_rounded, color: view.skin.accent),
+                      icon: Icon(Icons.tune_rounded, color: view.skin.accentInk),
                       tooltip: l10nOf(context).homePersonalize,
                     ),
             ),
@@ -261,12 +262,7 @@ class HomeScreen extends StatelessWidget {
                             : capsFor(context, l10nOf(context).homePlayWhatFitsNamed(view.nowMixName!)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontFloor,
-                          letterSpacing: trackingFor(context, 1.4),
-                          fontWeight: FontWeight.w900,
-                          color: view.skin.onAccent,
-                        ),
+                        style: Type.capsFloor(context, color: view.skin.onAccent),
                       ),
                     ),
                   ],
@@ -585,7 +581,7 @@ class HomeScreen extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: pal.textPrimary,
                     ),
@@ -617,11 +613,7 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontFloor,
-            letterSpacing: trackingFor(context, 2.2),
-            fontWeight: FontWeight.w900,
-            color: view.skin.accent,
+          style: Type.capsFloor(context, color: view.skin.accentInk).copyWith(
             // The view.band sits on artwork, so it needs a shadow of its own.
             shadows: [
               Shadow(
@@ -659,7 +651,7 @@ class HomeScreen extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: pal.textPrimary,
                     ),
@@ -674,7 +666,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.play_arrow_rounded, color: pal.accent, size: 26),
+            Icon(Icons.play_arrow_rounded, color: pal.accentInk, size: 26),
           ],
         ),
       ),
@@ -735,7 +727,7 @@ class HomeScreen extends StatelessWidget {
       height: size,
       color: pal.surface,
       child: (path == null || path.isEmpty)
-          ? Icon(Icons.music_note, color: pal.accent, size: size * 0.34)
+          ? Icon(Icons.music_note, color: pal.accentInk, size: size * 0.34)
           : Image.file(
               File(path),
               width: size,
@@ -744,7 +736,7 @@ class HomeScreen extends StatelessWidget {
 
               cacheWidth: (size * 3).round(),
               errorBuilder: (_, __, ___) =>
-                  Icon(Icons.music_note, color: pal.accent, size: size * 0.34),
+                  Icon(Icons.music_note, color: pal.accentInk, size: size * 0.34),
             ),
     );
   }
@@ -763,19 +755,15 @@ class HomeScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 20, color: dim ? pal.textSecondary : pal.accent),
+            Icon(icon, size: 20, color: dim ? pal.textSecondary : pal.accentInk),
             const SizedBox(height: 6),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 label,
                 maxLines: 1,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontFloor,
-                  letterSpacing: trackingFor(context, 1),
-                  fontWeight: FontWeight.w900,
-                  color: dim ? pal.textSecondary : pal.textPrimary,
-                ),
+                style: Type.capsFloor(context,
+                    color: dim ? pal.textSecondary : pal.textPrimary),
               ),
             ),
           ],

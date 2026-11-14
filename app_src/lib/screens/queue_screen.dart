@@ -96,7 +96,7 @@ class QueuePanel extends StatelessWidget {
                           Icon(
                             Icons.playlist_add_rounded,
                             size: 18,
-                            color: skin.accent,
+                            color: skin.accentInk,
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -108,7 +108,7 @@ class QueuePanel extends StatelessWidget {
                               fontSize: LayoutSpec.fontLabel,
                               letterSpacing: trackingFor(context, 1.5),
                               fontWeight: FontWeight.w800,
-                              color: skin.accent,
+                              color: skin.accentInk,
                             ),
                           ),
                         ],

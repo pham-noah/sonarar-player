@@ -17,6 +17,8 @@
   "settingsOfficialOnly": "公式のみ",
   "settingsContext": "コンテキスト",
   "settingsOffline": "オフライン",
+  "settingsNeedsNetwork": "ネットワーク接続が必要です",
+  "settingsNeedsWeather": "天気をオンにしてください",
   "settingsTimeOfDay": "時間帯",
   "settingsWeather": "天気",
   "settingsDynamicMix": "動的ミックス",

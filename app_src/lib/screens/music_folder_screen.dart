@@ -110,7 +110,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
           style: TextStyle(
             fontSize: 14,
             letterSpacing: trackingFor(context, 2),
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             color: skin.textPrimary,
           ),
         ),
@@ -254,7 +254,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
                           letterSpacing: trackingFor(context, 2),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),

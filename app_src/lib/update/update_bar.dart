@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../l10n/script.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import 'update_sheet.dart';
 import 'update_ui.dart';
 
@@ -104,12 +105,7 @@ class _UpdateBarState extends State<UpdateBar> {
               ),
               Text(
                 downloading ? '' : capsFor(context, l10nOf(context).updateSheetTitle),
-                style: TextStyle(
-                  color: skin.accentInk,
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: trackingFor(context, 1.2),
-                ),
+                style: Type.caps(context, color: skin.accentInk),
               ),
               if (downloading) ...[
                 const SizedBox(width: 10),

@@ -12,6 +12,7 @@ import '../l10n/l10n.dart';
 import '../core/app_state.dart';
 import '../core/prefs.dart';
 import '../theme/layout.dart';
+import '../theme/tokens.dart';
 import '../screens/reframe_screen.dart';
 import '../theme/theme_preset.dart';
 import '../widgets/kit.dart';
@@ -295,14 +296,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                 ),
                                 child: Text(
                                   l10nOf(context).personalizeTheme,
-                                  style: TextStyle(
+                                  style: Type.micro(
+                                    context,
                                     color: onTheme
                                         ? skin.accentInk
                                         : skin.textSecondary,
-                                    fontSize: LayoutSpec.fontMicro,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: trackingFor(context, 1),
-                                  ),
+                                  ).copyWith(letterSpacing: trackingFor(context, 1)),
                                 ),
                               ),
                             );
@@ -368,14 +367,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                 ),
                                 child: Text(
                                   l10nOf(context).personalizeTheme,
-                                  style: TextStyle(
+                                  style: Type.micro(
+                                    context,
                                     color: onTheme
                                         ? skin.accentInk
                                         : skin.textSecondary,
-                                    fontSize: LayoutSpec.fontMicro,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: trackingFor(context, 1),
-                                  ),
+                                  ).copyWith(letterSpacing: trackingFor(context, 1)),
                                 ),
                               ),
                             );
@@ -810,7 +807,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: LayoutSpec.fontFloor - 3,
+                    fontSize: LayoutSpec.fontRow,
                     fontWeight: FontWeight.w700,
                     color: skin.textPrimary.withValues(alpha: alpha),
                   ),
@@ -1197,12 +1194,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       color: Colors.black.withValues(alpha: 0.55),
                       child: Text(
                         _b.fromArt ? l10nOf(context).scopeFolder : l10nOf(context).scopePhoto,
-                        style: TextStyle(
-                          color: skin.accentInk,
-                          fontSize: LayoutSpec.fontMicro,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: trackingFor(context, 1.2),
-                        ),
+                        style: Type.micro(context, color: skin.accentInk)
+                            .copyWith(letterSpacing: trackingFor(context, 1.2)),
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -1321,10 +1314,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           Expanded(
             child: Text(
               l10nOf(context).personalizeReframeHint,
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor,
-                color: skin.textSecondary,
-              ),
+              style: Type.bodyBase(context, color: skin.textSecondary),
             ),
           ),
         ],
@@ -1555,12 +1545,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 LayoutKind.solid => l10nOf(context).baseSolid,
                 LayoutKind.glass => l10nOf(context).layoutGlass,
               },
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor,
-                letterSpacing: trackingFor(context, 1),
-                fontWeight: FontWeight.w900,
+              style: Type.caps(
+                context,
                 color: active ? skin.onAccent : skin.textPrimary,
-              ),
+              ).copyWith(letterSpacing: trackingFor(context, 1)),
             ),
           ],
         ),
@@ -1626,12 +1614,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             if (active)
               Text(
                 l10nOf(context).themeWorn,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: trackingFor(context, 0.8),
-                  color: skin.accentInk,
-                ),
+                style: Type.caps(context, color: skin.accentInk),
               )
             else if (preset.builtIn)
               Text(
@@ -1706,7 +1689,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             letterSpacing: trackingFor(context, 1.2),
             color: quiet ? skin.textPrimary : skin.onAccent,
           ),
@@ -1747,7 +1730,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: worn ? skin.accentInk : skin.textPrimary,
-                    fontSize: LayoutSpec.fontFloor - 3,
+                    fontSize: LayoutSpec.fontRow,
                     fontWeight: FontWeight.w800,
                     letterSpacing: trackingFor(context, 0.8),
                   ),
@@ -1880,12 +1863,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         backgroundColor: _skin.panel,
         title: Text(
           l10nOf(context).artFolderName,
-          style: TextStyle(
-            color: _skin.textPrimary,
-            fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w900,
-            letterSpacing: trackingFor(context, 1.4),
-          ),
+          style: Type.title(context, color: _skin.textPrimary),
         ),
         content: TextField(
           key: const Key('folder-name-field'),
@@ -1909,7 +1887,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               l10nOf(context).importSave,
               style: TextStyle(
                 color: _skin.accentInk,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
@@ -1975,18 +1953,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         backgroundColor: _skin.panel,
         title: Text(
           capsFor(context, l10nOf(context).personalizeDeleteFolderTitle(folder.name)),
-          style: TextStyle(
-            color: _skin.textPrimary,
-            fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w900,
-          ),
+          style: Type.title(context, color: _skin.textPrimary),
         ),
         content: Text(
           l10nOf(context)
               .personalizeDeleteFolderNote(folder.set.pieces.length),
           style: TextStyle(
             color: _skin.textSecondary,
-            fontSize: LayoutSpec.fontFloor - 3,
+            fontSize: LayoutSpec.fontRow,
             height: 1.4,
           ),
         ),
@@ -2001,7 +1975,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               l10nOf(context).themeDelete,
               style: TextStyle(
                 color: _skin.accentInk,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
@@ -2055,11 +2029,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
       child: Text(
         marked && !active ? '• $label' : label,
-        style: TextStyle(
-          fontSize: LayoutSpec.fontFloor,
-          fontWeight: FontWeight.w900,
-          color: active ? skin.onAccent : skin.textPrimary,
-        ),
+        style: Type.caps(context,
+            color: active ? skin.onAccent : skin.textPrimary),
       ),
     ),
   );

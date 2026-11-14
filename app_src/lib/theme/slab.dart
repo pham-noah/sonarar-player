@@ -100,23 +100,15 @@ class SectionLabel extends StatelessWidget {
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: LayoutSpec.fontLabel,
-                letterSpacing: trackingFor(context, 4),
-                fontWeight: FontWeight.w800,
-                color: skin.accentInk,
-              ),
+              style: Type.caps(context, color: skin.accentInk)
+                  .copyWith(letterSpacing: trackingFor(context, 2)),
             ),
           ),
           if (trailing != null)
             Text(
               trailing!,
-              style: TextStyle(
-                fontSize: LayoutSpec.fontLabel,
-                letterSpacing: trackingFor(context, 2),
-                fontWeight: FontWeight.w900,
-                color: skin.textSecondary,
-              ),
+              style: Type.caps(context, color: skin.textSecondary)
+                  .copyWith(letterSpacing: trackingFor(context, 1)),
             ),
         ],
       ),
@@ -125,10 +117,19 @@ class SectionLabel extends StatelessWidget {
 }
 
 class ScreenTitle extends StatelessWidget {
-  const ScreenTitle({super.key, required this.skin, required this.text});
+  const ScreenTitle({
+    super.key,
+    required this.skin,
+    required this.text,
+    this.hero = false,
+  });
 
   final Skin skin;
   final String text;
+
+  /// Home's greeting is the app's one `hero`: everything else is a `display`
+  /// title. Passing it here is why the two sizes cannot drift apart again.
+  final bool hero;
 
   @override
   Widget build(BuildContext context) {
@@ -138,12 +139,9 @@ class ScreenTitle extends StatelessWidget {
       child: Text(
         text,
         maxLines: 1,
-        style: TextStyle(
-          fontSize: LayoutSpec.fontTitle,
-          fontWeight: FontWeight.w900,
-          letterSpacing: trackingFor(context, 1),
-          color: skin.textPrimary,
-        ),
+        style: hero
+            ? Type.hero(context, color: skin.textPrimary)
+            : Type.display(context, color: skin.textPrimary),
       ),
     );
   }

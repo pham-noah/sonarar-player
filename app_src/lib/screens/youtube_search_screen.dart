@@ -674,7 +674,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 letterSpacing: trackingFor(context, 1.4),
-                                fontWeight: FontWeight.w900,
+                                fontWeight: FontWeight.w800,
                                 color: skin.textSecondary,
                               ),
                             ),
@@ -692,7 +692,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 letterSpacing: trackingFor(context, 1.4),
-                                fontWeight: FontWeight.w900,
+                                fontWeight: FontWeight.w800,
                                 color: skin.textSecondary,
                               ),
                             ),
@@ -805,7 +805,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                               : l10nOf(context).ytNotOfficial,
                           style: TextStyle(
                             fontSize: LayoutSpec.fontMicro,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w800,
                             letterSpacing: trackingFor(context, 0.6),
                             color: hit.isOfficialGiven(_vouched)
                                 ? skin.accentInk

@@ -73,7 +73,7 @@ class SwipePanel extends StatelessWidget {
         style: TextStyle(
           fontSize: LayoutSpec.fontLabel,
           letterSpacing: trackingFor(context, 2),
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w800,
           color: skin.accentInk,
         ),
       );

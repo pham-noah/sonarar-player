@@ -16,6 +16,7 @@ import '../library/downloaded_tracks.dart';
 import '../library/playlist_read.dart';
 import '../library/playlists.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../theme/layout.dart';
 
 class PlaylistSource {
@@ -662,11 +663,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                   const SizedBox(width: 8),
                   Text(
                     _progressTextOf(src.folder),
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontFloor,
-                      fontWeight: FontWeight.w900,
-                      color: skin.accentInk,
-                    ),
+                    style: Type.caps(context, color: skin.accentInk),
                   ),
                 ],
               ),

@@ -11,6 +11,7 @@ import '../library/track.dart';
 import '../theme/slab.dart';
 import '../theme/layout.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../widgets/kit.dart';
 import '../widgets/pressable.dart';
 
@@ -155,8 +156,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Text(
               capsFor(context, '${_monthName(_month.month)} ${h.month.year}'),
               style: TextStyle(
-                fontSize: LayoutSpec.fontFloor - 1,
-                fontWeight: FontWeight.w900,
+                fontSize: LayoutSpec.fontFloor,
+                fontWeight: FontWeight.w800,
                 letterSpacing: trackingFor(context, 0.8),
                 color: skin.accentInk,
               ),
@@ -265,7 +266,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               style: TextStyle(
                 fontSize: LayoutSpec.fontSmall,
 
-                fontWeight: day.isEmpty ? FontWeight.w400 : FontWeight.w900,
+                fontWeight: day.isEmpty ? FontWeight.w400 : FontWeight.w800,
                 color: day.isEmpty
                     ? skin.secondary(0.55)
 
@@ -306,12 +307,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Expanded(
                 child: Text(
                   '${day.date.day} ${_monthName(day.date.month)}',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontLabel,
-                    letterSpacing: trackingFor(context, 2),
-                    fontWeight: FontWeight.w900,
-                    color: skin.accentInk,
-                  ),
+                  style: Type.caps(context, color: skin.accentInk)
+                      .copyWith(letterSpacing: trackingFor(context, 2)),
                 ),
               ),
 
@@ -392,9 +389,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Text(
               _shortDuration(h.listenedMs),
               style: TextStyle(
-                fontSize: 34,
-                fontWeight: FontWeight.w900,
-                letterSpacing: trackingFor(context, -1),
+                fontSize: LayoutSpec.fontTitle,
+                fontWeight: Type.heavy,
+                letterSpacing: trackingFor(context, -0.4),
                 color: skin.textPrimary,
               ),
             ),
@@ -402,10 +399,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               const SizedBox(width: 10),
               Text(
                 'across $days day${days == 1 ? '' : 's'}',
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontLabel,
-                  color: skin.textSecondary,
-                ),
+                style: Type.bodyBase(context, color: skin.textSecondary),
               ),
             ],
           ],
@@ -449,11 +443,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   (h.msByTrack[id] ?? 0) > 0
                       ? _shortDuration(h.msByTrack[id]!)
                       : '${h.playsByTrack[id]}×',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontLabel,
-                    fontWeight: FontWeight.w900,
-                    color: skin.accentInk,
-                  ),
+                  style: Type.caps(context, color: skin.accentInk),
                 ),
               ],
             ),
@@ -474,11 +464,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             const SizedBox(width: 7),
             Text(
               l10nOf(context).historyShareNew((share * 100).round()),
-              style: TextStyle(
-                fontSize: LayoutSpec.fontLabel,
-                fontWeight: FontWeight.w900,
-                color: skin.textPrimary,
-              ),
+              style: Type.bodyBase(context, color: skin.textPrimary),
             ),
             const Spacer(),
             Text(

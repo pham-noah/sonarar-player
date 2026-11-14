@@ -105,7 +105,7 @@ class LibraryBrowserBar extends StatelessWidget {
 
                       fontSize: kBrowserChipFont,
                       letterSpacing: trackingFor(context, 0.2),
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                       color: skin.accentInk,
                     ),
                   ),
@@ -178,7 +178,7 @@ class LibraryBrowserBar extends StatelessWidget {
                   style: TextStyle(
                     fontSize: kBrowserChipFont,
                     letterSpacing: trackingFor(context, 0.2),
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w800,
 
                     color: active
                         ? skin.onAccent

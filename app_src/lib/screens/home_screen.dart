@@ -196,6 +196,7 @@ class HomeScreen extends StatelessWidget {
             AppScreenHeader(
               skin: view.skin,
               title: view.greeting!,
+              hero: true,
               mark: view.headerMark,
               trailing: view.onOpenPersonalize == null
                   ? null
@@ -661,7 +662,7 @@ class HomeScreen extends StatelessWidget {
                     t.artist,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
+                    style: Type.bodyBase(context, color: pal.textSecondary),
                   ),
                 ],
               ),
@@ -711,7 +712,7 @@ class HomeScreen extends StatelessWidget {
               t.artist,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
+              style: Type.bodyBase(context, color: pal.textSecondary),
             ),
           ],
         ),

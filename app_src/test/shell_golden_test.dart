@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/app_state.dart';
@@ -68,6 +69,32 @@ void main() {
       basePath: 'test',
       channelTolerance: 4,
     );
+  });
+
+  setUp(() {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    // A golden of the shell pulls the wakelock in through the player; without
+    // these the pigeon channel throws and the test dies before the compare.
+    // Pigeon channels speak StandardMessageCodec, so they answer with a raw
+    // encoded reply.
+    for (final name in const [
+      'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle',
+      'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.isEnabled',
+    ]) {
+      messenger.setMockMessageHandler(
+        name,
+        (message) async =>
+            const StandardMessageCodec().encodeMessage(<Object?>[null]),
+      );
+    }
+    for (final name in const [
+      'dev.fluttercommunity.plus/wakelock',
+      'com.ryanheise.just_audio_background',
+      'sonarar/location',
+    ]) {
+      messenger.setMockMethodCallHandler(MethodChannel(name), (call) async => null);
+    }
   });
 
   testWidgets('the shell, home tab', (tester) async {

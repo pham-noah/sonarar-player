@@ -8,6 +8,7 @@ import '../core/app_state.dart';
 import '../core/time_format.dart';
 import '../library/track.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../widgets/pressable.dart';
 
 class TrackPanel extends StatelessWidget {
@@ -76,6 +77,7 @@ class TrackPanel extends StatelessWidget {
           const SizedBox(height: 18),
 
           _row(
+            context,
             skin,
             bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
 
@@ -89,6 +91,7 @@ class TrackPanel extends StatelessWidget {
           ),
 
           _row(
+            context,
             skin,
             Icons.edit_note_rounded,
             fixCount == 0
@@ -99,6 +102,7 @@ class TrackPanel extends StatelessWidget {
           ),
 
           _row(
+            context,
             skin,
             Icons.repeat_rounded,
             l10n.loopPointsLabel,
@@ -106,6 +110,7 @@ class TrackPanel extends StatelessWidget {
           ),
 
           _row(
+            context,
             skin,
             Icons.playlist_add_rounded,
             l10n.panelAddToPlaylist,
@@ -113,6 +118,7 @@ class TrackPanel extends StatelessWidget {
           ),
 
           _row(
+            context,
             skin,
             excluded ? Icons.visibility_rounded : Icons.visibility_off_rounded,
             excluded ? l10n.panelShuffleAllowed : l10n.panelNeverInShuffle,
@@ -157,6 +163,7 @@ class TrackPanel extends StatelessWidget {
   }
 
   Widget _row(
+    BuildContext context,
     Skin skin,
     IconData icon,
     String label,
@@ -211,11 +218,7 @@ class TrackPanel extends StatelessWidget {
                 if (trailing != null)
                   Text(
                     trailing,
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontLabel,
-                      fontWeight: FontWeight.w900,
-                      color: skin.accentInk,
-                    ),
+                    style: Type.caps(context, color: skin.accentInk),
                   ),
               ],
             ),

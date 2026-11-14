@@ -10,6 +10,7 @@ import '../l10n/script.dart';
 import '../l10n/l10n.dart';
 
 import '../theme/ambient_backdrop.dart';
+import '../theme/tokens.dart';
 import '../widgets/art_scrim.dart';
 import '../widgets/cover_button.dart';
 import '../widgets/pressable.dart';
@@ -521,12 +522,7 @@ class PlayerScreen extends StatelessWidget {
                     child: Text(
                       _contextLabel(context, skin),
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: trackingFor(context, 2),
-                        color: skin.background,
-                      ),
+                      style: Type.caps(context, color: skin.background),
                     ),
                   ),
                 ],
@@ -680,12 +676,8 @@ class PlayerScreen extends StatelessWidget {
                               v.variantTag == null
                                   ? l10nOf(context).playerAlbumVersion
                                   : variantLabel(v.variantTag!),
-                              style: TextStyle(
-                                color: skin.accentInk,
-                                fontSize: LayoutSpec.fontMicro,
-                                letterSpacing: trackingFor(context, 1.6),
-                                fontWeight: FontWeight.w900,
-                              ),
+                              style: Type.micro(context, color: skin.accentInk)
+                                  .copyWith(letterSpacing: trackingFor(context, 1.6)),
                             ),
                           ],
                         ),
@@ -738,10 +730,10 @@ class PlayerScreen extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w900,
+                        fontSize: LayoutSpec.fontTitle,
+                        fontWeight: Type.heavy,
                         height: 1.05,
-                        letterSpacing: trackingFor(context, -0.5),
+                        letterSpacing: trackingFor(context, -0.4),
                         color: skin.textPrimary,
                         shadows: const [
                           Shadow(
@@ -779,12 +771,8 @@ class PlayerScreen extends StatelessWidget {
                             children: [
                               Text(
                                 variantLabel(t.variantTag!),
-                                style: TextStyle(
-                                  fontSize: LayoutSpec.fontMicro,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: trackingFor(context, 1.6),
-                                  color: skin.onAccent,
-                                ),
+                                style: Type.micro(context, color: skin.onAccent)
+                                    .copyWith(letterSpacing: trackingFor(context, 1.6)),
                               ),
 
                               if (view.variants.isNotEmpty &&
@@ -821,11 +809,7 @@ class PlayerScreen extends StatelessWidget {
                       t?.artist ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontSmall,
-                        fontWeight: FontWeight.w600,
-                        color: skin.textSecondary,
-                      ),
+                      style: Type.body(context, color: skin.textSecondary),
                     ),
                   ),
                 ),
@@ -842,11 +826,7 @@ class PlayerScreen extends StatelessWidget {
                     ),
                     child: Text(
                       '0',
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontLabel,
-                        fontWeight: FontWeight.w900,
-                        color: skin.accentDeep,
-                      ),
+                      style: Type.caps(context, color: skin.accentDeep),
                     ),
                   ),
                 ),
@@ -901,10 +881,10 @@ class PlayerScreen extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          fontSize: 34,
-          fontWeight: FontWeight.w900,
+          fontSize: LayoutSpec.fontTitle,
+          fontWeight: Type.heavy,
           height: 1.05,
-          letterSpacing: trackingFor(context, -0.5),
+          letterSpacing: trackingFor(context, -0.4),
           color: skin.textPrimary,
           shadows: const [
             Shadow(
@@ -926,11 +906,7 @@ class PlayerScreen extends StatelessWidget {
             t.artist,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: LayoutSpec.fontSmall,
-              fontWeight: FontWeight.w600,
-
-              color: skin.textPrimary,
+            style: Type.body(context, color: skin.textPrimary).copyWith(
               shadows: const [
                 Shadow(
                   color: Color(0xCC000000),
@@ -1051,6 +1027,7 @@ class PlayerScreen extends StatelessWidget {
             actions: [
               if (view.hasWhy)
                 _iconAction(
+                  context,
                   skin,
                   Icons.help_outline_rounded,
                   l10nOf(context).playerWhyThisSong,
@@ -1063,6 +1040,7 @@ class PlayerScreen extends StatelessWidget {
                 ),
               if (view.hasQueue)
                 _iconAction(
+                  context,
                   skin,
                   Icons.queue_music_rounded,
                   view.upNextCount == 0
@@ -1079,6 +1057,7 @@ class PlayerScreen extends StatelessWidget {
 
               if (view.hasTrackPanel)
                 _iconAction(
+                  context,
                   skin,
                   Icons.tune_rounded,
                   l10nOf(context).playerTrackTools,
@@ -1091,6 +1070,7 @@ class PlayerScreen extends StatelessWidget {
                 ),
               if (view.onStopAfterTrack != null)
                 _iconAction(
+                  context,
                   skin,
                   view.stopAfterTrack
                       ? Icons.stop_circle_rounded
@@ -1103,6 +1083,7 @@ class PlayerScreen extends StatelessWidget {
                 ),
               if (view.onSleep != null)
                 _iconAction(
+                  context,
                   skin,
                   view.sleepRunning ? Icons.bedtime_rounded : Icons.bedtime_outlined,
                   view.sleepRunning
@@ -1388,6 +1369,7 @@ class PlayerScreen extends StatelessWidget {
   }
 
   Widget _iconAction(
+    BuildContext context,
     Skin skin,
     IconData icon,
     String tooltip,
@@ -1436,11 +1418,7 @@ class PlayerScreen extends StatelessWidget {
                     ),
                     child: Text(
                       badge,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontMicro,
-                        fontWeight: FontWeight.w900,
-                        color: skin.onAccent,
-                      ),
+                      style: Type.micro(context, color: skin.onAccent),
                     ),
                   ),
                 ),
@@ -1478,12 +1456,10 @@ class PlayerScreen extends StatelessWidget {
               const SizedBox(width: 7),
               Text(
                 l10nOf(context).playerLyrics,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontLabel,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: trackingFor(context, 1.2),
-                  color: active ? skin.onAccent : skin.textSecondary,
-                ),
+                style: Type.caps(
+                        context,
+                        color: active ? skin.onAccent : skin.textSecondary)
+                    .copyWith(letterSpacing: trackingFor(context, 1.2)),
               ),
             ],
           ),

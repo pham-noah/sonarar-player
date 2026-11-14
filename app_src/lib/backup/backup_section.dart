@@ -97,7 +97,7 @@ class _BackupSectionState extends State<BackupSection> {
           l10nOf(context).backupRestore,
           style: TextStyle(
             color: widget.skin.textPrimary,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             letterSpacing: trackingFor(context, 1.5),
             fontSize: 14,
           ),

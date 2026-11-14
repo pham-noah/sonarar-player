@@ -132,7 +132,7 @@ class _SectionLabel extends StatelessWidget {
           style: TextStyle(
             fontSize: LayoutSpec.fontMicro,
             letterSpacing: trackingFor(context, 2.2),
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             color: skin.accentInk,
           ),
         ),

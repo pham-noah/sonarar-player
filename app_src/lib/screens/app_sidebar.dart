@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../theme/layout.dart';
 import '../theme/surface.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 
 class SidebarEntry {
   const SidebarEntry({
@@ -64,12 +65,8 @@ class AppSidebar extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'SONARAR',
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontFloor,
-                          letterSpacing: trackingFor(context, 3),
-                          fontWeight: FontWeight.w900,
-                          color: panelSkin.textPrimary,
-                        ),
+                        style: Type.caps(context, color: panelSkin.textPrimary)
+                          .copyWith(letterSpacing: trackingFor(context, 2)),
                       ),
                     ),
                   ],

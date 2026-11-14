@@ -1901,7 +1901,7 @@ class _HomeShellState extends State<HomeShell>
                   l10nOf(context).shellAddToPlaylist,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontSmall,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w800,
                     color: widget.state.skin.textPrimary,
                   ),
                 ),

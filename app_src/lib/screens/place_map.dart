@@ -315,7 +315,7 @@ class SaveSpotButton extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: LayoutSpec.fontMicro,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w800,
                 letterSpacing: trackingFor(context, 1.5),
                 color: _usable ? skin.onAccent : skin.textSecondary,
               ),

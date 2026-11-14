@@ -8,6 +8,7 @@ import '../l10n/l10n.dart';
 import '../art/art_focus.dart';
 import '../art/art_spec.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../widgets/art_scrim.dart';
 import '../widgets/framed_art.dart';
 
@@ -50,12 +51,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
         foregroundColor: skin.textPrimary,
         title: Text(
           l10nOf(context).artAdjust,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w900,
-            letterSpacing: trackingFor(context, 1.6),
-            color: skin.textPrimary,
-          ),
+          style: Type.caps(context, color: skin.textPrimary),
         ),
         actions: [
           TextButton(
@@ -69,7 +65,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
             onPressed: () => Navigator.of(context).pop(_spec),
             child: Text(
               l10nOf(context).importSave,
-              style: TextStyle(color: skin.accentInk, fontWeight: FontWeight.w900),
+              style: TextStyle(color: skin.accentInk, fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -214,7 +210,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
           style: TextStyle(
             color: skin.accentInk,
             fontSize: LayoutSpec.fontFloor - 4,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),

@@ -79,7 +79,7 @@ class Stamp extends StatelessWidget {
                   label!,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontMicro,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w800,
                     letterSpacing: trackingFor(context, square ? 0.8 : 1.6),
                     color: fg,
                   ),

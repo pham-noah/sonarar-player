@@ -10,6 +10,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/l10n.dart';
 import '../l10n/script.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import 'update_service.dart';
 import 'update_ui.dart';
 
@@ -60,7 +61,7 @@ class UpdateSheetBody extends StatelessWidget {
                       style: TextStyle(
                         color: skin.textPrimary,
                         fontSize: LayoutSpec.fontRow,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w800,
                         letterSpacing: trackingFor(context, 1.2),
                       ),
                     ),
@@ -213,11 +214,7 @@ class UpdateSheetBody extends StatelessWidget {
           // Uppercase follows the script being drawn: Japanese and Chinese are
           // neither upper-cased nor tracked, which is the app's rule everywhere.
           capsFor(context, label),
-          style: TextStyle(
-            fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w900,
-            letterSpacing: trackingFor(context, 1.2),
-          ),
+          style: Type.caps(context),
         ),
       ),
     );

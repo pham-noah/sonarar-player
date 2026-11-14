@@ -516,7 +516,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           style: TextStyle(
             fontSize: kBrowserChipFont,
             letterSpacing: trackingFor(context, 0.3),
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             color: on ? skin.onAccent : skin.textPrimary,
           ),
         ),
@@ -644,7 +644,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
             fontSize: kBrowserChipFont,
             letterSpacing: trackingFor(context, 0.3),
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             color: on ? skin.onAccent : skin.textPrimary,
           ),
         ),
@@ -1397,13 +1397,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
               const SizedBox(height: 20),
               Text(
                 l10n.libraryEmptyTitle,
-                style: TextStyle(fontSize: LayoutSpec.fontTitle, color: skin.textPrimary),
+                style: Type.display(context, color: skin.textPrimary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
                 l10n.libraryEmptyBody,
-                style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
+                style: Type.bodyBase(context, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
               if (view.onChooseFolder != null) ...[
@@ -1419,12 +1419,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       color: skin.accent,
                       child: Text(
                         l10n.libraryChooseFolder,
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontFloor,
-                          letterSpacing: trackingFor(context, 2),
-                          fontWeight: FontWeight.w900,
-                          color: skin.onAccent,
-                        ),
+                        style: Type.caps(context, color: skin.onAccent),
                       ),
                     ),
                   ),

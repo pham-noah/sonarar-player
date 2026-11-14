@@ -435,7 +435,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                             style: TextStyle(
                               fontSize: LayoutSpec.fontMicro,
                               letterSpacing: trackingFor(context, 1),
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w800,
                               color: skin.accentInk,
                             ),
                           ),
@@ -763,7 +763,7 @@ class _NameSheetState extends State<_NameSheet> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           letterSpacing: trackingFor(context, 1.5),
                           color: skin.textSecondary,
                         ),
@@ -786,7 +786,7 @@ class _NameSheetState extends State<_NameSheet> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: LayoutSpec.fontMicro,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           letterSpacing: trackingFor(context, 1.5),
                           color: skin.onAccent,
                         ),

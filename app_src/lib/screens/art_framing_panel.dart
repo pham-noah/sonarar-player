@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../art/art_focus.dart';
 import '../art/skin_art.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 import '../theme/slab.dart';
 import '../widgets/framed_art.dart';
 
@@ -140,7 +141,7 @@ class ArtFramingPanel extends StatelessWidget {
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: trackingFor(context, 1),
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w800,
               color: skin.textSecondary,
             ),
           ),
@@ -199,11 +200,7 @@ class ArtFramingPanel extends StatelessWidget {
           child: Text(
             '${focus.zoom.toStringAsFixed(2)}×',
             textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: LayoutSpec.fontLabel,
-              fontWeight: FontWeight.w900,
-              color: skin.textPrimary,
-            ),
+            style: Type.caps(context, color: skin.textPrimary),
           ),
         ),
       ],

@@ -633,7 +633,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       shown,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w800,
                         letterSpacing: trackingFor(context, 0.8),
                         color: skin.onAccent,
                       ),
@@ -797,7 +797,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: TextStyle(
                     fontSize: LayoutSpec.fontMicro,
                     letterSpacing: trackingFor(context, 1),
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w800,
                     color: active ? skin.onAccent : skin.textSecondary,
                   ),
                 ),

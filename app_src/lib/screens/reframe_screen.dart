@@ -1,4 +1,3 @@
-import '../l10n/script.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import '../widgets/kit.dart';
 import '../theme/backdrop_layer.dart';
 import '../theme/personalization.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 
 /// Drag the picture to frame it.
 class ReframeScreen extends StatefulWidget {
@@ -64,12 +64,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                 children: [
                   Text(
                     l10nOf(context).personalizeReframe,
-                    style: TextStyle(
-                      color: skin.textPrimary,
-                      fontSize: LayoutSpec.fontFloor + 2,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: trackingFor(context, 2),
-                    ),
+                    style: Type.caps(context, color: skin.textPrimary),
                   ),
                   const Spacer(),
                   // Undo the drag as easily as making it: the picture you
@@ -102,7 +97,7 @@ class _ReframeScreenState extends State<ReframeScreen> {
                       l10nOf(context).commonDone,
                       style: TextStyle(
                         color: skin.accentInk,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),

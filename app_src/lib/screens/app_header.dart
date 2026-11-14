@@ -14,6 +14,7 @@ class AppScreenHeader extends StatelessWidget {
     this.mark,
     this.trailing,
     this.leading,
+    this.hero = false,
   });
 
   final Skin skin;
@@ -25,6 +26,10 @@ class AppScreenHeader extends StatelessWidget {
   final Widget? trailing;
 
   final Widget? leading;
+
+  /// The greeting on Home is the one `hero` in the app; every other header is
+  /// a `display` title.
+  final bool hero;
 
   static const double markSize = 40;
 
@@ -38,7 +43,7 @@ class AppScreenHeader extends StatelessWidget {
           if (mark != null)
             SidebarMarkButton(mark: mark!, size: markSize),
           Expanded(
-            child: ScreenTitle(skin: skin, text: title),
+            child: ScreenTitle(skin: skin, text: title, hero: hero),
           ),
           if (trailing != null) trailing!,
         ],

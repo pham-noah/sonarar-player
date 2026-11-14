@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sonarar mockups</title>
+<style>
+  :root{
+    /* ---------- abyss (dark signature) ---------- */
+    --bg:#04080F; --surface:#0B141D; --border-strong:#565D65;
+    --text:#FFFFFF; --text-muted:#7E8B99; --accent:#3CE0D0; --on-accent:#03121E;
+    --accent-tint:rgba(60,224,208,.14);
+    /* ---------- minimal (light) ---------- */
+    --l-bg:#E9E4DC; --l-surface:#FFFFFF; --l-text:#2B2A28;
+    --l-accent-old:#E8927C; --l-accent-ink:#875C51; --l-border-old:#D6D1C9;
+    --l-border-strong:#86827D; --l-muted-old:#A9A49E; --l-muted:#615E5A;
+    /* ---------- scales (the proposed tokens) ---------- */
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+    --r-sm:4px; --r-md:12px; --r-lg:24px; --r-pill:999px;
+    --e1:0 1px 0 rgba(255,255,255,.06), 0 2px 8px rgba(0,0,0,.30);
+    --e2:0 1px 0 rgba(255,255,255,.10), 0 6px 20px rgba(0,0,0,.45);
+    --skew:-11deg;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#15161A;font-family:Arial,Helvetica,sans-serif;color:#fff}
+  .sheet{width:980px;padding:26px 26px 30px;background:#15161A}
+  h1{font-size:19px;letter-spacing:.02em;margin:0 0 4px;font-weight:800}
+  .sub{font-size:12px;color:#9AA0AA;margin:0 0 20px;line-height:1.5}
+  .cols{display:flex;gap:18px;align-items:flex-start}
+  .col{flex:1}
+  .tag{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;
+       letter-spacing:.14em;margin:0 0 8px;color:#9AA0AA}
+  .tag b{color:#fff}
+  .tag .dot{width:7px;height:7px;border-radius:50%}
+  .bad .dot{background:#E5484D} .good .dot{background:#3CE0D0}
+  .pad{padding:16px 14px}
+  .mono{font-family:Consolas,monospace;font-size:10.5px;color:#9AA0AA}
+  .cap{font-size:10px;letter-spacing:.06em;color:#8A9099;margin:6px 0 0}
+  .ok{color:#3CE0D0;font-weight:800}
+  .no{color:#E5484D;font-weight:800}
+  .rowb{display:flex;align-items:center;justify-content:space-between}
+</style>
+</head>
+<body>
+<section class="sheet" id="s1">
+  <h1>P0-1 · The text ladder fails on light themes, and the accent is used as text</h1>
+  <p class="sub">Abyss and Minimal are the same widgets. On Minimal every muted line is
+  painted at <span class="mono">secondary(0.55)</span> = 2.27:1, and every accent label uses the raw
+  accent = 1.88:1. The active tab, the section label and the artist line are the three
+  least legible things on the screen — while the things you are not meant to read are white.</p>
+  <div class="cols">
+    <div class="col">
+      <p class="tag bad"><span class="dot"></span>BEFORE · <b>accent as text + 0.55 alpha</b></p>
+      <div class="pad" style="background:var(--l-bg);border-radius:10px">
+        <div style="font-size:12px;font-weight:800;letter-spacing:.16em;color:var(--l-accent-old);
+                    text-shadow:0 1px 0 rgba(43,42,40,.12)">NOW</div>
+        <p class="cap" style="color:#8A9099">accent #E8927C on #E9E4DC · <span class="no">1.88:1</span></p>
+
+        <div style="margin-top:14px;font-size:15px;font-weight:800;color:var(--l-text)">Night Drive</div>
+        <div style="font-size:13px;color:var(--l-muted-old);margin-top:3px">Kaori Ito</div>
+        <p class="cap" style="color:#8A9099">secondary @0.55 · <span class="no">2.27:1</span></p>
+
+        <div style="margin-top:16px;background:var(--l-surface);border:1px solid var(--l-border-old);
+                    border-radius:6px;padding:11px 12px" class="rowb">
+          <span style="font-size:13px;font-weight:800;color:var(--l-text);letter-spacing:.04em">RESUME ON OPEN</span>
+          <span style="width:40px;height:22px;border-radius:999px;border:2px solid #B9B3AA;
+                       display:inline-block"></span>
+        </div>
+        <p class="cap" style="color:#8A9099">row border secondary @0.22 · <span class="no">1.16:1</span> — the plate has no edge</p>
+
+        <div style="margin-top:16px;display:flex;gap:26px;border-top:1px solid #D8D2CA;padding-top:8px">
+          <span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--l-accent-old)">HOME</span>
+          <span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#4A4743">LIBRARY</span>
+          <span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#4A4743">SETTINGS</span>
+        </div>
+        <p class="cap" style="color:#8A9099">the active tab is the dimmest label in the bar</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <p class="tag good"><span class="dot"></span>AFTER · <b>accentInk + muted floor</b></p>
+      <div class="pad" style="background:var(--l-bg);border-radius:10px">
+        <div style="font-size:12px;font-weight:800;letter-spacing:.16em;color:var(--l-accent-ink)">NOW</div>
+        <p class="cap" style="color:#8A9099">accentInk #875C51 on #E9E4DC · <span class="ok">4.51:1</span></p>
+
+        <div style="margin-top:14px;font-size:15px;font-weight:800;color:var(--l-text)">Night Drive</div>
+        <div style="font-size:13px;color:var(--l-muted);margin-top:3px">Kaori Ito</div>
+        <p class="cap" style="color:#8A9099">muted floor 0.90 · <span class="ok">4.50:1</span></p>
+
+        <div style="margin-top:16px;background:var(--l-surface);border:1px solid var(--l-border-strong);
+                    border-left:3px solid var(--l-accent-ink);border-radius:6px;padding:11px 12px" class="rowb">
+          <span style="font-size:13px;font-weight:800;color:var(--l-text);letter-spacing:.04em">RESUME ON OPEN</span>
+          <span style="width:40px;height:22px;border-radius:999px;border:2px solid var(--l-border-strong);
+                       display:inline-block"></span>
+        </div>
+        <p class="cap" style="color:#8A9099">borderStrong #86827D · <span class="ok">3.02:1</span></p>
+
+        <div style="margin-top:16px;display:flex;gap:26px;border-top:1px solid var(--l-border-strong);padding-top:8px">
+          <span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--l-accent-ink);
+                       border-bottom:2px solid var(--l-accent-ink);padding-bottom:3px">HOME</span>
+          <span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--l-muted)">LIBRARY</span>
+          <span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--l-muted)">SETTINGS</span>
+        </div>
+        <p class="cap" style="color:#8A9099">active = accentInk + 2px underline; inactive = muted</p>
+      </div>
+    </div>
+  </div>
+  <p class="cap" style="margin-top:16px;font-size:11px">Fix is one place: <span class="mono">Skin</span> derives
+  <span class="mono">textMuted</span>, <span class="mono">accentInk</span> and <span class="mono">borderStrong</span>
+  per theme, and <span class="mono">secondary(a)</span> clamps <span class="mono">a</span> to the theme's 4.5:1 floor.
+  All 22 alpha call sites become safe without being touched. Table of the nine themes is in the doc.</p>
+</section>
+
+<section class="sheet" id="s2">
+  <h1>P0-2 · The settings row: 34px hit targets, a fixed 104px value slot, three unit formats</h1>
+  <p class="sub">At 320dp the label is clipped to four characters ("SLEE…") while ~90dp of the row sits empty,
+  because the stepper reserves a hard <span class="mono">width:104</span> and the buttons are
+  <span class="mono">34×34</span> — 14dp under Android's 48dp minimum, on the control a thumb hits most.</p>
+  <div class="cols">
+    <div class="col">
+      <p class="tag bad"><span class="dot"></span>BEFORE · 320dp</p>
+      <div class="pad" style="background:var(--bg);border-radius:10px">
+        <div style="background:#0A141B;border-left:3px solid var(--accent);padding:7px 8px 7px 12px;
+                    display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;font-weight:800;color:#fff">SLEE…</span>
+          <span style="flex:1"></span>
+          <span style="width:34px;height:34px;border:1px solid rgba(60,224,208,.6);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:16px">−</span>
+          <span style="width:104px;text-align:center"><span style="background:#12252B;color:#fff;
+                font-size:11px;font-weight:800;padding:3px 7px;font-style:italic">30 min</span></span>
+          <span style="width:34px;height:34px;border:1px solid rgba(60,224,208,.6);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:16px">+</span>
+        </div>
+        <div style="background:#0A141B;border-left:3px solid var(--accent);padding:7px 8px 7px 12px;
+                    display:flex;align-items:center;gap:10px;margin-top:3px">
+          <span style="font-size:13px;font-weight:800;color:#fff">WEA…</span>
+          <span style="flex:1"></span>
+          <span style="width:34px;height:34px;border:1px solid rgba(60,224,208,.6);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:16px">−</span>
+          <span style="width:104px;text-align:center"><span style="background:#12252B;color:#fff;
+                font-size:11px;font-weight:800;padding:3px 7px;font-style:italic">30m</span></span>
+          <span style="width:34px;height:34px;border:1px solid rgba(60,224,208,.6);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:16px">+</span>
+        </div>
+        <p class="cap" style="color:#8A9099">34×34 targets · label clipped · hairline at 1.1:1 · 30 min vs 30m vs 5s</p>
+      </div>
+    </div>
+    <div class="col">
+      <p class="tag good"><span class="dot"></span>AFTER · 320dp</p>
+      <div class="pad" style="background:var(--bg);border-radius:10px">
+        <div style="background:#0B141D;border:1px solid var(--border-strong);border-left:3px solid var(--accent);
+                    padding:6px 8px 6px 12px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.04em">SLEEP LENGTH</span>
+          <span style="flex:1"></span>
+          <span style="width:48px;height:48px;border:1px solid rgba(60,224,208,.55);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:19px">−</span>
+          <span style="min-width:64px;text-align:center;font-size:13px;font-weight:800;color:#fff">30 min</span>
+          <span style="width:48px;height:48px;border:1px solid rgba(60,224,208,.55);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:19px">+</span>
+        </div>
+        <div style="background:#0B141D;border:1px solid var(--border-strong);border-left:3px solid var(--accent);
+                    padding:6px 8px 6px 12px;display:flex;align-items:center;gap:8px;margin-top:var(--s1)">
+          <span style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.04em">WEATHER EVERY</span>
+          <span style="flex:1"></span>
+          <span style="width:48px;height:48px;border:1px solid rgba(60,224,208,.55);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:19px">−</span>
+          <span style="min-width:64px;text-align:center;font-size:13px;font-weight:800;color:#fff">30 min</span>
+          <span style="width:48px;height:48px;border:1px solid rgba(60,224,208,.55);display:flex;
+                       align-items:center;justify-content:center;color:var(--accent);font-size:19px">+</span>
+        </div>
+        <p class="cap" style="color:#8A9099">48×48 targets · label flexes to full width · one unit format · plate edge at 3:1</p>
+      </div>
+    </div>
+  </div>
+  <div class="pad" style="margin-top:16px;background:#0B141D;border:1px solid #26313B;border-radius:10px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent);margin-bottom:8px">THE ROW ANATOMY, IN NUMBERS</div>
+    <div style="display:flex;gap:26px;flex-wrap:wrap" class="mono">
+      <span>height 56 · padding 12/8 · icon 18 @ gap 10</span>
+      <span>label 14/800 · tracking +0.04em · maxLines 2</span>
+      <span>value min-width 64 · step 48×48 · gap 8</span>
+      <span>plate: fill surface · border 1px borderStrong · tick 3px accent</span>
+      <span>rows separated by 4, not 2</span>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" id="s3">
+  <h1>P0-3 · One state language: OFF is louder than ON, and "selected" means four things</h1>
+  <p class="sub">Today OFF is a 2px white ring (21:1) while ON is accent at 35% (2.4:1) — the app shouts the
+  state you are not in. Meanwhile "selected" is a filled slab in the settings tabs, a filled chip in LAYOUT,
+  an outline-only chip in COLOURS, an underline in the tab bar, and a full-bleed slab for a section header.</p>
+  <div class="cols">
+    <div class="col">
+      <p class="tag bad"><span class="dot"></span>BEFORE</p>
+      <div class="pad" style="background:var(--bg);border-radius:10px">
+        <div class="rowb" style="padding:6px 0">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.1em;color:#fff">TOGGLE OFF</span>
+          <span style="width:46px;height:24px;border-radius:999px;border:2px solid #fff;
+                       position:relative;display:inline-block">
+            <span style="position:absolute;left:2px;top:1px;width:16px;height:16px;border-radius:50%;background:#fff"></span>
+          </span>
+        </div>
+        <div class="rowb" style="padding:6px 0">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.1em;color:#fff">TOGGLE ON</span>
+          <span style="width:46px;height:24px;border-radius:999px;background:rgba(60,224,208,.35);
+                       position:relative;display:inline-block">
+            <span style="position:absolute;left:26px;top:1px;width:16px;height:16px;border-radius:50%;
+                         background:var(--accent)"></span>
+          </span>
+        </div>
+        <p class="cap" style="color:#8A9099">OFF 21:1 white ring · ON 2.4:1 teal-on-teal</p>
+
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <span style="padding:6px 13px;background:var(--accent);color:var(--on-accent);font-size:11px;
+                       font-weight:800;letter-spacing:.1em;transform:skewX(-11deg)"><span style="display:inline-block;transform:skewX(11deg)">LAYOUT</span></span>
+          <span style="padding:6px 13px;border:1px solid rgba(60,224,208,.85);color:var(--accent);
+                       font-size:11px;font-weight:800;letter-spacing:.1em;border-radius:var(--r-pill)">COLOURS</span>
+          <span style="padding:6px 13px;border:1px solid #4A545E;color:#fff;font-size:11px;
+                       font-weight:800;letter-spacing:.1em">SONGS</span>
+        </div>
+        <p class="cap" style="color:#8A9099">three selected treatments, three shapes, one row of controls</p>
+
+        <div style="margin-top:14px;background:var(--accent);color:var(--on-accent);
+                    font-size:11px;font-weight:800;letter-spacing:.16em;padding:7px 12px;
+                    transform:skewX(-11deg)">PLAYBACK</div>
+        <p class="cap" style="color:#8A9099">section header = the brightest surface on the screen, and it is not a control</p>
+      </div>
+    </div>
+    <div class="col">
+      <p class="tag good"><span class="dot"></span>AFTER</p>
+      <div class="pad" style="background:var(--bg);border-radius:10px">
+        <div class="rowb" style="padding:6px 0">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.1em;color:#fff">TOGGLE OFF</span>
+          <span style="width:46px;height:24px;border-radius:999px;background:#111B24;
+                       border:1px solid var(--border-strong);position:relative;display:inline-block">
+            <span style="position:absolute;left:2px;top:2px;width:18px;height:18px;border-radius:50%;
+                         background:#8A94A0"></span>
+          </span>
+        </div>
+        <div class="rowb" style="padding:6px 0">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.1em;color:#fff">TOGGLE ON</span>
+          <span style="width:46px;height:24px;border-radius:999px;background:var(--accent);
+                       position:relative;display:inline-block">
+            <span style="position:absolute;left:24px;top:2px;width:18px;height:18px;border-radius:50%;
+                         background:var(--on-accent)"></span>
+          </span>
+        </div>
+        <p class="cap" style="color:#8A9099">OFF 3:1 neutral · ON accent + onAccent knob 11.5:1</p>
+
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <span style="padding:6px 13px;background:var(--accent);color:var(--on-accent);font-size:11px;
+                       font-weight:800;letter-spacing:.1em">LAYOUT</span>
+          <span style="padding:6px 13px;border:1px solid var(--border-strong);color:#8A94A0;font-size:11px;
+                       font-weight:800;letter-spacing:.1em">COLOURS</span>
+          <span style="padding:6px 13px;border:1px solid var(--border-strong);color:#8A94A0;font-size:11px;
+                       font-weight:800;letter-spacing:.1em">SONGS</span>
+        </div>
+        <p class="cap" style="color:#8A9099">one shape (4px) · selected = accent fill + onAccent · rest = borderStrong + muted</p>
+
+        <div style="margin-top:14px;border-left:3px solid var(--accent);padding:2px 0 2px 10px">
+          <span style="font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--accent)">PLAYBACK</span>
+        </div>
+        <p class="cap" style="color:#8A9099">section header = 3px tick + 13px caps; the content is now the loudest thing</p>
+      </div>
+    </div>
+  </div>
+  <p class="cap" style="margin-top:16px;font-size:11px">Rule: <b>fill = selected · border = available · muted = unavailable.</b>
+  Accent is a surface (with onAccent text) or ink (accentInk) — never both in one control.
+  The skew stays on the plate and the section tick in the SONAR layout only; it is not applied to a control whose
+  selected state changes its silhouette.</p>
+</section>
+</body>
+</html>

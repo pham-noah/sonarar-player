@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/library/track.dart';
+import 'package:sonarar/core/clock.dart';
 import 'package:sonarar/main.dart';
 import 'package:sonarar/screens/tab_bar_view.dart';
 import 'package:sonarar/theme/skin_policy.dart';
@@ -72,6 +73,13 @@ void main() {
   });
 
   setUp(() {
+    // Pin the hour: the greeting and the skin band come from the wall clock, so
+    // an unpinned run rendered differently at 06:00 than at 02:00 and the shell
+    // golden failed for a reason that was not a regression. 02:00 is the band
+    // the committed screenshots were taken in, so pinning it to 02:00 changes no
+    // pixel and the image can no longer drift with the hour the suite runs at.
+    Clock.now = () => DateTime(2026, 11, 14, 2, 0);
+
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     // A golden of the shell pulls the wakelock in through the player; without
@@ -95,6 +103,10 @@ void main() {
     ]) {
       messenger.setMockMethodCallHandler(MethodChannel(name), (call) async => null);
     }
+  });
+
+  tearDown(() {
+    Clock.now = DateTime.now;
   });
 
   testWidgets('the shell, home tab', (tester) async {

@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarar/core/clock.dart';
 import 'package:sonarar/main.dart';
 
 import 'shell_probe.dart';
@@ -140,11 +141,19 @@ List<String> _unlabelled(WidgetTester tester) {
 
 void main() {
   setUp(() {
+    // Pin the hour: the greeting and the skin band come from the wall clock, so
+    // an unpinned run rendered differently at 06:00 than at 02:00 and the shell
+    // golden failed for a reason that was not a regression. 02:00 is the band
+    // the committed screenshots were taken in, so pinning it to 02:00 changes no
+    // pixel and the image can no longer drift with the hour the suite runs at.
+    Clock.now = () => DateTime(2026, 11, 14, 2, 0);
+
     _sandbox = Directory.systemTemp.createTempSync('sonarar-a11y-');
     rootBundle.clear();
     _fakePlatform();
   });
   tearDown(() {
+    Clock.now = DateTime.now;
     if (_sandbox.existsSync()) _sandbox.deleteSync(recursive: true);
   });
 

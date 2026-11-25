@@ -16,6 +16,7 @@ import 'poi_types.dart';
 import 'weather_codes.dart';
 import 'weather_cache.dart';
 import 'weather_service.dart';
+import '../core/clock.dart';
 
 class ContextCoordinator {
   ContextCoordinator({
@@ -120,7 +121,7 @@ class ContextCoordinator {
   void setPlaces(PlaceBook book) => _placeBook = book;
 
   PlayContext contextNow() {
-    final now = DateTime.now();
+    final now = Clock.now();
     return PlayContext(
       band: _policy.bandFor(now.hour),
 

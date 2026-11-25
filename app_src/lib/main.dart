@@ -110,6 +110,7 @@ import 'player/track_loader.dart';
 import 'player/queue_mode.dart';
 import 'player/snapshot.dart';
 import 'screens/home_screen.dart';
+import 'core/clock.dart';
 
 Future<void>? _audioInit;
 
@@ -217,7 +218,7 @@ class _SonararAppState extends State<SonararApp> {
   }
 
   void _syncContext() {
-    final hour = DateTime.now().hour;
+    final hour = Clock.hour;
     _state.updateContext(
       PlayContext(
         band: const SkinPolicy().bandFor(hour),

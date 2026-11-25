@@ -205,6 +205,7 @@
   "shellStoppingAfter": "この曲の後に停止します",
   "shellStopAfterOff": "この曲の後に停止 — オフ",
   "commonBack": "戻る",
+  "commonUndo": "元に戻す",
   "shellCatalogue": "全曲リスト",
   "shellRanks": "ランキング",
   "personalizeMotion": "動き",

@@ -205,6 +205,7 @@
   "shellStoppingAfter": "Pysähtyy tämän kappaleen jälkeen",
   "shellStopAfterOff": "Pysähdy tämän jälkeen — pois",
   "commonBack": "Takaisin",
+  "commonUndo": "KUMOA",
   "shellCatalogue": "LUETTELO",
   "shellRanks": "SIJAT",
   "personalizeMotion": "LIIKE",

@@ -219,6 +219,7 @@
   "shellStoppingAfter": "Stopping after this track",
   "shellStopAfterOff": "Stop after this track — off",
   "commonBack": "Back",
+  "commonUndo": "UNDO",
   "shellCatalogue": "CATALOGUE",
   "shellRanks": "RANKS",
   "personalizeMotion": "MOTION",

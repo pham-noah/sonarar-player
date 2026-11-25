@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../theme/skin.dart';
 
 /// Snackbars, raised where they can be seen.
@@ -110,7 +111,9 @@ void toastUndo(
     message: message,
     duration: const Duration(seconds: 4),
     maxLines: 1,
-    actionLabel: 'UNDO',
+    // Was the English word in an app that ships five locales: a Finnish user
+    // got a Finnish sentence with an English button under it.
+    actionLabel: l10nOf(context).commonUndo,
     actionColor: skin.accent,
     onAction: undo,
   );

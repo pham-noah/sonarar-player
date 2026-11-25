@@ -298,7 +298,7 @@ class SaveSpotButton extends StatelessWidget {
         GestureDetector(
           onTap: _usable ? onSave : null,
           child: AnimatedContainer(
-            duration: Motion.morph,
+            duration: Motion.of(context, Motion.morph),
             curve: MotionCurve.morph,
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(

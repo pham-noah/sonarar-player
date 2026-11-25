@@ -85,6 +85,7 @@ import 'theme/backdrop_layer.dart';
 import 'theme/layout.dart';
 import 'theme/tokens.dart';
 import 'theme/layout_kit.dart';
+import 'theme/motion.dart';
 
 import 'art/art_bundle.dart';
 import 'update/update_bar.dart';
@@ -576,8 +577,13 @@ class _HomeShellState extends State<HomeShell>
           ),
         ),
       ),
-      transitionDuration: widget.state.motion.tabTransition,
-      reverseTransitionDuration: widget.state.motion.tabTransition,
+      // The player is pushed as a route, so its transition is the one motion
+      // the shell cannot reach from a widget's build: it is set here, from the
+      // shell's own context, which can see the accessibility setting.
+      transitionDuration:
+          Motion.of(context, widget.state.motion.tabTransition),
+      reverseTransitionDuration:
+          Motion.of(context, widget.state.motion.tabTransition),
       transitionsBuilder: (_, animation, _, child) {
         final curve =
             CurvedAnimation(parent: animation, curve: motion.arrivalCurve);

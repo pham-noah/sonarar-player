@@ -90,16 +90,33 @@ class _TabArrivalViewState extends State<TabArrivalView>
     duration: widget.duration ?? Motion.tabArrival,
   );
 
+  /// Whether this arrival should be drawn at all.
+  ///
+  /// Reduce Motion turns the tab arrival into a frame change: the content is
+  /// placed where it lands and the backdrop does not drift behind it.
+  bool get _moves => widget.animate &&
+      !(MediaQuery.maybeDisableAnimationsOf(context) ?? false);
+
   @override
   void initState() {
     super.initState();
+    // `initState` cannot read MediaQuery; `didChangeDependencies` runs before
+    // the first frame, so the start waits for it.
+  }
 
-    if (widget.animate) {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (_moves) {
       _c.forward();
     } else {
       _c.value = 1.0;
     }
   }
+
+  bool _started = false;
 
   @override
   void didUpdateWidget(TabArrivalView old) {
@@ -112,7 +129,7 @@ class _TabArrivalViewState extends State<TabArrivalView>
   }
 
   void replay() {
-    if (!widget.animate) {
+    if (!_moves) {
       _c.value = 1.0;
       return;
     }

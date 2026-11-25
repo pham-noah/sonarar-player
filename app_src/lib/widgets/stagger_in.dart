@@ -75,6 +75,14 @@ class _StaggerInState extends State<StaggerIn>
   }
 
   void _begin() {
+    // Reduce Motion: land the content at its resting state instead of sliding
+    // it in. The stagger is the one animation in the app that moves every list
+    // item at once, which is exactly what the setting is asking to stop.
+    if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
+      _c.value = 1;
+      return;
+    }
+
     final scrollable = Scrollable.maybeOf(context);
     final scrolling = scrollable?.position.isScrollingNotifier.value ?? false;
 

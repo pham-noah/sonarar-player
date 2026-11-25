@@ -264,7 +264,7 @@ class PlayerScreen extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         AnimatedContainer(
-          duration: Motion.artCrossFade,
+          duration: Motion.of(context, Motion.artCrossFade),
           curve: MotionCurve.art,
           color: pal.background,
         ),
@@ -943,6 +943,7 @@ class PlayerScreen extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           _playButton(
+            context,
             skin,
             skew,
             playing: view.playing,
@@ -1653,6 +1654,7 @@ class PlayerScreen extends StatelessWidget {
   };
 
   Widget _playButton(
+    BuildContext context,
     Skin skin,
     double skew, {
     required bool playing,
@@ -1692,7 +1694,7 @@ class PlayerScreen extends StatelessWidget {
                 child: Transform(
                   transform: Matrix4.skewX(skew),
                   child: AnimatedSwitcher(
-                    duration: Motion.morph,
+                    duration: Motion.of(context, Motion.morph),
                     switchInCurve: MotionCurve.morph,
                     switchOutCurve: MotionCurve.morph,
 
@@ -1835,7 +1837,7 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                         child: Transform(
                           transform: Matrix4.skewX(skew),
                           child: AnimatedContainer(
-                            duration: Motion.morph,
+                            duration: Motion.of(context, Motion.morph),
                             curve: MotionCurve.morph,
                             width: 14,
                             height: 14,

@@ -49,7 +49,7 @@ class _NudgingButtonState extends State<NudgingButton> {
           begin: kTransportNudge * widget.direction,
           end: 0.0,
         ),
-        duration: Motion.morph,
+        duration: Motion.of(context, Motion.morph),
         curve: MotionCurve.morph,
         builder: (context, dx, child) =>
             Transform.translate(offset: Offset(dx, 0), child: child),
@@ -89,7 +89,7 @@ class _PopOnChangeState extends State<PopOnChange> {
     return TweenAnimationBuilder<double>(
       key: ValueKey<int>(_tick),
       tween: Tween<double>(begin: 0.90, end: 1.0),
-      duration: Motion.release,
+      duration: Motion.of(context, Motion.release),
 
       curve: MotionCurve.pressOut,
       builder: (context, scale, child) =>
@@ -145,11 +145,11 @@ class _SwapSlideState extends State<SwapSlide> {
   Widget build(BuildContext context) {
     return AnimatedSlide(
       offset: _in ? Offset.zero : const Offset(0, 0.22),
-      duration: Motion.morph,
+      duration: Motion.of(context, Motion.morph),
       curve: MotionCurve.morph,
       child: AnimatedOpacity(
         opacity: _in ? 1.0 : 0.0,
-        duration: Motion.morph,
+        duration: Motion.of(context, Motion.morph),
         curve: MotionCurve.morph,
         child: widget.child,
       ),

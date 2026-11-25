@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../theme/motion.dart';
 import '../theme/skin.dart';
 
 /// Snackbars, raised where they can be seen.
@@ -28,7 +29,12 @@ void _raise(
   // the shell's context even when a sheet called them).
   final route = ModalRoute.of(context);
   final covered = route != null && !route.isCurrent;
-  if (route is! PopupRoute && !covered) {
+  // Reduce Motion sends everything through the overlay: a `SnackBar` animates
+  // itself, with a duration and a curve that are Flutter's and cannot be
+  // shortened from here, so the one path that honours "no animations" is the
+  // one this file draws.
+  final still = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+  if (!still && route is! PopupRoute && !covered) {
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
     messenger
@@ -157,12 +163,35 @@ class _ToastLayerState extends State<_ToastLayer>
   late final AnimationController _fade = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 160),
-  )..forward();
+  );
+
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+
+    final fadeFor = Motion.of(context, const Duration(milliseconds: 160));
+    _fade.duration = fadeFor;
+    // `forward()` with a zero duration still waits for the ticker's first tick,
+    // which is one frame of an invisible bar. Setting the value is the only way
+    // to be there in the frame it appears.
+    if (fadeFor == Duration.zero) {
+      _fade.value = 1;
+    } else {
+      _fade.forward();
+    }
+  }
 
   late final Timer _life = Timer(widget.duration, () {
     if (!mounted) return;
     unawaited(_fade.reverse().whenComplete(widget.onDone));
   });
+
+  // Under Reduce Motion the bar is simply there: 160ms of fade is not a
+  // transition the user needs, and the timer still owns how long it stays.
 
   @override
   void dispose() {

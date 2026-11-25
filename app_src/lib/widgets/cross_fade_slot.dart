@@ -9,18 +9,21 @@ class CrossFadeSlot extends StatelessWidget {
     super.key,
     required this.keyValue,
     required this.child,
-    this.duration = Motion.artCrossFade,
+    this.duration,
   });
 
   final Object keyValue;
 
   final Widget child;
-  final Duration duration;
+  /// Null means "as long as an art cross-fade should take on this device" —
+  /// resolved in [build] because a const default cannot ask whether the user
+  /// turned animations off.
+  final Duration? duration;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: duration,
+      duration: Motion.of(context, duration ?? Motion.artCrossFade),
       switchInCurve: MotionCurve.art,
       switchOutCurve: MotionCurve.art,
 

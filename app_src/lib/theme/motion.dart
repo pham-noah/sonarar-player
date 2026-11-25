@@ -1,6 +1,6 @@
 library;
 
-import 'package:flutter/animation.dart';
+import 'package:flutter/widgets.dart';
 
 /// The app's motion, in one place: four durations and three curves.
 ///
@@ -65,6 +65,23 @@ abstract final class Motion {
   /// A staggered list: [staggerCap] steps of [staggerStep], which is [screen]
   /// exactly.
   static const Duration stagger = screen;
+
+  /// How long this animation should actually run.
+  ///
+  /// Android's "Remove animations" and iOS Reduce Motion both reach the app as
+  /// [MediaQueryData.disableAnimations], and until now nothing read it: a user
+  /// who asked the whole system to stop moving still got every transition from
+  /// the 90ms press to the 528ms backdrop. Zero, not something short — a
+  /// 60ms slide is still a slide, and the setting exists for people the motion
+  /// itself is the problem for.
+  ///
+  /// Durations are constants, so this cannot happen inside them; a call site
+  /// that animates says `Motion.of(context, Motion.base)` and gets the honest
+  /// answer for the device it is on.
+  static Duration of(BuildContext context, Duration duration) =>
+      (MediaQuery.maybeDisableAnimationsOf(context) ?? false)
+          ? Duration.zero
+          : duration;
 }
 
 /// The three curves. `easeOutBack` is gone from the app: it overshoots, and an

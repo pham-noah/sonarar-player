@@ -130,7 +130,7 @@ class TabBarView2 extends StatelessWidget {
 
                     child: AnimatedScale(
                       scale: active ? 1.0 : 0.86,
-                      duration: Motion.morph,
+                      duration: Motion.of(context, Motion.morph),
                       curve: MotionCurve.morph,
                       child: Icon(
                         icon,

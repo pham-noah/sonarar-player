@@ -8,4 +8,10 @@ tags:
   # Define the tag so `flutter test --tags adversarial` runs only these.
   adversarial:
 
+# `exclude_tags` takes a bare string, and the only form this version accepts is
+# a single tag or an expression the tag parser understands; `live, shots` and a
+# YAML list both fail to parse and take the whole run down with them, and
+# excluding `shots` here would also empty out `flutter test --tags shots`. So the
+# screenshot pass stays in the suite and simply writes to ignored build/shots —
+# what was actually wrong was that it overwrote committed PNGs.
 exclude_tags: live

@@ -101,8 +101,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-        child: Column(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -123,11 +122,11 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
             for (final f in TagField.values) _fieldRow(skin, f),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               l10nOf(context).tagsPersistNote,
               style: TextStyle(
@@ -136,7 +135,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
             Row(
               children: [
@@ -207,8 +206,7 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
                     style: TextButton.styleFrom(
                       foregroundColor: skin.accent,
                       minimumSize: const Size(0, 34),
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                    ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),                    ),
                     child: Text(l10nOf(context).tagsRevert),
                   ),
                 ),
@@ -228,12 +226,11 @@ class _TagEditorSheetState extends State<TagEditorSheet> {
               filled: true,
               fillColor: skin.panel,
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-              border: OutlineInputBorder(
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),              border: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: overridden
                       ? skin.accent
-                      : skin.secondary(0.25),
+                      : skin.edge(0.25),
                 ),
               ),
             ),

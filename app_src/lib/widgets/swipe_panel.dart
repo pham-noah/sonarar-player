@@ -50,9 +50,9 @@ class SwipePanel extends StatelessWidget {
           if (!atRight) ...[
             _icon(p),
 
-            if (p > 0.55) ...[const SizedBox(width: 6), _label(context, )],
+            if (p > 0.55) ...[const SizedBox(width: 8), _label(context, )],
           ] else ...[
-            if (p > 0.55) ...[_label(context, ), const SizedBox(width: 6)],
+            if (p > 0.55) ...[_label(context, ), const SizedBox(width: 8)],
             _icon(p),
           ],
         ],

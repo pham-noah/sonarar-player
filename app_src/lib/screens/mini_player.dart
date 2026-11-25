@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
 
+import '../core/time_format.dart';
 import '../core/track_labels.dart';
 import '../l10n/l10n.dart';
 import '../core/constants.dart';
@@ -14,6 +15,7 @@ import '../player/queue.dart';
 import '../theme/skin.dart';
 import '../theme/layout.dart';
 import '../theme/surface.dart';
+import '../theme/tokens.dart';
 import '../widgets/cross_fade_slot.dart';
 import '../widgets/pressable.dart';
 
@@ -91,11 +93,14 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final p = widget.presentation ?? Presentation.forSkin(widget.skin);
     final floating = p.arrangement.miniPlayerIsFloating;
 
-    final content = Column(
-        mainAxisSize: MainAxisSize.min,
+    final content = Stack(
         children: [
-          _scrub(widget.skin),
-          Row(
+          Padding(
+            // 8dp around the art: the cover used to sit flush against the
+            // screen edge, which read as a cropped picture rather than a plate
+            // with a picture in it.
+            padding: const EdgeInsets.all(Space.sm),
+            child: Row(
             children: [
 
               Expanded(
@@ -153,8 +158,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                 color: widget.skin.background.withValues(alpha: 0.72),
                                 border: Border.all(color: widget.skin.accent, width: 2),
                               ),
-                              padding: const EdgeInsets.all(5),
-                              child: Icon(
+                              padding: const EdgeInsets.all(4),                              child: Icon(
                                 Icons.lyrics_outlined,
                                 size: 15,
                                 color: widget.skin.accentInk,
@@ -162,7 +166,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                             ),
                         ],
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: Space.sm),
                       Expanded(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -182,8 +186,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               widget.track.artist,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: LayoutSpec.fontLabel,
+                              style: Type.bodyBase(
+                                context,
                                 color: widget.skin.textSecondary,
                               ),
                             ),
@@ -217,6 +221,16 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   small: true,
                   semantic: l10nOf(context).playerClose),
             ],
+            ),
+          ),
+          // The scrub is a rule across the top of the plate, not a band above
+          // it: a band cost 8dp of the bar's 64, and the art has to stay inside
+          // the height the bottom clearance reserves.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: _scrub(widget.skin),
           ),
         ],
     );
@@ -227,18 +241,37 @@ class _MiniPlayerState extends State<MiniPlayer> {
             child: Surface(
               presentation: p,
               role: SurfaceRole.bar,
-              radius: 18,
+              radius: Corners.md,
               child: content,
             ),
           )
-        : Container(
-            decoration: BoxDecoration(
-              color: widget.skin.panel,
-              border: Border(
-                top: BorderSide(color: widget.skin.accentAt(0.4)),
+        : Padding(
+            // A plate, not a strip glued to both edges: 8dp of page either
+            // side, so the art has a frame and the bar reads as something
+            // floating over the list.
+            padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+            child: Container(
+              decoration: BoxDecoration(
+                // The plate is opaque: several skins draw `panel` as a tint
+                // (Abyss at 15%), and a translucent plate lets its own `e2`
+                // shadow show through the fill, which greys the bar instead of
+                // lifting it.
+                color: Color.alphaBlend(widget.skin.panel, widget.skin.background),
+                borderRadius: BorderRadius.circular(Corners.md),
+                // e2: the one elevation that means "floating over content".
+                boxShadow: Elevation.e2(light: widget.skin.isLight),
               ),
+              // The 1px edge is painted *over* the plate rather than as a
+              // `border`: a BoxDecoration border insets its child by its own
+              // width, which made the bar 66 tall against the 64 the bottom
+              // clearance reserves.
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(Corners.md),
+                border: Border.all(color: widget.skin.edge(Tone.edge)),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: content,
             ),
-            child: content,
           );
 
     final swipeable = (widget.onSwipeNext == null && widget.onSwipePrevious == null)
@@ -284,7 +317,31 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final at = widget.position?.inMilliseconds ?? 0;
 
     final frac = _dragFrac ?? (total <= 0 ? 0.0 : (at / total).clamp(0.0, 1.0));
-    return LayoutBuilder(
+
+    // A strip you can drag is a slider, and a slider is the one control a
+    // screen reader can actually work: it needs the role, the position and the
+    // two actions. Without them TalkBack announces a 404×8 "button" nothing can
+    // drag — which is exactly what this bar used to be.
+    const step = Duration(seconds: 5);
+    final here = Duration(milliseconds: at);
+    Duration clamped(Duration d) => d < Duration.zero
+        ? Duration.zero
+        : (widget.duration != null && d > widget.duration! ? widget.duration! : d);
+    final canSeek = widget.onSeek != null && total > 0;
+
+    return Semantics(
+      slider: true,
+      label: l10nOf(context).miniPlayerSeek,
+      value: '${mmss(here)} / ${mmss(widget.duration ?? Duration.zero)}',
+      increasedValue: canSeek
+          ? mmss(clamped(here + step))
+          : null,
+      decreasedValue: canSeek
+          ? mmss(clamped(here - step))
+          : null,
+      onIncrease: !canSeek ? null : () => widget.onSeek!(clamped(here + step)),
+      onDecrease: !canSeek ? null : () => widget.onSeek!(clamped(here - step)),
+      child: LayoutBuilder(
       builder: (context, box) => GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (d) =>
@@ -295,7 +352,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
         onHorizontalDragEnd: (_) => setState(() => _dragFrac = null),
         onHorizontalDragCancel: () => setState(() => _dragFrac = null),
         child: SizedBox(
-          height: 14,
+          height: Space.sm,
           child: Align(
             alignment: Alignment.centerLeft,
             child: Stack(
@@ -328,6 +385,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -340,14 +398,14 @@ class _MiniPlayerState extends State<MiniPlayer> {
   }
 
   Widget _cover() {
-    const size = 44.0;
+    const size = 40.0;
     return Hero(
       tag: kCoverHeroTag(widget.track.id),
       child: Container(
         width: size,
         height: size,
-        margin: const EdgeInsets.only(left: 12),
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(Corners.sm),
           border: Border.all(color: widget.skin.accentAt(0.7)),
         ),
 
@@ -378,6 +436,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
     // hiding under a thumb.
     const w = 48.0;
     final tap = onTap;
+    // The transport key is the one control in the bar that is a *surface*: the
+    // accent fill with `onAccent` on it, so the bar has a single focal point
+    // instead of four glyphs at the same weight.
+    final filled = big;
     return Semantics(
       button: true,
       enabled: tap != null,
@@ -395,10 +457,18 @@ class _MiniPlayerState extends State<MiniPlayer> {
             width: w,
             height: 48,
             alignment: Alignment.center,
+            decoration: filled
+                ? BoxDecoration(
+                    color: widget.skin.accent,
+                    borderRadius: BorderRadius.circular(Corners.sm),
+                  )
+                : null,
             child: Icon(
               icon,
               size: big ? 28 : (small ? 18 : 22),
-              color: active ? widget.skin.accentInk : widget.skin.textPrimary,
+              color: filled
+                  ? widget.skin.onAccent
+                  : (active ? widget.skin.accentInk : widget.skin.textPrimary),
             ),
           ),
         ),

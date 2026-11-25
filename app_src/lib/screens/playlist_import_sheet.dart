@@ -548,7 +548,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           Text(l10nOf(context).importHint,
               style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
           if (_notice != null) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(_notice!,
                 style: TextStyle(
                   fontSize: LayoutSpec.fontFloor,
@@ -556,7 +556,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
                   fontWeight: FontWeight.w600,
                 )),
           ],
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
 
           if (_loading)
             const Padding(
@@ -565,8 +565,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             )
           else if (_sources.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              child: Text(l10nOf(context).importEmpty,
+              padding: const EdgeInsets.symmetric(vertical: 16),              child: Text(l10nOf(context).importEmpty,
                   style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
             )
           else
@@ -578,7 +577,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
               ),
             ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           SizedBox(
             height: 48,
             child: OutlinedButton.icon(
@@ -604,8 +603,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
   Widget _row(Skin skin, PlaylistSource src) {
     final busy = _busy.contains(src.folder);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Column(
+      padding: const EdgeInsets.only(bottom: 8),      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -647,7 +645,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
             ],
           ),
           if (busy) ...[
-            const SizedBox(height: 5),
+            const SizedBox(height: 4),
             if (_nowTitle[src.folder] != null) ...[
               Row(
                 children: [
@@ -688,8 +686,7 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
           ],
           if (_status[src.folder] != null)
             Padding(
-              padding: const EdgeInsets.only(top: 3, left: 2),
-              child: Text(_status[src.folder]!,
+              padding: const EdgeInsets.only(top: 4, left: 2),              child: Text(_status[src.folder]!,
                   style: TextStyle(fontSize: LayoutSpec.fontFloor, color: skin.textSecondary)),
             ),
         ],

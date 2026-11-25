@@ -244,8 +244,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
     final body = ListView(
       padding: widget.inline
           ? const EdgeInsets.fromLTRB(20, 8, 20, 24)
-          : const EdgeInsets.fromLTRB(20, 18, 20, 24),
-      children: [
+          : const EdgeInsets.fromLTRB(20, 16, 20, 24),      children: [
         if (!widget.inline) ...[
           ScreenTitle(skin: skin, text: l10nOf(context).settingsPlaces),
           const SizedBox(height: LayoutSpec.gapM),
@@ -265,8 +264,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                 child: InkWell(
                   onTap: widget.onRefreshPosition,
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: Icon(Icons.my_location_rounded,
+                    padding: const EdgeInsets.all(8),                    child: Icon(Icons.my_location_rounded,
                         size: 18, color: skin.accentInk),
                   ),
                 ),
@@ -291,7 +289,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
             });
           },
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         MapAttribution(skin: skin),
 
         if (_tapped != null) ...[
@@ -308,11 +306,10 @@ class _PlacesScreenState extends State<PlacesScreen> {
             child: InkWell(
               onTap: () => _editPlace(_hereInside!),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
+                padding: const EdgeInsets.symmetric(vertical: 8),                child: Row(
                   children: [
                     Icon(placeIconFor(_hereInside!.icon), size: 14, color: skin.accentInk),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         l10nOf(context).placesYouAreIn(_hereInside!.name),
@@ -361,7 +358,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
           ),
         ],
 
-        const SizedBox(height: 26),
+        const SizedBox(height: 24),
 
         SectionLabel(
           skin: skin,
@@ -412,7 +409,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
 
                       Icon(placeIconFor(place.icon),
                           size: 15, color: skin.accentInk),
-                      const SizedBox(width: 7),
+                      const SizedBox(width: 8),
                       Text(
                         place.name,
                         style: TextStyle(
@@ -425,8 +422,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                         const SizedBox(width: 8),
                         Container(
                           padding:
-                              const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
+                              const EdgeInsets.symmetric(horizontal: 8, vertical: 1),                          decoration: BoxDecoration(
                             border: Border.all(
                                 color: skin.accentAt(0.6)),
                           ),
@@ -443,7 +439,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                       ],
                     ],
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
 
                     [
@@ -593,7 +589,7 @@ class _NameSheetState extends State<_NameSheet> {
                 color: skin.accentInk,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 6,
@@ -686,7 +682,7 @@ class _NameSheetState extends State<_NameSheet> {
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
 
             l10nOf(context).placesTapToClear,
@@ -745,7 +741,7 @@ class _NameSheetState extends State<_NameSheet> {
             ),
           ],
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
@@ -772,7 +768,7 @@ class _NameSheetState extends State<_NameSheet> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 flex: 2,
                 child: Pressable(
@@ -831,8 +827,7 @@ class _NameSheetState extends State<_NameSheet> {
               color: skin.secondary(0.6),
             ),
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            border: OutlineInputBorder(
+            contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),            border: OutlineInputBorder(
               borderSide:
                   BorderSide(color: skin.secondary(0.4)),
             ),

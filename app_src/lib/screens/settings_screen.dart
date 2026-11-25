@@ -1,7 +1,10 @@
 library;
 
 import '../l10n/script.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/l10n.dart';
 
@@ -229,8 +232,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       child: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-          children: [
+          // The bottom reserves the mini player and the tab bar plus `s5`:
+          // SYSTEM's last row used to be painted underneath them (F-23).
+          padding: EdgeInsets.fromLTRB(
+            20,
+            8,
+            20,
+            PresentationScope.of(context, fallback: skin).arrangement.bottomClearance,
+          ),          children: [
           ..._withoutLeadingGap([
             if (widget.showTitle) ...[
               ScreenTitle(skin: skin, text: l10n.settingsTitle),
@@ -247,7 +256,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onSelected: (t) => setState(() => _tab = t),
               keyBuilder: (t) => Key('settings-tab-${t.name}'),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
 
             
             
@@ -596,10 +605,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ValueChanged<double> onChanged,
   }) =>
       Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 6, 8, 2),
-          decoration: BoxDecoration(
+        padding: const EdgeInsets.only(bottom: 8),        child: Container(
+          padding: const EdgeInsets.fromLTRB(12, 8, 8, 2),          decoration: BoxDecoration(
             color: skin.panel,
             border: Border(
               left: BorderSide(color: skin.accentAt(0.7), width: 3),
@@ -610,7 +617,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Row(
                 children: [
                   Icon(icon, size: 17, color: skin.accentInk),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       label,
@@ -628,8 +635,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   Slab(
                     skin: skin,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    child: Text(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),                    child: Text(
                       shown,
                       style: TextStyle(
                         fontSize: LayoutSpec.fontMicro,
@@ -696,15 +702,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // "WEATHER" across two lines — and at the top of the system font scale
         // it is too wide even on a big screen. Below those two cases the
         // stepper sits under the label it steps.
-        trailing: _stacked(context) ? null : _stepRow(skin, value, onLess, onMore, enabled),
+        trailing: _stacked(context)
+            ? null
+            : _stepRow(skin, label, value, onLess, onMore, enabled),
         below: _stacked(context)
             ? Padding(
                 padding: const EdgeInsets.only(top: Space.xs),
                 child: Row(
                   children: [
-                    _stepButton(skin, Icons.remove_rounded, enabled ? onLess : null),
+                    _stepButton(skin, Icons.remove_rounded, enabled ? onLess : null,
+                        l10n.settingsStepLess(label)),
                     Expanded(child: _stepValue(skin, value, enabled)),
-                    _stepButton(skin, Icons.add_rounded, enabled ? onMore : null),
+                    _stepButton(skin, Icons.add_rounded, enabled ? onMore : null,
+                        l10n.settingsStepMore(label)),
                   ],
                 ),
               )
@@ -719,6 +729,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _stepRow(
     Skin skin,
+    String label,
     String value,
     VoidCallback? onLess,
     VoidCallback? onMore,
@@ -727,12 +738,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _stepButton(skin, Icons.remove_rounded, enabled ? onLess : null),
+          _stepButton(skin, Icons.remove_rounded, enabled ? onLess : null,
+              l10n.settingsStepLess(label)),
           ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 64),
             child: _stepValue(skin, value, enabled),
           ),
-          _stepButton(skin, Icons.add_rounded, enabled ? onMore : null),
+          _stepButton(skin, Icons.add_rounded, enabled ? onMore : null,
+              l10n.settingsStepMore(label)),
         ],
       );
 
@@ -749,24 +762,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// 48dp: at 34×34 these were the two smallest controls in the app, flanking
   /// the value you press them to change.
-  Widget _stepButton(Skin skin, IconData icon, VoidCallback? onTap) {
+  ///
+  /// [semantic] names both the direction and the row, because a minus glyph
+  /// announces as "button" and there are three steppers on this screen: the
+  /// screen reader has to be able to tell which setting it is about to change.
+  Widget _stepButton(Skin skin, IconData icon, VoidCallback? onTap,
+      String semantic) {
     final off = onTap == null;
-    return Pressable(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: Space.tap,
-          height: Space.tap,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: off ? skin.edge(0.22) : skin.accentAt(0.55),
+    return Semantics(
+      button: true,
+      enabled: !off,
+      label: semantic,
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Pressable(
+        child: InkWell(
+          onTap: onTap == null
+              ? null
+              : () {
+                  unawaited(HapticFeedback.selectionClick());
+                  onTap();
+                },
+          child: Container(
+            width: Space.tap,
+            height: Space.tap,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: off ? skin.edge(0.22) : skin.accentAt(0.55),
+              ),
             ),
-          ),
-          child: Icon(
-            icon,
-            size: 18,
-            color: off ? skin.textMuted : skin.accentInk,
+            child: Icon(
+              icon,
+              size: 18,
+              color: off ? skin.textMuted : skin.accentInk,
+            ),
           ),
         ),
       ),
@@ -783,12 +813,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         presentation: PresentationScope.of(context, fallback: skin),
           skin: skin,
           active: active,
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 6),
-          child: Column(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),          child: Column(
             children: [
               Icon(icon,
                   size: 19, color: active ? skin.onAccent : skin.accentInk),
-              const SizedBox(height: 5),
+              const SizedBox(height: 4),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -804,7 +833,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               if (selected == true) ...[
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 Icon(Icons.check_rounded, size: 12, color: skin.onAccent),
               ],
             ],

@@ -16,8 +16,7 @@ class Slab extends StatelessWidget {
     this.accentEdge = true,
     this.active = false,
     this.fill,
-    this.padding = const EdgeInsets.fromLTRB(16, 14, 18, 14),
-    this.onTap,
+    this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 12),    this.onTap,
     this.skewScale = 0.45,
     this.presentation,
     this.radius = 0,
@@ -177,8 +176,7 @@ class SkinChip extends StatelessWidget {
         transform: Matrix4.skewX(-rad),
         child: Container(
           constraints: const BoxConstraints(minHeight: Space.tap),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),          decoration: BoxDecoration(
 
             borderRadius: BorderRadius.circular(Corners.pill),
             color: selected ? skin.accent : Colors.transparent,
@@ -193,7 +191,7 @@ class SkinChip extends StatelessWidget {
               children: [
                 if (icon != null) ...[
                   Icon(icon, size: 15, color: fg),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 8),
                 ],
 
                 Flexible(

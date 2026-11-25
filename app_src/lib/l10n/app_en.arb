@@ -93,6 +93,24 @@
   "playerWhyThisSongTitle": "WHY THIS SONG",
   "playerQueueTitle": "QUEUE",
   "playerAudio": "AUDIO",
+  "playerAudioHide": "HIDE AUDIO",
+  "miniPlayerSeek": "Playback position",
+  "settingsStepLess": "Less: {label}",
+  "@settingsStepLess": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsStepMore": "More: {label}",
+  "@settingsStepMore": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "playerThisTrack": "THIS TRACK",
   "playerLoopPoints": "LOOP POINTS",
   "playerShrink": "Shrink",
@@ -1385,6 +1403,14 @@
   "@libraryEmptyBody": {"description": "One sentence under the empty-library heading naming the one action that fixes it."},
   "libraryChooseFolder": "CHOOSE A FOLDER",
   "@libraryChooseFolder": {"description": "Button on the empty library that opens the folder picker."},
+  "libraryUnreadableTitle": "Can't read this folder",
+  "@libraryUnreadableTitle": {"description": "Heading when the music folder exists but the OS refused access to it — a failure, not an empty library."},
+  "libraryUnreadableBody": "Android would not let the app read your music folder. Choose it again to restore the library.",
+  "@libraryUnreadableBody": {"description": "One sentence under the unreadable-folder heading. Says what went wrong and the one action that fixes it."},
+  "libraryMissingTitle": "Your music has moved",
+  "@libraryMissingTitle": {"description": "Heading when the manifest lists songs that are no longer on disk."},
+  "libraryMissingBody": "Some songs in the library are no longer on disk. Choose the folder again, or rescan it from Library management.",
+  "@libraryMissingBody": {"description": "One sentence under the missing-songs heading. Names the two ways back."},
   "librarySearchFound": "{count} found",
   "@librarySearchFound": {
     "description": "How many tracks the library search returned.",

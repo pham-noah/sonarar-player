@@ -121,8 +121,7 @@ class _BackupSectionState extends State<BackupSection> {
                 InkWell(
                   onTap: () => Navigator.of(ctx).pop(f),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 9),
-                    child: Text(
+                    padding: const EdgeInsets.symmetric(vertical: 8),                    child: Text(
                       f.uri.pathSegments.last,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

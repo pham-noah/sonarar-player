@@ -20,7 +20,7 @@
     "activeFillIsAccent": false,
     "blur": 0.0,
     "specularEdge": false,
-    "castShadow": false,
+    "elevation": "e1",
     "transparentInactiveFill": false,
     "radii": {
       "panel": 24.0,
@@ -30,7 +30,7 @@
     }
   },
   "motion": {
-    "tabTransitionMs": 260,
+    "tabTransition": "base",
     "arrivalCurve": "easeOutCubic",
     "arrivalAmplitude": 0.5,
     "backdropFactor": 1.4,

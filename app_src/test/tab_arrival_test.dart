@@ -84,8 +84,15 @@ void main() {
 
       expect(dxOf(tester, 'fg').abs(), lessThanOrEqualTo(0.5),
           reason: 'the content should have finished travelling');
-      expect(dxOf(tester, 'bg').abs(), greaterThan(0.5),
+      // §2.6 dropped the arrival's overshoot, so at the content's landing the
+      // backdrop has travelled most of the way and the old 0.5px threshold no
+      // longer separated the two layers. What the layering means is that the
+      // backdrop is still *in flight* when the content has arrived — it has
+      // backdropFactor more time to run — so its displacement is non-zero.
+      expect(dxOf(tester, 'bg').abs(), greaterThan(0),
           reason: 'the backdrop finished as fast as the content — the layering is gone');
+      expect(Motion.tabBackdrop, greaterThan(Motion.tabArrival),
+          reason: 'one duration for both layers is not two speeds');
     });
 
     testWidgets('the backdrop travels LESS far than the content', (tester) async {
@@ -108,7 +115,7 @@ void main() {
           tester.widgetList<Opacity>(find.byType(Opacity)).map((o) => o.opacity).toList();
       expect(opacities.every((o) => o >= 0.99), isTrue,
           reason: 'a layer is still fading while the other has arrived');
-      expect(dxOf(tester, 'bg').abs(), greaterThan(0.5),
+      expect(dxOf(tester, 'bg').abs(), greaterThan(0),
           reason: 'the backdrop stopped early — there is no layering left to see');
     });
   });

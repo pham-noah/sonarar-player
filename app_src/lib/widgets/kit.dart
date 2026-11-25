@@ -311,7 +311,7 @@ class KitTabs<T> extends StatelessWidget {
                             ? skin.accent
                             : skin.borderStrong,
                       ),
-                      borderRadius: BorderRadius.circular(Corners.xs),
+                      borderRadius: BorderRadius.circular(Corners.sm),
                     ),
                     child: Text(
                       entries[i].value,
@@ -419,9 +419,9 @@ class KitSection extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     mainAxisSize: MainAxisSize.min,
     children: [
-      if (leading != null) ...[leading!, const SizedBox(height: 6)],
+      if (leading != null) ...[leading!, const SizedBox(height: 8)],
       SectionBand(skin: skin, label: label, trailing: trailing),
-      const SizedBox(height: 6),
+      const SizedBox(height: 8),
       ...children,
       const SizedBox(height: 12),
     ],

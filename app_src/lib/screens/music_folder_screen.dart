@@ -119,8 +119,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
-              child: Row(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),              child: Row(
                 children: [
                   if (_parent != null)
                     IconButton(
@@ -174,18 +173,15 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                       child: Icon(Icons.folder_open_rounded,
                           size: 28, color: skin.textSecondary))
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      itemCount: _dirs.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),                      itemCount: _dirs.length,
                       itemBuilder: (_, i) {
                         final dir = _dirs[i];
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: InkWell(
+                          padding: const EdgeInsets.only(bottom: 8),                          child: InkWell(
                             key: Key('music-folder-${_name(dir.path)}'),
                             onTap: () => _open(dir.path),
                             child: Container(
-                              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                              decoration: BoxDecoration(
+                              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),                              decoration: BoxDecoration(
                                 color: skin.panel,
                                 border: Border(
                                   left: BorderSide(
@@ -197,7 +193,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                                 children: [
                                   Icon(Icons.folder_rounded,
                                       size: 17, color: skin.accentInk),
-                                  const SizedBox(width: 10),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       _name(dir.path),
@@ -219,8 +215,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
                     ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-              child: Column(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),              child: Column(
                 children: [
                   Text(
                     _isLibrary

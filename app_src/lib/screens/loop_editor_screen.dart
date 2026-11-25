@@ -98,7 +98,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
                 color: skin.textPrimary,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               widget.track.title,
               maxLines: 2,
@@ -109,7 +109,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
                 height: 1.3,
               ),
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
 
             ValueListenableBuilder<Duration>(
               valueListenable: widget.position,
@@ -124,7 +124,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             _markRow(
               skin,
               l10nOf(context).loopIntroEnds,
@@ -147,18 +147,17 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
               onClear: () => setState(() => _loopEnd = null),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
             SectionLabel(skin: skin, text: l10nOf(context).loopRepeat),
             Row(
               children: [
                 for (final n in [1, 2, 3, 0])
                   Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: _countChip(skin, n),
+                    padding: const EdgeInsets.only(right: 8),                    child: _countChip(skin, n),
                   ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               _loopCount == 0
                   ? l10nOf(context).loopNoRepeat
@@ -169,7 +168,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
               ),
             ),
 
-            const SizedBox(height: 26),
+            const SizedBox(height: 24),
 
             if (_loopEnd != null && _loopStart != null && _loopEnd! <= _loopStart!)
               Padding(
@@ -245,11 +244,10 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
             minHeight: LayoutSpec.tapTarget,
           ),
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(horizontal: 12),          decoration: BoxDecoration(
             color: selected ? skin.panel : Colors.transparent,
             border: Border.all(
-              color: selected ? skin.accent : skin.secondary(0.3),
+              color: selected ? skin.accent : skin.edge(0.3),
               width: selected ? 2 : 1,
             ),
           ),
@@ -274,8 +272,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
     required VoidCallback onClear,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
+      padding: const EdgeInsets.only(bottom: 8),      child: Row(
         children: [
           Expanded(
             child: Text(
@@ -296,7 +293,7 @@ class _LoopEditorScreenState extends State<LoopEditorScreen> {
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Pressable(
             child: OutlinedButton(
               onPressed: onSet,

@@ -52,11 +52,11 @@ class RulesEditorScreen extends StatelessWidget {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
             _activeNow(context, skin, active),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
             if (rules.isEmpty)
               Text(
                 l10nOf(context).rulesNone,
@@ -69,10 +69,10 @@ class RulesEditorScreen extends StatelessWidget {
             else
               for (final r in rules.rules) _ruleRow(context, skin, r, active),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             _addButton(context, skin),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             Text(
               l10nOf(context).rulesJsonNote,
               style: TextStyle(
@@ -98,11 +98,10 @@ class RulesEditorScreen extends StatelessWidget {
   }
 
   Widget _activeNow(BuildContext context, Skin skin, ContextRule? active) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),        decoration: BoxDecoration(
           border: Border.all(
             color: active == null
-                ? skin.secondary(0.3)
+                ? skin.edge(0.3)
                 : skin.accent,
             width: active == null ? 1 : 2,
           ),
@@ -119,7 +118,7 @@ class RulesEditorScreen extends StatelessWidget {
                 color: skin.accentInk,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
 
               active == null
@@ -138,14 +137,12 @@ class RulesEditorScreen extends StatelessWidget {
   Widget _ruleRow(BuildContext context, Skin skin, ContextRule r, ContextRule? active) {
     final isActive = active?.id == r.id;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
+      padding: const EdgeInsets.only(bottom: 8),      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),        decoration: BoxDecoration(
           border: Border.all(
             color: isActive
                 ? skin.accent
-                : skin.secondary(0.3),
+                : skin.edge(0.3),
             width: isActive ? 2 : 1,
           ),
         ),
@@ -164,7 +161,7 @@ class RulesEditorScreen extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     'priority ${r.priority}'
                     '${isActive ? " · ACTING NOW" : ""}',
@@ -294,8 +291,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-        child: Column(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -307,7 +303,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
                 color: skin.textPrimary,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
 
               l10nOf(context).rulesEveryCondition,
@@ -317,7 +313,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
             _label(skin, l10nOf(context).rulesTimeBand),
             _chips<ContextBand>(
@@ -363,7 +359,7 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
               (t) => capsFor(context, t),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
             Pressable(
               child: ElevatedButton(
                 onPressed: canSave ? _create : null,
@@ -432,13 +428,12 @@ class _NewRuleSheetState extends State<_NewRuleSheet> {
       GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),          decoration: BoxDecoration(
             color: selected ? skin.accentAt(0.2) : Colors.transparent,
             border: Border.all(
               color: selected
                   ? skin.accent
-                  : skin.secondary(0.35),
+                  : skin.edge(0.35),
             ),
           ),
           child: Text(

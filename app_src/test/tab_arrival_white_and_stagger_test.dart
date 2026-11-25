@@ -140,11 +140,16 @@ void main() {
         of: find.byType(StaggerIn),
         matching: find.byType(Opacity),
       );
-      expect(
-        wrappers,
-        findsNothing,
-        reason: 'the row still carries its entrance wrapper, so it is still faded or paying for a layer',
-      );
+      // §2.6 replaced the arrival's overshoot with `easeOutCubic`, so the row is
+      // no longer *finished* at 140ms — it still has 180ms of travel to spend.
+      // What must hold is that it is already LEGIBLE, which is the rule the
+      // wrapper exists to protect: the fade is spent in the first 45% of the
+      // arrival, not at its end.
+      for (final o in tester.widgetList<Opacity>(wrappers)) {
+        expect(o.opacity, greaterThanOrEqualTo(0.99),
+            reason: 'the row is still faded at 140ms — it arrives dimmed rather '
+                'than arriving');
+      }
     });
 
     testWidgets('the delay is CAPPED, so a long list does not arrive late',

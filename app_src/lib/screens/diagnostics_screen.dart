@@ -77,8 +77,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
     return InkWell(
       onTap: ok || a == null ? null : _askAccess,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Row(
+        padding: const EdgeInsets.only(bottom: 8),        child: Row(
           children: [
             Icon(
               ok ? Icons.folder_open_rounded : Icons.lock_outline_rounded,
@@ -155,8 +154,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                     onTap: () => setState(widget.log.clear),
                     child: Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      child: Text(l10nOf(context).diagClear,
+                          const EdgeInsets.symmetric(horizontal: 8, vertical: 8),                      child: Text(l10nOf(context).diagClear,
                           style: TextStyle(
                               color: skin.textSecondary,
                               fontSize: LayoutSpec.fontMicro,
@@ -172,10 +170,9 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                     builder: (_) => const SpectrumProbeScreen(),
                   )),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Row(children: [
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),                    child: Row(children: [
                       Icon(Icons.graphic_eq_rounded, size: 15, color: skin.accentInk),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 8),
                       Text(l10nOf(context).diagSpectrum,
                           style: TextStyle(
                               color: skin.accentInk,
@@ -190,10 +187,9 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                 child: InkWell(
                   onTap: _share,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Row(children: [
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),                    child: Row(children: [
                       Icon(Icons.copy_rounded, size: 15, color: skin.accentInk),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 8),
                       Text(l10nOf(context).diagCopy,
                           style: TextStyle(
                               color: skin.accentInk,
@@ -227,14 +223,12 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
                 skin: skin,
                 fill: skin.panel,
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(10),
-                  itemCount: lines.length,
+                  padding: const EdgeInsets.all(8),                  itemCount: lines.length,
 
                   itemBuilder: (_, i) {
                     final l = _problemsOnly ? lines[i] : reading[i];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3),
-                      child: SelectableText.rich(
+                      padding: const EdgeInsets.symmetric(vertical: 4),                      child: SelectableText.rich(
                         TextSpan(children: [
                           TextSpan(
                             text: '${l.stamp}  ',
@@ -267,8 +261,7 @@ class _DiagnosticsPanelState extends State<DiagnosticsPanel> {
       child: InkWell(
         onTap: onTap,
         child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),        decoration: BoxDecoration(
 
           color: on ? skin.accent : skin.panel,
           border: Border.all(color: on ? skin.accent : skin.accentDeep),

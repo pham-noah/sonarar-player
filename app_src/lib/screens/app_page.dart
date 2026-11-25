@@ -72,8 +72,7 @@ class AppPage extends StatelessWidget {
                   onTap: () => Navigator.of(context).maybePop(),
                   behavior: HitTestBehavior.opaque,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                    child:
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),                    child:
                         Icon(Icons.arrow_back_rounded, color: resolved.accentInk, size: 28),
                   ),
                 ),

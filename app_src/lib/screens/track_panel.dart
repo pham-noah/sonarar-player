@@ -74,7 +74,7 @@ class TrackPanel extends StatelessWidget {
               color: skin.textSecondary,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
           _row(
             context,
@@ -129,16 +129,15 @@ class TrackPanel extends StatelessWidget {
           if (playCount != null) ...[
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),              decoration: BoxDecoration(
                 border: Border.all(
-                  color: skin.secondary(0.25),
+                  color: skin.edge(0.25),
                 ),
               ),
               child: Row(
                 children: [
                   Icon(Icons.insights_rounded, size: 18, color: skin.accentInk),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       playCount == 0
@@ -173,13 +172,11 @@ class TrackPanel extends StatelessWidget {
   }) {
     final enabled = onTap != null;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Pressable(
+      padding: const EdgeInsets.only(bottom: 8),      child: Pressable(
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),            decoration: BoxDecoration(
               color: active ? skin.accentAt(0.12) : Colors.transparent,
               border: Border.all(
                 color: active

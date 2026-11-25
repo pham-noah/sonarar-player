@@ -36,8 +36,7 @@ class AppScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 10, 20, 6),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(12, 8, 20, 8),      child: Row(
         children: [
           if (leading != null) leading!,
           if (mark != null)

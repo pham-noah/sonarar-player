@@ -99,8 +99,12 @@ void main() {
 
     HomeShellStateProbe.shellCall(tester, 'debugOpenPlayer');
 
+    // The flight is the layout's own tab transition, not a 420 literal: at
+    // §2.6's `screen` token that is 320ms, so five steps of a hardcoded 84ms
+    // ran past the end of the flight and found the bar already released.
+    final step = _transitionFor(tester) ~/ 5;
     for (var i = 0; i < 5; i++) {
-      await tester.pump(const Duration(milliseconds: 420 ~/ 5));
+      await tester.pump(step);
       expect(find.byType(MiniPlayer), findsOneWidget,
           reason: 'the bar was unmounted mid-flight at step $i, so the cover '
               'could not grow out of it');

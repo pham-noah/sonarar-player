@@ -77,8 +77,7 @@ class MiniPlayerHost extends StatelessWidget {
 
             if (downloadBadge != null)
               Padding(
-                padding: const EdgeInsets.only(right: 14, bottom: 6),
-                child: Align(
+                padding: const EdgeInsets.only(right: 12, bottom: 8),                child: Align(
                   alignment: Alignment.centerRight,
                   child: downloadBadge!,
                 ),

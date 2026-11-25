@@ -150,8 +150,7 @@ class PlaceMap extends StatelessWidget {
       children: [
 
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),          decoration: BoxDecoration(
             color: skin.background.withValues(alpha: 0.85),
             border: Border.all(color: colour, width: 1.5),
           ),

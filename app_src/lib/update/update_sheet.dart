@@ -47,15 +47,14 @@ class UpdateSheetBody extends StatelessWidget {
         return SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(22, 16, 22, 22),
-            child: Column(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),            child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(Icons.system_update_rounded, size: 18, color: skin.accentInk),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
                     Text(
                       capsFor(context, l10n.updateSheetTitle),
                       style: TextStyle(
@@ -67,7 +66,7 @@ class UpdateSheetBody extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 ..._body(context, l10n),
               ],
             ),
@@ -83,11 +82,11 @@ class UpdateSheetBody extends StatelessWidget {
       case UpdatePhase.checking:
         return [
           _line(context, l10n.updateChecking),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           LinearProgressIndicator(
             minHeight: 3,
             color: skin.accent,
-            backgroundColor: skin.secondary(0.2),
+            backgroundColor: skin.edge(0.2),
           ),
         ];
 
@@ -106,7 +105,7 @@ class UpdateSheetBody extends StatelessWidget {
             ),
           ),
           if (notes.isNotEmpty) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 220),
               child: SingleChildScrollView(
@@ -122,7 +121,7 @@ class UpdateSheetBody extends StatelessWidget {
             ),
           ],
           if (release.sizeBytes > 0) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _line(context, l10n.updateSizeMb(megabytesOf(release.sizeBytes))),
           ],
           const SizedBox(height: 16),
@@ -132,7 +131,7 @@ class UpdateSheetBody extends StatelessWidget {
       case UpdatePhase.upToDate:
         return [
           _line(context, l10n.settingsOnNewest(ui.release?.version ?? '')),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           _button(context, l10n.updateCheckAgain, () => ui.checkNow(), primary: false),
         ];
 
@@ -146,7 +145,7 @@ class UpdateSheetBody extends StatelessWidget {
                     ? l10n.updateInstallRefusedHint
                     : l10n.updateDidNotFinish),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           _button(
             context,
             ui.apk == null ? l10n.updateCheckAgain : l10n.updateInstall,
@@ -175,7 +174,7 @@ class UpdateSheetBody extends StatelessWidget {
               value: ui.progress,
               minHeight: 6,
               color: skin.accent,
-              backgroundColor: skin.secondary(0.2),
+              backgroundColor: skin.edge(0.2),
             ),
           ],
         );
@@ -205,10 +204,9 @@ class UpdateSheetBody extends StatelessWidget {
       child: FilledButton(
         onPressed: onTap,
         style: FilledButton.styleFrom(
-          backgroundColor: primary ? skin.accent : skin.secondary(0.12),
+          backgroundColor: primary ? skin.accent : skin.edge(0.12),
           foregroundColor: primary ? skin.onAccent : skin.textPrimary,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(vertical: 12),          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Text(
           // Uppercase follows the script being drawn: Japanese and Chinese are

@@ -150,7 +150,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   _tabs(skin),
                 ],
               ),
@@ -166,7 +166,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   // The mock home feed is not the picture.
                   if (_tab != PersonalizeTab.art) ...[
                     _preview(skin),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                   ],
 
                   if (_tab == PersonalizeTab.look) ...[
@@ -187,7 +187,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
 
                     SectionBand(skin: skin, label: l10nOf(context).firstRunSongList),
                     const SizedBox(height: 8),
@@ -208,7 +208,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
 
                     SectionBand(skin: skin, label: l10nOf(context).personalizeMotion),
                     _toggleRow(
@@ -243,7 +243,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         (v) =>
                             _prefs((p) => p.copyWith(spectrumScale: v.round())),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       SizedBox(
                         height: 42,
                         child: ListView(
@@ -266,7 +266,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
 
                     SectionBand(skin: skin, label: l10nOf(context).personalizeBase),
                     SizedBox(
@@ -406,15 +406,15 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                   ],
                   if (_tab == PersonalizeTab.art) ...[
                     SectionBand(skin: skin, label: l10nOf(context).personalizePictureFor),
                     _picturePreview(skin),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     _scopeStrip(skin),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -437,14 +437,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ],
                     ),
                     if (_b.isSet) ...[
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       _button(
                         skin,
                         _canReframe ? l10nOf(context).personalizeReframe : l10nOf(context).personalizeReframeNoFile,
                         _reframe,
                         quiet: !_canReframe,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       _slider(
                         skin,
                         l10nOf(context).effectBlur,
@@ -593,7 +593,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                             color: skin.textSecondary,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         _fillSwatches(
                           skin,
                           _p.fill.start ?? 0xFF16121C,
@@ -609,7 +609,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                               color: skin.textSecondary,
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 8),
                           _fillSwatches(
                             skin,
                             _p.fill.end ?? 0xFF3A2140,
@@ -626,7 +626,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ],
                       ],
                     ],
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                   ],
                   if (_tab == PersonalizeTab.art) ...[
                     SectionBand(skin: skin, label: l10nOf(context).artFolders),
@@ -646,7 +646,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     for (final folder in widget.state.bundles)
                       _folderCard(skin, folder),
                     const SizedBox(height: 4),
@@ -661,7 +661,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                   ],
                   if (_tab == PersonalizeTab.home) ...[
                     SectionBand(skin: skin, label: l10nOf(context).scopeHome),
@@ -672,10 +672,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         color: skin.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     for (final section in _orderedSections())
                       _sectionRow(skin, section),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                   ],
                   if (_tab == PersonalizeTab.themes) ...[
                     // The tab already says THEMES; a band repeating it wastes the one
@@ -692,10 +692,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         color: skin.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     for (final preset in widget.state.allPresets) ...[
                       _themeRow(skin, preset),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                     ],
                     if (widget.onSaveTheme != null)
                       Row(
@@ -764,7 +764,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         : (sonar ? Colors.transparent : skin.panel);
     final edge = glass
         ? Colors.white.withValues(alpha: 0.22)
-        : skin.secondary(0.16);
+        : skin.edge(0.16);
 
     Widget row(
       String title,
@@ -772,8 +772,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       double alpha = 1,
       bool lead = false,
     }) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),      decoration: BoxDecoration(
         color: panel,
         border: Border.all(color: edge),
         borderRadius: BorderRadius.circular(radius),
@@ -849,8 +848,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               PersonalBackdrop(root: root, spec: _b, skin: skin),
             if (art != null) ArtScrim(color: skin.background),
             Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
+              padding: const EdgeInsets.all(12),              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -860,7 +858,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 4),
                           ],
                         ),
                       ),
@@ -882,9 +880,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   const Spacer(),
                   row(l10nOf(context).personalizeSampleTitle, l10nOf(context).personalizeSampleArtist,
                       lead: sonar),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
                   row(l10nOf(context).personalizeSampleSecond, '3:12', alpha: 0.55),
-                  const SizedBox(height: 7),
+                  const SizedBox(height: 8),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(2),
                     child: Row(
@@ -897,7 +895,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           flex: 6,
                           child: Container(
                             height: 3,
-                            color: skin.secondary(0.25),
+                            color: skin.edge(0.25),
                           ),
                         ),
                       ],
@@ -1097,7 +1095,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           border: Border.all(
             color: active
                 ? skin.accent
-                : skin.secondary(0.25),
+                : skin.edge(0.25),
             width: active ? 2 : 1,
           ),
         ),
@@ -1142,7 +1140,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: skin.panel,
-          border: Border.all(color: skin.secondary(0.22)),
+          border: Border.all(color: skin.edge(0.22)),
         ),
         child: Text(
           l10nOf(context).photoNoneSkinPaints,
@@ -1198,7 +1196,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                             .copyWith(letterSpacing: trackingFor(context, 1.2)),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     if (_b.fromArt && total > 1)
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -1262,8 +1260,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final root = _root;
     final file = root == null ? null : backdropFile(root, _b);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
+      padding: const EdgeInsets.only(bottom: 8),      child: Row(
         children: [
           SizedBox(
             width: 96,
@@ -1488,7 +1485,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 border: Border.all(
                   color: c == selected
                       ? skin.accent
-                      : skin.secondary(0.3),
+                      : skin.edge(0.3),
                   width: c == selected ? 3 : 1,
                 ),
               ),
@@ -1538,7 +1535,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               size: 20,
               color: active ? skin.onAccent : skin.accentInk,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               switch (kind) {
                 LayoutKind.sonar => l10nOf(context).layoutSonar,
@@ -1580,8 +1577,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         setState(() {});
       },
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),        decoration: BoxDecoration(
           color: active ? skin.accentAt(0.16) : skin.panel,
           border: Border(
             // One spine, one meaning: accent on the theme you are wearing,
@@ -1589,7 +1585,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             left: BorderSide(
               color: active
                   ? skin.accent
-                  : skin.secondary(0.35),
+                  : skin.edge(0.35),
               width: 3,
             ),
           ),
@@ -1600,7 +1596,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             // makes six of them a reading exercise. The swatch is the theme's
             // own two colours: its ground and its accent.
             _themeSwatch(skinFor(preset.skinId), active),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 preset.name,
@@ -1677,8 +1673,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       child: Container(
         constraints: const BoxConstraints(minHeight: 48),
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-        // Quiet means "not the main move", not "unavailable": it keeps full
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),        // Quiet means "not the main move", not "unavailable": it keeps full
         // contrast, since a button that looks disabled has to be explained.
         color: quiet ? skin.panel : skin.accent,
         child: Text(
@@ -1705,14 +1700,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final worn = folder.set.pieces.any((p) => p.key == _b.artKey);
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),      decoration: BoxDecoration(
         color: skin.panel,
         border: Border(
           left: BorderSide(
             color: worn
                 ? skin.accent
-                : skin.secondary(0.3),
+                : skin.edge(0.3),
             width: 3,
           ),
         ),
@@ -1756,7 +1750,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           SizedBox(
             height: 46,
             child: ListView(
@@ -1764,8 +1758,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               children: [
                 for (final piece in folder.set.pieces)
                   Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: Stack(
+                    padding: const EdgeInsets.only(right: 8),                    child: Stack(
                       children: [
                         GestureDetector(
                           key: Key('folder-frame-${piece.key}'),
@@ -1824,11 +1817,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   ) => InkWell(
     onTap: onTap,
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Row(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),      child: Row(
         children: [
           Icon(icon, size: 14, color: skin.textSecondary),
-          const SizedBox(width: 3),
+          const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(

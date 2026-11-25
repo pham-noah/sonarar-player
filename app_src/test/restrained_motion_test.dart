@@ -33,8 +33,11 @@ Future<double> _firstOffset(WidgetTester tester, MotionSpec? spec) async {
 
 void main() {
   group('the spec says what a layout does', () {
-    test('Persona is untouched', () {
-      expect(MotionSpec.persona.tabTransition, const Duration(milliseconds: 420));
+    test('Persona is the loud one at the token\'s own length', () {
+      // §2.6: 420ms was Persona's own number, out of a theme JSON. The tab
+      // change is now the `screen` token, and the loudness comes from the
+      // amplitude and the backdrop factor, which are still Persona's alone.
+      expect(MotionSpec.persona.tabTransition, Motion.screen);
       expect(MotionSpec.persona.arrivalAmplitude, 1.0);
       expect(MotionSpec.persona.backdropFactor, 1.65);
 
@@ -42,18 +45,20 @@ void main() {
         expect(MotionSpec.persona.arrivalCurve.transform(t),
             MotionCurve.arrival.transform(t));
       }
+      // §2.6 retires the overshoot: `easeOutBack` is allowed only on arrivals
+      // whose amplitude is ≤ 0.5, and Persona's is 1.0 — an overshoot that big
+      // is what read as a bounce under the 46px hero.
       expect(
           [
             for (var i = 0; i <= 100; i++)
               MotionSpec.persona.arrivalCurve.transform(i / 100)
           ].reduce((a, b) => a > b ? a : b),
-          greaterThan(1.0),
-          reason: 'Persona no longer overshoots — its arrival lost the landing');
+          lessThanOrEqualTo(1.0 + 1e-9),
+          reason: 'Persona still overshoots — §2.6 allows that below amplitude 0.5 only');
     });
 
     test('the restrained layouts move less, and less abruptly', () {
-      expect(MotionSpec.restrained.tabTransition,
-          const Duration(milliseconds: 260));
+      expect(MotionSpec.restrained.tabTransition, Motion.base);
 
       expect(MotionSpec.restrained.arrivalAmplitude, greaterThan(0.3),
           reason: 'the restrained layouts went back to barely moving — he asked for closer to Persona');

@@ -127,8 +127,7 @@ Widget compendiumRow({
     child: Slab(
         presentation: presentation,
       skin: skin,
-      padding: const EdgeInsets.fromLTRB(14, 9, 10, 9),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),      child: Row(
         children: [
           Expanded(
             child: Column(
@@ -186,13 +185,11 @@ class _CompendiumScreenState extends State<CompendiumScreen> {
     final header = [
       if (!widget.inline)
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 4),
-          child: ScreenTitle(skin: skin, text: l10nOf(context).shellCatalogue),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),          child: ScreenTitle(skin: skin, text: l10nOf(context).shellCatalogue),
         ),
 
       Padding(
-        padding: EdgeInsets.fromLTRB(20, widget.inline ? 10 : 2, 20, 12),
-        child: Text(
+        padding: EdgeInsets.fromLTRB(20, widget.inline ? 8 : 2, 20, 12),        child: Text(
           l10nOf(context).compendiumHeardCount(
               widget.entries.length - neverHeard, widget.entries.length),
           style: TextStyle(

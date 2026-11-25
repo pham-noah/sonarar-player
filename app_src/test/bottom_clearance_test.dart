@@ -8,6 +8,7 @@ import 'package:sonarar/library/track.dart';
 import 'package:sonarar/screens/mini_player.dart';
 import 'package:sonarar/theme/layout.dart';
 import 'package:sonarar/theme/skin.dart';
+import 'package:sonarar/theme/tokens.dart';
 import 'package:sonarar/widgets/mini_player_host.dart';
 
 Track _t(String id) => Track(
@@ -23,13 +24,18 @@ Track _t(String id) => Track(
 
 void main() {
   group('the clearance is the bars, added up', () {
-    test('Persona reserves the bar plus the mini player, with no inset', () {
+    test('Persona reserves both bars plus s5, with no inset', () {
       final clearance = ScreenLayout.persona.bottomClearance;
 
-      expect(clearance, LayoutSpec.tabBarHeight + LayoutSpec.miniPlayerHeight,
-          reason: 'Persona\'s bar is docked with zero bottom inset, so the '
-              'clearance is exactly the two bars');
-      expect(clearance, greaterThan(120),
+      expect(
+          clearance,
+          LayoutSpec.tabBarHeight +
+              LayoutSpec.miniPlayerHeight +
+              Space.xl,
+          reason: "Persona's bar is docked with zero bottom inset, so the "
+              'clearance is the two bars plus the s5 of air that keeps the last '
+              'row off the mini player rather than flush against it');
+      expect(clearance, greaterThan(150),
           reason: 'this must not fall back below what the library used to '
               'reserve — that was already too little for the search tab');
     });

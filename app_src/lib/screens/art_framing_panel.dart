@@ -75,7 +75,7 @@ class ArtFramingPanel extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: skin.secondary(0.35),
+                  color: skin.edge(0.35),
                 ),
               ),
               child: Stack(
@@ -151,7 +151,7 @@ class ArtFramingPanel extends StatelessWidget {
               children: [
                 Container(
                   height: 3,
-                  color: skin.secondary(0.3),
+                  color: skin.edge(0.3),
                 ),
                 FractionallySizedBox(
                   widthFactor: amount.clamp(0.0, 1.0),
@@ -177,13 +177,13 @@ class ArtFramingPanel extends StatelessWidget {
             color: skin.accentInk,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: SliderTheme(
             data: SliderTheme.of(context).copyWith(
               trackHeight: 3,
               activeTrackColor: skin.accent,
-              inactiveTrackColor: skin.secondary(0.3),
+              inactiveTrackColor: skin.edge(0.3),
               thumbColor: skin.accent,
               overlayShape: SliderComponentShape.noOverlay,
             ),
@@ -217,7 +217,7 @@ class ArtFramingPanel extends StatelessWidget {
           selected: customised,
           onTap: customised ? onReset : null,
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             customised

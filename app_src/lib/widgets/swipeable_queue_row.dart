@@ -160,7 +160,7 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
 
   Widget _content(Skin skin) {
     final row = Container(
-      padding: const EdgeInsets.fromLTRB(6, 6, 12, 6),
+      padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
       decoration: BoxDecoration(
 
         // The sheet underneath is the surface. Rows sat on a fill of the room's
@@ -170,19 +170,22 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
         color: widget.reordering || _hovered && !widget.isCurrent
             ? skin.panel
             : Colors.transparent,
+      ),
+      // The edge is painted over the row rather than as a `border`: a border
+      // insets its child by its own width, and at 8dp of row padding the 66dp
+      // row left the title/artist column 48 against the 49 it needs.
+      foregroundDecoration: BoxDecoration(
         border: Border.all(
           color: widget.isCurrent
               ? skin.accent
-              : (_hovered
-                  ? skin.accentAt(0.7)
-                  : skin.secondary(0.28)),
+              : (_hovered ? skin.accentAt(0.7) : skin.edge(0.28)),
           width: widget.isCurrent ? 2 : 1,
         ),
       ),
       child: Row(
         children: [
           _coverWidget(skin),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

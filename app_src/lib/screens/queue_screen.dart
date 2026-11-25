@@ -112,7 +112,7 @@ class QueuePanel extends StatelessWidget {
                     ),
                     if (onClearUpcoming != null &&
                         order.length > currentAt + 1) ...[
-                      const SizedBox(width: 22),
+                      const SizedBox(width: 24),
                       Pressable(
                         key: queueClearUpcomingKey,
                         onTap: onClearUpcoming!,
@@ -227,8 +227,7 @@ class QueuePanel extends StatelessWidget {
                     index: i,
                     style: StaggerStyle.drop,
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-
+                      padding: const EdgeInsets.only(bottom: 8),
                       child: isCurrent
                           ? row
                           : ReorderableDelayedDragStartListener(

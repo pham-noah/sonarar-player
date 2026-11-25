@@ -220,8 +220,7 @@ class _ToastCard extends StatelessWidget {
       elevation: bar.elevation ?? 6,
       borderRadius: BorderRadius.circular(4),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
@@ -239,8 +238,7 @@ class _ToastCard extends StatelessWidget {
                 onPressed: onAction,
                 style: TextButton.styleFrom(
                   minimumSize: const Size(0, 36),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),                ),
                 child: Text(
                   actionLabel!,
                   style: TextStyle(

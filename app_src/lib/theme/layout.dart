@@ -6,6 +6,7 @@ import 'contrast.dart';
 import 'layout_kit.dart';
 import 'motion.dart';
 import 'skin.dart';
+import 'tokens.dart' show Space, Tone;
 
 enum LayoutKind {
   sonar,
@@ -38,7 +39,6 @@ class LayoutPalette {
     required this.accentDeep,
     required this.onAccent,
     required this.border,
-    required this.shadow,
     this.ambient = const [],
     this.pageFill,
   });
@@ -51,8 +51,12 @@ class LayoutPalette {
         accent: skin.accent,
         accentDeep: skin.accentDeep,
         onAccent: skin.onAccent,
-        border: skin.secondary(0.35),
-        shadow: skin.slabShadow,
+        // One of the ~20 decorative hairlines the audit found on
+        // `secondary(0.22–0.30)`. `secondary()` now clamps to the theme's
+        // 4.5:1 text floor, so that alpha rendered near-solid on the light
+        // skins and a 1px divider looked like a border. `edge()` is exempt: it
+        // is structure nobody has to read.
+        border: skin.edge(Tone.edge),
       );
 
   final Color background;
@@ -68,11 +72,11 @@ class LayoutPalette {
 
   final Color border;
 
-  final Color shadow;
-
   final List<Color> ambient;
 
   final Color? pageFill;
+
+  bool get isLight => background.computeLuminance() > 0.5;
 
   /// The three derived roles, computed from this palette's own colours rather
   /// than pasted per theme: a palette the user built from a photo gets the same
@@ -102,7 +106,6 @@ class LayoutPalette {
           accentDeep == other.accentDeep &&
           onAccent == other.onAccent &&
           border == other.border &&
-          shadow == other.shadow &&
           ambient == other.ambient &&
           pageFill == other.pageFill;
 
@@ -116,7 +119,6 @@ class LayoutPalette {
         accentDeep,
         onAccent,
         border,
-        shadow,
         Object.hashAllUnordered(ambient),
         pageFill,
       );
@@ -141,12 +143,15 @@ class MotionSpec {
 
   final bool enabled;
 
+  /// A theme says *which* of the four durations a tab change takes, never a
+  /// number of milliseconds: `tabTransitionMs` in the theme JSONs is how three
+  /// motion systems appeared for the same transition.
   static const MotionSpec persona = MotionSpec(
-    tabTransition: Duration(milliseconds: 420),
+    tabTransition: Motion.screen,
   );
 
   static const MotionSpec restrained = MotionSpec(
-    tabTransition: Duration(milliseconds: 260),
+    tabTransition: Motion.base,
     arrivalCurve: Curves.easeOutCubic,
     arrivalAmplitude: 0.5,
     backdropFactor: 1.4,
@@ -177,8 +182,7 @@ class ScreenLayout {
     headerScrollsAway: true,
     contextPlateExists: false,
     tabBarIsFloating: true,
-    tabBarInsets: EdgeInsets.fromLTRB(12, 0, 12, 10),
-    contentMaxWidth: 720,
+    tabBarInsets: EdgeInsets.fromLTRB(12, 0, 12, 8),    contentMaxWidth: 720,
   );
 
   final bool libraryIsGrid;
@@ -193,9 +197,16 @@ class ScreenLayout {
 
   bool get miniPlayerIsFloating => tabBarIsFloating;
 
+  /// What a scroll view must reserve at its bottom so its last row is never
+  /// painted under the mini player: the two bars, plus `s5` of air.
+  ///
+  /// The air is not decoration. Without it the final row stopped exactly at the
+  /// top edge of the mini player, which reads as a clipped list rather than a
+  /// list that has ended — and at 320dp the gesture bar took the rest.
   double get bottomClearance =>
       LayoutSpec.tabBarHeight +
       LayoutSpec.miniPlayerHeight +
+      Space.xl +
       tabBarInsets.bottom;
 
   final double? contentMaxWidth;
@@ -310,7 +321,6 @@ LayoutPalette _onBase(LayoutPalette p, Skin skin) => LayoutPalette(
       accentDeep: p.accentDeep,
       onAccent: p.onAccent,
       border: p.border,
-      shadow: p.shadow,
       ambient: p.ambient,
       pageFill: skin.background,
     );
@@ -361,7 +371,6 @@ const List<NamedPalette> kSolidPalettes = [
     accentDeep: Color(0xFF14833B),
     onAccent: Color(0xFF0B0B0B),
     border: Color(0xFF2A2A2A),
-    shadow: Color(0x00000000),
     ambient: [Color(0x5C1DB954), Color(0x463B7DD8), Color(0x381E8E4E), Color(0x2848B0A0)],
     pageFill: Color(0xB3121212),
   )),
@@ -376,7 +385,6 @@ const List<NamedPalette> kSolidPalettes = [
     accentDeep: Color(0xFF2F6BD6),
     onAccent: Color(0xFF061024),
     border: Color(0xFF263352),
-    shadow: Color(0x00000000),
 
     ambient: [Color(0x5C4C8DFF), Color(0x467FD1FF), Color(0x382F6BD6), Color(0x2A22466B)],
     pageFill: Color(0xB30B1020),
@@ -392,7 +400,6 @@ const List<NamedPalette> kSolidPalettes = [
     accentDeep: Color(0xFFC9531F),
     onAccent: Color(0xFF1A0B04),
     border: Color(0xFF3A2C24),
-    shadow: Color(0x00000000),
     ambient: [Color(0x2AFF7A45), Color(0x1EE8B45C), Color(0x16C9531F), Color(0x122B1A12)],
     pageFill: Color(0xB314100E),
   )),
@@ -409,7 +416,6 @@ const List<NamedPalette> kGlassPalettes = [
     accentDeep: Color(0xFF4FA8D8),
     onAccent: Color(0xFF06121C),
     border: Color(0x59FFFFFF),
-    shadow: Color(0x00000000),
     pageFill: Color(0x5E0E1116),
 
     ambient: [Color(0x337EE0C3), Color(0x2B80B5EA), Color(0x24E68B9B), Color(0x21E8B45C)],
@@ -426,7 +432,6 @@ const List<NamedPalette> kGlassPalettes = [
     onAccent: Color(0xFF04140D),
     border: Color(0x55FFFFFF),
 
-    shadow: Color(0x00000000),
     pageFill: Color(0x5E0C1411),
     ambient: [Color(0x337FE0B0), Color(0x2B4FA8D8), Color(0x1E6FC8A0), Color(0x1A9FD8C4)],
   )),
@@ -442,7 +447,6 @@ const List<NamedPalette> kGlassPalettes = [
     onAccent: Color(0xFF1C0A04),
     border: Color(0x5EFFFFFF),
 
-    shadow: Color(0x00000000),
     pageFill: Color(0x8C150F14),
     ambient: [Color(0x33E68B9B), Color(0x2BE8B45C), Color(0x24FFA67F), Color(0x1E9B6BC8)],
   )),

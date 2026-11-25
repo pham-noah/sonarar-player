@@ -86,11 +86,10 @@ class _UpdateBarState extends State<UpdateBar> {
           unawaited(showUpdateSheet(context, ui, skin: skin, known: update));
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-          child: Row(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),          child: Row(
             children: [
               Icon(Icons.system_update_rounded, size: 18, color: skin.accentInk),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   downloading
@@ -108,14 +107,14 @@ class _UpdateBarState extends State<UpdateBar> {
                 style: Type.caps(context, color: skin.accentInk),
               ),
               if (downloading) ...[
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 SizedBox(
                   width: 60,
                   child: LinearProgressIndicator(
                     value: progress,
                     minHeight: 3,
                     color: skin.accent,
-                    backgroundColor: skin.secondary(0.2),
+                    backgroundColor: skin.edge(0.2),
                   ),
                 ),
               ],

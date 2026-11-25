@@ -85,7 +85,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               )
             else ...[
               _monthBar(skin, h),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               _heatGrid(skin, h.month),
 
               if (_selected != null && !_selected!.isEmpty) ...[
@@ -95,8 +95,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
               if (h.thinSample)
                 Padding(
-                  padding: const EdgeInsets.only(top: 14),
-                  child: Text(
+                  padding: const EdgeInsets.only(top: 12),                  child: Text(
                     l10nOf(context).historyThinSample(h.totalPlays),
                     style: TextStyle(
                       fontSize: LayoutSpec.fontLabel,
@@ -106,15 +105,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
 
               _listened(skin, h),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
               SectionLabel(skin: skin, text: l10nOf(context).historyTopTracks),
               _topTracks(skin, h, byId),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
 
               if (widget.contextEnabled) ...[
                 SectionLabel(skin: skin, text: l10nOf(context).historyByTimeOfDay),
@@ -124,7 +123,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ],
 
             if (widget.ranks != null) ...[
-              const SizedBox(height: 26),
+              const SizedBox(height: 24),
               widget.ranks!,
             ],
             const SizedBox(height: 24),
@@ -192,7 +191,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       cells.add(Expanded(child: _cell(skin, day, month.peakPlays)));
       if (cells.length == 7) {
         rows.add(Row(children: cells));
-        rows.add(const SizedBox(height: 5));
+        rows.add(const SizedBox(height: 4));
         cells = <Widget>[];
       }
     }
@@ -221,7 +220,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
           ],
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 4),
         ...rows,
       ],
     );
@@ -252,7 +251,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ? skin.accent
                     : isToday
                         ? skin.primaryText(0.7)
-                        : skin.secondary(0.2),
+                        : skin.edge(0.2),
                 width: selected ? 2 : 1,
               ),
             ),
@@ -293,8 +292,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       skin: skin,
 
       fill: skin.background,
-      padding: const EdgeInsets.fromLTRB(12, 12, 14, 14),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -318,7 +316,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       size: 15,
                       color: skin.accentInk,
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 4),
                     Text(
                       l10nOf(context).historyInRain(day.playedInTheRain),
                       style: TextStyle(
@@ -330,7 +328,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
           for (final b in kBandOrder)
             if ((day.byBand[b] ?? 0) > 0)
@@ -391,7 +389,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
             if (days > 0) ...[
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Text(
                 'across $days day${days == 1 ? '' : 's'}',
                 style: Type.bodyBase(context, color: skin.textSecondary),
@@ -417,8 +415,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       children: [
         for (final id in ranked.take(5))
           Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Row(
+            padding: const EdgeInsets.only(bottom: 8),            child: Row(
               children: [
                 Expanded(
                   child: Text(
@@ -432,7 +429,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Text(
 
                   (h.msByTrack[id] ?? 0) > 0
@@ -456,7 +453,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         Row(
           children: [
             Icon(Icons.auto_awesome_rounded, size: 14, color: skin.accentInk),
-            const SizedBox(width: 7),
+            const SizedBox(width: 8),
             Text(
               l10nOf(context).historyShareNew((share * 100).round()),
               style: Type.bodyBase(context, color: skin.textPrimary),
@@ -545,7 +542,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Container(
                   height: compact ? 10 : 14,
                   decoration: BoxDecoration(
-                    color: skin.secondary(0.15),
+                    color: skin.edge(0.15),
                   ),
                 ),
                 FractionallySizedBox(

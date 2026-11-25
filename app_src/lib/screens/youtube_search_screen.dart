@@ -181,13 +181,11 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
       key: downloadsSetupBannerKey,
       onTap: out || installing ? null : _installEngine,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 4, 20, 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
+        margin: const EdgeInsets.fromLTRB(20, 4, 20, 8),        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),        decoration: BoxDecoration(
           color: skin.panel,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _setupFailed ? skin.accent : skin.secondary(0.28),
+            color: _setupFailed ? skin.accent : skin.edge(0.28),
           ),
         ),
         child: Row(
@@ -199,7 +197,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
               size: 18,
               color: _setupFailed ? skin.accentInk : skin.textSecondary,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,7 +240,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 child: LinearProgressIndicator(
                   minHeight: 3,
                   color: skin.accent,
-                  backgroundColor: skin.secondary(0.2),
+                  backgroundColor: skin.edge(0.2),
                 ),
               ),
           ],
@@ -517,8 +515,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                         ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
-                  child: Row(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),                  child: Row(
                     children: [
                       Expanded(
                         child: TextField(
@@ -546,7 +543,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
                               borderSide: BorderSide(
-                                color: skin.secondary(0.35),
+                                color: skin.edge(0.35),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -608,8 +605,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                  child: SizedBox(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),                  child: SizedBox(
                     height: 44,
                     child: OutlinedButton.icon(
                       onPressed: _openImport,
@@ -668,8 +664,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       if (_local.isNotEmpty) {
                         if (i == 0) {
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 6),
-                            child: Text(
+                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),                            child: Text(
                               l10nOf(context).ytInLibrary,
                               style: TextStyle(
                                 fontSize: 14,
@@ -686,8 +681,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
                         if (k == 0) {
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
-                            child: Text(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),                            child: Text(
                               l10nOf(context).ytOnYoutube,
                               style: TextStyle(
                                 fontSize: 14,
@@ -739,8 +733,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
       // The row IS the progress. A separate queue above the list made the same
       // download appear twice and never where the user was looking.
       color: downloading ? skin.accentAt(0.12) : null,
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),      child: Row(
         children: [
           GestureDetector(
             onTap:
@@ -829,7 +822,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                   ],
                 ),
                 if (downloading) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: p,
                     color: skin.accent,
@@ -855,7 +848,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           if (done)
             widget.onPlay != null && _libraryIds.contains(hit.id)
                 ? IconButton(
@@ -889,7 +882,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
               widget.downloads.downloadsCompiledOut)
             // The banner above the list is where this is dealt with. A live icon per
             // row was thirty buttons that all did nothing.
-            Icon(Icons.download_rounded, color: skin.secondary(0.35))
+            Icon(Icons.download_rounded, color: skin.textMuted)
           else
             IconButton(
               onPressed: () => _download(hit),
@@ -907,8 +900,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
       key: Key('local-row-${hit.id}'),
       onTap: widget.onPlay == null ? null : () => widget.onPlay!(hit.id),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-        child: Row(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),        child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -953,7 +945,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Icon(Icons.play_circle_fill_rounded, color: skin.accentInk),
           ],
         ),

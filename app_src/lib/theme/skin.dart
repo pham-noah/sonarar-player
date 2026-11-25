@@ -97,10 +97,6 @@ class Skin {
 
   bool get isLight => background.computeLuminance() > 0.5;
 
-  Color get slabShadow => isLight
-      ? textPrimary.withValues(alpha: 0.10)
-      : const Color(0x8C000000);
-
   final double skewDegrees;
 
 
@@ -279,8 +275,7 @@ abstract final class LayoutSpec {
 
   static const double headerArtOverhang = 64.0;
 
-  static const EdgeInsets screenPadding = EdgeInsets.fromLTRB(30, 20, 20, 0);
-
+  static const EdgeInsets screenPadding = EdgeInsets.fromLTRB(32, 20, 20, 0);
   static const Curve curveOut = Curves.easeOutCubic;
 
   static const double playButtonWidth = 62.0;

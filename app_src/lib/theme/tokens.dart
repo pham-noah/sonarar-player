@@ -4,6 +4,7 @@ import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import 'layout.dart';
+import 'layout_kit.dart' show MaterialRadius;
 import 'motion.dart';
 import 'skin.dart' show LayoutSpec, Skin;
 
@@ -51,14 +52,15 @@ abstract final class Corners {
   /// A plate with a heavy left edge: the slab, the banner.
   static const double none = 0;
 
-  /// Tab strips, chips inside a row, the accent tick.
-  static const double xs = 4;
+  /// `r-sm` — inline chips, badges, the accent tick.
+  static const double sm = 4;
 
-  /// A card, a list row, a button, cover art.
-  static const double sm = 12;
+  /// `r-md` — rows, cards, buttons, cover art, and the default every surface
+  /// falls back to when its theme declares no radius of its own.
+  static const double md = MaterialRadius.defaultRadius;
 
-  /// A sheet's top corners, a floating panel.
-  static const double md = 24;
+  /// `r-lg` — a sheet's top corners, a floating panel.
+  static const double lg = 24;
 
   /// A pill: the tab capsule, a chip that wraps a single word.
   static const double pill = 999;
@@ -210,42 +212,71 @@ abstract final class StateLayer {
   static const double dragged = 0.24;
 }
 
-/// Depth, as blur and offset rather than a colour.
+/// Depth, as one decision per level (§2.5).
 ///
-/// The colour still comes from the skin (`LayoutPalette.shadow`), because a
-/// light skin casts a grey and a dark one casts black.
+/// A shadow is not depth on a near-black page: `#000` at 45% drawn on a
+/// background that is itself near-black measures about 1:1, i.e. nothing, which
+/// is why the app's plates used to sit on the page with no edge at all. On dark
+/// the lift is a *rim* — a 1px light line along the top of the plate — plus a
+/// real drop shadow; on light it is the drop shadow alone.
+///
+/// The rim is drawn as a zero-blur shadow offset one pixel up, which is the
+/// only way a `BoxShadow` can paint an inner highlight: an inset shadow does not
+/// exist in Flutter, and a border would have to be four sides of the box.
 abstract final class Elevation {
-  /// Flat on the page: a row inside a group.
-  static const List<BoxShadow> none = [];
+  /// The rim light a dark plate gets: 1px, white at 10%, at the top edge.
+  static const BoxShadow rim = BoxShadow(
+    color: Color(0x1AFFFFFF),
+    offset: Offset(0, -1),
+  );
 
-  /// A card that sits on the page.
-  static List<BoxShadow> low(Color shadow) => [
-        BoxShadow(color: shadow, blurRadius: 14, offset: const Offset(0, 4)),
-      ];
+  /// `e0` — flat on the page. A row inside a group.
+  static const List<BoxShadow> e0 = <BoxShadow>[];
 
-  /// A bar or a panel that floats over content.
-  static List<BoxShadow> mid(Color shadow) => [
-        BoxShadow(color: shadow, blurRadius: 22, offset: const Offset(0, 6)),
-      ];
+  /// `e1` — a plate. Delimited by a `borderStrong` 1px edge; on dark that edge
+  /// is the whole of the depth, on light it carries a 1px soft shadow too.
+  static List<BoxShadow> e1({required bool light}) => light
+      ? const <BoxShadow>[
+          BoxShadow(color: Color(0x0F1D1A16), blurRadius: 2, offset: Offset(0, 1)),
+        ]
+      : e0;
 
-  /// A sheet over the whole screen.
-  static List<BoxShadow> high(Color shadow) => [
-        BoxShadow(color: shadow, blurRadius: 34, offset: const Offset(0, 10)),
-      ];
+  /// `e2` — anything floating over content: the mini player, the CTA.
+  static List<BoxShadow> e2({required bool light}) => light
+      ? const <BoxShadow>[
+          BoxShadow(color: Color(0x1A1D1A16), blurRadius: 6, offset: Offset(0, 2)),
+        ]
+      : const <BoxShadow>[
+          rim,
+          BoxShadow(color: Color(0x73000000), blurRadius: 20, offset: Offset(0, 6)),
+        ];
+
+  /// `e3` — an overlay: a sheet, the player panel.
+  static List<BoxShadow> e3({required bool light}) => light
+      ? const <BoxShadow>[
+          BoxShadow(color: Color(0x241D1A16), blurRadius: 24, offset: Offset(0, 8)),
+        ]
+      : const <BoxShadow>[
+          rim,
+          BoxShadow(color: Color(0x8C000000), blurRadius: 32, offset: Offset(0, 12)),
+        ];
+
+  /// The edge `e1` draws where a shadow cannot be seen at all.
+  static Border edge(Skin skin) => Border.all(color: skin.borderStrong);
 }
 
-/// The durations a state change is allowed. `Motion` owns the app's own
-/// choreography; these are the platform-level answers a `ThemeData` can carry.
+/// The four durations a state change is allowed, in the vocabulary a
+/// `ThemeData` can carry. The values live in `Motion`.
 abstract final class StateMotion {
   /// A press lands immediately and leaves slowly: the finger already knows.
   static const Duration pressIn = Motion.press;
   static const Duration pressOut = Motion.release;
 
   /// A colour or a corner changing under a pointer.
-  static const Duration settle = Motion.morph;
+  static const Duration settle = Motion.base;
 
   /// A sheet or a panel arriving.
-  static const Duration panel = Motion.panel;
+  static const Duration panel = Motion.base;
 }
 
 /// The two states of a switch, in one theme's colours.
@@ -283,10 +314,22 @@ class SwitchInk {
   final Color off;
   final Color offContent;
 
+  /// How much of its colour a switch keeps when it cannot be operated.
+  ///
+  /// Material dims a disabled switch on Cupertino only; on Android a gated row's
+  /// switch drew in full contrast with a live-looking knob, so WEATHER VARIANTS
+  /// under a WEATHER that was off offered a control that did nothing. Half
+  /// strength, resolved here, is the state — not something the call site does.
+  static const double disabledStrength = 0.45;
+
   static WidgetStateProperty<Color> _picked(Color on, Color off) =>
-      WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.selected) ? on : off,
-      );
+      WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          final base = states.contains(WidgetState.selected) ? on : off;
+          return base.withValues(alpha: base.a * disabledStrength);
+        }
+        return states.contains(WidgetState.selected) ? on : off;
+      });
 
   WidgetStateProperty<Color> get track => _picked(on, off);
 

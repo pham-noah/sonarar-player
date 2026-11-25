@@ -48,8 +48,7 @@ class Stamp extends StatelessWidget {
         : (accent ? skin.textPrimary : skin.textSecondary);
 
     final chip = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),      decoration: BoxDecoration(
         color: bg,
 
         borderRadius: square ? BorderRadius.circular(6) : null,
@@ -67,7 +66,7 @@ class Stamp extends StatelessWidget {
         children: [
           if (icon != null) ...[
             Icon(icon, size: 14, color: fg),
-            if (label != null) const SizedBox(width: 5),
+            if (label != null) const SizedBox(width: 4),
           ],
           if (label != null)
 
@@ -110,8 +109,7 @@ class SkewPanel extends StatelessWidget {
     super.key,
     required this.skin,
     required this.child,
-    this.padding = const EdgeInsets.fromLTRB(16, 13, 18, 13),
-    this.fill,
+    this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 12),    this.fill,
     this.active = false,
     this.accentEdge = true,
     this.onTap,
@@ -184,8 +182,7 @@ class SectionBand extends StatelessWidget {
     switch (form) {
       case SectionBandForm.mark:
         return Padding(
-          padding: const EdgeInsets.fromLTRB(0, 6, 0, 6),
-          child: Row(
+          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),          child: Row(
             children: [
               Container(width: 3, height: 15, color: skin.accent),
               const SizedBox(width: Space.sm),
@@ -214,8 +211,7 @@ class SectionBand extends StatelessWidget {
           child: Container(
             width: double.infinity,
             color: skin.accentAt(0.14),
-            padding: const EdgeInsets.fromLTRB(14, 5, 12, 5),
-            child: Transform(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),            child: Transform(
               transform: Matrix4.skewX(slant),
               alignment: Alignment.centerLeft,
               child: Row(
@@ -246,8 +242,7 @@ class CutCorner extends StatelessWidget {
     this.cut = 16,
     this.fill,
     this.onTap,
-    this.padding = const EdgeInsets.fromLTRB(14, 12, 14, 12),
-  });
+    this.padding = const EdgeInsets.fromLTRB(12, 12, 12, 12),  });
 
   final Skin skin;
   final Widget child;

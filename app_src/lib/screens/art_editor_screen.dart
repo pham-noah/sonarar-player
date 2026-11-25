@@ -115,8 +115,7 @@ class _ArtEditorScreenState extends State<ArtEditorScreen> {
           ),
           Container(
             color: skin.panel,
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 22),
-            child: Column(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _slider(

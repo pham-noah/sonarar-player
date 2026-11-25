@@ -48,8 +48,7 @@ class LibraryBrowserBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
       child: SizedBox(
       height: 42,
       child: Row(
@@ -84,14 +83,13 @@ class LibraryBrowserBar extends StatelessWidget {
             ),
 
             if (besidePlaylists.isNotEmpty) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               ...besidePlaylists,
             ] else if (filterLabel != null) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 4),
-                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: skin.accentAt(0.14),
                     border: Border.all(color: skin.accent),
@@ -139,8 +137,7 @@ class LibraryBrowserBar extends StatelessWidget {
         onTap: () => onSelect(view),
         child: Container(
 
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),          decoration: BoxDecoration(
             color: active
                 ? skin.accentAt(0.92)
                 : skin.background.withValues(alpha: 0.45),
@@ -230,15 +227,14 @@ class PlaylistRow extends StatelessWidget {
       onTap: onOpen,
       onLongPress: onLongPress,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 6, 14, 6),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),        decoration: BoxDecoration(
           color: isDynamic
               ? skin.accentAt(0.12)
               : Colors.transparent,
           border: Border.all(
             color: isDynamic
                 ? skin.accentAt(0.75)
-                : skin.secondary(0.28),
+                : skin.edge(0.28),
             width: isDynamic ? 2 : 1,
           ),
         ),
@@ -357,10 +353,9 @@ class ArtistRow extends StatelessWidget {
     return GestureDetector(
       onTap: onOpen,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),        decoration: BoxDecoration(
           border: Border.all(
-            color: skin.secondary(0.28),
+            color: skin.edge(0.28),
           ),
         ),
         child: Row(
@@ -400,7 +395,7 @@ class ArtistRow extends StatelessWidget {
                 color: skin.textSecondary,
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             Icon(Icons.chevron_right_rounded,
                 color: skin.secondary(0.6), size: 22),
           ],

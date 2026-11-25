@@ -60,8 +60,7 @@ class BondsScreen extends StatelessWidget {
 
         if (board.isEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 18),
-            child: Text(
+            padding: const EdgeInsets.only(top: 16),            child: Text(
               board.consideredEvents == 0 &&
                       state.bondState.config.resetAt != null
                   ? l10nOf(context).bondsNothingSinceReset
@@ -77,7 +76,7 @@ class BondsScreen extends StatelessWidget {
             _bondRow(context, skin, b, byId[b.trackId]),
 
         if (onReset != null) ...[
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerLeft,
             child: Pressable(
@@ -144,7 +143,7 @@ class BondsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
 
                 Text(
                   '${bond.rank}',
@@ -169,7 +168,7 @@ class BondsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: i < bond.rank
                               ? skin.accent
-                              : skin.secondary(0.22),
+                              : skin.edge(0.22),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -177,7 +176,7 @@ class BondsScreen extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 7),
+            const SizedBox(height: 8),
 
             Row(
               children: [
@@ -215,7 +214,7 @@ class BondsScreen extends StatelessWidget {
             ),
 
             if (note != null) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               Text(
                 note,
                 maxLines: 2,

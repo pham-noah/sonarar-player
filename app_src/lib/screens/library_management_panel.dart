@@ -68,7 +68,7 @@ class LibraryManagementPanel extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: LayoutSpec.fontSmall, color: skin.textSecondary),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
           _row(skin, Icons.play_arrow_rounded, l10nOf(context).panelPlayNow, onPlayNow),
           _row(skin, Icons.queue_music_rounded, l10nOf(context).panelPlayNext, onPlayNext),
@@ -102,8 +102,8 @@ class LibraryManagementPanel extends StatelessWidget {
           ),
 
           if (onRemoveDownload != null) ...[
-            const SizedBox(height: 6),
-            Divider(color: skin.secondary(0.25)),
+            const SizedBox(height: 8),
+            Divider(color: skin.edge(0.25)),
             _row(skin, Icons.delete_forever_rounded, l10nOf(context).panelRemoveDownload, onRemoveDownload),
             Text(
               l10nOf(context).panelDeleteDownloadNote,
@@ -114,7 +114,7 @@ class LibraryManagementPanel extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
 
             excluded
@@ -134,17 +134,15 @@ class LibraryManagementPanel extends StatelessWidget {
   Widget _row(Skin skin, IconData icon, String label, VoidCallback? onTap) {
     final enabled = onTap != null;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Pressable(
+      padding: const EdgeInsets.only(bottom: 8),      child: Pressable(
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),            decoration: BoxDecoration(
               border: Border.all(
                 color: enabled
-                    ? skin.secondary(0.35)
-                    : skin.secondary(0.15),
+                    ? skin.edge(0.35)
+                    : skin.edge(0.15),
               ),
             ),
             child: Row(

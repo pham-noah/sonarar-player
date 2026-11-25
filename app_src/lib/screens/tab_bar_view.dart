@@ -49,8 +49,7 @@ class TabBarView2 extends StatelessWidget {
       child: floating
 
           ? Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-              child: Surface(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),              child: Surface(
                 presentation: p,
                 role: SurfaceRole.bar,
                 radius: 32,
@@ -111,7 +110,10 @@ class TabBarView2 extends StatelessWidget {
             if (active)
 
               Positioned(
-                top: 0,
+                // Under the label, not over the icon: on top the 2px rule sat
+                // against the mini player's own bottom edge and read as that
+                // bar's border rather than as this tab's state.
+                bottom: 8,
                 left: 16,
                 right: 16,
                 child: Transform(

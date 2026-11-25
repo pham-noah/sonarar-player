@@ -39,14 +39,12 @@ class LyricsRow extends StatelessWidget {
       key: rowKey,
       onTap: onOpen,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 6),
-        decoration: BoxDecoration(
+        margin: const EdgeInsets.only(bottom: 8),        decoration: BoxDecoration(
 
           color: skin.panel,
           border: Border(left: BorderSide(color: skin.accent, width: 3)),
         ),
-        padding: const EdgeInsets.fromLTRB(10, 8, 12, 8),
-        child: Row(
+        padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),        child: Row(
           children: [
             Icon(Icons.lyrics_outlined, size: 20, color: skin.textSecondary),
             const SizedBox(width: 12),
@@ -203,12 +201,11 @@ class _LyricsViewState extends State<LyricsView> {
                     color: skin.background.withValues(alpha: 0.55),
                     border: Border.all(color: skin.accentAt(0.8), width: 1.5),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                  child: Row(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: skin.accentInk),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 8),
                       Text(
                         l10nOf(context).scopePlayer,
 
@@ -241,8 +238,7 @@ class _LyricsViewState extends State<LyricsView> {
                       color: skin.background.withValues(alpha: 0.9),
                       border: Border.all(color: skin.accent, width: 2),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                    child: Row(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.my_location_rounded, size: 16, color: skin.accentInk),
@@ -281,7 +277,7 @@ class _LyricsViewState extends State<LyricsView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.lyrics_outlined, size: 40, color: skin.textSecondary),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Text(
               reason,
               textAlign: TextAlign.center,

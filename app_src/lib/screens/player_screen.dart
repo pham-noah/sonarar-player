@@ -392,11 +392,11 @@ class PlayerScreen extends StatelessWidget {
                       ),
                     ),
                   if (view.state.arrangement.contextPlateExists) ...[
-                    const SizedBox(height: 13),
+                    const SizedBox(height: 12),
                     _contextBadge(context, skin, skew, pal),
-                    const SizedBox(height: 9),
+                    const SizedBox(height: 8),
                   ] else
-                    const SizedBox(height: 9),
+                    const SizedBox(height: 8),
                   if (chrome.titleForm == TitleForm.stacked)
                     _meta(
                       context,
@@ -489,17 +489,10 @@ class PlayerScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: skin.textPrimary,
           border: Border(left: BorderSide(color: skin.accentDeep, width: 5)),
-          boxShadow: [
-            BoxShadow(
-              color: skin.slabShadow,
-              blurRadius: 22,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          boxShadow: Elevation.e2(light: skin.isLight),
         ),
 
-        padding: const EdgeInsets.fromLTRB(13, 7, 14, 7),
-        child: Transform(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),        child: Transform(
           transform: Matrix4.skewX(skew),
           alignment: Alignment.centerLeft,
           child: Column(
@@ -517,7 +510,7 @@ class PlayerScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 9),
+                  const SizedBox(width: 8),
                   Flexible(
                     child: Text(
                       _contextLabel(context, skin),
@@ -527,7 +520,7 @@ class PlayerScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 7),
+              const SizedBox(height: 8),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
 
@@ -554,11 +547,10 @@ class PlayerScreen extends StatelessWidget {
                     ),
 
                     if (view.state.mode == QueueMode.dynamic) ...[
-                      const SizedBox(width: 5),
+                      const SizedBox(width: 4),
                       for (final fact in _contextFacts(context, skin))
                         Padding(
-                          padding: const EdgeInsets.only(right: 5),
-                          child: Tooltip(
+                          padding: const EdgeInsets.only(right: 4),                          child: Tooltip(
                             message: fact.label,
                             child: _factChip(skin, skew, fact.icon),
                           ),
@@ -579,8 +571,7 @@ class PlayerScreen extends StatelessWidget {
       transform: Matrix4.skewX(-skew * 2),
       alignment: Alignment.center,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),        decoration: BoxDecoration(
           color: dark ? skin.background : skin.accent,
           border: Border(
             left: BorderSide(
@@ -636,8 +627,7 @@ class PlayerScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
-              child: Text(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),              child: Text(
                 l10nOf(context).playerOtherRecordings,
                 style: TextStyle(
                   color: skin.textSecondary,
@@ -671,7 +661,7 @@ class PlayerScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 4),
                             Text(
                               v.variantTag == null
                                   ? l10nOf(context).playerAlbumVersion
@@ -689,7 +679,7 @@ class PlayerScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -747,7 +737,7 @@ class PlayerScreen extends StatelessWidget {
                   ),
 
                   if (t != null && isKnownVariantTag(t.variantTag)) ...[
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
 
                     Pressable(
                       child: InkWell(
@@ -777,7 +767,7 @@ class PlayerScreen extends StatelessWidget {
 
                               if (view.variants.isNotEmpty &&
                                   view.onSwapVariant != null) ...[
-                                const SizedBox(width: 3),
+                                const SizedBox(width: 4),
                                 Icon(
                                   Icons.expand_more_rounded,
                                   size: 14,
@@ -794,7 +784,7 @@ class PlayerScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 7),
+          const SizedBox(height: 8),
           SwapSlide(
             keyValue: t?.id ?? '',
             stagger: const Duration(milliseconds: 60),
@@ -813,12 +803,11 @@ class PlayerScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 9),
+                const SizedBox(width: 8),
                 Transform(
                   transform: Matrix4.skewX(-skew * 0.6),
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(7, 1, 7, 2),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.fromLTRB(8, 1, 8, 2),                    decoration: BoxDecoration(
                       border: Border.all(
                         color: skin.accentDeep.withValues(alpha: 0.6),
                       ),
@@ -835,7 +824,7 @@ class PlayerScreen extends StatelessWidget {
           ),
         ],
         if (view.cover != null || view.onPlayPause != null) ...[
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           SwapSlide(
             keyValue: t?.id ?? '',
             child: Row(
@@ -861,7 +850,7 @@ class PlayerScreen extends StatelessWidget {
                     ),
                   ),
                 if (titleBeside) ...[
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 12),
                   Flexible(child: _titleBeside(context, skin, t)),
                 ],
               ],
@@ -940,7 +929,7 @@ class PlayerScreen extends StatelessWidget {
             compact: true,
             semantic: l10nOf(context).playerShuffleAction,
           ),
-          const SizedBox(width: 7),
+          const SizedBox(width: 8),
           NudgingButton(
             direction: -1,
             onTap: view.onPrevious,
@@ -973,7 +962,7 @@ class PlayerScreen extends StatelessWidget {
               semantic: l10nOf(context).playerNextAction,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           _transportButton(
             skin,
             skew,
@@ -1000,9 +989,9 @@ class PlayerScreen extends StatelessWidget {
       children: [
         if (scrubberFirst) ...[
           _progressBar(skin, skew),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           _times(skin, skew),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
         ],
         _transportRow(context, skin, skew),
 
@@ -1114,7 +1103,7 @@ class PlayerScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.bedtime_rounded, size: 14, color: skin.accentInk),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     Text(
                       capsFor(context, l10nOf(context).playerSleepIn(text)),
                       style: Type.caps(context, color: skin.accentInk)
@@ -1126,7 +1115,7 @@ class PlayerScreen extends StatelessWidget {
             },
           ),
 
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
         if (chrome.titleForm == TitleForm.stacked)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1143,8 +1132,7 @@ class PlayerScreen extends StatelessWidget {
 
         if (view.fileMissing)
           Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Text(
+            padding: const EdgeInsets.only(top: 8),            child: Text(
               l10nOf(context).playerFileMissing,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -1178,8 +1166,7 @@ class PlayerScreen extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-            child: Text(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),            child: Text(
               has ? text : '—',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -1292,7 +1279,7 @@ class PlayerScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const SizedBox(width: 14),
+                            const SizedBox(width: 12),
                             Icon(
                               Icons.drag_handle_rounded,
                               color: skin.textSecondary,
@@ -1430,8 +1417,7 @@ class PlayerScreen extends StatelessWidget {
         key: lyricsButtonKey,
         onTap: view.onLyrics,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),          decoration: BoxDecoration(
             color: active ? skin.accent : Colors.transparent,
             border: Border.all(
               color: active
@@ -1447,7 +1433,7 @@ class PlayerScreen extends StatelessWidget {
                 size: 16,
                 color: active ? skin.onAccent : skin.textSecondary,
               ),
-              const SizedBox(width: 7),
+              const SizedBox(width: 8),
               Text(
                 l10nOf(context).playerLyrics,
                 style: Type.caps(
@@ -1495,7 +1481,7 @@ class PlayerScreen extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         Container(height: 1, color: skin.accentAt(0.2)),
-        const SizedBox(height: 11),
+        const SizedBox(height: 12),
         Transform(
           transform: Matrix4.skewX(-skew),
           alignment: Alignment.centerLeft,
@@ -1509,7 +1495,7 @@ class PlayerScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 4),
         Text(
           nextTitle ?? l10nOf(context).playerNothingAfter,
           maxLines: 1,
@@ -1812,7 +1798,7 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
                         child: Align(
                           alignment: Alignment.center,
                           child: ColoredBox(
-                            color: skin.secondary(0.26),
+                            color: skin.edge(0.26),
                             child: const SizedBox(
                               height: 7,
                               width: double.infinity,

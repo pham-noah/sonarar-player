@@ -11,6 +11,32 @@ enum SurfaceEdge {
   hairline,
 }
 
+/// The three corner roles, and the default a surface falls back to.
+///
+/// A skew and a radius never apply to the same control, and a control's
+/// silhouette never changes when it is selected — the two rules that stop one
+/// strip showing a pill, a skew and a 4px box side by side.
+abstract final class MaterialRadius {
+  /// `r-sm` — inline chips, badges, the accent tick.
+  static const double sm = 4;
+
+  /// `r-md` — rows, cards, buttons, cover art.
+  static const double md = 12;
+
+  /// `r-lg` — sheets, floating panels.
+  static const double lg = 24;
+
+  /// The floating tab bar, and nothing else.
+  static const double pill = 999;
+
+  /// What a surface draws when its theme declares no radius for the role.
+  ///
+  /// It used to be `4.0`, written inline in `surface.dart`, so a theme that
+  /// omitted `radii` drew 4px plates beside its own 24px sheets and nobody had
+  /// decided that.
+  static const double defaultRadius = md;
+}
+
 @immutable
 class MaterialKit {
   const MaterialKit({

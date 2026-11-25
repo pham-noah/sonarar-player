@@ -176,7 +176,7 @@ class HomeScreen extends StatelessWidget {
         ? <Widget>[
             _bandText(context, l10nOf(context).homeAllMusic),
             _coverRail(context, view.allTracks.take(kRailLength).toList()),
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
           ]
         : const <Widget>[];
 
@@ -246,8 +246,7 @@ class HomeScreen extends StatelessWidget {
             GestureDetector(
               onTap: view.onPlayNowMix,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),                decoration: BoxDecoration(
                   color: view.skin.accent,
                 ),
                 child: Row(
@@ -255,7 +254,7 @@ class HomeScreen extends StatelessWidget {
                     Icon(Icons.play_arrow_rounded,
                         color: view.skin.onAccent,
                         size: 24),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         view.nowMixName == null
@@ -271,7 +270,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 26),
+          const SizedBox(height: 24),
         ],
 
         ...sections,
@@ -310,7 +309,7 @@ class HomeScreen extends StatelessWidget {
     return [
       _bandText(context, l10nOf(context).homeContinue),
       _continueRow(context, view.continueTrack!),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -322,7 +321,7 @@ class HomeScreen extends StatelessWidget {
         child: _bandText(context, l10nOf(context).homeRediscover),
       ),
       _coverRail(context, view.rediscover),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -331,7 +330,7 @@ class HomeScreen extends StatelessWidget {
     return [
       _bandText(context, l10nOf(context).homeJumpBackIn),
       _coverRail(context, view.jumpBackIn),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -352,7 +351,7 @@ class HomeScreen extends StatelessWidget {
         coverPathFor: view.coverPathFor,
         onPlay: view.onPlay,
       ),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -361,7 +360,7 @@ class HomeScreen extends StatelessWidget {
     return [
       _bandText(context, l10nOf(context).homeFromLibrary),
       _playlistRail(context, view.libraryPlaylists),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -372,7 +371,7 @@ class HomeScreen extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: lists.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final entry = lists[i];
           final p = entry.playlist;
@@ -389,7 +388,7 @@ class HomeScreen extends StatelessWidget {
                     aspectRatio: 1,
                     child: _playlistCover(p),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text(
                     p.name,
                     maxLines: 1,
@@ -423,7 +422,7 @@ class HomeScreen extends StatelessWidget {
     final cover = first.isEmpty ? null : view.coverPathFor?.call(first.first);
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: view.skin.secondary(0.28)),
+        border: Border.all(color: view.skin.edge(0.28)),
       ),
       child: (cover == null || !File(cover).existsSync())
           ? ColoredBox(
@@ -449,8 +448,7 @@ class HomeScreen extends StatelessWidget {
       _bandText(context, l10nOf(context).homeGenre),
       for (final p in withTracks) ...[
         Padding(
-          padding: const EdgeInsets.only(bottom: 6),
-          child: Text(
+          padding: const EdgeInsets.only(bottom: 8),          child: Text(
             p.name,
             style: TextStyle(
               fontSize: LayoutSpec.fontFloor,
@@ -460,7 +458,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         _coverRail(context, tracksOf(p)),
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
       ],
       const SizedBox(height: 4),
     ];
@@ -475,7 +473,7 @@ class HomeScreen extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: view.recent.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 10),
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
           itemBuilder: (_, i) {
             final t = view.recent[i];
             final cover = view.coverPathFor?.call(t);
@@ -507,7 +505,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
                       titleWithoutArtist(t.title, t.artist),
                       maxLines: 1,
@@ -534,7 +532,7 @@ class HomeScreen extends StatelessWidget {
           },
         ),
       ),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -543,7 +541,7 @@ class HomeScreen extends StatelessWidget {
     return [
       _bandText(context, 'RECAP — ${capsFor(context, view.recapLabel)}'),
       _recapCard(context),
-      const SizedBox(height: 22),
+      const SizedBox(height: 24),
     ];
   }
 
@@ -554,8 +552,7 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: view.onOpenRecap,
       child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.all(8),        decoration: BoxDecoration(
           color: pal.surface,
           border: Border.all(color: pal.border),
         ),
@@ -587,7 +584,7 @@ class HomeScreen extends StatelessWidget {
                       color: pal.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     l10nOf(context).homeRecapSongs(view.recapTracks.length),
                     style: TextStyle(fontSize: LayoutSpec.fontFloor, color: pal.textSecondary),
@@ -681,7 +678,7 @@ class HomeScreen extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: tracks.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 10),
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
           itemBuilder: (_, i) => _coverTile(context, tracks[i]),
         ),
       );
@@ -697,7 +694,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _coverBox(context, t, 104),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               t.title,
               maxLines: 1,
@@ -744,27 +741,30 @@ class HomeScreen extends StatelessWidget {
 
   Widget _stateTile(BuildContext context, IconData icon, String label, {bool dim = false}) {
     final pal = PresentationScope.of(context, fallback: view.skin).palette;
+    // One state language: selected (or "read") is the accent *surface* with
+    // `onAccent` on it, the same as `KitSegment`. This row used to say
+    // "selected" with an outline and a tinted glyph while the segment beside it
+    // said "selected" with a fill, and a 2px border for one state and 1px for
+    // the other made the silhouette itself the signal.
+    final fill = dim ? pal.surface : pal.accent;
+    final ink = dim ? pal.textSecondary : pal.onAccent;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: pal.surface,
-          border: Border.all(
-            color: dim ? pal.border : pal.accent,
-            width: dim ? 1 : 2,
-          ),
+          color: fill,
+          border: Border.all(color: dim ? pal.border : pal.accent),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 20, color: dim ? pal.textSecondary : pal.accentInk),
-            const SizedBox(height: 6),
+            Icon(icon, size: 20, color: ink),
+            const SizedBox(height: 8),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 label,
                 maxLines: 1,
-                style: Type.capsFloor(context,
-                    color: dim ? pal.textSecondary : pal.textPrimary),
+                style: Type.capsFloor(context, color: ink),
               ),
             ),
           ],

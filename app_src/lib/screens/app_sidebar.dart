@@ -57,8 +57,7 @@ class AppSidebar extends StatelessWidget {
             children: [
 
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-                child: Row(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),                child: Row(
                   children: [
                     SizedBox(width: 34, height: 34, child: mark),
                     const SizedBox(width: 12),
@@ -143,8 +142,7 @@ class SidebarMarkButton extends StatelessWidget {
       onTap: () => Scaffold.of(context).openDrawer(),
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.only(right: 6, top: 4, bottom: 4),
-        // The mark looked like a 34px logo and behaved like one: the drawer was
+        padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),        // The mark looked like a 34px logo and behaved like one: the drawer was
         // hard to hit. The artwork stays the same size; the target does not.
         child: SizedBox(
           width: 48,

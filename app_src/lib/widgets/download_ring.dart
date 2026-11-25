@@ -36,8 +36,7 @@ class DownloadRing extends StatelessWidget {
         final waiting = manager.pendingCount;
 
         return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: GestureDetector(
+          padding: const EdgeInsets.only(right: 8),          child: GestureDetector(
             key: const Key('download-ring'),
             onTap: onTap,
             child: Tooltip(

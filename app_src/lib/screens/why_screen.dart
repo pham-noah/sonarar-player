@@ -46,14 +46,14 @@ class WhyPanel extends StatelessWidget {
               _moment(skin, explanation.moment!),
 
             if (onPick != null && alternatives.isNotEmpty) ...[
-              const SizedBox(height: 30),
+              const SizedBox(height: 32),
               SectionLabel(skin: skin, text: capsFor(context, l10nOf(context).whyNotThisOne)),
               const SizedBox(height: 12),
               for (final t in alternatives) _alternative(skin, t),
             ],
 
             if (trailing != null) trailing!,
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -61,8 +61,7 @@ class WhyPanel extends StatelessWidget {
   }
 
   Widget _moment(Skin skin, String sentence) => Padding(
-        padding: const EdgeInsets.only(top: 6, bottom: 34),
-        child: Text(
+        padding: const EdgeInsets.only(top: 8, bottom: 32),        child: Text(
           sentence,
           style: TextStyle(
 
@@ -75,14 +74,12 @@ class WhyPanel extends StatelessWidget {
       );
 
   Widget _alternative(Skin skin, Track t) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Pressable(
+        padding: const EdgeInsets.only(bottom: 8),        child: Pressable(
           child: InkWell(
             onTap: () => onPick!(t),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                border: Border.all(color: skin.secondary(0.3)),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),              decoration: BoxDecoration(
+                border: Border.all(color: skin.edge(0.3)),
               ),
               child: Row(
                 children: [

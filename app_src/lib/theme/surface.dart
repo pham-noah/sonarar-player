@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'layout.dart';
 import 'layout_kit.dart';
+import 'tokens.dart' show Elevation;
 
 enum SurfaceRole { panel, card, bar, sheet }
 
@@ -47,7 +48,10 @@ class Surface extends StatelessWidget {
     final skew = p.skewDegrees;
     final rad = skew * (3.14159265 / 180);
 
-    final resolvedRadius = radius ?? mat.radii[role] ?? 4.0;
+    // A theme that declares no radius for a role gets `r-md` (12), not the 4.0
+    // that used to be written here: a theme omitting `radii` drew 4px plates
+    // beside its own 24px sheets and nobody had decided that.
+    final resolvedRadius = radius ?? mat.radii[role] ?? MaterialRadius.defaultRadius;
     final resolvedPadding = padding ?? EdgeInsets.zero;
 
     final baseFill =
@@ -293,37 +297,19 @@ class Surface extends StatelessWidget {
     SurfaceRole role,
     MaterialKit mat,
   ) {
-    if (isGlassMaterial(mat)) {
-      return const [
-        BoxShadow(
-          color: Color(0x59000000),
-          blurRadius: 28,
-          offset: Offset(0, 8),
-        ),
-      ];
-    }
-    if (pal.shadow.a == 0) return const [];
-    if (mat.castShadow && !isGlassMaterial(mat) && mat.slant) {
-      return [
-        BoxShadow(
-          color: pal.shadow,
-          blurRadius: 22,
-          offset: const Offset(0, 6),
-        ),
-      ];
-    }
-    final blur = switch (role) {
-      SurfaceRole.bar => 26.0,
-      SurfaceRole.sheet => 34.0,
-      SurfaceRole.card => 14.0,
-      SurfaceRole.panel => 22.0,
+    // Depth is a token now, one of four (§2.5), not a blur radius chosen per
+    // role: the palette used to hand out a shadow colour and the glass themes
+    // handed out a transparent one on the theme whose whole proposal is depth.
+    final level = switch (role) {
+      SurfaceRole.panel => Elevation.e1,
+      SurfaceRole.card => Elevation.e1,
+      SurfaceRole.bar => Elevation.e2,
+      SurfaceRole.sheet => Elevation.e3,
     };
-    return [
-      BoxShadow(
-        color: pal.shadow,
-        blurRadius: blur,
-        offset: const Offset(0, 6),
-      ),
-    ];
+
+    // A material that does not cast (Solid) is delimited by its hairline alone.
+    if (!isGlassMaterial(mat) && !mat.castShadow) return Elevation.e0;
+
+    return level(light: pal.isLight);
   }
 }

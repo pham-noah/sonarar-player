@@ -2,6 +2,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../theme/skin.dart';
 
 class TrackActions extends StatelessWidget {
@@ -33,7 +34,9 @@ class TrackActions extends StatelessWidget {
           skin: skin,
           key: audioButtonKey,
           icon: Icons.speaker_rounded,
-          tooltip: audioOpen ? 'Hide audio' : 'Audio',
+          tooltip: audioOpen
+              ? l10nOf(context).playerAudioHide
+              : l10nOf(context).playerAudio,
           active: audioOpen,
           onTap: onAudio!,
         ),

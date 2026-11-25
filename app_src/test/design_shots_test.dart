@@ -60,8 +60,15 @@ final List<Track> _library = <Track>[
   _t('9', title: 'Empty Platform', artist: 'The Quiet Hours'),
 ];
 
-AppState _state({bool empty = false}) {
+AppState _state({bool empty = false, int? base}) {
   final state = AppState();
+  if (base != null) {
+    // SOLID only takes the skin's own background when a base is set
+    // (`AppState.presentation` passes `takeBase` for that one case), which is
+    // how a light SOLID screen exists at all — without it the palette is the
+    // kit's, and `SkinId.minimal` is ignored.
+    state.setPersonalization(state.personalization.copyWith(base: base));
+  }
   state.attachLibrary(empty ? <Track>[] : _library);
   if (!empty) {
     state.updateContext(const PlayContext(
@@ -92,12 +99,13 @@ Future<void> _boot(
   int paletteIndex = 0,
   SkinId skin = SkinId.abyss,
   bool empty = false,
+  int? base,
 }) async {
   tester.view.physicalSize = size * dpr;
   tester.view.devicePixelRatio = dpr;
   addTearDown(tester.view.reset);
 
-  final state = _state(empty: empty);
+  final state = _state(empty: empty, base: base);
   state.chooseSkinManually(skin);
   state.setLayout(kind, paletteIndex: paletteIndex);
 
@@ -213,15 +221,21 @@ void main() {
   const phone = Size(412, 892);
   const small = Size(320, 620);
 
-  final variants = <(String, LayoutKind, int, SkinId)>[
-    ('sonar-abyss', LayoutKind.sonar, 0, SkinId.abyss),
-    ('solid-midnight', LayoutKind.solid, 0, SkinId.crimson),
-    ('glass-aurora', LayoutKind.glass, 0, SkinId.crimson),
-    ('light-minimal', LayoutKind.solid, 0, SkinId.minimal),
-    ('sonar-minimal', LayoutKind.sonar, 0, SkinId.minimal),
+  // `light-minimal` used to be `LayoutKind.solid` + `SkinId.minimal` with no
+  // base, and SOLID ignores the skin unless a base is set: the label said light
+  // and the palette it drew was the kit's forest. The base is what makes it the
+  // light skin the name claims (and what a user gets from Personalize → base).
+  final lightBase = kSkinMinimal.background.toARGB32();
+
+  final variants = <(String, LayoutKind, int, SkinId, int?)>[
+    ('sonar-abyss', LayoutKind.sonar, 0, SkinId.abyss, null),
+    ('solid-midnight', LayoutKind.solid, 0, SkinId.crimson, null),
+    ('glass-aurora', LayoutKind.glass, 0, SkinId.crimson, null),
+    ('light-minimal', LayoutKind.solid, 0, SkinId.minimal, lightBase),
+    ('sonar-minimal', LayoutKind.sonar, 0, SkinId.minimal, null),
   ];
 
-  for (final (label, kind, paletteIndex, skin) in variants) {
+  for (final (label, kind, paletteIndex, skin, base) in variants) {
     testWidgets('matrix — $label', (tester) async {
       Future<void> boot({Size size = phone}) => _boot(
             tester,
@@ -229,6 +243,7 @@ void main() {
             kind: kind,
             paletteIndex: paletteIndex,
             skin: skin,
+            base: base,
           );
 
       // --- default screens, phone ---
@@ -241,14 +256,14 @@ void main() {
       await _toSettings(tester);
       await _shot(tester, '$label-settings');
 
-      await _boot(tester, kind: kind, paletteIndex: paletteIndex, skin: skin);
+      await _boot(tester, kind: kind, paletteIndex: paletteIndex, skin: skin, base: base);
       HomeShellStateProbe.shellCall(tester, 'debugOpenPlayer');
       await _settle(tester);
       await _shotWidget(tester, '$label-player');
 
       // The queue panel is the only screen with real list rows in this harness
       // (the song list needs a folder on disk), so it carries the row evidence.
-      await _boot(tester, kind: kind, paletteIndex: paletteIndex, skin: skin);
+      await _boot(tester, kind: kind, paletteIndex: paletteIndex, skin: skin, base: base);
       HomeShellStateProbe.shellCall(tester, 'debugOpenPanel', PlayerPanel.queue);
       await _settle(tester);
       await _shot(tester, '$label-panel-queue');
@@ -278,7 +293,7 @@ void main() {
       await _shot(tester, '$label-settings-small');
 
       // --- empty library ---
-      await _boot(tester, kind: kind, paletteIndex: paletteIndex, skin: skin, empty: true);
+      await _boot(tester, kind: kind, paletteIndex: paletteIndex, skin: skin, empty: true, base: base);
       await _shot(tester, '$label-home-empty');
 
       await _toLibrary(tester);
@@ -287,15 +302,18 @@ void main() {
   }
 
   testWidgets('first run', (tester) async {
-    for (final (label, kind, skin) in <(String, LayoutKind, SkinId)>[
-      ('sonar-abyss', LayoutKind.sonar, SkinId.abyss),
-      ('light-minimal', LayoutKind.solid, SkinId.minimal),
+    for (final (label, kind, skin, base) in <(String, LayoutKind, SkinId, int?)>[
+      ('sonar-abyss', LayoutKind.sonar, SkinId.abyss, null),
+      // Same fix as the matrix: SOLID needs a base before the skin's own light
+      // background reaches the screen.
+      ('light-minimal', LayoutKind.solid, SkinId.minimal,
+          kSkinMinimal.background.toARGB32()),
     ]) {
       tester.view.physicalSize = phone * 2;
       tester.view.devicePixelRatio = 2.0;
       addTearDown(tester.view.reset);
 
-      final state = _state();
+      final state = _state(base: base);
       state.chooseSkinManually(skin);
       state.setLayout(kind);
 

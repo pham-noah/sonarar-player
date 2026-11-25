@@ -111,7 +111,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
             onSummon: widget.onSummon,
           ),
 
-        SliverToBoxAdapter(child: SizedBox(height: widget.inline ? 24 : 18)),
+        SliverToBoxAdapter(child: SizedBox(height: widget.inline ? 24 : 16)),
       ],
     );
 

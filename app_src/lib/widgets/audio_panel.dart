@@ -57,7 +57,7 @@ class AudioPanel extends StatelessWidget {
                 size: 22,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Expanded(
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
@@ -65,7 +65,7 @@ class AudioPanel extends StatelessWidget {
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
                   overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
                   activeTrackColor: skin.accent,
-                  inactiveTrackColor: skin.secondary(0.3),
+                  inactiveTrackColor: skin.edge(0.3),
                   thumbColor: skin.accent,
                 ),
                 child: Slider(
@@ -89,7 +89,7 @@ class AudioPanel extends StatelessWidget {
         ),
 
         if (outputs.isNotEmpty) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           _SectionLabel(skin: skin, text: l10n.outputPlaysThrough),
           _PanelRow(
             skin: skin,
@@ -126,8 +126,7 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 10, 2, 6),
-        child: Text(
+        padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),        child: Text(
           text,
           style: TextStyle(
             fontSize: LayoutSpec.fontMicro,
@@ -162,14 +161,12 @@ class _PanelRow extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-        margin: const EdgeInsets.only(bottom: 6),
-          decoration: BoxDecoration(
+        margin: const EdgeInsets.only(bottom: 8),          decoration: BoxDecoration(
 
             color: skin.panel,
             border: Border(left: BorderSide(color: skin.accent, width: 3)),
           ),
-          padding: const EdgeInsets.fromLTRB(10, 8, 12, 8),
-          child: Row(
+          padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),          child: Row(
             children: [
               Icon(icon, size: 20, color: skin.textSecondary),
               const SizedBox(width: 12),

@@ -55,6 +55,9 @@ class LibraryScreenView {
     required this.coverPathFor,
     required this.skin,
     this.libraryRoot,
+    this.accessDenied = false,
+    this.missingCount = 0,
+    this.onRescan,
     this.onManage,
     this.onTogglePlay,
     this.playingTrackId,
@@ -110,6 +113,16 @@ class LibraryScreenView {
   final String? Function(Track) coverPathFor;
   final Skin skin;
   final String? libraryRoot;
+
+  /// The OS refused to read the folder. A *failure*, and it used to be drawn as
+  /// the same "no music yet" page as an empty library, so the only hint anything
+  /// was wrong was a folder that would not come back.
+  final bool accessDenied;
+
+  /// Songs the manifest knows and the disk no longer has.
+  final int missingCount;
+
+  final VoidCallback? onRescan;
 
   final void Function(Track)? onManage;
 
@@ -497,13 +510,24 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Widget _sortSegment(Skin skin, String label, String value) {
     final on = view.playlistSort == value;
-    return GestureDetector(
+
+    // Three chips that announce as one run of text — "RECENTS UPDATED A–Z" —
+    // leave a screen reader with no way to tell which sort is on, or that any
+    // of them can be pressed. One node per chip, each saying whether it is the
+    // selected one.
+    return Semantics(
+      button: true,
+      selected: on,
+      label: label,
+      excludeSemantics: true,
+      enabled: view.onPlaylistSort != null,
+      onTap: view.onPlaylistSort == null ? null : () => view.onPlaylistSort!(value),
+      child: GestureDetector(
       onTap: view.onPlaylistSort == null
           ? null
           : () => view.onPlaylistSort!(value),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),        decoration: BoxDecoration(
           color: on
               ? skin.accentAt(0.92)
               : skin.background.withValues(alpha: 0.45),
@@ -520,6 +544,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             color: on ? skin.onAccent : skin.textPrimary,
           ),
         ),
+      ),
       ),
     );
   }
@@ -541,7 +566,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 border: Border.all(
                   color: pinned
                       ? skin.accent
-                      : skin.secondary(0.28),
+                      : skin.edge(0.28),
                   width: pinned ? 2 : 1,
                 ),
               ),
@@ -554,12 +579,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
 
           if (pinned) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.push_pin_rounded, color: skin.accentInk, size: 14),
-                const SizedBox(width: 5),
+                const SizedBox(width: 4),
 
                 Flexible(
                   child: FittedBox(
@@ -575,7 +600,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ],
             ),
           ],
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -628,8 +653,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         _pickedView = on ? null : LibraryView.playlists;
       }),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),        decoration: BoxDecoration(
           color: on
               ? skin.accentAt(0.92)
               : skin.background.withValues(alpha: 0.45),
@@ -723,7 +747,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ? const []
                   : [
                       _kindChip(skin, l10nOf(context).librarySeeded, _PlaylistKind.seeded),
-                      const SizedBox(width: 5),
+                      const SizedBox(width: 4),
                       _kindChip(skin, l10nOf(context).libraryCustom, _PlaylistKind.custom),
                     ],
               pickedView: _pickedView,
@@ -812,31 +836,48 @@ class _LibraryScreenState extends State<LibraryScreen> {
     // nobody could see, and Minimal shipped two.
     final actionColour = skin.accentInk;
 
-    Widget? action(IconData icon, Color color, VoidCallback? tap) => tap == null
-        ? null
-        : GestureDetector(
-            onTap: tap,
-
-            child: SizedBox(
-              // 48dp: a header key is a key, not a glyph in a corner.
-              width: Space.tap,
-              height: Space.tap,
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: 26,
-                  color: color,
+    // A header key used to be a bare glyph: the right target size, no name. A
+    // screen reader got "button" beside "LIBRARY" and nothing to choose
+    // between, on the three keys that are the only way in to search, download
+    // and a new playlist.
+    Widget? action(IconData icon, Color color, VoidCallback? tap,
+            String semantic) =>
+        tap == null
+            ? null
+            : Semantics(
+                button: true,
+                label: semantic,
+                excludeSemantics: true,
+                onTap: tap,
+                child: GestureDetector(
+                  onTap: () {
+                    unawaited(HapticFeedback.selectionClick());
+                    tap();
+                  },
+                  child: SizedBox(
+                    // 48dp: a header key is a key, not a glyph in a corner.
+                    width: Space.tap,
+                    height: Space.tap,
+                    child: Center(
+                      child: Icon(
+                        icon,
+                        size: 26,
+                        color: color,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
+              );
 
     final findButton =
-        action(Icons.download_rounded, actionColour, onFindMusic);
+        action(Icons.download_rounded, actionColour, onFindMusic,
+            l10nOf(context).libraryFindMusic);
     final searchButton =
-        action(Icons.search_rounded, actionColour, onSearch);
+        action(Icons.search_rounded, actionColour, onSearch,
+            l10nOf(context).librarySearch);
     final plusButton =
-        action(newPlaylistIcon, actionColour, onNewPlaylist);
+        action(newPlaylistIcon, actionColour, onNewPlaylist,
+            l10nOf(context).libraryNewPlaylist);
     final buttons = <Widget>[
       if (findButton != null) findButton,
       if (searchButton != null) searchButton,
@@ -855,8 +896,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 14, 20, 8),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(12, 12, 20, 8),      child: Row(
         children: [
           if (view.headerMark != null)
             SidebarMarkButton(mark: view.headerMark!, size: AppScreenHeader.markSize),
@@ -877,8 +917,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final slant = skin.skewDegrees * (3.14159265 / 180);
     final square = slant.abs() < 0.001;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-      child: Transform(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),      child: Transform(
         transform: Matrix4.skewX(-slant * 0.5),
         alignment: Alignment.centerLeft,
         child: Container(
@@ -887,8 +926,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             color: skin.accent,
             borderRadius: square ? BorderRadius.circular(12) : null,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-          child: Transform(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),          child: Transform(
             transform: Matrix4.skewX(slant * 0.5),
             alignment: Alignment.centerLeft,
             child: TextField(
@@ -958,8 +996,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         GestureDetector(
           onTap: _closeOpenList,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),            child: Row(
               children: [
                 Icon(Icons.arrow_back_rounded, color: skin.accentInk, size: 20),
                 const SizedBox(width: 8),
@@ -1089,13 +1126,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
         if (view.headerScrollsAway) _head(skin),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-          child: Row(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),          child: Row(
             children: [
               _sortSegment(skin, l10nOf(context).libraryRecents, 'recents'),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               _sortSegment(skin, l10nOf(context).libraryUpdated, 'updated'),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               _sortSegment(skin, 'A–Z', 'alpha'),
               const Spacer(),
 
@@ -1118,8 +1154,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ),
         if (!_playlistsAreGrid)
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-            child: PlaylistRow(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),            child: PlaylistRow(
               skin: skin,
               playlist: liked,
               cover: _coverOfFirst(liked),
@@ -1137,8 +1172,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             if (p.id != kRediscoverId &&
                 (p.id == kDownloadedId || (p.id != kDynamicId && !p.isEmpty)))
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                child: PlaylistRow(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),                child: PlaylistRow(
                   skin: skin,
                   playlist: p,
                   cover: _coverOfFirst(p),
@@ -1204,8 +1238,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               style: StaggerStyle.shelf,
               child:
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                child: PlaylistRow(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),                child: PlaylistRow(
                   skin: skin,
                   playlist: entry.value,
 
@@ -1250,8 +1283,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           index: i,
           style: StaggerStyle.shelf,
           child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-          child: ArtistRow(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),          child: ArtistRow(
             skin: skin,
             artist: name,
             count: tracks.length,
@@ -1354,8 +1386,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
             if (seeded || isDerivedPlaylistId(p.id))
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                child: Text(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),                child: Text(
 
                   isDerivedPlaylistId(p.id)
                       ? l10nOf(context).librarySeededNote
@@ -1382,32 +1413,55 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final rows = source ?? _visible;
     if (view.tracks.isEmpty) {
       final l10n = l10nOf(context);
+      // Empty and unreadable are different states with different exits. An
+      // unreadable folder used to draw "No music yet — choose a folder", which
+      // is advice for a situation the user is not in (F-20).
+      final broken = view.accessDenied || view.missingCount > 0;
       final root = view.libraryRoot;
       return Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          key: Key(broken ? 'library-unreadable' : 'library-empty'),
+          // The bottom air is the same clearance every other scroll view
+          // reserves: at 320dp the empty state's last control (and the folder
+          // path under it) was painting behind the mini player.
+          padding: EdgeInsets.fromLTRB(
+              Space.xl, Space.xl, Space.xl, _clearance),
           // The empty library used to name a path and stop there. An empty
           // state that cannot be acted on is a dead end, so the one control
           // that fixes it sits under the sentence.
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.library_music_outlined,
-                  size: 64, color: skin.textSecondary),
-              const SizedBox(height: 20),
+              Icon(
+                  broken
+                      ? (view.accessDenied
+                          ? Icons.folder_off_rounded
+                          : Icons.folder_delete_rounded)
+                      : Icons.library_music_outlined,
+                  size: 64,
+                  color: broken ? skin.accentInk : skin.textSecondary),
+              const SizedBox(height: 24),
               Text(
-                l10n.libraryEmptyTitle,
+                broken
+                    ? (view.accessDenied
+                        ? l10n.libraryUnreadableTitle
+                        : l10n.libraryMissingTitle)
+                    : l10n.libraryEmptyTitle,
                 style: Type.display(context, color: skin.textPrimary),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
-                l10n.libraryEmptyBody,
+                broken
+                    ? (view.accessDenied
+                        ? l10n.libraryUnreadableBody
+                        : l10n.libraryMissingBody)
+                    : l10n.libraryEmptyBody,
                 style: Type.bodyBase(context, color: skin.textSecondary),
                 textAlign: TextAlign.center,
               ),
               if (view.onChooseFolder != null) ...[
-                const SizedBox(height: 22),
+                const SizedBox(height: 24),
                 Semantics(
                   button: true,
                   label: l10n.libraryChooseFolder,
@@ -1415,7 +1469,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     onTap: view.onChooseFolder,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 26, vertical: 15),
+                          horizontal: Space.xl, vertical: Space.lg),
                       color: skin.accent,
                       child: Text(
                         l10n.libraryChooseFolder,
@@ -1426,7 +1480,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ],
               if (view.onFindMusic != null) ...[
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 Semantics(
                   button: true,
                   label: l10n.libraryFindMusic,
@@ -1434,7 +1488,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     onTap: view.onFindMusic,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 13),
+                          horizontal: Space.xl, vertical: Space.md),
                       decoration: BoxDecoration(
                         border: Border.all(color: skin.accent, width: 1.5),
                       ),
@@ -1447,7 +1501,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ],
               if (root != null && root.isNotEmpty) ...[
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 Text(
                   '${l10n.settingsMusicFolder}\n$root',
                   style: TextStyle(fontSize: LayoutSpec.fontLabel, color: skin.textSecondary),
@@ -1633,7 +1687,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: coverBox),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               t.title,
               maxLines: 1,
@@ -1839,9 +1893,9 @@ return Stack(
             dim: !widget.ranked,
             width: 28,
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
           _cover(),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1858,7 +1912,7 @@ return Stack(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 Text(
                   track.artist,
                   maxLines: 1,
@@ -1960,13 +2014,10 @@ return Stack(
     return Material(
       color: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.all(8),        decoration: BoxDecoration(
           color: skin.panel,
           border: Border.all(color: skin.accent, width: 2),
-          boxShadow: [
-            BoxShadow(color: skin.slabShadow, blurRadius: 16, offset: const Offset(0, 6)),
-          ],
+          boxShadow: Elevation.e2(light: skin.isLight),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1983,7 +2034,7 @@ return Stack(
                     )
                   : Icon(Icons.music_note, color: skin.accentDeep, size: 26),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 180),
               child: Column(

@@ -110,8 +110,7 @@ class _InlinePanelSheetState extends State<InlinePanelSheet> {
                     onVerticalDragUpdate: _onDragUpdate,
                     onVerticalDragEnd: _onDragEnd,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(6, 8, 6, 2),
-                      child: Row(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),                      child: Row(
                         children: [
 
                           Icon(

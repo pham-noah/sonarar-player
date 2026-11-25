@@ -7,6 +7,7 @@ import 'package:sonarar/library/track.dart';
 import 'package:sonarar/main.dart';
 import 'package:sonarar/screens/library_screen.dart';
 import 'package:sonarar/theme/layout.dart';
+import 'package:sonarar/theme/motion.dart';
 import 'package:sonarar/theme/skin_policy.dart';
 import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/theme/surface.dart';
@@ -69,9 +70,22 @@ void main() {
       }
     });
 
-    test("Persona's own number is exactly what the app had", () {
+    test("Persona's tab change is the token, not a number of milliseconds", () {
       final m = presentationFor(LayoutKind.sonar, skinFor(SkinId.abyss)).motion;
-      expect(m.tabTransition, const Duration(milliseconds: 420));
+      // §2.6: a tab change is one of the four durations. Persona used to carry
+      // its own 420ms out of a theme JSON, which is how three motion systems
+      // appeared for the same transition (F-15). It is the screen token now.
+      expect(m.tabTransition, Motion.screen);
+      expect(
+        <Duration>[
+          Motion.press,
+          Motion.release,
+          Motion.base,
+          Motion.screen,
+        ],
+        contains(m.tabTransition),
+        reason: 'Persona moves on a duration that is not one of the four',
+      );
       expect(m.enabled, isTrue);
     });
   });

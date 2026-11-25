@@ -42,7 +42,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                 color: skin.textPrimary,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               l10nOf(context).nisNote,
               style: TextStyle(
@@ -51,7 +51,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                 height: 1.35,
               ),
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
 
             if (ids.isEmpty)
               Text(
@@ -83,7 +83,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -93,11 +93,9 @@ class NeverInShuffleScreen extends StatelessWidget {
   Widget _row(BuildContext context, Skin skin, String id, Track? track) {
     final l10n = l10nOf(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          border: Border.all(color: skin.secondary(0.3)),
+      padding: const EdgeInsets.only(bottom: 8),      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),        decoration: BoxDecoration(
+          border: Border.all(color: skin.edge(0.3)),
         ),
         child: Row(
           children: [
@@ -117,7 +115,7 @@ class NeverInShuffleScreen extends StatelessWidget {
                     ),
                   ),
                   if (track != null) ...[
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       track.artist,
                       maxLines: 1,

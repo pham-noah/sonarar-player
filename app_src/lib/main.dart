@@ -1897,8 +1897,7 @@ class _HomeShellState extends State<HomeShell>
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
-                child: Text(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),                child: Text(
                   l10nOf(context).shellAddToPlaylist,
                   style: TextStyle(
                     fontSize: LayoutSpec.fontSmall,
@@ -2824,6 +2823,9 @@ class _HomeShellState extends State<HomeShell>
         skin: skin,
         headerArt: _headerArt(skin),
         libraryRoot: _repo.libraryRoot,
+        accessDenied: _repo.accessDenied,
+        missingCount: _repo.missingIds.length,
+        onRescan: null,
 
         onManage: _openLibraryManagement,
         onChooseFolder: _openMusicFolder,

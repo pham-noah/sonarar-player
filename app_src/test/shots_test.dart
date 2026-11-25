@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/app_state.dart';
+import 'package:sonarar/core/clock.dart';
 import 'package:sonarar/library/playlists.dart';
 import 'package:sonarar/library/track.dart';
 import 'package:sonarar/main.dart';
@@ -36,7 +37,12 @@ const Size kSmall = Size(360, 740);
 const Size kPhone = Size(412, 900);
 const Size kLarge = Size(480, 1000);
 
-final String _outRoot = Platform.environment['SHOTS_OUT'] ?? 'docs/shots/review';
+// `build/` is ignored, so a default `flutter test` run refreshes these without
+// dirtying the tree — before this, every run rewrote three committed PNGs, and
+// the greeting in them moved with the hour the suite was run at. Point
+// SHOTS_OUT at `docs/shots/review` when you mean to publish them.
+final String _outRoot =
+    Platform.environment['SHOTS_OUT'] ?? 'build/shots/review';
 
 /// Latin fixtures on purpose: the host has no CJK font to register, so a
 /// Japanese title would photograph as tofu and hide the type behind it.
@@ -215,6 +221,17 @@ Future<void> _shootShell(
 }
 
 void main() {
+  setUp(() {
+    // The home greeting and the skin band come from the wall clock, so unpinned
+    // these photographs differ at 06:00, 12:00, 17:00 and 22:00 and a diff of
+    // them says nothing about the code.
+    Clock.now = () => DateTime(2026, 11, 14, 2, 0);
+  });
+
+  tearDown(() {
+    Clock.now = DateTime.now;
+  });
+
   setUpAll(() async {
     goldenFileComparator = _WriteOnlyComparator();
     // A shot is of a widget tree, not of the platform: the audio engine asks for

@@ -1126,14 +1126,29 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
         if (view.headerScrollsAway) _head(skin),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),          child: Row(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          child: Row(
+            // Two ends: the chips take what they need, the toggle keeps the
+            // right edge. spaceBetween does that without a `Spacer`, which
+            // would have split the width with the Flexible and wrapped the
+            // chips at 100% as well.
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _sortSegment(skin, l10nOf(context).libraryRecents, 'recents'),
+              // Three chips and a toggle on one line is right at 100% and 127
+              // pixels too wide at 200%. Wrapping keeps every sort reachable at
+              // any scale, and Flexible lets them wrap instead of overflowing.
+              Flexible(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    _sortSegment(skin, l10nOf(context).libraryRecents, 'recents'),
+                    _sortSegment(skin, l10nOf(context).libraryUpdated, 'updated'),
+                    _sortSegment(skin, 'A–Z', 'alpha'),
+                  ],
+                ),
+              ),
               const SizedBox(width: 8),
-              _sortSegment(skin, l10nOf(context).libraryUpdated, 'updated'),
-              const SizedBox(width: 8),
-              _sortSegment(skin, 'A–Z', 'alpha'),
-              const Spacer(),
 
               GestureDetector(
                 onTap: view.onPlaylistGrid == null

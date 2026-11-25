@@ -76,8 +76,16 @@ class _SwipeableQueueRowState extends State<SwipeableQueueRow> {
     final skin = widget.skin;
     final willRemove = -_dx >= kRemoveThreshold;
 
+    // Two lines of text in a fixed box: at 130% the title and the artist need
+    // 13 more pixels than the row has and the row painted an overflow marker
+    // over itself. The row's *text* scales, its 8+8 of padding does not — so
+    // grow by what the type gained rather than by the whole height, and the row
+    // is unchanged at 100%.
+    final textRoom = kQueueRowHeight - 16;
+    final height = MediaQuery.textScalerOf(context).scale(textRoom) + 16;
+
     return SizedBox(
-      height: kQueueRowHeight,
+      height: height,
       child: Stack(
           children: [
 

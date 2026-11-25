@@ -313,15 +313,22 @@ class KitTabs<T> extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(Corners.sm),
                     ),
-                    child: Text(
-                      entries[i].value,
-                      maxLines: 1,
-                      overflow: TextOverflow.clip,
-                      style: Type.caps(
-                        context,
-                        color: entries[i].key == selected
-                            ? skin.onAccent
-                            : skin.textMuted,
+                    // Three tabs share the width, so the longest label sets
+                    // what fits: Finnish "JÄRJESTELMÄ" was clipped mid-glyph
+                    // ("JÄRJESTEL") on a 320dp phone at every text size. A
+                    // scale-down of a few percent keeps the word whole; the
+                    // content under the tabs still follows the user's setting.
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        entries[i].value,
+                        maxLines: 1,
+                        style: Type.caps(
+                          context,
+                          color: entries[i].key == selected
+                              ? skin.onAccent
+                              : skin.textMuted,
+                        ),
                       ),
                     ),
                   ),

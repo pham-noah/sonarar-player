@@ -2588,10 +2588,15 @@ class _HomeShellState extends State<HomeShell>
         onSaveAsPlaylist: _saveQueueAsPlaylist,
 
         onClearUpcoming: () {
-          final dropped = widget.state.clearUpcoming();
-          if (dropped <= 0) return;
+          final dropped = widget.state.takeUpcoming();
+          if (dropped.isEmpty) return;
           unawaited(_rebuildEngineQueueKeepingPosition());
-          _toast(l10nOf(context).shellClearedFromQueue(dropped));
+          // Clearing says how many went and nothing else, while removing one
+          // track is undoable. Twenty tracks deserve the same way back.
+          _toastUndo(l10nOf(context).shellClearedFromQueue(dropped.length), () {
+            if (!widget.state.restoreUpcoming(dropped)) return;
+            unawaited(_rebuildEngineQueueKeepingPosition());
+          });
         },
 
         onRemoved: (track, at) {
@@ -2893,10 +2898,17 @@ class _HomeShellState extends State<HomeShell>
         },
 
         onRemoveFromPlaylist: (p, t) {
-          widget.state.removeTrackFromPlaylist(p, t.id);
+          final at = p.trackIds.indexOf(t.id);
+          if (!widget.state.removeTrackFromPlaylist(p, t.id)) return;
           // ignore: discarded_futures
           _persistPlaylists();
-          _toast(l10nOf(context).shellRemovedFromPlaylist(p.name));
+          // Deleting a whole playlist offers it back; taking one track out of
+          // one is the same kind of loss and deserves the same way out.
+          _toastUndo(l10nOf(context).shellRemovedFromPlaylist(p.name), () {
+            if (!widget.state.restoreTrackToPlaylist(p, at, t.id)) return;
+            // ignore: discarded_futures
+            _persistPlaylists();
+          });
         },
         onDeletePlaylist: (p) {
           final slot = widget.state.playlistIndexOf(p.id);

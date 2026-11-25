@@ -530,6 +530,17 @@ void main() {
       expect(q.length, 3);
     });
 
+    test('hands the dropped tracks back in order, for the undo', () {
+      final q = PlayQueue(source: _many(6));
+      q.jumpTo('t2');
+
+      final dropped = q.takeUpcoming();
+
+      expect(dropped.map((t) => t.id).toList(), ['t3', 't4', 't5'],
+          reason: 'the undo can only put back what it was given, so this has '
+              'to be the tracks themselves and not a count');
+    });
+
     test('clearing twice does not invent tracks', () {
       final q = PlayQueue(source: _many(4));
       q.jumpTo('t1');

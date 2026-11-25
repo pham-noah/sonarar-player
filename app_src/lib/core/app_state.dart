@@ -561,6 +561,14 @@ class AppState extends ChangeNotifier {
     return removed;
   }
 
+  /// Puts a track back at the slot it left — the undo for
+  /// [removeTrackFromPlaylist].
+  bool restoreTrackToPlaylist(Playlist playlist, int at, String trackId) {
+    final restored = playlist.insertAt(at, trackId);
+    if (restored) notifyListeners();
+    return restored;
+  }
+
   void toggleExclusion(String trackId) {
     final was = _excluded.contains(trackId);
     _excluded.toggle(trackId);
@@ -1665,12 +1673,30 @@ class AppState extends ChangeNotifier {
     return true;
   }
 
-  int clearUpcoming() {
+  int clearUpcoming() => takeUpcoming().length;
+
+  /// Clears what is up next and hands it back for [restoreUpcoming].
+  List<Track> takeUpcoming() {
     final q = _queue;
-    if (q == null) return 0;
-    final dropped = q.clearUpcoming();
-    if (dropped > 0) _queueEdited();
+    if (q == null) return const [];
+    final dropped = q.takeUpcoming();
+    if (dropped.isNotEmpty) _queueEdited();
     return dropped;
+  }
+
+  /// Puts a cleared run back after the playing track, in the order it was in.
+  ///
+  /// Used by the undo on "clear upcoming": a queue of twenty tracks is one tap
+  /// away from empty, and without this the only recovery is to rebuild it.
+  bool restoreUpcoming(List<Track> tracks) {
+    final q = _queue;
+    if (q == null || tracks.isEmpty) return false;
+    var restored = 0;
+    for (final track in tracks) {
+      if (q.insertAt(q.length, track)) restored++;
+    }
+    if (restored > 0) _queueEdited();
+    return restored > 0;
   }
 
   @visibleForTesting

@@ -94,6 +94,41 @@ void main() {
       expect(wholeState, 0);
     });
 
+    test('clearing what is up next can be put back exactly', () {
+      final state = watched();
+      state.setQueueForTest([for (var i = 0; i < 6; i++) _t('t$i')]);
+      state.playTrackNow('t2');
+      final before = state.queueOrder.map((t) => t.id).toList();
+      wholeState = 0;
+      queueOnly = 0;
+
+      final dropped = state.takeUpcoming();
+
+      expect([for (final t in dropped) t.id], ['t3', 't4', 't5'],
+          reason: 'clearing hands back what it took, in queue order, so the '
+              'undo has something to put back');
+      expect(state.queueOrder.map((t) => t.id).toList(), ['t0', 't1', 't2']);
+      expect(queueOnly, 1);
+
+      expect(state.restoreUpcoming(dropped), isTrue);
+      expect(state.queueOrder.map((t) => t.id).toList(), before,
+          reason: 'undo must restore the queue it cleared, not a reordered '
+              'approximation of it');
+      expect(state.currentTrack?.id, 't2',
+          reason: 'restoring must not move the playing track');
+    });
+
+    test('clearing when nothing is up next is a no-op with nothing to undo', () {
+      final state = watched();
+      state.setQueueForTest([for (var i = 0; i < 3; i++) _t('t$i')]);
+      state.playTrackNow('t2');
+      queueOnly = 0;
+
+      expect(state.takeUpcoming(), isEmpty);
+      expect(state.restoreUpcoming(const []), isFalse);
+      expect(queueOnly, 0);
+    });
+
     test('removing a track that is not the one playing', () {
       final state = watched();
       state.setQueueForTest([for (var i = 0; i < 5; i++) _t('t$i')]);

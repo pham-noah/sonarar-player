@@ -443,12 +443,21 @@ class PlayQueue {
     return true;
   }
 
-  /// Drops everything after the playing track; returns how many went.
-  int clearUpcoming() {
-    if (_index >= _entries.length - 1) return 0;
-    final dropped = _entries.length - _index - 1;
+  /// Drops everything after the playing track and hands it back.
+  ///
+  /// The list, not the count, because a cleared queue is the one destructive
+  /// edit with no other way out: the tracks are gone from the queue and there
+  /// is nowhere else to find them. Whoever calls this can offer them back.
+  List<Track> takeUpcoming() {
+    if (_index >= _entries.length - 1) return const [];
+    final dropped = [
+      for (var i = _index + 1; i < _entries.length; i++) _entries[i].track,
+    ];
     _entries.removeRange(_index + 1, _entries.length);
     _bumpOrder();
     return dropped;
   }
+
+  /// Drops everything after the playing track; returns how many went.
+  int clearUpcoming() => takeUpcoming().length;
 }

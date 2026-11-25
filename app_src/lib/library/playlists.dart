@@ -56,6 +56,16 @@ class Playlist {
     return gone;
   }
 
+  /// Puts a track back where it was — the undo for [remove].
+  bool insertAt(int at, String trackId) {
+    if (_trackIds.contains(trackId)) return false;
+    // Clamped rather than refused: the playlist may have changed while the
+    // snackbar was up, and landing one slot off beats not landing at all.
+    _trackIds.insert(at.clamp(0, _trackIds.length), trackId);
+    _touch();
+    return true;
+  }
+
   bool move(int from, int to) {
     if (from < 0 || from >= _trackIds.length) return false;
     if (to < 0 || to >= _trackIds.length) return false;

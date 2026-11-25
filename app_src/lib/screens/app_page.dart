@@ -1,8 +1,12 @@
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/layout.dart';
+import '../l10n/l10n.dart';
 import '../theme/skin.dart';
 import 'app_header.dart';
 
@@ -68,12 +72,25 @@ class AppPage extends StatelessWidget {
                 skin: resolved,
                 title: title,
                 mark: mark,
-                leading: GestureDetector(
+                // An arrow is not a name: without this the whole way out of every
+                // sheet announced as "button". `commonBack` was already in the
+                // ARB and unused — this is the control it was written for.
+                leading: Semantics(
+                  button: true,
+                  label: l10nOf(context).commonBack,
+                  excludeSemantics: true,
                   onTap: () => Navigator.of(context).maybePop(),
-                  behavior: HitTestBehavior.opaque,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),                    child:
-                        Icon(Icons.arrow_back_rounded, color: resolved.accentInk, size: 28),
+                  child: GestureDetector(
+                    onTap: () {
+                      unawaited(HapticFeedback.selectionClick());
+                      Navigator.of(context).maybePop();
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      child: Icon(Icons.arrow_back_rounded,
+                          color: resolved.accentInk, size: 28),
+                    ),
                   ),
                 ),
               ),

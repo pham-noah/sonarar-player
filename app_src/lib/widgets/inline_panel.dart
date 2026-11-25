@@ -3,6 +3,7 @@ library;
 import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../theme/skin.dart';
 
 enum PanelSize {
@@ -120,11 +121,21 @@ class _InlinePanelSheetState extends State<InlinePanelSheet> {
                             color: skin.textSecondary,
                           ),
                           if (widget.onBack != null)
-                            IconButton(
-                              onPressed: widget.onBack,
-                              icon: Icon(Icons.arrow_back_rounded,
-                                  color: skin.textSecondary),
-                              tooltip: 'Back',
+                            // A tooltip is a long-press hint, not a name: without
+                            // this label the way back out of a panel announced as
+                            // "button", and the word in the tooltip was English
+                            // on all five locales.
+                            Semantics(
+                              button: true,
+                              label: l10nOf(context).commonBack,
+                              excludeSemantics: true,
+                              onTap: widget.onBack,
+                              child: IconButton(
+                                onPressed: widget.onBack,
+                                icon: Icon(Icons.arrow_back_rounded,
+                                    color: skin.textSecondary),
+                                tooltip: l10nOf(context).commonBack,
+                              ),
                             )
                           else
                             const SizedBox(width: 8),
@@ -141,11 +152,17 @@ class _InlinePanelSheetState extends State<InlinePanelSheet> {
                               ),
                             ),
                           ),
-                          IconButton(
-                            onPressed: widget.onClose,
-                            icon: Icon(Icons.close_rounded,
-                                color: skin.textSecondary),
-                            tooltip: 'Close',
+                          Semantics(
+                            button: true,
+                            label: l10nOf(context).playerClose,
+                            excludeSemantics: true,
+                            onTap: widget.onClose,
+                            child: IconButton(
+                              onPressed: widget.onClose,
+                              icon: Icon(Icons.close_rounded,
+                                  color: skin.textSecondary),
+                              tooltip: l10nOf(context).playerClose,
+                            ),
                           ),
                         ],
                       ),

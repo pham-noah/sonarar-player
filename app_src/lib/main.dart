@@ -3681,12 +3681,20 @@ children: [
   Positioned(
     left: 8,
     top: MediaQuery.of(context).padding.top + 4,
-    child: IconButton(
-      onPressed: _closePlayer,
-      icon: const Icon(Icons.keyboard_arrow_down_rounded),
-      color: skin.textPrimary,
-      iconSize: 32,
-      tooltip: l10nOf(context).commonBack,
+    // A tooltip is a long-press hint; the name is what a screen reader reads
+    // first. Without it the way out of the player was a 48×48 "button".
+    child: Semantics(
+      button: true,
+      label: l10nOf(context).commonBack,
+      excludeSemantics: true,
+      onTap: _closePlayer,
+      child: IconButton(
+        onPressed: _closePlayer,
+        icon: const Icon(Icons.keyboard_arrow_down_rounded),
+        color: skin.textPrimary,
+        iconSize: 32,
+        tooltip: l10nOf(context).commonBack,
+      ),
     ),
   ),
 

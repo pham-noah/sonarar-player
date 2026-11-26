@@ -268,6 +268,14 @@
     }
   },
   "personalizeMoveDown": "{section} を下へ",
+  "personalizeHomeShown": "{total} 個中 {shown} 個を表示",
+  "personalizeHomeHiddenMark": "非表示",
+  "personalizeHomePageHeader": "ページヘッダー",
+  "personalizeHomeReset": "並び順を戻す",
+  "personalizeThemeOverrideNote": "OVERRIDE はこの見た目を、着ているテーマ「{name}」に書き込みます。NEW THEME はこれを保ったまま、そこから新しいテーマを作ります。",
+  "personalizeDeleteTheme": "{name} を削除",
+  "personalizeRemovePicture": "この画像を削除",
+  "personalizeFrameOf": "フレーム {at}/{total}",
   "@personalizeMoveDown": {
     "placeholders": {
       "section": {"type": "String"}
@@ -305,6 +313,7 @@
   "baseDirection": "方向",
   "artFolders": "画像フォルダ",
   "artRescan": "再スキャン",
+  "artRescanFound": "{count, plural, other{{count} 個のアートフォルダが見つかりました}}",
   "scopeHome": "ホーム",
   "scopeEverywhere": "すべて",
   "scopePlayer": "プレイヤー",

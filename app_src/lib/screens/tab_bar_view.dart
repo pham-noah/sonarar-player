@@ -1,6 +1,7 @@
 library;
 
 import '../l10n/l10n.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -53,9 +54,9 @@ class TabBarView2 extends StatelessWidget {
     final bar = SizedBox(
       height: LayoutSpec.tabBarHeight,
       child: floating
-
           ? Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),              child: Surface(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Surface(
                 presentation: p,
                 role: SurfaceRole.bar,
                 radius: 32,
@@ -81,13 +82,22 @@ class TabBarView2 extends StatelessWidget {
   Widget _row(BuildContext context, LayoutPalette pal) {
     final l10n = l10nOf(context);
     return Row(
-        children: [
-
-          if (showHome) _tab(context, AppTab.home, Icons.home_rounded, l10n.tabHome),
-          _tab(context, AppTab.library, Icons.library_music_rounded, l10n.libraryTitle),
-          _tab(context, AppTab.settings, Icons.settings_rounded, l10n.settingsTitle),
-
-        ],
+      children: [
+        if (showHome)
+          _tab(context, AppTab.home, Icons.home_rounded, l10n.tabHome),
+        _tab(
+          context,
+          AppTab.library,
+          Icons.library_music_rounded,
+          l10n.libraryTitle,
+        ),
+        _tab(
+          context,
+          AppTab.settings,
+          Icons.settings_rounded,
+          l10n.settingsTitle,
+        ),
+      ],
     );
   }
 
@@ -100,76 +110,63 @@ class TabBarView2 extends StatelessWidget {
     final skew = skin.skewDegrees * (3.14159265 / 180);
 
     return Expanded(
+      key: ValueKey('tab-${tab.name}'),
       child: Semantics(
         button: true,
         selected: active,
         label: label,
         excludeSemantics: true,
         child: Pressable(
-        child: InkWell(
-        onTap: () {
-          unawaited(HapticFeedback.selectionClick());
-          if (active) {
-            // Already here: this is a "take me back" tap, not a navigation.
-            onReselect?.call(tab);
-          } else {
-            onSelect(tab);
-          }
-        },
-        child: Stack(
-          children: [
-            if (active)
+          child: InkWell(
+            onTap: () {
+              unawaited(HapticFeedback.selectionClick());
+              if (active) {
+                // Already here: this is a "take me back" tap, not a navigation.
+                onReselect?.call(tab);
+              } else {
+                onSelect(tab);
+              }
+            },
+            // The state is the label, not a rule under it: the chosen tab is ink
+            // while the rest are muted, and its icon sits a size larger. The 2px
+            // accent underline that used to sit here was the third copy of that
+            // fact, and the only one that read as a border of the bar.
+            child: Stack(
+              children: [
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Transform(
+                        transform: Matrix4.skewX(-skew),
 
-              Positioned(
-                // Under the label, not over the icon: on top the 2px rule sat
-                // against the mini player's own bottom edge and read as that
-                // bar's border rather than as this tab's state.
-                bottom: 8,
-                left: 16,
-                right: 16,
-                child: Transform(
-                  transform: Matrix4.skewX(-skew),
-                  child: Container(height: 2, color: skin.accent),
+                        child: AnimatedScale(
+                          scale: active ? 1.0 : 0.86,
+                          duration: Motion.of(context, Motion.morph),
+                          curve: MotionCurve.morph,
+                          child: Icon(icon, size: 25, color: colour),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Transform(
+                          transform: Matrix4.skewX(-skew),
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            style: Type.caps(context, color: colour),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Transform(
-                    transform: Matrix4.skewX(-skew),
-
-                    child: AnimatedScale(
-                      scale: active ? 1.0 : 0.86,
-                      duration: Motion.of(context, Motion.morph),
-                      curve: MotionCurve.morph,
-                      child: Icon(
-                        icon,
-                        size: 25,
-                        color: colour,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Transform(
-                      transform: Matrix4.skewX(-skew),
-                      child: Text(
-                        label,
-                        maxLines: 1,
-                        style: Type.caps(context, color: colour),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
-      ),
       ),
     );
   }

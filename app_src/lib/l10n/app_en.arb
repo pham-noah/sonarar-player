@@ -282,6 +282,52 @@
     }
   },
   "personalizeMoveDown": "Move {section} down",
+  "personalizeHomeShown": "{shown} of {total} sections shown",
+  "@personalizeHomeShown": {
+    "description": "How much of the Home feed is on, above the reorder list.",
+    "placeholders": {
+      "shown": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "personalizeHomeHiddenMark": "HIDDEN",
+  "@personalizeHomeHiddenMark": {
+    "description": "Marker on a section row that is switched off."
+  },
+  "personalizeHomePageHeader": "PAGE HEADER",
+  "@personalizeHomePageHeader": {
+    "description": "What NOW is on Home: the header, not a section."
+  },
+  "personalizeHomeReset": "RESET ORDER",
+  "@personalizeHomeReset": {
+    "description": "Puts the Home sections back in the shipped order and shows them again."
+  },
+  "personalizeThemeOverrideNote": "OVERRIDE writes this look into {name}, the theme you are wearing. NEW THEME keeps this one and starts another from it.",
+  "@personalizeThemeOverrideNote": {
+    "description": "What OVERRIDE does to the theme you are wearing.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeDeleteTheme": "Delete {name}",
+  "personalizeRemovePicture": "Remove this picture",
+  "@personalizeRemovePicture": {
+    "description": "Accessible name for the small cross on one picture of an art folder."
+  },
+  "@personalizeDeleteTheme": {
+    "description": "Accessible name for the button that deletes a saved theme.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeFrameOf": "FRAME {at}/{total}",
+  "@personalizeFrameOf": {
+    "description": "Which picture of a folder is showing.",
+    "placeholders": {
+      "at": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "@personalizeMoveDown": {
     "placeholders": {
       "section": {"type": "String"}
@@ -319,6 +365,13 @@
   "baseDirection": "DIRECTION",
   "artFolders": "ART FOLDERS",
   "artRescan": "RESCAN",
+  "artRescanFound": "{count, plural, =1{1 art folder found} other{{count} art folders found}}",
+  "@artRescanFound": {
+    "description": "How many folders of pictures the rescan found.",
+    "placeholders": {
+      "count": {"type": "num"}
+    }
+  },
   "scopeHome": "HOME",
   "scopeEverywhere": "EVERYWHERE",
   "scopePlayer": "PLAYER",

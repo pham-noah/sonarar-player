@@ -268,6 +268,14 @@
     }
   },
   "personalizeMoveDown": "Chuyển {section} xuống",
+  "personalizeHomeShown": "Hiện {shown}/{total} mục",
+  "personalizeHomeHiddenMark": "ĐÃ ẨN",
+  "personalizeHomePageHeader": "TIÊU ĐỀ TRANG",
+  "personalizeHomeReset": "ĐẶT LẠI THỨ TỰ",
+  "personalizeThemeOverrideNote": "OVERRIDE ghi giao diện này vào {name}, chủ đề bạn đang dùng. NEW THEME giữ lại giao diện này và tạo chủ đề mới từ nó.",
+  "personalizeDeleteTheme": "Xoá {name}",
+  "personalizeRemovePicture": "Xoá ảnh này",
+  "personalizeFrameOf": "KHUNG {at}/{total}",
   "@personalizeMoveDown": {
     "placeholders": {
       "section": {"type": "String"}
@@ -305,6 +313,7 @@
   "baseDirection": "HƯỚNG",
   "artFolders": "THƯ MỤC ẢNH",
   "artRescan": "QUÉT LẠI",
+  "artRescanFound": "{count, plural, other{Tìm thấy {count} thư mục ảnh}}",
   "scopeHome": "TRANG CHỦ",
   "scopeEverywhere": "MỌI NƠI",
   "scopePlayer": "TRÌNH PHÁT",

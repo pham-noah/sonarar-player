@@ -189,7 +189,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   ],
 
                   if (_tab == PersonalizeTab.look) ...[
-                    SectionBand(skin: skin, label: l10nOf(context).firstRunLayout),
+                    SectionBand(
+                      skin: skin,
+                      label: l10nOf(context).firstRunLayout,
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -208,7 +211,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    SectionBand(skin: skin, label: l10nOf(context).firstRunSongList),
+                    SectionBand(
+                      skin: skin,
+                      label: l10nOf(context).firstRunSongList,
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -229,7 +235,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    SectionBand(skin: skin, label: l10nOf(context).personalizeMotion),
+                    SectionBand(
+                      skin: skin,
+                      label: l10nOf(context).personalizeMotion,
+                    ),
                     _toggleRow(
                       skin,
                       l10nOf(context).personalizeTabAnimation,
@@ -287,7 +296,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ],
                     const SizedBox(height: 16),
 
-                    SectionBand(skin: skin, label: l10nOf(context).personalizeBase),
+                    SectionBand(
+                      skin: skin,
+                      label: l10nOf(context).personalizeBase,
+                    ),
                     SizedBox(
                       height: 48,
                       child: ListView.separated(
@@ -305,31 +317,38 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                               onTap: () => _apply(_p.copyWith(clearBase: true)),
                               label: l10nOf(context).personalizeTheme,
                               child: GestureDetector(
-                              key: const Key('base-theme'),
-                              onTap: () => _apply(_p.copyWith(clearBase: true)),
-                              child: Container(
-                                width: 92,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: skin.panel,
-                                  border: Border.all(
-                                    color: onTheme
-                                        ? skin.accent
-                                        : skin.textSecondary,
-                                    width: onTheme ? 2 : 1,
+                                key: const Key('base-theme'),
+                                onTap: () =>
+                                    _apply(_p.copyWith(clearBase: true)),
+                                child: Container(
+                                  width: 92,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: skin.panel,
+                                    border: Border.all(
+                                      color: onTheme
+                                          ? skin.accent
+                                          : skin.textSecondary,
+                                      width: onTheme ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    l10nOf(context).personalizeTheme,
+                                    style:
+                                        Type.micro(
+                                          context,
+                                          color: onTheme
+                                              ? skin.accentInk
+                                              : skin.textSecondary,
+                                        ).copyWith(
+                                          letterSpacing: trackingFor(
+                                            context,
+                                            1,
+                                          ),
+                                        ),
                                   ),
                                 ),
-                                child: Text(
-                                  l10nOf(context).personalizeTheme,
-                                  style: Type.micro(
-                                    context,
-                                    color: onTheme
-                                        ? skin.accentInk
-                                        : skin.textSecondary,
-                                  ).copyWith(letterSpacing: trackingFor(context, 1)),
-                                ),
                               ),
-                            ),
                             );
                           }
                           final colour = _bases[i - 1];
@@ -359,7 +378,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    SectionBand(skin: skin, label: l10nOf(context).personalizeAccent),
+                    SectionBand(
+                      skin: skin,
+                      label: l10nOf(context).personalizeAccent,
+                    ),
                     _chip(
                       skin,
                       l10nOf(context).personalizeFromPhoto,
@@ -390,33 +412,39 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                               // is exactly what the selection state is for.
                               label: l10nOf(context).personalizeAccentTheme,
                               child: GestureDetector(
-                              key: const Key('accent-theme'),
-                              onTap: () => _apply(
-                                _p.copyWith(accent: const AccentSpec()),
-                              ),
-                              child: Container(
-                                width: 92,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: skin.panel,
-                                  border: Border.all(
-                                    color: onTheme
-                                        ? skin.accent
-                                        : skin.textSecondary,
-                                    width: onTheme ? 2 : 1,
+                                key: const Key('accent-theme'),
+                                onTap: () => _apply(
+                                  _p.copyWith(accent: const AccentSpec()),
+                                ),
+                                child: Container(
+                                  width: 92,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: skin.panel,
+                                    border: Border.all(
+                                      color: onTheme
+                                          ? skin.accent
+                                          : skin.textSecondary,
+                                      width: onTheme ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    l10nOf(context).personalizeTheme,
+                                    style:
+                                        Type.micro(
+                                          context,
+                                          color: onTheme
+                                              ? skin.accentInk
+                                              : skin.textSecondary,
+                                        ).copyWith(
+                                          letterSpacing: trackingFor(
+                                            context,
+                                            1,
+                                          ),
+                                        ),
                                   ),
                                 ),
-                                child: Text(
-                                  l10nOf(context).personalizeTheme,
-                                  style: Type.micro(
-                                    context,
-                                    color: onTheme
-                                        ? skin.accentInk
-                                        : skin.textSecondary,
-                                  ).copyWith(letterSpacing: trackingFor(context, 1)),
-                                ),
                               ),
-                            ),
                             );
                           }
                           final colour = _swatches[i - 1];
@@ -455,7 +483,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     const SizedBox(height: 16),
                   ],
                   if (_tab == PersonalizeTab.art) ...[
-                    SectionBand(skin: skin, label: l10nOf(context).personalizePictureFor),
+                    SectionBand(
+                      skin: skin,
+                      label: l10nOf(context).personalizePictureFor,
+                    ),
                     _picturePreview(skin),
                     const SizedBox(height: 8),
                     _scopeStrip(skin),
@@ -486,7 +517,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       const SizedBox(height: 12),
                       _button(
                         skin,
-                        _canReframe ? l10nOf(context).personalizeReframe : l10nOf(context).personalizeReframeNoFile,
+                        _canReframe
+                            ? l10nOf(context).personalizeReframe
+                            : l10nOf(context).personalizeReframeNoFile,
                         _reframe,
                         quiet: !_canReframe,
                       ),
@@ -635,7 +668,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       if (_p.fill.isSet) ...[
                         const SizedBox(height: 12),
                         Text(
-                          _p.fill.isGradient ? l10nOf(context).baseFrom : l10nOf(context).baseColour,
+                          _p.fill.isGradient
+                              ? l10nOf(context).baseFrom
+                              : l10nOf(context).baseColour,
                           style: TextStyle(
                             fontSize: LayoutSpec.fontFloor,
                             fontWeight: FontWeight.w800,
@@ -691,7 +726,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: _button(skin, l10nOf(context).personalizeAddPicture, _chooseImage),
+                          child: _button(
+                            skin,
+                            l10nOf(context).personalizeAddPicture,
+                            _chooseImage,
+                          ),
                         ),
                       ],
                     ),
@@ -712,20 +751,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     const SizedBox(height: 16),
                   ],
-                  if (_tab == PersonalizeTab.home) ...[
-                    SectionBand(skin: skin, label: l10nOf(context).scopeHome),
-                    Text(
-                      'NOW stays at the top — it is the page header, not a section.',
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontFloor,
-                        color: skin.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    for (final section in _orderedSections())
-                      _sectionRow(skin, section),
-                    const SizedBox(height: 16),
-                  ],
+                  if (_tab == PersonalizeTab.home) ..._homeTab(skin),
                   if (_tab == PersonalizeTab.themes) ...[
                     // The tab already says THEMES; a band repeating it wastes the one
                     // line that could tell you where you stand.
@@ -734,8 +760,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       // other language showed "12 BUILT IN · NONE WORN" in a
                       // screen that is otherwise fully translated.
                       widget.state.preset == null
-                          ? l10nOf(context)
-                              .personalizeThemesBuiltIn(widget.state.allPresets.length)
+                          ? l10nOf(context).personalizeThemesBuiltIn(
+                              widget.state.allPresets.length,
+                            )
                           : l10nOf(context).personalizeThemesWearing(
                               widget.state.allPresets.length,
                               capsFor(context, widget.state.preset!.name),
@@ -756,7 +783,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: _button(skin, l10nOf(context).themeNew, _saveTheme),
+                            child: _button(
+                              skin,
+                              l10nOf(context).themeNew,
+                              _saveTheme,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -772,9 +803,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     if (widget.state.preset != null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'OVERRIDE writes this look into "${widget.state.preset!.name}", '
-                        'the theme you are wearing. NEW THEME keeps this one and starts '
-                        'another from it.',
+                        l10nOf(context).personalizeThemeOverrideNote(
+                          widget.state.preset!.name,
+                        ),
                         style: TextStyle(
                           color: skin.textSecondary,
                           fontSize: LayoutSpec.fontFloor - 4,
@@ -817,17 +848,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final panel = glass
         ? Colors.white.withValues(alpha: 0.10)
         : (sonar ? Colors.transparent : skin.panel);
-    final edge = glass
-        ? Colors.white.withValues(alpha: 0.22)
-        : skin.edge(0.16);
+    final edge = glass ? Colors.white.withValues(alpha: 0.22) : skin.edge(0.16);
 
     Widget row(
       String title,
-      String sub, {
+      String? sub, {
       double alpha = 1,
       bool lead = false,
+      Key? key,
     }) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),      decoration: BoxDecoration(
+      key: key,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
         color: panel,
         border: Border.all(color: edge),
         borderRadius: BorderRadius.circular(radius),
@@ -866,15 +898,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     color: skin.textPrimary.withValues(alpha: alpha),
                   ),
                 ),
-                Text(
-                  sub,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontMicro,
-                    color: skin.textSecondary.withValues(alpha: alpha),
+                // A section row in the picture is a name and nothing else: a
+                // stand-in artist under it would be a second, false fact.
+                if (sub != null)
+                  Text(
+                    sub,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontMicro,
+                      color: skin.textSecondary.withValues(alpha: alpha),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -890,86 +925,119 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       // the one thing on this screen that is meant to show the result. Someone who
       // scales their text up is not asking for a taller thumbnail.
       child: MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.noScaling),
+        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
         child: Container(
-        height: 216,
-        color: skin.background,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (art != null)
-              FramedArt(
-                assetPath: art.assetPath,
-                aspect: art.aspect,
-                spec: art.spec,
-                focus: widget.state.artFocus,
-                cacheWidth: 720,
-                burn: 1.0,
-              )
-            else if (_b.isSet && root != null)
-              PersonalBackdrop(root: root, spec: _b, skin: skin),
-            if (art != null) ArtScrim(color: skin.background),
-            Padding(
-              padding: const EdgeInsets.all(12),              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: skin.accent,
-                          borderRadius: BorderRadius.circular(radius),
-                        ),
-                        child: Icon(
-                          Icons.play_arrow_rounded,
-                          size: 15,
-                          color: skin.onAccent,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  row(l10nOf(context).personalizeSampleTitle, l10nOf(context).personalizeSampleArtist,
-                      lead: sonar),
-                  const SizedBox(height: 4),
-                  row(l10nOf(context).personalizeSampleSecond, '3:12', alpha: 0.55),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: Row(
+          height: 216,
+          color: skin.background,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (art != null)
+                FramedArt(
+                  assetPath: art.assetPath,
+                  aspect: art.aspect,
+                  spec: art.spec,
+                  focus: widget.state.artFocus,
+                  cacheWidth: 720,
+                  burn: 1.0,
+                )
+              else if (_b.isSet && root != null)
+                PersonalBackdrop(root: root, spec: _b, skin: skin),
+              if (art != null) ArtScrim(color: skin.background),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          flex: 4,
-                          child: Container(height: 3, color: skin.accent),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              if (_tab == PersonalizeTab.home)
+                                Text(
+                                  l10nOf(context).homeNow,
+                                  style: TextStyle(
+                                    fontSize: LayoutSpec.fontMicro,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: trackingFor(context, 1),
+                                    color: skin.textSecondary,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                        Expanded(
-                          flex: 6,
-                          child: Container(
-                            height: 3,
-                            color: skin.edge(0.25),
+                        Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: skin.accent,
+                            borderRadius: BorderRadius.circular(radius),
+                          ),
+                          child: Icon(
+                            Icons.play_arrow_rounded,
+                            size: 15,
+                            color: skin.onAccent,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    const Spacer(),
+                    if (_tab == PersonalizeTab.home) ...[
+                      // The picture is the page this tab edits: these rows are the
+                      // sections in the order they were put in, so an arrow moves
+                      // the name here instead of changing a number somewhere else.
+                      // A sample title would have sat still while the list beside
+                      // it changed, which reads as nothing happening.
+                      for (final section
+                          in _p.home.visible
+                              .where((s) => s != HomeSection.now)
+                              .take(2)) ...[
+                        row(
+                          _sectionName(section),
+                          null,
+                          key: ValueKey('preview-section-${section.name}'),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                    ] else ...[
+                      row(
+                        l10nOf(context).personalizeSampleTitle,
+                        l10nOf(context).personalizeSampleArtist,
+                        lead: sonar,
+                      ),
+                      const SizedBox(height: 4),
+                      row(
+                        l10nOf(context).personalizeSampleSecond,
+                        '3:12',
+                        alpha: 0.55,
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(2),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: Container(height: 3, color: skin.accent),
+                          ),
+                          Expanded(
+                            flex: 6,
+                            child: Container(height: 3, color: skin.edge(0.25)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -981,8 +1049,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     if (root == null) return;
     widget.state.setArtBundles(scanArtBundles(root.path));
     setState(() {});
-    toast(context, '${widget.state.bundles.length} art folder'
-          '${widget.state.bundles.length == 1 ? '' : 's'} found.');
+    toast(context, l10nOf(context).artRescanFound(widget.state.bundles.length));
   }
 
   /// The phone's own pictures, as a sheet of thumbnails. One door for both
@@ -1074,7 +1141,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ListTile(
               leading: Icon(Icons.wallpaper_rounded, color: _skin.accentInk),
               title: Text(
-                _surface == null ? l10nOf(context).photoUseEverywhere : l10nOf(context).photoUseHere,
+                _surface == null
+                    ? l10nOf(context).photoUseEverywhere
+                    : l10nOf(context).photoUseHere,
                 style: TextStyle(color: _skin.textPrimary),
               ),
               onTap: () => Navigator.of(ctx).pop('here'),
@@ -1157,9 +1226,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           border: Border.all(
-            color: active
-                ? skin.accent
-                : skin.edge(0.25),
+            color: active ? skin.accent : skin.edge(0.25),
             width: active ? 2 : 1,
           ),
         ),
@@ -1255,9 +1322,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                       ),
                       color: Colors.black.withValues(alpha: 0.55),
                       child: Text(
-                        _b.fromArt ? l10nOf(context).scopeFolder : l10nOf(context).scopePhoto,
-                        style: Type.micro(context, color: skin.accentInk)
-                            .copyWith(letterSpacing: trackingFor(context, 1.2)),
+                        _b.fromArt
+                            ? l10nOf(context).scopeFolder
+                            : l10nOf(context).scopePhoto,
+                        style: Type.micro(
+                          context,
+                          color: skin.accentInk,
+                        ).copyWith(letterSpacing: trackingFor(context, 1.2)),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1269,7 +1340,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                         color: Colors.black.withValues(alpha: 0.55),
                         child: Text(
-                          'FRAME $at/$total',
+                          l10nOf(context).personalizeFrameOf(at, total),
                           style: TextStyle(
                             color: skin.textPrimary,
                             fontSize: LayoutSpec.fontMicro,
@@ -1324,7 +1395,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final root = _root;
     final file = root == null ? null : backdropFile(root, _b);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),      child: Row(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
         children: [
           SizedBox(
             width: 96,
@@ -1445,22 +1517,161 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     child: GestureDetector(onTap: onTap, child: child),
   );
 
+  /// Home's sections as a page, not as eight rows of controls. The header is
+  /// drawn where the page draws it and cannot be moved, the count says what the
+  /// page will show before you read a single row, and RESET only exists once
+  /// there is something to undo — a screen of arrows with no way back is how a
+  /// reordered feed becomes permanent.
+  List<Widget> _homeTab(Skin skin) {
+    final l10n = l10nOf(context);
+    final sections = _orderedSections();
+    final shown = sections.where((s) => !_p.home.hidden.contains(s)).length + 1;
+    return [
+      SectionBand(skin: skin, label: l10n.scopeHome),
+      Row(
+        children: [
+          Expanded(
+            child: Text(
+              l10n.personalizeHomeShown(shown, sections.length + 1),
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor - 4,
+                fontWeight: FontWeight.w800,
+                letterSpacing: trackingFor(context, 1),
+                color: skin.textSecondary,
+              ),
+            ),
+          ),
+          if (!_homeIsDefault())
+            _miniAction(
+              skin,
+              Icons.restore_rounded,
+              l10n.personalizeHomeReset,
+              _resetHome,
+            ),
+        ],
+      ),
+      const SizedBox(height: 4),
+      _nowRow(skin),
+      for (final section in sections) _sectionRow(skin, section),
+      const SizedBox(height: 16),
+    ];
+  }
+
+  bool _homeIsDefault() =>
+      _p.home.hidden.isEmpty &&
+      listEquals(_p.home.order, HomeLayout.defaultOrder);
+
+  void _resetHome() => _apply(_p.copyWith(home: HomeLayout.defaults));
+
+  /// NOW is the page header, so it is not a section you can move. It used to be
+  /// missing from this list with a sentence underneath explaining the gap; a row
+  /// that is there, and visibly locked, says the same thing without the sentence
+  /// — and the list stops looking like it lost one.
+  Widget _nowRow(Skin skin) {
+    final l10n = l10nOf(context);
+    return Semantics(
+      label: '${l10n.homeNow}, ${l10n.personalizeHomePageHeader}',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            Icon(
+              Icons.lock_outline_rounded,
+              size: 14,
+              color: skin.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                l10n.homeNow,
+                style: TextStyle(
+                  fontSize: LayoutSpec.fontFloor,
+                  fontWeight: FontWeight.w800,
+                  color: skin.textSecondary,
+                ),
+              ),
+            ),
+            Text(
+              l10n.personalizeHomePageHeader,
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor - 5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: trackingFor(context, 1),
+                color: skin.textSecondary.withValues(alpha: 0.75),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _sectionRow(Skin skin, HomeSection section) {
-    final order = _orderedSections();
-    final index = order.indexOf(section);
+    // The list draws every section but NOW; the saved order keeps NOW at index
+    // 0. So the row you press and the row the layout moves are one apart, and
+    // the arrows used the drawn index: down moved a section onto itself and did
+    // nothing, up moved it three rows, and neither showed up in the picture
+    // because the picture did not move either.
+    final drawn = _orderedSections();
+    final drawnIndex = drawn.indexOf(section);
+    final savedIndex = _p.home.all.indexOf(section);
+    final on = !_p.home.hidden.contains(section);
+
+    void move(int delta) =>
+        _apply(_p.copyWith(home: _p.home.move(section, savedIndex + delta)));
+
+    final up = drawnIndex <= 0 ? null : () => move(-1);
+    final down = drawnIndex < 0 || drawnIndex >= drawn.length - 1
+        ? null
+        : () => move(1);
+
     return Padding(
       key: ValueKey('home-row-${section.name}'),
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              _sectionName(section),
-              style: TextStyle(
-                fontSize: LayoutSpec.fontFloor,
-                fontWeight: FontWeight.w800,
-                color: skin.textPrimary,
-              ),
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    _sectionName(section),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontFloor,
+                      fontWeight: FontWeight.w800,
+                      // A section that is off stays in the list so it can be
+                      // turned back on, but it is not on the page. Left at full
+                      // strength, the list read as the page and the switch had
+                      // to be read to know which rows it was true of.
+                      color: on ? skin.textPrimary : skin.textSecondary,
+                    ),
+                  ),
+                ),
+                if (!on) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: skin.edge(0.35)),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: Text(
+                      l10nOf(context).personalizeHomeHiddenMark,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontFloor - 6,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: trackingFor(context, 0.8),
+                        color: skin.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           // Two arrows and a switch per row, and four rows: an arrow is not a
@@ -1469,17 +1680,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             button: true,
             label: l10nOf(context).personalizeMoveUp(_sectionName(section)),
             excludeSemantics: true,
-            onTap: index <= 0
-                ? null
-                : () => _apply(
-                    _p.copyWith(home: _p.home.move(section, index - 1)),
-                  ),
+            onTap: up,
             child: IconButton(
-              onPressed: index <= 0
-                  ? null
-                  : () => _apply(
-                      _p.copyWith(home: _p.home.move(section, index - 1)),
-                    ),
+              onPressed: up,
               icon: Icon(
                 Icons.keyboard_arrow_up_rounded,
                 color: skin.textPrimary,
@@ -1490,17 +1693,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             button: true,
             label: l10nOf(context).personalizeMoveDown(_sectionName(section)),
             excludeSemantics: true,
-            onTap: index < 0 || index >= order.length - 1
-                ? null
-                : () => _apply(
-                    _p.copyWith(home: _p.home.move(section, index + 1)),
-                  ),
+            onTap: down,
             child: IconButton(
-              onPressed: index < 0 || index >= order.length - 1
-                  ? null
-                  : () => _apply(
-                      _p.copyWith(home: _p.home.move(section, index + 1)),
-                    ),
+              onPressed: down,
               icon: Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: skin.textPrimary,
@@ -1509,10 +1704,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           ),
           Semantics(
             label: _sectionName(section),
-            toggled: !_p.home.hidden.contains(section),
+            toggled: on,
             child: ExcludeSemantics(
               child: Switch(
-                value: !_p.home.hidden.contains(section),
+                value: on,
                 activeThumbColor: skin.accent,
                 onChanged: (_) =>
                     _apply(_p.copyWith(home: _p.home.toggle(section))),
@@ -1562,9 +1757,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final name = widget.state.preset?.name;
     final done = widget.state.overrideActiveTheme();
     setState(() {});
-    toast(context, done
-              ? l10nOf(context).personalizeSavedInto(name ?? '')
-              : l10nOf(context).themeNoneToOverride);
+    toast(
+      context,
+      done
+          ? l10nOf(context).personalizeSavedInto(name ?? '')
+          : l10nOf(context).themeNoneToOverride,
+    );
   }
 
   void _setFill(BackdropFill fill) => _apply(_p.copyWith(fill: fill));
@@ -1597,9 +1795,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               decoration: BoxDecoration(
                 color: Color(c),
                 border: Border.all(
-                  color: c == selected
-                      ? skin.accent
-                      : skin.edge(0.3),
+                  color: c == selected ? skin.accent : skin.edge(0.3),
                   width: c == selected ? 3 : 1,
                 ),
               ),
@@ -1685,21 +1881,25 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   Widget _themeRow(Skin skin, ThemePreset preset) {
     final active = widget.state.preset?.id == preset.id;
+    void deleteTheme() {
+      widget.onDeleteTheme?.call(preset);
+      setState(() {});
+    }
+
     return GestureDetector(
       onTap: () {
         widget.onApplyTheme?.call(preset);
         setState(() {});
       },
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),        decoration: BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+        decoration: BoxDecoration(
           color: active ? skin.accentAt(0.16) : skin.panel,
           border: Border(
             // One spine, one meaning: accent on the theme you are wearing,
             // quiet grey on the rest. Six lime spines said nothing.
             left: BorderSide(
-              color: active
-                  ? skin.accent
-                  : skin.edge(0.35),
+              color: active ? skin.accent : skin.edge(0.35),
               width: 3,
             ),
           ),
@@ -1735,15 +1935,25 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 ),
               )
             else
-              IconButton(
-                onPressed: () {
-                  widget.onDeleteTheme?.call(preset);
-                  setState(() {});
+              // A saved theme is the only row here with a control that does
+              // something other than wear it, and it was a bare cross: unnamed
+              // to a screen reader and indistinguishable from closing the page.
+              Semantics(
+                button: true,
+                label: l10nOf(context).personalizeDeleteTheme(preset.name),
+                excludeSemantics: true,
+                onTap: () {
+                  deleteTheme();
                 },
-                icon: Icon(
-                  Icons.close_rounded,
-                  size: 18,
-                  color: skin.textSecondary,
+                child: IconButton(
+                  onPressed: () {
+                    deleteTheme();
+                  },
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: skin.textSecondary,
+                  ),
                 ),
               ),
           ],
@@ -1787,7 +1997,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       child: Container(
         constraints: const BoxConstraints(minHeight: 48),
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),        // Quiet means "not the main move", not "unavailable": it keeps full
+        padding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 12,
+        ), // Quiet means "not the main move", not "unavailable": it keeps full
         // contrast, since a button that looks disabled has to be explained.
         color: quiet ? skin.panel : skin.accent,
         child: Text(
@@ -1814,13 +2027,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     final worn = folder.set.pieces.any((p) => p.key == _b.artKey);
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),      decoration: BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+      decoration: BoxDecoration(
         color: skin.panel,
         border: Border(
           left: BorderSide(
-            color: worn
-                ? skin.accent
-                : skin.edge(0.3),
+            color: worn ? skin.accent : skin.edge(0.3),
             width: 3,
           ),
         ),
@@ -1872,7 +2084,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               children: [
                 for (final piece in folder.set.pieces)
                   Padding(
-                    padding: const EdgeInsets.only(right: 8),                    child: Stack(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Stack(
                       children: [
                         GestureDetector(
                           key: Key('folder-frame-${piece.key}'),
@@ -1899,15 +2112,26 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         Positioned(
                           top: 0,
                           right: 0,
-                          child: GestureDetector(
+                          // A bare cross on every picture: unnamed, and 15dp on a
+                          // 62dp tile that is itself a tap target. Named, and big
+                          // enough to hit without removing the picture next to it.
+                          child: Semantics(
+                            button: true,
+                            label: l10nOf(context).personalizeRemovePicture,
+                            excludeSemantics: true,
                             onTap: () => _removePiece(folder, piece),
-                            child: Container(
-                              color: Colors.black54,
-                              padding: const EdgeInsets.all(1),
-                              child: Icon(
-                                Icons.close_rounded,
-                                size: 13,
-                                color: skin.textPrimary,
+                            child: GestureDetector(
+                              onTap: () => _removePiece(folder, piece),
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                color: Colors.black54,
+                                alignment: Alignment.topRight,
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 13,
+                                  color: skin.textPrimary,
+                                ),
                               ),
                             ),
                           ),
@@ -1930,21 +2154,29 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     VoidCallback onTap,
   ) => InkWell(
     onTap: onTap,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),      child: Row(
-        children: [
-          Icon(icon, size: 14, color: skin.textSecondary),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: skin.textSecondary,
-              fontSize: LayoutSpec.fontMicro,
-              fontWeight: FontWeight.w800,
-              letterSpacing: trackingFor(context, 0.6),
+    // Three of these ride on every folder card and they are the only way to
+    // add, rename or delete one. At 22dp they were targets to aim at and miss;
+    // 48dp is the floor every other control in the app meets.
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: skin.textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: skin.textSecondary,
+                fontSize: LayoutSpec.fontMicro,
+                fontWeight: FontWeight.w800,
+                letterSpacing: trackingFor(context, 0.6),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -1957,8 +2189,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     addToFolder(Directory('${root.path}/art/${folder.name}'), picked);
     widget.state.setArtBundles(scanArtBundles(root.path));
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(l10nOf(context).personalizeAddedToFolder(folder.name))));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10nOf(context).personalizeAddedToFolder(folder.name)),
+      ),
+    );
   }
 
   Future<String?> _askFolderName() async {
@@ -1985,7 +2220,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10nOf(context).libraryCancel, style: TextStyle(color: _skin.textSecondary)),
+            child: Text(
+              l10nOf(context).libraryCancel,
+              style: TextStyle(color: _skin.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
@@ -2032,7 +2270,8 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
     if (!mounted) return;
-    final hex = '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+    final hex =
+        '#${argb.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
     toast(context, l10nOf(context).personalizeAccentTaken(hex));
   }
 
@@ -2058,12 +2297,14 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: _skin.panel,
         title: Text(
-          capsFor(context, l10nOf(context).personalizeDeleteFolderTitle(folder.name)),
+          capsFor(
+            context,
+            l10nOf(context).personalizeDeleteFolderTitle(folder.name),
+          ),
           style: Type.title(context, color: _skin.textPrimary),
         ),
         content: Text(
-          l10nOf(context)
-              .personalizeDeleteFolderNote(folder.set.pieces.length),
+          l10nOf(context).personalizeDeleteFolderNote(folder.set.pieces.length),
           style: TextStyle(
             color: _skin.textSecondary,
             fontSize: LayoutSpec.fontRow,
@@ -2073,7 +2314,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10nOf(context).importKeep, style: TextStyle(color: _skin.textSecondary)),
+            child: Text(
+              l10nOf(context).importKeep,
+              style: TextStyle(color: _skin.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
@@ -2127,16 +2371,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       decoration: BoxDecoration(
         color: active ? skin.accent : skin.panel,
         border: Border.all(
-          color: active
-              ? skin.accent
-              : skin.secondary(0.4),
+          color: active ? skin.accent : skin.secondary(0.4),
           width: marked && !active ? 2 : 1,
         ),
       ),
       child: Text(
         marked && !active ? '• $label' : label,
-        style: Type.caps(context,
-            color: active ? skin.onAccent : skin.textPrimary),
+        style: Type.caps(
+          context,
+          color: active ? skin.onAccent : skin.textPrimary,
+        ),
       ),
     ),
   );

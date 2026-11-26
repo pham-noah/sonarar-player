@@ -58,10 +58,23 @@ void main() {
 
     await tester.tap(find.byKey(const Key('personalize-tab-home')));
     await tester.pumpAndSettle();
-    expect(find.text('CONTINUE LISTENING'), findsOneWidget);
-    expect(find.text('NOW stays at the top — it is the page header, not a section.'),
-        findsOneWidget);
-    expect(find.text('NOW'), findsNothing);
+    // Home is the page, drawn twice on purpose: as rows you can move, and as
+    // the picture at the top of the tab. NOW is the header of both, which is
+    // why the sentence that used to stand in for it is gone.
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('home-row-continueListening')),
+        matching: find.text('CONTINUE LISTENING'),
+      ),
+      findsOneWidget,
+      reason: 'the home tab lists the sections the page will draw',
+    );
+    expect(find.text('NOW'), findsWidgets,
+        reason: 'NOW is the page header and has to be drawn where the page '
+            'draws it, in the list and at the top of the picture');
+    expect(find.textContaining('page header'), findsNothing,
+        reason: 'the header is a row now; the prose that explained its absence '
+            'would be a second, stale copy of the same fact');
   });
 
   testWidgets('one ART tab holds the picture and the folders under it',

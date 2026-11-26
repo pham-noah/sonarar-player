@@ -774,12 +774,14 @@ class PrefsStore {
     }
   }
 
+  /// Writes the settings, and lets a failed write out.
+  ///
+  /// Swallowing `FileSystemException` here meant the guard above could never
+  /// report one: a full disk lost every setting changed that session, and the
+  /// app had nothing to say about it. Reads stay tolerant — a corrupt file
+  /// should still fall back to defaults.
   Future<void> save(AppPrefs prefs) async {
-    try {
-      await file.parent.create(recursive: true);
-      await file.writeAsString(jsonEncode(prefs.toJson()));
-    } on FileSystemException {
-      // ignore: empty_catches
-    }
+    await file.parent.create(recursive: true);
+    await file.writeAsString(jsonEncode(prefs.toJson()));
   }
 }

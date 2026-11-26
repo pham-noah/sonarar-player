@@ -12,6 +12,7 @@ import '../library/exclusions.dart' show JsonMapStore;
 import '../library/play_log.dart';
 import '../library/playlist_loader.dart';
 import '../library/playlists.dart';
+import '../theme/personalization.dart';
 import '../theme/personalization_store.dart';
 import '../theme/theme_preset.dart';
 import '../library/tag_overrides.dart';
@@ -111,6 +112,12 @@ class StateStores {
   Future<void> savePrefs(AppPrefs next) => _guard('save prefs', () => prefs.save(next));
 
   Future<void> savePlaces(PlaceBook book) => _guard('save places', () => places.save(book));
+
+  Future<void> savePersonalization(Personalization p) =>
+      _guard('save personalization', () => personalization.save(p));
+
+  Future<void> saveThemePresets(List<ThemePreset> presets) =>
+      _guard('save theme presets', () => themePresets.save(presets));
 
   Future<void> savePlaylists(PlaylistsView lists) =>
       _guard('save playlists', () => playlists.save(lists));

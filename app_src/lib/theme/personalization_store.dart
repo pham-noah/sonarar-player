@@ -23,12 +23,10 @@ class PersonalizationStore {
     }
   }
 
+  /// Lets a failed write out to the guard, so a lost theme says so instead of
+  /// sliding back to the old one at the next launch with no explanation.
   Future<void> save(Personalization p) async {
-    try {
-      await file.parent.create(recursive: true);
-      await file.writeAsString(p.encode());
-    } on FileSystemException {
-      // ignore: empty_catches
-    }
+    await file.parent.create(recursive: true);
+    await file.writeAsString(p.encode());
   }
 }

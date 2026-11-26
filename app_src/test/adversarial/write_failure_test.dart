@@ -17,6 +17,12 @@ library;
 // The idea is taken from NeoTube's `failNextPush`, which arms a failed upload and
 // asserts the app retries or says so. The defect it exposes here was live in the
 // tree: nothing in `lib/` reported a failed state write.
+//
+// Arming a fault is not enough on its own — PrefsStore, SnapshotStore, PlaceStore
+// and PersonalizationStore each caught FileSystemException and returned normally,
+// so the guard never saw a *real* failure and the armed test would have passed
+// over a silent machine. The last case therefore fails a write with no hook at
+// all: a directory sitting where the file belongs.
 
 import 'dart:io';
 
@@ -117,6 +123,27 @@ void main() {
           reason: 'The armed fault was not one-shot: after one deliberate '
               'failure every later write was skipped too, so the fault itself '
               'would be the bug.');
+    });
+
+    test('a write the disk refuses is published with nothing armed', () async {
+      final stores = await StateStores.open(libraryRoot: _sandbox.path);
+      final prefs = await stores.prefs.load();
+
+      // The real fault, not a hook: a directory sitting where the file belongs
+      // makes the write fail the way a read-only volume or a full disk does.
+      // This is the case the seam alone would have hidden — every store used to
+      // swallow FileSystemException itself, so `_guard` never saw a real failure.
+      final blocked = Directory('${_sandbox.path}/.state/prefs.json')
+        ..createSync(recursive: true);
+      addTearDown(() => blocked.deleteSync(recursive: true));
+
+      await stores.savePrefs(prefs);
+
+      expect(StateStores.writeFailure.value, 'save prefs',
+          reason: 'A real refused write never reached the guard, because '
+              'PrefsStore.save caught FileSystemException and returned normally. '
+              'The armed test above would have passed anyway, proving the '
+              'plumbing while the machine stayed silent.');
     });
 
     test('every store goes through the same guard', () async {

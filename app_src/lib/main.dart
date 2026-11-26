@@ -1230,7 +1230,7 @@ class _HomeShellState extends State<HomeShell>
     _applyLocale(_prefs);
 
     widget.state.setPersonalization(await personalizationRead);
-    widget.state.onPersonalizationChanged = _stores.personalization.save;
+    widget.state.onPersonalizationChanged = _stores.savePersonalization;
 
     widget.state.applyQueuePrefs(
       defaultMode: _prefs.dynamicByDefault,
@@ -2014,10 +2014,10 @@ class _HomeShellState extends State<HomeShell>
       );
 
   late final ThemeSession _themeSession =
-      ThemeSession(save: (presets) => _stores.themePresets.save(presets));
+      ThemeSession(save: (presets) => _stores.saveThemePresets(presets));
 
   Future<void> _persistPresets() =>
-      _stores.themePresets.save(widget.state.userPresets);
+      _stores.saveThemePresets(widget.state.userPresets);
 
   Future<void> _persistPlaylists() =>
       _stores.savePlaylists(widget.state.playlists);

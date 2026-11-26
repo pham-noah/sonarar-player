@@ -249,12 +249,10 @@ class PlaceStore {
     }
   }
 
+  /// Lets a failed write out to the guard: a saved place the user pinned and
+  /// the disk refused is exactly the kind of loss worth a word.
   Future<void> save(PlaceBook book) async {
-    try {
-      await file.parent.create(recursive: true);
-      await file.writeAsString(book.encode());
-    } on FileSystemException {
-      // ignore: empty_catches
-    }
+    await file.parent.create(recursive: true);
+    await file.writeAsString(book.encode());
   }
 }

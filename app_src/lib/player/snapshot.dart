@@ -123,17 +123,15 @@ class SnapshotStore {
 
   File get _file => File('$directory/playback_state.json');
 
+  /// Lets a failed write out to the guard, which is the only thing that can
+  /// still speak to the user once the disk is gone.
   Future<void> save(PlaybackSnapshot snap) async {
-    try {
-      final dir = Directory(directory);
-      if (!await dir.exists()) await dir.create(recursive: true);
-      await _file.writeAsString(jsonEncode({
-        'version': schemaVersion,
-        ...snap.toJson(),
-      }));
-    } on FileSystemException {
-      // ignore: empty_catches
-    }
+    final dir = Directory(directory);
+    if (!await dir.exists()) await dir.create(recursive: true);
+    await _file.writeAsString(jsonEncode({
+      'version': schemaVersion,
+      ...snap.toJson(),
+    }));
   }
 
   Future<PlaybackSnapshot?> load() async {

@@ -2,6 +2,90 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.8 — 2026-11-26
+
+The UI pass. Every screen now has a name for every control, a duration for every
+transition, and something to say when a tap does nothing. Most of what is below
+was found by measuring the app — at 200% text, with a screen reader, with
+animations disabled, and as it boots — rather than by looking at it.
+
+### New
+
+- **The library can be searched.** Search shipped in code but no phone could
+  reach it: the screen only rendered when a flag nothing set was true, and the
+  one trigger focused a field that was not on screen. The library header now
+  carries a search control, its close control returns to the list, and asking
+  for search opens the screen and puts the cursor in the field on the next frame.
+- **Personalization is reachable, and it says what it is doing.** The screen
+  existed with four tabs and no route. Every swatch now announces "ACCENT, 3 of
+  18" and whether it is worn, the arrows say which way they move, and the
+  headings are localised in all five languages.
+- **Tapping the tab you are already on returns the list to its first row.** It
+  used to re-navigate to the same tab: a rebuild that left the scroll position
+  exactly where it was, so the tap looked broken in a library three hundred rows
+  deep.
+- **A queue can be worked without swiping.** Every row action a swipe performs
+  has a menu entry, the drag handles are 48dp, and the swipe removal speaks the
+  word the library already ships instead of a hardcoded English "REMOVE".
+- **Undo for the two largest single-tap losses.** Clearing what is up next and
+  removing a track from a playlist showed a dead-end toast; both offer UNDO now,
+  like removing one track already did.
+- **Downloads moved behind the library, and Settings took the third seat.** The
+  bar offered SEARCH, which opened the YouTube downloader — a screen that can do
+  nothing offline and needs a 14 MB engine. It is a page the library opens, and
+  an empty library offers it next to the folder picker.
+
+### Accessibility
+
+- **Every control has a name.** On Personalization alone, 53 controls announced
+  themselves as "button": the back arrow, 18 colour swatches, four stepper
+  arrows and every toggle. The same sweep covered Settings' steppers ("Less:
+  Fade in"), the mini player's keys, and the sort chips — which read as one run
+  of text, "RECENTS UPDATED A–Z", with no way to tell which was chosen.
+- **The app says the song's name when the song changes.** `SemanticsService` was
+  called in zero places, so skipping five tracks gave a screen reader nothing to
+  distinguish them; each new track is announced once, in the language in force,
+  and not on position ticks.
+- **The app says why a row did nothing.** A track whose file is gone failed into
+  a `debugPrint` and went idle — indistinguishable from paused. It says so now,
+  and a failure with somewhere to go stays silent so only the dead end speaks.
+
+### Fixed
+
+- **Search compares letters, not bytes.** "bjork" found nothing under Björk,
+  "sigur ros" nothing under Sigur Rós. Diacritics, full-width Latin and case are
+  folded now, punctuation is preserved (`re:zero`, `Svefn-g-englar`), and CJK,
+  Cyrillic and Greek are left alone rather than mangled.
+- **A failed save is no longer silent.** Four stores caught `FileSystemException`
+  in their own `save()` and printed it, so a full disk or a read-only volume ate
+  a session's work with nobody told. Writes let the exception out, the guard
+  publishes it, and the app says "Couldn't save your changes — the disk may be
+  full."
+- **A slow load cannot label the engine with the track it stopped loading.** Two
+  in-flight loads let the slower one land last, so a track tapped first played
+  under the title of the one tapped second.
+- **Two layouts painted Flutter's overflow marker over their own controls at
+  200% text**, and the tab label clipped mid-word at the longest locale. Page
+  titles scale down instead of ellipsising, previews ignore text scaling, and
+  rows that can overflow wrap.
+
+### Motion
+
+- **Reduce Motion is honoured, with zero duration rather than a shorter one.**
+  `MediaQuery.disableAnimations` was read in zero places, so a user who asked
+  the system to stop still got the 90ms press, the 200ms morph, the 320ms tab
+  arrival and the 528ms backdrop. `Motion.of(context, token)` is now the only
+  duration source, and it answers with zero.
+
+### Verified
+
+- `flutter analyze --fatal-infos`: 0 issues. `flutter test`: 2,302 passed,
+  4 skipped, 0 failed — including 159 adversarial probes over hostile manifests,
+  queues, caches, prefs, playlists, release documents and layouts at 2× text.
+- The UI guard suite pins what a screenshot cannot: no control unnamed, no
+  overflow at 1.3× or 2×, no transition running under Reduce Motion, no tab
+  label below 65% width, toast clearance measured on the real shell.
+
 ## 0.3.7 — 2026-11-09
 
 ### Fixed

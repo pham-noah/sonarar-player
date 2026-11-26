@@ -75,6 +75,14 @@
   "libraryUnlike": "UNLIKE",
   "libraryLike": "LIKE",
   "playerNowPlaying": "NOW PLAYING",
+  "playerNowPlayingAnnounce": "Now playing {title} by {artist}",
+  "@playerNowPlayingAnnounce": {
+    "description": "Announced to a screen reader when the playing track changes; track title and track artist are the tag values.",
+    "placeholders": {
+      "title": {"type": "String"},
+      "artist": {"type": "String"}
+    }
+  },
   "playerModeDynamicHint": "Dynamic — the queue fills itself from the context. Tap for Fixed.",
   "playerModeFixedHint": "Fixed — only what you queued. Tap for Dynamic.",
   "playerModeDynamic": "Dynamic — the queue fills itself from the context.",

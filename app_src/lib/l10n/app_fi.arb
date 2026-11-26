@@ -75,6 +75,14 @@
   "libraryUnlike": "POISTA TYYKKÄYS",
   "libraryLike": "TYYKKÄÄ",
   "playerNowPlaying": "SOI NYT",
+  "playerNowPlayingAnnounce": "Nyt soi {title}, {artist}",
+  "@playerNowPlayingAnnounce": {
+    "description": "Ruudunlukijalle ilmoitettava teksti, kun toistettava kappale vaihtuu; kappaleen nimi ja artisti ovat tagiarvot.",
+    "placeholders": {
+      "title": {"type": "String"},
+      "artist": {"type": "String"}
+    }
+  },
   "playerModeDynamicHint": "Dynaaminen — jono täyttyy itsestään kontekstista. Napauta vaihtaaksesi kiinteään.",
   "playerModeFixedHint": "Kiinteä — vain se mitä jonoitit. Napauta vaihtaaksesi dynaamiseen.",
   "playerModeDynamic": "Dynaaminen — jono täyttyy itsestään kontekstista.",

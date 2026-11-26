@@ -37,6 +37,7 @@ import 'core/shortcuts.dart';
 import 'core/prefs.dart';
 import 'widgets/download_ring.dart';
 import 'widgets/name_prompt.dart';
+import 'widgets/now_playing_announcer.dart';
 import 'widgets/toasts.dart';
 import 'widgets/fps_overlay.dart';
 import 'download/download_manager.dart';
@@ -255,7 +256,7 @@ class _SonararAppState extends State<SonararApp> {
         locale: _state.locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: HomeShell(state: _state),
+        home: NowPlayingAnnouncer(state: _state, child: HomeShell(state: _state)),
       );
       },
     );

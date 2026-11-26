@@ -75,6 +75,14 @@
   "libraryUnlike": "BỎ THÍCH",
   "libraryLike": "THÍCH",
   "playerNowPlaying": "ĐANG PHÁT",
+  "playerNowPlayingAnnounce": "Đang phát {title} của {artist}",
+  "@playerNowPlayingAnnounce": {
+    "description": "Được đọc cho trình đọc màn hình khi bài hát đang phát thay đổi; tên bài hát và nghệ sĩ là giá trị thẻ.",
+    "placeholders": {
+      "title": {"type": "String"},
+      "artist": {"type": "String"}
+    }
+  },
   "playerModeDynamicHint": "Động — hàng đợi tự chọn theo bối cảnh. Chạm để chuyển sang Cố định.",
   "playerModeFixedHint": "Cố định — chỉ phát những gì bạn xếp. Chạm để chuyển sang Động.",
   "playerModeDynamic": "Động — hàng đợi tự chọn theo bối cảnh.",

@@ -75,6 +75,14 @@
   "libraryUnlike": "取消喜欢",
   "libraryLike": "喜欢",
   "playerNowPlaying": "正在播放",
+  "playerNowPlayingAnnounce": "正在播放 {title}，{artist}",
+  "@playerNowPlayingAnnounce": {
+    "description": "播放歌曲变化时读给屏幕阅读器听；歌曲名和艺人为标签值。",
+    "placeholders": {
+      "title": {"type": "String"},
+      "artist": {"type": "String"}
+    }
+  },
   "playerModeDynamicHint": "动态——队列根据情境自动填充。点击切换到固定。",
   "playerModeFixedHint": "固定——只播放你排入的曲目。点击切换到动态。",
   "playerModeDynamic": "动态——队列根据情境自动填充。",

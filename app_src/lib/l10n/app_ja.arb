@@ -75,6 +75,14 @@
   "libraryUnlike": "お気に入りから外す",
   "libraryLike": "お気に入り",
   "playerNowPlaying": "再生中",
+  "playerNowPlayingAnnounce": "再生中: {title}／{artist}",
+  "@playerNowPlayingAnnounce": {
+    "description": "再生中の曲が変わったときにスクリーンリーダーへ読み上げる文言。曲名とアーティストがタグ値。",
+    "placeholders": {
+      "title": {"type": "String"},
+      "artist": {"type": "String"}
+    }
+  },
   "playerModeDynamicHint": "動的 — キューはコンテキストから自動で埋まります。タップで固定に切り替え。",
   "playerModeFixedHint": "固定 — 自分で並べた曲だけを再生します。タップで動的に切り替え。",
   "playerModeDynamic": "動的 — キューはコンテキストから自動で埋まります。",

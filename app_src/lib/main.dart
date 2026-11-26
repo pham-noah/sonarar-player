@@ -1082,6 +1082,9 @@ class _HomeShellState extends State<HomeShell>
   Future<bool> _loadCurrentTrack({Duration? startAt, bool autoPlay = true}) async {
     final ok = await _loader.loadCurrent(startAt: startAt, autoPlay: autoPlay);
     if (!mounted) return ok;
+    // A newer tap took the engine over while this one waited. Reporting that as
+    // a failed load would step over the track the user is actually listening to.
+    if (_loader.superseded) return false;
 
     // What to do about a failure is the shell's call: the loader reports, the
     // interface decides whether to step over the track or show it as missing.

@@ -58,16 +58,46 @@ class TrackLoader {
   /// The id of the track the engine was last given, when it took it.
   String? get loadedTrackId => _loadedTrackId;
 
+  int _generation = 0;
+  bool _superseded = false;
+
+  /// True when a newer load started while this one was in flight, so this one
+  /// abandoned the engine untouched.
+  ///
+  /// A load reads the current track, then waits on the platform player. Tap a
+  /// second track during that wait and two loads are in flight at once; without
+  /// this the slower one lands last and the engine ends up playing the track
+  /// the user tapped *first*, under the title of the one they tapped second.
+  bool get superseded => _superseded;
+
+  /// Arms the next load to stall after it has read the current track, the way a
+  /// slow disk or platform player does. Tests arm it; the app never does.
+  Future<void> Function()? debugHoldNextLoad;
+
   /// Loads whatever [state] says is current.
   ///
-  /// Returns false when there was nothing to load or the engine refused it; the
-  /// caller decides whether that is a skip, a toast or a retry.
+  /// Returns false when there was nothing to load, the engine refused it, or a
+  /// newer load took over mid-flight ([superseded]); the caller decides whether
+  /// that is a skip, a toast or a retry.
   Future<bool> loadCurrent({Duration? startAt, bool autoPlay = true}) async {
     final e = engine();
     final track = state.currentTrack;
     if (e == null || track == null) return false;
     final path = repo.absoluteFor(track);
     if (path == null) return false;
+
+    final generation = ++_generation;
+    _superseded = false;
+
+    final hold = debugHoldNextLoad;
+    if (hold != null) {
+      debugHoldNextLoad = null;
+      await hold();
+    }
+    if (generation != _generation) {
+      _superseded = true;
+      return false;
+    }
 
     e.loop = LoopController(points: loopPointsFor(track.id));
 
@@ -149,6 +179,14 @@ class TrackLoader {
       }
 
       if (ok) state.queue?.markEngineSynced();
+    }
+
+    // The engine may have taken a while. If a newer load started in the
+    // meantime it has already put the right thing in the player, and this one
+    // must not label it with the track it was loading.
+    if (generation != _generation) {
+      _superseded = true;
+      return false;
     }
 
     _fileMissing = !ok;

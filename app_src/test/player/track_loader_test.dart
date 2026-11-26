@@ -1,5 +1,7 @@
 library;
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/app_state.dart';
@@ -102,6 +104,35 @@ void main() {
       expect(h.state.queue!.engineIsStale, isFalse);
       expect(h.loader.fileMissing, isFalse);
       expect(h.loader.loadedTrackId, 't0');
+    });
+
+    test('a second tap while the first is still loading wins', () async {
+      final h = await _setup(tracks: 4);
+      final stalled = Completer<void>();
+      h.loader.debugHoldNextLoad = () => stalled.future;
+
+      // Tap t0. The load reads it, then waits on the platform player.
+      final slow = h.loader.loadCurrent();
+      await Future<void>.delayed(Duration.zero);
+
+      // Tap t2 while that first load is still in flight.
+      h.state.queue!.jumpTo('t2');
+      expect(await h.loader.loadCurrent(), isTrue,
+          reason: 'the second tap is a normal load and must succeed');
+
+      // The player finally answers the first request.
+      stalled.complete();
+
+      expect(await slow, isFalse,
+          reason: 'The superseded load reported success, so the shell believed '
+              'two loads landed and could not tell which track is playing.');
+      expect(h.loader.superseded, isTrue);
+      expect(h.engine.queuedIndex, 2,
+          reason: 'The slower load stamped the engine with the track the user '
+              'tapped first, so tapping quickly through a list played the wrong '
+              'song while the title said otherwise.');
+      expect(h.loader.loadedTrackId, 't2',
+          reason: 'The engine holds t2, so the loader must say t2.');
     });
 
     test('seeks inside a queue the engine already holds instead of resetting it',

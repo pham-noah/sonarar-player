@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show debugPrint;
 
+import 'search_fold.dart';
 import 'variants.dart';
 
 enum QueueSource {
@@ -28,7 +29,7 @@ class Track {
     required this.gainDb,
     this.romaji,
   }) : searchBlob =
-            '$title $artist $album $file ${romaji ?? ''}'.toLowerCase();
+            foldForLibrarySearch('$title $artist $album $file ${romaji ?? ''}');
 
   final String id;
   final String title;
@@ -68,7 +69,10 @@ class Track {
   bool matches(String query) => matchesTerms(searchTerms(query));
 
   static List<String> searchTerms(String query) {
-    final q = query.trim().toLowerCase();
+    // Folded, not merely lower-cased: see `search_fold.dart`. Both sides go
+    // through the same function, which is what makes a query typed with the
+    // mark find a file without it, and the reverse.
+    final q = foldForLibrarySearch(query.trim());
     return q.isEmpty ? const [] : q.split(RegExp(r'\s+'));
   }
 

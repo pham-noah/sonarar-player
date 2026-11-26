@@ -1,5 +1,6 @@
 library;
 
+import 'search_fold.dart';
 import 'compendium.dart';
 import 'play_log.dart';
 import 'playlists.dart';
@@ -46,7 +47,7 @@ List<PlaylistPlays> rankPlaylistsByPlays({
   ranked.sort((a, b) {
     final byPlays = b.plays.compareTo(a.plays);
     if (byPlays != 0) return byPlays;
-    return a.playlist.name.toLowerCase().compareTo(b.playlist.name.toLowerCase());
+    return compareFolded(a.playlist.name, b.playlist.name);
   });
   return ranked;
 }

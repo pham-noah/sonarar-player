@@ -1,3 +1,4 @@
+import '../library/search_fold.dart';
 import '../l10n/script.dart';
 import 'dart:async';
 import 'dart:io';
@@ -58,8 +59,7 @@ class _MusicFolderScreenState extends State<MusicFolderScreen> {
           .where((e) => e is Directory && !_isHidden(e.path))
           .cast<Directory>()
           .toList()
-        ..sort((a, b) => _name(a.path).toLowerCase().compareTo(
-            _name(b.path).toLowerCase()));
+        ..sort((a, b) => compareFolded(_name(a.path), _name(b.path)));
     } catch (_) {
       children = const [];
     }

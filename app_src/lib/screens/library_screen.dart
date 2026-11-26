@@ -1,5 +1,6 @@
 library;
 
+import '../library/search_fold.dart';
 import 'dart:async';
 
 import '../l10n/script.dart';
@@ -246,7 +247,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final cached = _sortedArtistsCache;
     if (cached != null) return cached;
     return _sortedArtistsCache = _byArtist.keys.toList()
-      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      ..sort(compareFolded);
   }
 
   _PlaylistKind? _playlistFilter;
@@ -1082,7 +1083,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         final ib = fileOrder[b.id];
 
         if (ia == null && ib == null) {
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+          return compareFolded(a.name, b.name);
         }
         if (ia == null) return 1;
         if (ib == null) return -1;
@@ -1092,7 +1093,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       int bySort(Playlist a, Playlist b) {
         switch (view.playlistSort) {
           case 'alpha':
-            return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+            return compareFolded(a.name, b.name);
           case 'updated':
 
             if (a.updatedAt == 0 && b.updatedAt == 0) return byFileOrder(a, b);

@@ -1,5 +1,6 @@
 library;
 
+import 'search_fold.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -252,7 +253,7 @@ class PlaylistList implements PlaylistsView {
       byFold.putIfAbsent(a.toLowerCase(), () => a);
     }
     final out = byFold.values.toList()
-      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      ..sort(compareFolded);
     return out;
   }
 

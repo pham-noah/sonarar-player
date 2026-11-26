@@ -207,9 +207,11 @@ class _ToastLayer extends StatefulWidget {
 
 class _ToastLayerState extends State<_ToastLayer>
     with SingleTickerProviderStateMixin {
+  // Set from `Motion` in didChangeDependencies; a literal here would be a
+  // second answer to a question the app answers once.
   late final AnimationController _fade = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 160),
+    duration: Duration.zero,
   );
 
   bool _started = false;

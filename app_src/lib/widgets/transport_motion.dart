@@ -128,7 +128,9 @@ class _SwapSlideState extends State<SwapSlide> {
     setState(() => _in = false);
 
     _staggerTimer?.cancel();
-    _staggerTimer = Timer(widget.stagger, () {
+    // The stagger is a hold on a blank, not a decoration: at zero the row must
+    // swap in the same frame, or Reduce Motion still shows a gap.
+    _staggerTimer = Timer(Motion.of(context, widget.stagger), () {
       if (mounted) setState(() => _in = true);
     });
   }

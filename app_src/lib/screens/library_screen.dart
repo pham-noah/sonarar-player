@@ -1984,7 +1984,7 @@ return Stack(
         bottom: 0,
         width: 3,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
+          duration: Motion.of(context, const Duration(milliseconds: 120)),
           curve: Curves.easeOut,
           color: (selected || _hovered) ? skin.accent : Colors.transparent,
         ),
@@ -1994,7 +1994,7 @@ return Stack(
         child: IgnorePointer(
           child: AnimatedContainer(
 
-            duration: const Duration(milliseconds: 120),
+            duration: Motion.of(context, const Duration(milliseconds: 120)),
             curve: Curves.easeOut,
 
             color: (_hovered || selected) ? skin.panel : Colors.transparent,

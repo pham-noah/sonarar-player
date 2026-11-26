@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../art/art_focus.dart';
+import '../theme/motion.dart';
 import '../art/art_spec.dart';
 
 class FramedArt extends StatelessWidget {
@@ -153,7 +154,7 @@ class FramedArt extends StatelessWidget {
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: from, end: 0.0),
-      duration: const Duration(milliseconds: 620),
+      duration: Motion.of(context, const Duration(milliseconds: 620)),
       curve: Curves.easeOutBack,
       builder: (context, dx, child) =>
           Transform.translate(offset: Offset(dx, 0), child: child),

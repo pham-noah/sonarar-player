@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 
 import '../library/lyrics.dart';
+import '../theme/motion.dart';
 import '../theme/skin.dart';
 
 class LyricsRow extends StatelessWidget {
@@ -129,7 +130,10 @@ class _LyricsViewState extends State<LyricsView> {
     if (!c.hasClients) return;
     final target = line * _slot;
 
-    if (jump) {
+    final glide = Motion.of(context, const Duration(milliseconds: 420));
+    // With motion asked off, sliding to the line over 420ms is exactly the
+    // thing the setting refuses: put it there.
+    if (jump || glide == Duration.zero) {
       c.jumpTo(target.clamp(0.0, c.position.maxScrollExtent));
       return;
     }
@@ -137,7 +141,7 @@ class _LyricsViewState extends State<LyricsView> {
     unawaited(
       c.animateTo(
         target,
-        duration: const Duration(milliseconds: 420),
+        duration: glide,
         curve: Curves.easeOutCubic,
       ),
     );

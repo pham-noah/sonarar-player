@@ -4,6 +4,7 @@ import '../l10n/script.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../theme/motion.dart';
 import '../theme/skin.dart';
 
 enum PanelSize {
@@ -96,7 +97,7 @@ class _InlinePanelSheetState extends State<InlinePanelSheet> {
           Align(
             alignment: Alignment.bottomCenter,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
+              duration: Motion.of(context, const Duration(milliseconds: 180)),
               curve: Curves.easeOutCubic,
               height: screen.height * _size.factor,
               decoration: BoxDecoration(

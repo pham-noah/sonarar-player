@@ -2070,11 +2070,14 @@ class _HomeShellState extends State<HomeShell>
   /// The mini player only counts when it is on screen: reserving its height with
   /// nothing playing floats a toast a third of the way up the screen for no
   /// reason.
+  /// The system gesture inset is deliberately *not* in here: both toast paths
+  /// add it themselves — the overlay through its `SafeArea`, a floating
+  /// `SnackBar` through the Scaffold — so counting it twice would lift every
+  /// toast a gesture bar's height off the bars.
   double get _bottomBarsHeight {
     final miniShowing = !_showPlayer.value && widget.state.currentTrack != null;
     return LayoutSpec.tabBarHeight +
-        (miniShowing ? LayoutSpec.miniPlayerHeight : 0) +
-        MediaQuery.viewPaddingOf(context).bottom;
+        (miniShowing ? LayoutSpec.miniPlayerHeight : 0);
   }
 
   /// What a toast must keep clear, with air above the bars.
@@ -3413,11 +3416,19 @@ class _HomeShellState extends State<HomeShell>
         ),
     };
 
-    return ToastClearance(
-      // The bars, plus the system gesture inset the bars themselves are padded
-      // by, plus a little air so the toast does not touch them.
-      height: _bottomBarsHeight + 8,
+    // Rebuilt with `_showPlayer`, not just with the frame: opening the player
+    // hides the mini player, and a height published before that would leave a
+    // toast from a screen below either floating 64dp high or sitting on the bar
+    // that is now there.
+    return ValueListenableBuilder<bool>(
+      valueListenable: _showPlayer,
       child: frame,
+      builder: (context, showPlayer, frame) => ToastClearance(
+        // The bars, plus the system gesture inset the bars themselves are padded
+        // by, plus a little air so the toast does not touch them.
+        height: _bottomBarsHeight + 8,
+        child: frame!,
+      ),
     );
   }
 

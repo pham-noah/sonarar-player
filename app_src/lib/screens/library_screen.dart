@@ -18,6 +18,7 @@ import '../library/rediscovery.dart';
 import '../library/downloaded_tracks.dart';
 import '../library/track.dart';
 import '../theme/layout.dart';
+import '../theme/motion.dart';
 import '../core/time_format.dart';
 import '../theme/skin.dart';
 import '../theme/tokens.dart';
@@ -68,6 +69,7 @@ class LibraryScreenView {
     this.likedIds = const {},
     this.likedOrder = const [],
     this.searchRequest = 0,
+    this.topRequest = 0,
     this.onChooseFolder,
     this.onFindMusic,
     this.closeListRequest = 0,
@@ -142,6 +144,11 @@ class LibraryScreenView {
   final List<String> likedOrder;
 
   final int searchRequest;
+
+  /// Bumped when the shell wants this list back at the top — a re-tap on the
+  /// Library tab. A counter rather than a callback so the position stays where
+  /// it lives, in this screen's own scroll controller.
+  final int topRequest;
 
   /// Opens the folder picker from the empty library. Without it the empty
   /// state can only name the folder it wanted, which is not an action.
@@ -230,6 +237,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final _searchFocus = FocusNode();
   final _listController = ScrollController();
 
+  /// Returns the list to its first row. A re-tap on the tab is the only way to
+  /// ask for this, and it is a jump when the user asked for no motion — a
+  /// 200ms glide is still a glide, and the point of the tap is to arrive.
+  void _popToTop() {
+    if (!_listController.hasClients || _listController.offset <= 0) return;
+    final duration = Motion.of(context, Motion.base);
+    if (duration == Duration.zero) {
+      _listController.jumpTo(0);
+    } else {
+      unawaited(_listController.animateTo(0,
+          duration: duration, curve: Curves.easeOutCubic));
+    }
+  }
+
   static const double _kLibraryBottomAir = 16;
 
   double get _clearance =>
@@ -305,6 +326,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (old.view.searchOnly != view.searchOnly) {
       _searchOpen = view.searchOnly;
     }
+
+    if (old.view.topRequest != view.topRequest) _popToTop();
 
     if (old.view.searchRequest != view.searchRequest) {
       // The field only exists once the search screen is open, so the request

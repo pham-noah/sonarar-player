@@ -1830,6 +1830,10 @@ class _HomeShellState extends State<HomeShell>
 
   int _searchRequest = 0;
 
+  /// Bumped when the user re-taps the tab they are already on, which asks the
+  /// library for its first row.
+  int _topRequest = 0;
+
   bool _lyricsMode = false;
 
   Lyrics? _lyrics;
@@ -2948,6 +2952,7 @@ class _HomeShellState extends State<HomeShell>
         onAddSongsTo: _addSongsToPlaylist,
 
         searchRequest: _searchRequest,
+        topRequest: _topRequest,
         closeListRequest: _closeListRequest,
         onListOpenChanged: (open) {
           if (open != _libraryListOpen) {
@@ -3387,6 +3392,7 @@ class _HomeShellState extends State<HomeShell>
           showHome: _homeAvailable,
 
           onSelect: _selectTab,
+          onReselect: _reselectTab,
         ),
       ],
     );
@@ -3459,6 +3465,17 @@ class _HomeShellState extends State<HomeShell>
         child: frame!,
       ),
     );
+  }
+
+  /// A tap on the tab already in force: take me back to the top of it.
+  ///
+  /// Only the library scrolls deep enough to need it; the other two tabs are
+  /// one screen tall, so a counter bump there would be a no-op with a side
+  /// effect on rebuilds.
+  void _reselectTab(AppTab t) {
+    if (t != AppTab.library) return;
+    if (_tab != AppTab.library) return;
+    setState(() => _topRequest += 1);
   }
 
   void _selectTab(AppTab t) {

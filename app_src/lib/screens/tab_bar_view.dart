@@ -25,6 +25,7 @@ class TabBarView2 extends StatelessWidget {
     required this.skin,
     required this.current,
     required this.onSelect,
+    this.onReselect,
     this.presentation,
     this.showHome = true,
   });
@@ -32,6 +33,11 @@ class TabBarView2 extends StatelessWidget {
   final Skin skin;
   final AppTab current;
   final ValueChanged<AppTab> onSelect;
+
+  /// Tapping the tab you are already on. Every list app returns to the top of
+  /// the list it is already showing; without this the only way back from three
+  /// hundred rows down is to flick until it stops.
+  final ValueChanged<AppTab>? onReselect;
 
   final Presentation? presentation;
 
@@ -103,7 +109,12 @@ class TabBarView2 extends StatelessWidget {
         child: InkWell(
         onTap: () {
           unawaited(HapticFeedback.selectionClick());
-          onSelect(tab);
+          if (active) {
+            // Already here: this is a "take me back" tap, not a navigation.
+            onReselect?.call(tab);
+          } else {
+            onSelect(tab);
+          }
         },
         child: Stack(
           children: [

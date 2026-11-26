@@ -373,6 +373,27 @@ void main() {
       );
     });
 
+    // The empty state of the one square that carries the whole screen. A track
+    // with no cover file used to draw a void; this shot is what a reader
+    // compares the placeholder against.
+    testWidgets('player no cover $w', (tester) async {
+      final s = _state(playing: true);
+      await _shootWidget(
+        tester,
+        'player_no_cover',
+        size,
+        PlayerScreen(
+          view: PlayerView(
+            state: s,
+            track: s.currentTrack,
+            cover: null,
+            onPlayPause: () {},
+          ),
+        ),
+        state: s,
+      );
+    });
+
     testWidgets('settings light skin $w', (tester) async {
       final s = _state()..chooseSkinManually(SkinId.minimal);
       await _shootWidget(

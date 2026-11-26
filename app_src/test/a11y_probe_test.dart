@@ -79,8 +79,9 @@ List<String> _unlabelledTappables(WidgetTester tester) {
     SemanticsNode? cursor = node.parent;
     while (cursor != null) {
       final l = cursor.getSemanticsData().label.trim();
-      if (l.isNotEmpty)
+      if (l.isNotEmpty) {
         return ' inside "${l.length > 24 ? l.substring(0, 24) : l}"';
+      }
       cursor = cursor.parent;
     }
     return '';
@@ -174,6 +175,10 @@ void main() {
           libraryRoot: '/music',
           likedIds: {'a'},
           onPlaylistSort: (_) {},
+          // Non-null on purpose. With both null the header drew a dead sort row
+          // and no view toggle, so the probe had nothing to inspect and passed
+          // while the toggle announced an unlabelled button.
+          onPlaylistGrid: (_) {},
         ),
       ),
     );

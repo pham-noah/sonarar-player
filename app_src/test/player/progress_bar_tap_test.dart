@@ -51,6 +51,37 @@ void main() {
     },
   );
 
+  testWidgets('the band you aim at is 48 dp tall, not 26', (tester) async {
+    final pos = ValueNotifier<Duration>(Duration.zero);
+    final dur = ValueNotifier<Duration?>(const Duration(seconds: 200));
+    addTearDown(pos.dispose);
+    addTearDown(dur.dispose);
+
+    await tester.pumpWidget(host(pos, dur));
+
+    final rect = tester.getRect(find.byType(PlayerProgressBar));
+    expect(
+      rect.height,
+      greaterThanOrEqualTo(48),
+      reason:
+          'The scrub band is ${rect.height} dp tall while the line it draws '
+          'is 7 dp. Seeking is the thing a music player is for, and this was the '
+          'smallest target in the app after the folder buttons.',
+    );
+
+    // 3 dp inside the top edge: inside the new 48 dp band, 10 dp above the
+    // painted 7 dp line. Before the fix this landed on nothing at all.
+    await tester.tapAt(Offset(rect.left + 100, rect.top + 3));
+    await tester.pumpAndSettle();
+    expect(
+      pos.value,
+      const Duration(seconds: 100),
+      reason:
+          'a tap at the top of the band did not seek, so the extra height is '
+          'paint and not target',
+    );
+  });
+
   testWidgets('a DRAG holds the bar under the finger until it ends', (
     tester,
   ) async {

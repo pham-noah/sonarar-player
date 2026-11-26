@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
+import 'no_cover.dart';
 import 'cross_fade_slot.dart';
 
 class CoverPlayButton extends StatelessWidget {
@@ -85,7 +86,7 @@ class CoverPlayButton extends StatelessWidget {
 
   Widget _fallback() {
     final icon = fallbackIcon;
-    if (icon == null) return ColoredBox(color: skin.panel);
+    if (icon == null) return NoCover(skin: skin, size: size);
     return ColoredBox(
       color: skin.panel,
       child: Icon(

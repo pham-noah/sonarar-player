@@ -602,8 +602,9 @@ class PlayerScreen extends StatelessWidget {
     final out = <({IconData icon, String label})>[];
 
     final sky = weatherIcon(view.weather);
-    if (sky != null)
+    if (sky != null) {
       out.add((icon: sky, label: weatherName(l10nOf(context), view.weather)));
+    }
 
     if (view.placeName != null && view.placeName!.trim().isNotEmpty) {
       out.add((
@@ -1823,7 +1824,10 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
       transform: Matrix4.skewX(-skew),
       alignment: Alignment.centerLeft,
       child: SizedBox(
-        height: 26,
+        // 48 of target around 7 of ink. The most-used control in a music player
+        // was a 26 dp band: the line you aim at is 404 dp wide and 7 dp tall,
+        // and a thumb that lands 10 dp off it lands on nothing.
+        height: Space.tap,
         child: LayoutBuilder(
           builder: (context, box) => ValueListenableBuilder<Duration>(
             valueListenable: widget.position,

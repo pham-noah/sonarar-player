@@ -8,6 +8,7 @@ import '../l10n/script.dart';
 import '../library/playlists.dart';
 import '../library/track.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 
 enum LibraryView { playlists, artists, songs }
 
@@ -316,12 +317,27 @@ class PlaylistRow extends StatelessWidget {
               ),
             ),
             if (onPlay != null && !empty)
-              GestureDetector(
+              // A 26 dp triangle with no name, on the card whose whole point is
+              // that triangle. Same floor as everything else: 48 of target
+              // around the glyph, and a label that says which playlist it
+              // starts.
+              Semantics(
+                button: true,
+                label: l10nOf(context).libraryPlayPlaylist(playlist.name),
+                excludeSemantics: true,
                 onTap: onPlay,
-                child: Icon(
-                  Icons.play_arrow_rounded,
-                  color: skin.accentInk,
-                  size: 26,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onPlay,
+                  child: SizedBox(
+                    width: Space.tap,
+                    height: Space.tap,
+                    child: Icon(
+                      Icons.play_arrow_rounded,
+                      color: skin.accentInk,
+                      size: 26,
+                    ),
+                  ),
                 ),
               ),
           ],

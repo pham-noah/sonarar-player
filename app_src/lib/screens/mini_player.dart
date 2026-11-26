@@ -17,6 +17,7 @@ import '../theme/layout.dart';
 import '../theme/surface.dart';
 import '../theme/tokens.dart';
 import '../widgets/cross_fade_slot.dart';
+import '../widgets/no_cover.dart';
 import '../widgets/pressable.dart';
 
 class MiniPlayer extends StatefulWidget {
@@ -425,12 +426,19 @@ class _MiniPlayerState extends State<MiniPlayer> {
         child: CrossFadeSlot(
           keyValue: widget.track.id,
           child: widget.cover == null
-              ? ColoredBox(color: widget.skin.background)
+              ? NoCover(
+                  skin: widget.skin,
+                  size: size,
+                  panel: widget.skin.background,
+                )
               : Image(
                   image: ResizeImage(widget.cover!, width: 132),
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      ColoredBox(color: widget.skin.background),
+                  errorBuilder: (_, __, ___) => NoCover(
+                    skin: widget.skin,
+                    size: size,
+                    panel: widget.skin.background,
+                  ),
                 ),
         ),
       ),

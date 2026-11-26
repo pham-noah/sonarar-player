@@ -551,6 +551,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 
+  void _toggleGrid() {
+    unawaited(HapticFeedback.selectionClick());
+    view.onPlaylistGrid!(!_playlistsAreGrid);
+  }
+
   Widget _sortSegment(Skin skin, String label, String value) {
     final on = view.playlistSort == value;
 
@@ -567,25 +572,41 @@ class _LibraryScreenState extends State<LibraryScreen> {
       onTap: view.onPlaylistSort == null
           ? null
           : () => view.onPlaylistSort!(value),
+      // 36 of ink inside 48 of target: the chip stays the size the header
+      // wants and the thing your thumb has to hit does not. At 27 the three
+      // chips were the smallest targets on a screen whose whole job is
+      // tapping them.
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: view.onPlaylistSort == null
             ? null
             : () => view.onPlaylistSort!(value),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          decoration: BoxDecoration(
-            color: on
-                ? skin.accentAt(0.92)
-                : skin.background.withValues(alpha: 0.45),
-            border: Border.all(color: on ? skin.accent : skin.borderStrong),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: kBrowserChipFont,
-              letterSpacing: trackingFor(context, 0.3),
-              fontWeight: FontWeight.w800,
-              color: on ? skin.onAccent : skin.textPrimary,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 36),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: on
+                  ? skin.accentAt(0.92)
+                  : skin.background.withValues(alpha: 0.45),
+              border: Border.all(color: on ? skin.accent : skin.borderStrong),
+            ),
+            // widthFactor 1 keeps the chip as wide as its word: a bare
+            // `alignment:` on the container expands it to the whole row, which
+            // turned three chips into three full-width bars.
+            child: Align(
+              alignment: Alignment.center,
+              widthFactor: 1,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: kBrowserChipFont,
+                  letterSpacing: trackingFor(context, 0.3),
+                  fontWeight: FontWeight.w800,
+                  color: on ? skin.onAccent : skin.textPrimary,
+                ),
+              ),
             ),
           ),
         ),
@@ -1029,8 +1050,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (view.tracks.isEmpty && (view.playlists?.length ?? 0) == 0) {
       return _list(skin);
     }
-    if (_openPlaylist != null || _openArtist != null)
+    if (_openPlaylist != null || _openArtist != null) {
       return _filteredList(skin);
+    }
     switch (_view) {
       case LibraryView.playlists:
         return _playlistsView(skin);
@@ -1225,18 +1247,34 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
               const SizedBox(width: 8),
 
-              GestureDetector(
-                onTap: view.onPlaylistGrid == null
-                    ? null
-                    : () => view.onPlaylistGrid!(!_playlistsAreGrid),
-                child: Icon(
-                  _playlistsAreGrid
-                      ? Icons.view_list_rounded
-                      : Icons.grid_view_rounded,
-                  color: view.onPlaylistGrid == null
-                      ? skin.secondary(0.4)
-                      : skin.accentInk,
-                  size: 24,
+              // A 24 dp glyph with no name: the only way to change how
+              // playlists are drawn was the smallest thing in the header, and
+              // it announced nothing at all. The a11y probe missed it because
+              // its fixture passed a null callback, so the control it drew was
+              // dead and had no semantics to complain about.
+              Semantics(
+                button: true,
+                toggled: _playlistsAreGrid,
+                label: l10nOf(context).libraryPlaylistsGrid,
+                excludeSemantics: true,
+                enabled: view.onPlaylistGrid != null,
+                onTap: view.onPlaylistGrid == null ? null : () => _toggleGrid(),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: view.onPlaylistGrid == null ? null : _toggleGrid,
+                  child: SizedBox(
+                    width: Space.tap,
+                    height: Space.tap,
+                    child: Icon(
+                      _playlistsAreGrid
+                          ? Icons.view_list_rounded
+                          : Icons.grid_view_rounded,
+                      color: view.onPlaylistGrid == null
+                          ? skin.secondary(0.4)
+                          : skin.accentInk,
+                      size: 24,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -1536,94 +1574,110 @@ class _LibraryScreenState extends State<LibraryScreen> {
           // The empty library used to name a path and stop there. An empty
           // state that cannot be acted on is a dead end, so the one control
           // that fixes it sits under the sentence.
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                broken
-                    ? (view.accessDenied
-                          ? Icons.folder_off_rounded
-                          : Icons.folder_delete_rounded)
-                    : Icons.library_music_outlined,
-                size: 64,
-                color: broken ? skin.accentInk : skin.textSecondary,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                broken
-                    ? (view.accessDenied
-                          ? l10n.libraryUnreadableTitle
-                          : l10n.libraryMissingTitle)
-                    : l10n.libraryEmptyTitle,
-                style: Type.display(context, color: skin.textPrimary),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                broken
-                    ? (view.accessDenied
-                          ? l10n.libraryUnreadableBody
-                          : l10n.libraryMissingBody)
-                    : l10n.libraryEmptyBody,
-                style: Type.bodyBase(context, color: skin.textSecondary),
-                textAlign: TextAlign.center,
-              ),
-              if (view.onChooseFolder != null) ...[
-                const SizedBox(height: 24),
-                Semantics(
-                  button: true,
-                  label: l10n.libraryChooseFolder,
-                  child: GestureDetector(
-                    onTap: view.onChooseFolder,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Space.xl,
-                        vertical: Space.lg,
-                      ),
-                      color: skin.accent,
-                      child: Text(
-                        l10n.libraryChooseFolder,
-                        style: Type.caps(context, color: skin.onAccent),
-                      ),
-                    ),
-                  ),
+          //
+          // IntrinsicWidth + stretch is what makes the two controls one block:
+          // they were 172 and 192 wide, two different widths stacked on the
+          // same centre line, which reads as a mistake rather than a hierarchy.
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(
+                  broken
+                      ? (view.accessDenied
+                            ? Icons.folder_off_rounded
+                            : Icons.folder_delete_rounded)
+                      : Icons.library_music_outlined,
+                  size: 64,
+                  color: broken ? skin.accentInk : skin.textSecondary,
                 ),
-              ],
-              if (view.onFindMusic != null) ...[
-                const SizedBox(height: 8),
-                Semantics(
-                  button: true,
-                  label: l10n.libraryFindMusic,
-                  child: GestureDetector(
-                    onTap: view.onFindMusic,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Space.xl,
-                        vertical: Space.md,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: skin.accent, width: 1.5),
-                      ),
-                      child: Text(
-                        l10n.libraryFindMusic,
-                        style: Type.caps(context, color: skin.accentInk),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              if (root != null && root.isNotEmpty) ...[
                 const SizedBox(height: 24),
                 Text(
-                  '${l10n.settingsMusicFolder}\n$root',
-                  style: TextStyle(
-                    fontSize: LayoutSpec.fontLabel,
-                    color: skin.textSecondary,
-                  ),
+                  broken
+                      ? (view.accessDenied
+                            ? l10n.libraryUnreadableTitle
+                            : l10n.libraryMissingTitle)
+                      : l10n.libraryEmptyTitle,
+                  style: Type.display(context, color: skin.textPrimary),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 8),
+                Text(
+                  broken
+                      ? (view.accessDenied
+                            ? l10n.libraryUnreadableBody
+                            : l10n.libraryMissingBody)
+                      : l10n.libraryEmptyBody,
+                  style: Type.bodyBase(context, color: skin.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                if (view.onChooseFolder != null) ...[
+                  const SizedBox(height: 24),
+                  Semantics(
+                    button: true,
+                    label: l10n.libraryChooseFolder,
+                    child: GestureDetector(
+                      onTap: view.onChooseFolder,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Space.xl,
+                          vertical: Space.lg,
+                        ),
+                        constraints: const BoxConstraints(minHeight: Space.tap),
+                        color: skin.accent,
+                        child: Text(
+                          l10n.libraryChooseFolder,
+                          // The two controls are stretched to one width, so the
+                          // label has to say centre or it hangs off the left.
+                          textAlign: TextAlign.center,
+                          style: Type.caps(context, color: skin.onAccent),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                if (view.onFindMusic != null) ...[
+                  const SizedBox(height: 8),
+                  Semantics(
+                    button: true,
+                    label: l10n.libraryFindMusic,
+                    child: GestureDetector(
+                      onTap: view.onFindMusic,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Space.xl,
+                          vertical: Space.md,
+                        ),
+                        // 12 of padding over a 20 dp cap is 44, under the 48 dp
+                        // floor: the outlined exit was the one control on the
+                        // empty state a thumb could miss.
+                        constraints: const BoxConstraints(minHeight: Space.tap),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: skin.accent, width: 1.5),
+                        ),
+                        child: Text(
+                          l10n.libraryFindMusic,
+                          textAlign: TextAlign.center,
+                          style: Type.caps(context, color: skin.accentInk),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                if (root != null && root.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Text(
+                    '${l10n.settingsMusicFolder}\n$root',
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontLabel,
+                      color: skin.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );
@@ -2083,10 +2137,7 @@ class _TrackRowState extends State<_TrackRow> {
                     bottom: 0,
                     width: 3,
                     child: AnimatedContainer(
-                      duration: Motion.of(
-                        context,
-                        const Duration(milliseconds: 120),
-                      ),
+                      duration: Motion.of(context, Motion.row),
                       curve: Curves.easeOut,
                       color: (selected || _hovered)
                           ? skin.accent
@@ -2097,10 +2148,7 @@ class _TrackRowState extends State<_TrackRow> {
                   Positioned.fill(
                     child: IgnorePointer(
                       child: AnimatedContainer(
-                        duration: Motion.of(
-                          context,
-                          const Duration(milliseconds: 120),
-                        ),
+                        duration: Motion.of(context, Motion.row),
                         curve: Curves.easeOut,
 
                         color: (_hovered || selected)

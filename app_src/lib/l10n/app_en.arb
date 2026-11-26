@@ -61,9 +61,23 @@
   "libraryEmptyArtist": "No tracks by this artist.",
   "libraryRecents": "RECENTS",
   "libraryUpdated": "UPDATED",
+  "libraryPlaylistsGrid": "Playlists as a grid",
+  "@libraryPlaylistsGrid": {
+    "description": "The switch in the library header that shows playlists as a grid instead of a list."
+  },
   "libraryNoPlaylists": "No playlists yet.",
   "libraryNoArtists": "No artists.",
   "libraryNewPlaylist": "New playlist",
+  "libraryPlayPlaylist": "Play {name}",
+  "@libraryPlayPlaylist": {
+    "description": "Accessible name of the play button on a playlist card.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Morning run"
+      }
+    }
+  },
   "libraryPlaylistName": "Name",
   "libraryCancel": "CANCEL",
   "libraryCreate": "CREATE",
@@ -494,6 +508,10 @@
   "outputHdmi": "HDMI",
   "outputThisPhone": "THIS PHONE",
   "outputVolume": "VOLUME",
+  "audioMute": "Mute",
+  "@audioMute": {
+    "description": "The speaker button beside the volume slider; it mutes, so its state is reported separately."
+  },
   "outputPlaysThrough": "PLAYS THROUGH",
   "outputChange": "CHANGE OUTPUT",
   "compendiumNotHeard": "Not heard yet",

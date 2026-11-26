@@ -1,14 +1,18 @@
 library;
 
+import 'dart:async';
+
 import '../l10n/script.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/l10n.dart';
 
 import '../player/audio_route.dart';
 import '../theme/skin.dart';
+import '../theme/tokens.dart';
 
 String _kindLabel(AppLocalizations l10n, String kind) => switch (kind) {
   'bluetooth' => l10n.outputBluetooth,
@@ -40,6 +44,11 @@ class AudioPanel extends StatelessWidget {
 
   final VoidCallback? onPickOutput;
 
+  void _toggleMute() {
+    unawaited(HapticFeedback.selectionClick());
+    onVolume(muted ? 1.0 : 0.0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = l10nOf(context);
@@ -49,12 +58,27 @@ class AudioPanel extends StatelessWidget {
         _SectionLabel(skin: skin, text: l10n.outputVolume),
         Row(
           children: [
-            GestureDetector(
-              onTap: () => onVolume(muted ? 1.0 : 0.0),
-              child: Icon(
-                muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-                color: muted ? skin.accentInk : skin.textSecondary,
-                size: 22,
+            // 22 dp, unnamed, and it was the one control here that changes
+            // state rather than a value: the slider says what the volume is,
+            // nothing said whether the speaker was off.
+            Semantics(
+              button: true,
+              toggled: muted,
+              label: l10n.audioMute,
+              excludeSemantics: true,
+              onTap: () => _toggleMute(),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: _toggleMute,
+                child: SizedBox(
+                  width: Space.tap,
+                  height: Space.tap,
+                  child: Icon(
+                    muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                    color: muted ? skin.accentInk : skin.textSecondary,
+                    size: 22,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 8),

@@ -48,6 +48,11 @@ abstract final class Motion {
   /// A sheet or a panel arriving.
   static const Duration panel = base;
 
+  /// A row's own paint: the left marker and the hover wash under a track.
+  /// Separate from [panel] because a list of twelve rows at 200 ms reads as
+  /// a lag rather than a highlight.
+  static const Duration row = Duration(milliseconds: 120);
+
   /// A whole screen of content arriving.
   static const Duration tabArrival = screen;
 

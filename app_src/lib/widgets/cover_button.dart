@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
+import 'no_cover.dart';
 
 class CoverButton extends StatefulWidget {
   const CoverButton({
@@ -62,7 +63,7 @@ class _CoverButtonState extends State<CoverButton> {
             fit: StackFit.expand,
             children: [
               if (widget.cover == null)
-                ColoredBox(color: skin.panel)
+                NoCover(skin: skin, size: widget.size)
               else
                 Image(
                   image: ResizeImage(
@@ -70,7 +71,8 @@ class _CoverButtonState extends State<CoverButton> {
                     width: (widget.size * 3).round(),
                   ),
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => ColoredBox(color: skin.panel),
+                  errorBuilder: (_, __, ___) =>
+                      NoCover(skin: skin, size: widget.size),
                 ),
 
               if (show) ColoredBox(color: Colors.black.withValues(alpha: 0.45)),

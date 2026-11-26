@@ -22,14 +22,15 @@ import 'package:sonarar/screens/queue_screen.dart';
 import 'package:sonarar/screens/settings_screen.dart';
 
 Track _t(String id, String title, String artist) => Track(
-      id: id,
-      title: title,
-      artist: artist,
-      album: 'Persona 3 Reload',
-      duration: const Duration(seconds: 208),
-      file: '$id.opus',
-      cover: '',
-      gainDb: -3.0);
+  id: id,
+  title: title,
+  artist: artist,
+  album: 'Persona 3 Reload',
+  duration: const Duration(seconds: 208),
+  file: '$id.opus',
+  cover: '',
+  gainDb: -3.0,
+);
 
 final _lib = <Track>[
   _t('a', '全ての人の魂の戦い', 'ATLUS Sound Team'),
@@ -44,10 +45,9 @@ AppState _state() {
 }
 
 Future<void> _pump(WidgetTester tester, Widget child) async {
-  await tester.pumpWidget(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Scaffold(body: child),
-  ));
+  await tester.pumpWidget(
+    MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: child)),
+  );
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 400));
 }
@@ -79,7 +79,8 @@ List<String> _unlabelledTappables(WidgetTester tester) {
     SemanticsNode? cursor = node.parent;
     while (cursor != null) {
       final l = cursor.getSemanticsData().label.trim();
-      if (l.isNotEmpty) return ' inside "${l.length > 24 ? l.substring(0, 24) : l}"';
+      if (l.isNotEmpty)
+        return ' inside "${l.length > 24 ? l.substring(0, 24) : l}"';
       cursor = cursor.parent;
     }
     return '';
@@ -90,10 +91,12 @@ List<String> _unlabelledTappables(WidgetTester tester) {
     final tap = data.hasAction(SemanticsAction.tap);
     final long = data.hasAction(SemanticsAction.longPress);
     if ((tap || long) && (labelOf(node) ?? '').trim().isEmpty) {
-      out.add('${data.tooltip.isEmpty ? 'no tooltip' : 'tooltip'} '
-          '${node.rect.width.round()}×${node.rect.height.round()}'
-          '${tap ? ' tap' : ''}${long ? ' long-press' : ''}'
-          '${where(node)}');
+      out.add(
+        '${data.tooltip.isEmpty ? 'no tooltip' : 'tooltip'} '
+        '${node.rect.width.round()}×${node.rect.height.round()}'
+        '${tap ? ' tap' : ''}${long ? ' long-press' : ''}'
+        '${where(node)}',
+      );
     }
     node.visitChildren((child) {
       walk(child);
@@ -120,16 +123,22 @@ void main() {
 
     final s = _state();
     await _pump(
-        tester,
-        PlayerScreen(
-            view: PlayerView(state: s, track: s.currentTrack, cover: null)));
+      tester,
+      PlayerScreen(
+        view: PlayerView(state: s, track: s.currentTrack, cover: null),
+      ),
+    );
 
     final bare = _unlabelledTappables(tester);
     handle.dispose();
 
-    expect(bare, isEmpty,
-        reason: 'the player is the screen a screen-reader user reaches most '
-            'often, and each of these announces as "button"');
+    expect(
+      bare,
+      isEmpty,
+      reason:
+          'the player is the screen a screen-reader user reaches most '
+          'often, and each of these announces as "button"',
+    );
   });
 
   testWidgets('settings announces every control it draws', (tester) async {
@@ -141,9 +150,13 @@ void main() {
     final bare = _unlabelledTappables(tester);
     handle.dispose();
 
-    expect(bare, isEmpty,
-        reason: 'here a bare button is a setting nobody can identify, so it '
-            'cannot be changed');
+    expect(
+      bare,
+      isEmpty,
+      reason:
+          'here a bare button is a setting nobody can identify, so it '
+          'cannot be changed',
+    );
   });
 
   testWidgets('the library announces every control it draws', (tester) async {
@@ -152,16 +165,18 @@ void main() {
 
     final s = _state();
     await _pump(
-        tester,
-        LibraryScreen(
-            view: LibraryScreenView(
+      tester,
+      LibraryScreen(
+        view: LibraryScreenView(
           tracks: _lib,
           coverPathFor: (_) => null,
           skin: s.skin,
           libraryRoot: '/music',
           likedIds: {'a'},
           onPlaylistSort: (_) {},
-        )));
+        ),
+      ),
+    );
 
     final bare = _unlabelledTappables(tester);
     handle.dispose();
@@ -179,42 +194,52 @@ void main() {
     final bare = _unlabelledTappables(tester);
     handle.dispose();
 
-    expect(bare, isEmpty,
-        reason: 'the queue is mostly rows you swipe; a row whose swipe targets '
-            'are unnamed is a row that cannot be edited without sight');
+    expect(
+      bare,
+      isEmpty,
+      reason:
+          'the queue is mostly rows you swipe; a row whose swipe targets '
+          'are unnamed is a row that cannot be edited without sight',
+    );
   });
 
-  testWidgets('the mini player announces every control it draws',
-      (tester) async {
+  testWidgets('the mini player announces every control it draws', (
+    tester,
+  ) async {
     phone(tester);
     final handle = tester.ensureSemantics();
 
     final s = _state();
     await _pump(
-        tester,
-        MiniPlayer(
-          skin: s.skin,
-          track: s.currentTrack!,
-          cover: null,
-          playing: true,
-          // A playing bar has a position, so the scrub has something to say and
-          // the two ±5s actions exist: an unseekable bar would pass this probe
-          // while the control it is testing sits inert.
-          position: const Duration(seconds: 42),
-          duration: const Duration(seconds: 208),
-          onSeek: (_) {},
-          onPlayPause: () {},
-          onCycleRepeat: () {},
-          repeatMode: RepeatMode.off,
-          onOpen: () {},
-          onDisband: () {},
-        ));
+      tester,
+      MiniPlayer(
+        skin: s.skin,
+        track: s.currentTrack!,
+        cover: null,
+        playing: true,
+        // A playing bar has a position, so the scrub has something to say and
+        // the two ±5s actions exist: an unseekable bar would pass this probe
+        // while the control it is testing sits inert.
+        position: const Duration(seconds: 42),
+        duration: const Duration(seconds: 208),
+        onSeek: (_) {},
+        onPlayPause: () {},
+        onCycleRepeat: () {},
+        repeatMode: RepeatMode.off,
+        onOpen: () {},
+        onDisband: () {},
+      ),
+    );
 
     final bare = _unlabelledTappables(tester);
     handle.dispose();
 
-    expect(bare, isEmpty,
-        reason: 'the bar sits over every screen, so a bare button here is the '
-            'one nobody can skip past');
+    expect(
+      bare,
+      isEmpty,
+      reason:
+          'the bar sits over every screen, so a bare button here is the '
+          'one nobody can skip past',
+    );
   });
 }

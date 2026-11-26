@@ -54,7 +54,6 @@ class CoverPlayButton extends StatelessWidget {
       builder: (hovered) => Stack(
         fit: StackFit.expand,
         children: [
-
           if (fadeKey == null)
             _art()
           else
@@ -133,7 +132,9 @@ class _HoverableCoverState extends State<_HoverableCover> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor: widget.onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
+      cursor: widget.onTap == null
+          ? MouseCursor.defer
+          : SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
@@ -143,9 +144,7 @@ class _HoverableCoverState extends State<_HoverableCover> {
           height: widget.size,
           decoration: BoxDecoration(
             border: widget.showBorder
-                ? Border.all(
-                    color: widget.skin.accentAt(0.5),
-                  )
+                ? Border.all(color: widget.skin.accentAt(0.5))
                 : null,
           ),
           child: widget.builder(_hovered),

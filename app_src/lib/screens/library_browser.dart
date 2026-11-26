@@ -50,82 +50,105 @@ class LibraryBrowserBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
       child: SizedBox(
-      height: 42,
-      child: Row(
-        children: [
-          if (pickedView == LibraryView.playlists &&
-              current == LibraryView.playlists) ...[
-            GestureDetector(
-              onTap: onClearFilter,
-              child: Container(
-
-                width: 34,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: skin.accentAt(0.92),
-                  border: Border.all(color: skin.accent),
-                ),
-                child: Icon(Icons.close_rounded, color: skin.onAccent, size: 20),
-              ),
-            ),
-            const SizedBox(width: 8),
-
-            _segment(context, 
-              switch (current) {
-                LibraryView.playlists => l10nOf(context).libraryPlaylists,
-                LibraryView.artists => l10nOf(context).libraryArtists,
-                LibraryView.songs => l10nOf(context).librarySongs,
-              },
-              current,
-
-              flexible: false,
-            ),
-
-            if (besidePlaylists.isNotEmpty) ...[
-              const SizedBox(width: 8),
-              ...besidePlaylists,
-            ] else if (filterLabel != null) ...[
-              const SizedBox(width: 8),
-              Expanded(
+        height: 42,
+        child: Row(
+          children: [
+            if (pickedView == LibraryView.playlists &&
+                current == LibraryView.playlists) ...[
+              GestureDetector(
+                onTap: onClearFilter,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),                  alignment: Alignment.center,
+                  width: 34,
+                  height: 34,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: skin.accentAt(0.14),
+                    color: skin.accentAt(0.92),
                     border: Border.all(color: skin.accent),
                   ),
-                  child: Text(
-                    capsFor(context, filterLabel!),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
+                  child: Icon(
+                    Icons.close_rounded,
+                    color: skin.onAccent,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
 
-                      fontSize: kBrowserChipFont,
-                      letterSpacing: trackingFor(context, 0.2),
-                      fontWeight: FontWeight.w800,
-                      color: skin.accentInk,
+              _segment(
+                context,
+                switch (current) {
+                  LibraryView.playlists => l10nOf(context).libraryPlaylists,
+                  LibraryView.artists => l10nOf(context).libraryArtists,
+                  LibraryView.songs => l10nOf(context).librarySongs,
+                },
+                current,
+
+                flexible: false,
+              ),
+
+              if (besidePlaylists.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                ...besidePlaylists,
+              ] else if (filterLabel != null) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 4,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: skin.accentAt(0.14),
+                      border: Border.all(color: skin.accent),
+                    ),
+                    child: Text(
+                      capsFor(context, filterLabel!),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: kBrowserChipFont,
+                        letterSpacing: trackingFor(context, 0.2),
+                        fontWeight: FontWeight.w800,
+                        color: skin.accentInk,
+                      ),
                     ),
                   ),
                 ),
+              ],
+            ] else ...[
+              _segment(
+                context,
+                l10nOf(context).libraryPlaylists,
+                LibraryView.playlists,
+              ),
+              const SizedBox(width: 8),
+              _segment(
+                context,
+                l10nOf(context).libraryArtists,
+                LibraryView.artists,
+              ),
+              const SizedBox(width: 8),
+
+              _segment(
+                context,
+                l10nOf(context).librarySongs,
+                LibraryView.songs,
               ),
             ],
-          ] else ...[
-
-            _segment(context, l10nOf(context).libraryPlaylists, LibraryView.playlists),
-            const SizedBox(width: 8),
-            _segment(context, l10nOf(context).libraryArtists, LibraryView.artists),
-            const SizedBox(width: 8),
-
-            _segment(context, l10nOf(context).librarySongs, LibraryView.songs),
           ],
-        ],
-      ),
+        ),
       ),
     );
   }
 
-  Widget _segment(BuildContext context, String label, LibraryView view, {bool flexible = true}) {
+  Widget _segment(
+    BuildContext context,
+    String label,
+    LibraryView view, {
+    bool flexible = true,
+  }) {
     // Two different things wear two different marks. The fill means a filter is
     // applied — filling the view you happen to be on made it read as a default
     // filter. The view you are on gets an underline instead, so the strip
@@ -134,58 +157,50 @@ class LibraryBrowserBar extends StatelessWidget {
     final here = view == current;
 
     final body = GestureDetector(
-        onTap: () => onSelect(view),
-        child: Container(
-
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),          decoration: BoxDecoration(
-            color: active
-                ? skin.accentAt(0.92)
-                : skin.background.withValues(alpha: 0.45),
-            border: Border(
-              top: BorderSide(
-                color: active
-                    ? skin.accent
-                    : skin.secondary(0.55),
-              ),
-              left: BorderSide(
-                color: active
-                    ? skin.accent
-                    : skin.secondary(0.55),
-              ),
-              right: BorderSide(
-                color: active
-                    ? skin.accent
-                    : skin.secondary(0.55),
-              ),
-              bottom: BorderSide(
-                color: here ? skin.accent : skin.secondary(0.55),
-                width: here ? 2 : 1,
-              ),
+      onTap: () => onSelect(view),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+        decoration: BoxDecoration(
+          color: active
+              ? skin.accentAt(0.92)
+              : skin.background.withValues(alpha: 0.45),
+          border: Border(
+            top: BorderSide(color: active ? skin.accent : skin.secondary(0.55)),
+            left: BorderSide(
+              color: active ? skin.accent : skin.secondary(0.55),
+            ),
+            right: BorderSide(
+              color: active ? skin.accent : skin.secondary(0.55),
+            ),
+            bottom: BorderSide(
+              color: here ? skin.accent : skin.secondary(0.55),
+              width: here ? 2 : 1,
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: kBrowserChipFont,
-                    letterSpacing: trackingFor(context, 0.2),
-                    fontWeight: FontWeight.w800,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: kBrowserChipFont,
+                  letterSpacing: trackingFor(context, 0.2),
+                  fontWeight: FontWeight.w800,
 
-                    color: active
-                        ? skin.onAccent
-                        : (here ? skin.accentInk : skin.textPrimary),
-                  ),
+                  color: active
+                      ? skin.onAccent
+                      : (here ? skin.accentInk : skin.textPrimary),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
 
     return flexible ? Expanded(child: body) : body;
@@ -227,14 +242,11 @@ class PlaylistRow extends StatelessWidget {
       onTap: onOpen,
       onLongPress: onLongPress,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),        decoration: BoxDecoration(
-          color: isDynamic
-              ? skin.accentAt(0.12)
-              : Colors.transparent,
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        decoration: BoxDecoration(
+          color: isDynamic ? skin.accentAt(0.12) : Colors.transparent,
           border: Border.all(
-            color: isDynamic
-                ? skin.accentAt(0.75)
-                : skin.edge(0.28),
+            color: isDynamic ? skin.accentAt(0.75) : skin.edge(0.28),
             width: isDynamic ? 2 : 1,
           ),
         ),
@@ -248,7 +260,6 @@ class PlaylistRow extends StatelessWidget {
                 color: skin.accent,
               ),
             Container(
-
               width: 40,
               height: 40,
               decoration: BoxDecoration(
@@ -258,7 +269,6 @@ class PlaylistRow extends StatelessWidget {
                   ? ColoredBox(
                       color: skin.panel,
                       child: Icon(
-
                         isDynamic
                             ? Icons.auto_awesome_rounded
                             : Icons.queue_music_rounded,
@@ -291,16 +301,16 @@ class PlaylistRow extends StatelessWidget {
                   ),
 
                   if (blurb != null) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    blurb!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: LayoutSpec.fontLabel,
-                      color: skin.accentInk,
+                    const SizedBox(height: 2),
+                    Text(
+                      blurb!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LayoutSpec.fontLabel,
+                        color: skin.accentInk,
+                      ),
                     ),
-                  ),
                   ],
                 ],
               ),
@@ -308,10 +318,12 @@ class PlaylistRow extends StatelessWidget {
             if (onPlay != null && !empty)
               GestureDetector(
                 onTap: onPlay,
-                child: Icon(Icons.play_arrow_rounded,
-                    color: skin.accentInk, size: 26),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: skin.accentInk,
+                  size: 26,
+                ),
               ),
-
           ],
         ),
       ),
@@ -322,13 +334,7 @@ class PlaylistRow extends StatelessWidget {
 Playlist likedAsPlaylist({
   required List<String> orderedIds,
   required String name,
-}) =>
-    Playlist(
-
-      id: kLikedPlaylistId,
-      name: name,
-      trackIds: orderedIds,
-    );
+}) => Playlist(id: kLikedPlaylistId, name: name, trackIds: orderedIds);
 
 const String kLikedPlaylistId = '__liked__';
 
@@ -353,14 +359,10 @@ class ArtistRow extends StatelessWidget {
     return GestureDetector(
       onTap: onOpen,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),        decoration: BoxDecoration(
-          border: Border.all(
-            color: skin.edge(0.28),
-          ),
-        ),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        decoration: BoxDecoration(border: Border.all(color: skin.edge(0.28))),
         child: Row(
           children: [
-
             Container(
               width: 48,
               height: 48,
@@ -396,8 +398,11 @@ class ArtistRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded,
-                color: skin.secondary(0.6), size: 22),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: skin.secondary(0.6),
+              size: 22,
+            ),
           ],
         ),
       ),

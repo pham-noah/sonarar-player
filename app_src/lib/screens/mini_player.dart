@@ -94,15 +94,14 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final floating = p.arrangement.miniPlayerIsFloating;
 
     final content = Stack(
-        children: [
-          Padding(
-            // 8dp around the art: the cover used to sit flush against the
-            // screen edge, which read as a cropped picture rather than a plate
-            // with a picture in it.
-            padding: const EdgeInsets.all(Space.sm),
-            child: Row(
+      children: [
+        Padding(
+          // 8dp around the art: the cover used to sit flush against the
+          // screen edge, which read as a cropped picture rather than a plate
+          // with a picture in it.
+          padding: const EdgeInsets.all(Space.sm),
+          child: Row(
             children: [
-
               Expanded(
                 child: GestureDetector(
                   onVerticalDragUpdate: widget.onSwipeUp == null
@@ -122,81 +121,90 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         },
 
                   onHorizontalDragUpdate:
-                      (widget.onSwipeNext == null && widget.onSwipePrevious == null)
-                          ? null
-                          : (d) => _dragDx += d.primaryDelta ?? 0,
+                      (widget.onSwipeNext == null &&
+                          widget.onSwipePrevious == null)
+                      ? null
+                      : (d) => _dragDx += d.primaryDelta ?? 0,
                   onHorizontalDragEnd:
-                      (widget.onSwipeNext == null && widget.onSwipePrevious == null)
-                          ? null
-                          : (d) {
-                              final v = d.primaryVelocity ?? 0;
-                              final dx = _dragDx;
-                              _dragDx = 0;
+                      (widget.onSwipeNext == null &&
+                          widget.onSwipePrevious == null)
+                      ? null
+                      : (d) {
+                          final v = d.primaryVelocity ?? 0;
+                          final dx = _dragDx;
+                          _dragDx = 0;
 
-                              if (v > 220 || dx > 40) {
-                                unawaited(HapticFeedback.selectionClick());
-                                widget.onSwipePrevious?.call();
-                              } else if (v < -220 || dx < -40) {
-                                unawaited(HapticFeedback.selectionClick());
-                                widget.onSwipeNext?.call();
-                              }
-                            },
+                          if (v > 220 || dx > 40) {
+                            unawaited(HapticFeedback.selectionClick());
+                            widget.onSwipePrevious?.call();
+                          } else if (v < -220 || dx < -40) {
+                            unawaited(HapticFeedback.selectionClick());
+                            widget.onSwipeNext?.call();
+                          }
+                        },
                   child: InkWell(
-                  onTap: widget.onOpen,
-                  child: Row(
-                    children: [
-
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          _cover(),
-                          if (widget.lyricsActive)
-
-                            Container(
-                              key: MiniPlayer.lyricsMarkKey,
-                              decoration: BoxDecoration(
-                                color: widget.skin.background.withValues(alpha: 0.72),
-                                border: Border.all(color: widget.skin.accent, width: 2),
-                              ),
-                              padding: const EdgeInsets.all(4),                              child: Icon(
-                                Icons.lyrics_outlined,
-                                size: 15,
-                                color: widget.skin.accentInk,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(width: Space.sm),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    onTap: widget.onOpen,
+                    child: Row(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
                           children: [
-                            Text(
-                              titleWithoutArtist(widget.track.title, widget.track.artist),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: LayoutSpec.fontSmall,
-                                fontWeight: FontWeight.w700,
-                                color: widget.skin.textPrimary,
+                            _cover(),
+                            if (widget.lyricsActive)
+                              Container(
+                                key: MiniPlayer.lyricsMarkKey,
+                                decoration: BoxDecoration(
+                                  color: widget.skin.background.withValues(
+                                    alpha: 0.72,
+                                  ),
+                                  border: Border.all(
+                                    color: widget.skin.accent,
+                                    width: 2,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(4),
+                                child: Icon(
+                                  Icons.lyrics_outlined,
+                                  size: 15,
+                                  color: widget.skin.accentInk,
+                                ),
                               ),
-                            ),
-                            Text(
-                              widget.track.artist,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Type.bodyBase(
-                                context,
-                                color: widget.skin.textSecondary,
-                              ),
-                            ),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: Space.sm),
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                titleWithoutArtist(
+                                  widget.track.title,
+                                  widget.track.artist,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: LayoutSpec.fontSmall,
+                                  fontWeight: FontWeight.w700,
+                                  color: widget.skin.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                widget.track.artist,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Type.bodyBase(
+                                  context,
+                                  color: widget.skin.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 ),
               ),
               _btn(
@@ -216,23 +224,21 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     ? l10nOf(context).playerPauseAction
                     : l10nOf(context).playerPlayAction,
               ),
-              _btn(Icons.close_rounded, widget.onDisband,
-                  active: false,
-                  small: true,
-                  semantic: l10nOf(context).playerClose),
+              _btn(
+                Icons.close_rounded,
+                widget.onDisband,
+                active: false,
+                small: true,
+                semantic: l10nOf(context).playerClose,
+              ),
             ],
-            ),
           ),
-          // The scrub is a rule across the top of the plate, not a band above
-          // it: a band cost 8dp of the bar's 64, and the art has to stay inside
-          // the height the bottom clearance reserves.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _scrub(widget.skin),
-          ),
-        ],
+        ),
+        // The scrub is a rule across the top of the plate, not a band above
+        // it: a band cost 8dp of the bar's 64, and the art has to stay inside
+        // the height the bottom clearance reserves.
+        Positioned(top: 0, left: 0, right: 0, child: _scrub(widget.skin)),
+      ],
     );
 
     final bar = floating
@@ -256,7 +262,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 // (Abyss at 15%), and a translucent plate lets its own `e2`
                 // shadow show through the fill, which greys the bar instead of
                 // lifting it.
-                color: Color.alphaBlend(widget.skin.panel, widget.skin.background),
+                color: Color.alphaBlend(
+                  widget.skin.panel,
+                  widget.skin.background,
+                ),
                 borderRadius: BorderRadius.circular(Corners.md),
                 // e2: the one elevation that means "floating over content".
                 boxShadow: Elevation.e2(light: widget.skin.isLight),
@@ -274,7 +283,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
             ),
           );
 
-    final swipeable = (widget.onSwipeNext == null && widget.onSwipePrevious == null)
+    final swipeable =
+        (widget.onSwipeNext == null && widget.onSwipePrevious == null)
         ? bar
         : GestureDetector(
             behavior: HitTestBehavior.translucent,
@@ -326,65 +336,66 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final here = Duration(milliseconds: at);
     Duration clamped(Duration d) => d < Duration.zero
         ? Duration.zero
-        : (widget.duration != null && d > widget.duration! ? widget.duration! : d);
+        : (widget.duration != null && d > widget.duration!
+              ? widget.duration!
+              : d);
     final canSeek = widget.onSeek != null && total > 0;
 
     return Semantics(
       slider: true,
       label: l10nOf(context).miniPlayerSeek,
       value: '${mmss(here)} / ${mmss(widget.duration ?? Duration.zero)}',
-      increasedValue: canSeek
-          ? mmss(clamped(here + step))
-          : null,
-      decreasedValue: canSeek
-          ? mmss(clamped(here - step))
-          : null,
+      increasedValue: canSeek ? mmss(clamped(here + step)) : null,
+      decreasedValue: canSeek ? mmss(clamped(here - step)) : null,
       onIncrease: !canSeek ? null : () => widget.onSeek!(clamped(here + step)),
       onDecrease: !canSeek ? null : () => widget.onSeek!(clamped(here - step)),
       child: LayoutBuilder(
-      builder: (context, box) => GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: (d) =>
-            _seekTo(d.localPosition.dx, box.maxWidth, widget.duration,
-                remember: false),
-        onHorizontalDragStart: (d) => _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
-        onHorizontalDragUpdate: (d) => _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
-        onHorizontalDragEnd: (_) => setState(() => _dragFrac = null),
-        onHorizontalDragCancel: () => setState(() => _dragFrac = null),
-        child: SizedBox(
-          height: Space.sm,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Stack(
+        builder: (context, box) => GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: (d) => _seekTo(
+            d.localPosition.dx,
+            box.maxWidth,
+            widget.duration,
+            remember: false,
+          ),
+          onHorizontalDragStart: (d) =>
+              _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
+          onHorizontalDragUpdate: (d) =>
+              _seekTo(d.localPosition.dx, box.maxWidth, widget.duration),
+          onHorizontalDragEnd: (_) => setState(() => _dragFrac = null),
+          onHorizontalDragCancel: () => setState(() => _dragFrac = null),
+          child: SizedBox(
+            height: Space.sm,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(height: 3, color: sk.panel),
+                  FractionallySizedBox(
+                    widthFactor: total <= 0 ? 1.0 : frac,
+                    child: Container(height: 3, color: sk.accent),
+                  ),
 
-              clipBehavior: Clip.none,
-              children: [
-                Container(height: 3, color: sk.panel),
-                FractionallySizedBox(
-
-                  widthFactor: total <= 0 ? 1.0 : frac,
-                  child: Container(height: 3, color: sk.accent),
-                ),
-
-                if (_dragFrac != null)
-                  Positioned(
-                    left: (box.maxWidth * _dragFrac!) - 7,
-                    top: -4,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: sk.accent,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: sk.panel, width: 2),
+                  if (_dragFrac != null)
+                    Positioned(
+                      left: (box.maxWidth * _dragFrac!) - 7,
+                      top: -4,
+                      child: Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: sk.accent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: sk.panel, width: 2),
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -394,7 +405,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final f = (dx / width).clamp(0.0, 1.0);
     // A tap must not pin the bar; only a drag holds it under the finger.
     if (remember) setState(() => _dragFrac = f);
-    widget.onSeek?.call(Duration(milliseconds: (dur.inMilliseconds * f).round()));
+    widget.onSeek?.call(
+      Duration(milliseconds: (dur.inMilliseconds * f).round()),
+    );
   }
 
   Widget _cover() {
@@ -416,8 +429,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
               : Image(
                   image: ResizeImage(widget.cover!, width: 132),
                   fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => ColoredBox(color: widget.skin.background),
-              ),
+                  errorBuilder: (_, __, ___) =>
+                      ColoredBox(color: widget.skin.background),
+                ),
         ),
       ),
     );

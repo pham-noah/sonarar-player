@@ -49,6 +49,7 @@ enum PlayerPanel { none, why, queue, track, audio, loop }
 const double kLyricsArtOpacity = 1.0;
 
 const double kPlainArtBehind = 88.0;
+
 /// Everything the player screen is handed, in one object.
 ///
 /// Fifty-two values and callbacks wired by the shell; naming them once keeps the
@@ -110,7 +111,6 @@ class PlayerView {
     this.placeIcon,
     this.weather = WeatherCondition.unknown,
   });
-
 
   final AppState state;
   final Track? track;
@@ -200,7 +200,6 @@ class PlayerView {
 
   final VoidCallback? onSwipeNext;
   final VoidCallback? onSwipePrevious;
-
 }
 
 class PlayerScreen extends StatelessWidget {
@@ -383,14 +382,14 @@ class PlayerScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      l10nOf(context).playerNowPlaying,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontMicro,
-                        letterSpacing: trackingFor(context, 5),
-                        fontWeight: FontWeight.w700,
-                        color: pal.accentInk,
-                      ),
+                    l10nOf(context).playerNowPlaying,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontMicro,
+                      letterSpacing: trackingFor(context, 5),
+                      fontWeight: FontWeight.w700,
+                      color: pal.accentInk,
                     ),
+                  ),
                   if (view.state.arrangement.contextPlateExists) ...[
                     const SizedBox(height: 12),
                     _contextBadge(context, skin, skew, pal),
@@ -414,7 +413,9 @@ class PlayerScreen extends StatelessWidget {
                           bottom:
                               LayoutSpec.tabBarHeight +
                               view.state.arrangement.tabBarInsets.bottom +
-                              (view.lyricsMode ? LayoutSpec.miniPlayerClearance : 0),
+                              (view.lyricsMode
+                                  ? LayoutSpec.miniPlayerClearance
+                                  : 0),
                         ),
                         child: Align(
                           alignment: Alignment.bottomCenter,
@@ -423,7 +424,8 @@ class PlayerScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (view.lyrics != null && view.onLyrics != null)
+                                if (view.lyrics != null &&
+                                    view.onLyrics != null)
                                   _liveLyricLine(context, skin),
                                 _meta(
                                   context,
@@ -480,7 +482,12 @@ class PlayerScreen extends StatelessWidget {
   static const secondaryKey = Key('player-secondary');
   static const playButtonKey = Key('player-play');
 
-  Widget _contextBadge(BuildContext context, Skin skin, double skew, LayoutPalette pal) {
+  Widget _contextBadge(
+    BuildContext context,
+    Skin skin,
+    double skew,
+    LayoutPalette pal,
+  ) {
     return Transform(
       key: contextBadgeKey,
       transform: Matrix4.skewX(-skew),
@@ -492,7 +499,8 @@ class PlayerScreen extends StatelessWidget {
           boxShadow: Elevation.e2(light: skin.isLight),
         ),
 
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),        child: Transform(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        child: Transform(
           transform: Matrix4.skewX(skew),
           alignment: Alignment.centerLeft,
           child: Column(
@@ -550,7 +558,8 @@ class PlayerScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                       for (final fact in _contextFacts(context, skin))
                         Padding(
-                          padding: const EdgeInsets.only(right: 4),                          child: Tooltip(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Tooltip(
                             message: fact.label,
                             child: _factChip(skin, skew, fact.icon),
                           ),
@@ -571,7 +580,8 @@ class PlayerScreen extends StatelessWidget {
       transform: Matrix4.skewX(-skew * 2),
       alignment: Alignment.center,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
           color: dark ? skin.background : skin.accent,
           border: Border(
             left: BorderSide(
@@ -585,14 +595,21 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  List<({IconData icon, String label})> _contextFacts(BuildContext context, Skin skin) {
+  List<({IconData icon, String label})> _contextFacts(
+    BuildContext context,
+    Skin skin,
+  ) {
     final out = <({IconData icon, String label})>[];
 
     final sky = weatherIcon(view.weather);
-    if (sky != null) out.add((icon: sky, label: weatherName(l10nOf(context), view.weather)));
+    if (sky != null)
+      out.add((icon: sky, label: weatherName(l10nOf(context), view.weather)));
 
     if (view.placeName != null && view.placeName!.trim().isNotEmpty) {
-      out.add((icon: view.placeIcon ?? kDefaultPlaceIcon, label: view.placeName!));
+      out.add((
+        icon: view.placeIcon ?? kDefaultPlaceIcon,
+        label: view.placeName!,
+      ));
     }
     return out;
   }
@@ -627,7 +644,8 @@ class PlayerScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),              child: Text(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+              child: Text(
                 l10nOf(context).playerOtherRecordings,
                 style: TextStyle(
                   color: skin.textSecondary,
@@ -667,14 +685,20 @@ class PlayerScreen extends StatelessWidget {
                                   ? l10nOf(context).playerAlbumVersion
                                   : variantLabel(v.variantTag!),
                               style: Type.micro(context, color: skin.accentInk)
-                                  .copyWith(letterSpacing: trackingFor(context, 1.6)),
+                                  .copyWith(
+                                    letterSpacing: trackingFor(context, 1.6),
+                                  ),
                             ),
                           ],
                         ),
                       ),
 
                       if (v.id == current.id)
-                        Icon(Icons.check_rounded, color: skin.accentInk, size: 20),
+                        Icon(
+                          Icons.check_rounded,
+                          color: skin.accentInk,
+                          size: 20,
+                        ),
                     ],
                   ),
                 ),
@@ -741,7 +765,9 @@ class PlayerScreen extends StatelessWidget {
 
                     Pressable(
                       child: InkWell(
-                        onTap: (view.variants.isEmpty || view.onSwapVariant == null)
+                        onTap:
+                            (view.variants.isEmpty ||
+                                view.onSwapVariant == null)
                             ? null
                             : () => _pickVariant(context, skin, t),
                         child: Container(
@@ -762,7 +788,9 @@ class PlayerScreen extends StatelessWidget {
                               Text(
                                 variantLabel(t.variantTag!),
                                 style: Type.micro(context, color: skin.onAccent)
-                                    .copyWith(letterSpacing: trackingFor(context, 1.6)),
+                                    .copyWith(
+                                      letterSpacing: trackingFor(context, 1.6),
+                                    ),
                               ),
 
                               if (view.variants.isNotEmpty &&
@@ -807,7 +835,8 @@ class PlayerScreen extends StatelessWidget {
                 Transform(
                   transform: Matrix4.skewX(-skew * 0.6),
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(8, 1, 8, 2),                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.fromLTRB(8, 1, 8, 2),
+                    decoration: BoxDecoration(
                       border: Border.all(
                         color: skin.accentDeep.withValues(alpha: 0.6),
                       ),
@@ -910,73 +939,74 @@ class PlayerScreen extends StatelessWidget {
     ],
   );
 
-  Widget _transportRow(BuildContext context, Skin skin, double skew) => StaggerIn(
-    index: 0,
-    style: StaggerStyle.rise,
+  Widget _transportRow(BuildContext context, Skin skin, double skew) =>
+      StaggerIn(
+        index: 0,
+        style: StaggerStyle.rise,
 
-    child: FittedBox(
-      key: transportKey,
-      fit: BoxFit.scaleDown,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _transportButton(
-            skin,
-            skew,
-            Icons.shuffle_rounded,
-            onTap: view.onShuffle,
-            active: view.shuffled,
-            compact: true,
-            semantic: l10nOf(context).playerShuffleAction,
+        child: FittedBox(
+          key: transportKey,
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _transportButton(
+                skin,
+                skew,
+                Icons.shuffle_rounded,
+                onTap: view.onShuffle,
+                active: view.shuffled,
+                compact: true,
+                semantic: l10nOf(context).playerShuffleAction,
+              ),
+              const SizedBox(width: 8),
+              NudgingButton(
+                direction: -1,
+                onTap: view.onPrevious,
+                child: _transportButton(
+                  skin,
+                  skew,
+                  Icons.skip_previous_rounded,
+                  onTap: view.onPrevious,
+                  semantic: l10nOf(context).playerPreviousAction,
+                ),
+              ),
+              const SizedBox(width: 8),
+              _playButton(
+                context,
+                skin,
+                skew,
+                playing: view.playing,
+                semantic: view.playing
+                    ? l10nOf(context).playerPauseAction
+                    : l10nOf(context).playerPlayAction,
+              ),
+              const SizedBox(width: 8),
+              NudgingButton(
+                direction: 1,
+                onTap: view.onNext,
+                child: _transportButton(
+                  skin,
+                  skew,
+                  Icons.skip_next_rounded,
+                  onTap: view.onNext,
+                  semantic: l10nOf(context).playerNextAction,
+                ),
+              ),
+              const SizedBox(width: 8),
+              _transportButton(
+                skin,
+                skew,
+                _repeatIcon(view.repeatMode),
+                onTap: view.onCycleRepeat,
+                active: view.repeatMode != RepeatMode.off,
+                compact: true,
+                semantic: l10nOf(context).playerRepeatAction,
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          NudgingButton(
-            direction: -1,
-            onTap: view.onPrevious,
-            child: _transportButton(
-              skin,
-              skew,
-              Icons.skip_previous_rounded,
-              onTap: view.onPrevious,
-              semantic: l10nOf(context).playerPreviousAction,
-            ),
-          ),
-          const SizedBox(width: 8),
-          _playButton(
-            context,
-            skin,
-            skew,
-            playing: view.playing,
-            semantic: view.playing
-                ? l10nOf(context).playerPauseAction
-                : l10nOf(context).playerPlayAction,
-          ),
-          const SizedBox(width: 8),
-          NudgingButton(
-            direction: 1,
-            onTap: view.onNext,
-            child: _transportButton(
-              skin,
-              skew,
-              Icons.skip_next_rounded,
-              onTap: view.onNext,
-              semantic: l10nOf(context).playerNextAction,
-            ),
-          ),
-          const SizedBox(width: 8),
-          _transportButton(
-            skin,
-            skew,
-            _repeatIcon(view.repeatMode),
-            onTap: view.onCycleRepeat,
-            active: view.repeatMode != RepeatMode.off,
-            compact: true,
-            semantic: l10nOf(context).playerRepeatAction,
-          ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 
   Widget _controls(
     BuildContext context,
@@ -1075,11 +1105,14 @@ class PlayerScreen extends StatelessWidget {
                 _iconAction(
                   context,
                   skin,
-                  view.sleepRunning ? Icons.bedtime_rounded : Icons.bedtime_outlined,
+                  view.sleepRunning
+                      ? Icons.bedtime_rounded
+                      : Icons.bedtime_outlined,
                   view.sleepRunning
                       ? l10nOf(context).playerSleepOn
                       : l10nOf(context).playerSleep,
-                  () => view.onSleep!(view.sleepRunning ? null : view.sleepTimer),
+                  () =>
+                      view.onSleep!(view.sleepRunning ? null : view.sleepTimer),
                   active: view.sleepRunning,
                 ),
             ],
@@ -1103,12 +1136,17 @@ class PlayerScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.bedtime_rounded, size: 14, color: skin.accentInk),
+                    Icon(
+                      Icons.bedtime_rounded,
+                      size: 14,
+                      color: skin.accentInk,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       capsFor(context, l10nOf(context).playerSleepIn(text)),
-                      style: Type.caps(context, color: skin.accentInk)
-  .copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+                      style: Type.caps(context, color: skin.accentInk).copyWith(
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
                     ),
                   ],
                 ),
@@ -1126,14 +1164,20 @@ class PlayerScreen extends StatelessWidget {
                 const SizedBox(width: 12),
               ],
               Expanded(
-                child: _upNext(context, skin, skew, showSourceLine: chrome.upNextStrip),
+                child: _upNext(
+                  context,
+                  skin,
+                  skew,
+                  showSourceLine: chrome.upNextStrip,
+                ),
               ),
             ],
           ),
 
         if (view.fileMissing)
           Padding(
-            padding: const EdgeInsets.only(top: 8),            child: Text(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
               l10nOf(context).playerFileMissing,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -1167,7 +1211,8 @@ class PlayerScreen extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),            child: Text(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: Text(
               has ? text : '—',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -1237,112 +1282,117 @@ class PlayerScreen extends StatelessWidget {
                 bottom: MediaQuery.viewPaddingOf(context).bottom,
               ),
               child: GestureDetector(
-              onVerticalDragEnd: (d) {
-                final v = d.primaryVelocity ?? 0;
-                final dy = dragDy;
-                dragDy = 0;
-                if (v < -220 || dy < -48) {
-                  view.onPanelMaximised?.call(true);
-                } else if (v > 220 || dy > 48) {
-                  if (view.panelMaximised) {
-                    view.onPanelMaximised?.call(false);
-                  } else {
-                    view.onPanel?.call(PlayerPanel.none);
-                  }
-                }
-              },
-              onVerticalDragUpdate: (d) => dragDy += d.primaryDelta ?? 0,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (n) {
-                  if (n is OverscrollNotification && n.overscroll < 0) {
-                    pull += -n.overscroll;
-                  } else if (n is ScrollEndNotification) {
-                    final pulled = pull;
-                    pull = 0;
-                    if (pulled > 90) {
-                      if (view.panelMaximised) {
-                        view.onPanelMaximised?.call(false);
-                      } else {
-                        view.onPanel?.call(PlayerPanel.none);
-                      }
+                onVerticalDragEnd: (d) {
+                  final v = d.primaryVelocity ?? 0;
+                  final dy = dragDy;
+                  dragDy = 0;
+                  if (v < -220 || dy < -48) {
+                    view.onPanelMaximised?.call(true);
+                  } else if (v > 220 || dy > 48) {
+                    if (view.panelMaximised) {
+                      view.onPanelMaximised?.call(false);
+                    } else {
+                      view.onPanel?.call(PlayerPanel.none);
                     }
                   }
-                  return false;
                 },
-                child: Builder(
-                builder: (context) {
-                  final layout = PresentationScope.of(context, fallback: skin);
-                  final sheet = SizedBox(
-                    height: view.panelMaximised
-                        ? MediaQuery.of(context).size.height
-                        : MediaQuery.of(context).size.height * 0.64,
-                    child: Column(
-                      children: [
-                        Row(
+                onVerticalDragUpdate: (d) => dragDy += d.primaryDelta ?? 0,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (n) {
+                    if (n is OverscrollNotification && n.overscroll < 0) {
+                      pull += -n.overscroll;
+                    } else if (n is ScrollEndNotification) {
+                      final pulled = pull;
+                      pull = 0;
+                      if (pulled > 90) {
+                        if (view.panelMaximised) {
+                          view.onPanelMaximised?.call(false);
+                        } else {
+                          view.onPanel?.call(PlayerPanel.none);
+                        }
+                      }
+                    }
+                    return false;
+                  },
+                  child: Builder(
+                    builder: (context) {
+                      final layout = PresentationScope.of(
+                        context,
+                        fallback: skin,
+                      );
+                      final sheet = SizedBox(
+                        height: view.panelMaximised
+                            ? MediaQuery.of(context).size.height
+                            : MediaQuery.of(context).size.height * 0.64,
+                        child: Column(
                           children: [
-                            const SizedBox(width: 12),
-                            Icon(
-                              Icons.drag_handle_rounded,
-                              color: skin.textSecondary,
-                            ),
-                            Expanded(
-                              child: Text(
-                                title,
-                                style: TextStyle(
-                                  fontSize: LayoutSpec.fontLabel,
-                                  letterSpacing: trackingFor(context, 4),
-                                  fontWeight: FontWeight.w800,
-                                  color: skin.accentInk,
+                            Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Icon(
+                                  Icons.drag_handle_rounded,
+                                  color: skin.textSecondary,
                                 ),
-                              ),
-                            ),
-                            if (view.panelMaximised)
-                              IconButton(
-                                onPressed: () => view.onPanelMaximised?.call(false),
-                                icon: Icon(
-                                  Icons.fullscreen_exit_rounded,
-                                  color: skin.textPrimary,
-                                  size: 26,
+                                Expanded(
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontSize: LayoutSpec.fontLabel,
+                                      letterSpacing: trackingFor(context, 4),
+                                      fontWeight: FontWeight.w800,
+                                      color: skin.accentInk,
+                                    ),
+                                  ),
                                 ),
-                                tooltip: l10nOf(context).playerShrink,
-                              ),
-                            IconButton(
-                              onPressed: () => view.onPanel?.call(PlayerPanel.none),
-                              icon: Icon(
-                                Icons.close_rounded,
-                                color: skin.textPrimary,
-                                size: 28,
-                              ),
-                              tooltip: l10nOf(context).playerClose,
+                                if (view.panelMaximised)
+                                  IconButton(
+                                    onPressed: () =>
+                                        view.onPanelMaximised?.call(false),
+                                    icon: Icon(
+                                      Icons.fullscreen_exit_rounded,
+                                      color: skin.textPrimary,
+                                      size: 26,
+                                    ),
+                                    tooltip: l10nOf(context).playerShrink,
+                                  ),
+                                IconButton(
+                                  onPressed: () =>
+                                      view.onPanel?.call(PlayerPanel.none),
+                                  icon: Icon(
+                                    Icons.close_rounded,
+                                    color: skin.textPrimary,
+                                    size: 28,
+                                  ),
+                                  tooltip: l10nOf(context).playerClose,
+                                ),
+                              ],
                             ),
+                            Expanded(child: content),
                           ],
                         ),
-                        Expanded(child: content),
-                      ],
-                    ),
-                  );
-                  if (!chrome.panelSheetUsesSurface) {
-                    return DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: skin.background,
-                        border: Border(
-                          top: BorderSide(color: skin.accent, width: 2),
-                        ),
-                      ),
-                      child: sheet,
-                    );
-                  }
-                  return Surface(
-                    presentation: layout,
-                    role: SurfaceRole.panel,
-                    radius: 20,
-                    accentEdge: false,
-                    child: sheet,
-                  );
-                },
+                      );
+                      if (!chrome.panelSheetUsesSurface) {
+                        return DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: skin.background,
+                            border: Border(
+                              top: BorderSide(color: skin.accent, width: 2),
+                            ),
+                          ),
+                          child: sheet,
+                        );
+                      }
+                      return Surface(
+                        presentation: layout,
+                        role: SurfaceRole.panel,
+                        radius: 20,
+                        accentEdge: false,
+                        child: sheet,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
             ),
           ),
         ],
@@ -1373,9 +1423,7 @@ class PlayerScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: active ? skin.accent : Colors.transparent,
                   border: Border.all(
-                    color: active
-                        ? skin.accent
-                        : skin.secondary(0.42),
+                    color: active ? skin.accent : skin.secondary(0.42),
                   ),
                 ),
                 child: Icon(
@@ -1418,12 +1466,11 @@ class PlayerScreen extends StatelessWidget {
         key: lyricsButtonKey,
         onTap: view.onLyrics,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
             color: active ? skin.accent : Colors.transparent,
             border: Border.all(
-              color: active
-                  ? skin.accent
-                  : skin.secondary(0.5),
+              color: active ? skin.accent : skin.secondary(0.5),
             ),
           ),
           child: Row(
@@ -1438,9 +1485,9 @@ class PlayerScreen extends StatelessWidget {
               Text(
                 l10nOf(context).playerLyrics,
                 style: Type.caps(
-                        context,
-                        color: active ? skin.onAccent : skin.textSecondary)
-                    .copyWith(letterSpacing: trackingFor(context, 1.2)),
+                  context,
+                  color: active ? skin.onAccent : skin.textSecondary,
+                ).copyWith(letterSpacing: trackingFor(context, 1.2)),
               ),
             ],
           ),
@@ -1449,7 +1496,12 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget _upNext(BuildContext context, Skin skin, double skew, {bool showSourceLine = false}) {
+  Widget _upNext(
+    BuildContext context,
+    Skin skin,
+    double skew, {
+    bool showSourceLine = false,
+  }) {
     final q = view.state.queue;
     final upcoming = q?.upcoming ?? const [];
     final nextTitle = upcoming.isEmpty ? null : upcoming.first.title;
@@ -1487,7 +1539,9 @@ class PlayerScreen extends StatelessWidget {
           transform: Matrix4.skewX(-skew),
           alignment: Alignment.centerLeft,
           child: Text(
-            nextTitle == null ? l10nOf(context).playerEndOfQueue : l10nOf(context).playerUpNext,
+            nextTitle == null
+                ? l10nOf(context).playerEndOfQueue
+                : l10nOf(context).playerUpNext,
             style: TextStyle(
               fontSize: LayoutSpec.fontMicro,
               letterSpacing: trackingFor(context, 4),
@@ -1626,9 +1680,7 @@ class PlayerScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: active ? skin.accent : skin.panel,
                 border: Border.all(
-                  color: active
-                      ? skin.accent
-                      : skin.accentAt(0.55),
+                  color: active ? skin.accent : skin.accentAt(0.55),
                   width: 1.5,
                 ),
               ),
@@ -1703,7 +1755,9 @@ class PlayerScreen extends StatelessWidget {
                       child: ScaleTransition(scale: animation, child: child),
                     ),
                     child: Icon(
-                      view.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      view.playing
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
                       key: ValueKey<bool>(view.playing),
                       size: 30,
                       color: skin.background,

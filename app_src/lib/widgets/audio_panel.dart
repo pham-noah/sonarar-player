@@ -1,6 +1,7 @@
 library;
 
 import '../l10n/script.dart';
+
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -10,12 +11,12 @@ import '../player/audio_route.dart';
 import '../theme/skin.dart';
 
 String _kindLabel(AppLocalizations l10n, String kind) => switch (kind) {
-      'bluetooth' => l10n.outputBluetooth,
-      'headphones' => l10n.outputWired,
-      'usb' => l10n.outputUsbDac,
-      'hdmi' => l10n.outputHdmi,
-      _ => l10n.outputThisPhone,
-    };
+  'bluetooth' => l10n.outputBluetooth,
+  'headphones' => l10n.outputWired,
+  'usb' => l10n.outputUsbDac,
+  'hdmi' => l10n.outputHdmi,
+  _ => l10n.outputThisPhone,
+};
 
 class AudioPanel extends StatelessWidget {
   const AudioPanel({
@@ -48,7 +49,6 @@ class AudioPanel extends StatelessWidget {
         _SectionLabel(skin: skin, text: l10n.outputVolume),
         Row(
           children: [
-
             GestureDetector(
               onTap: () => onVolume(muted ? 1.0 : 0.0),
               child: Icon(
@@ -62,8 +62,12 @@ class AudioPanel extends StatelessWidget {
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 4,
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 8,
+                  ),
+                  overlayShape: const RoundSliderOverlayShape(
+                    overlayRadius: 16,
+                  ),
                   activeTrackColor: skin.accent,
                   inactiveTrackColor: skin.edge(0.3),
                   thumbColor: skin.accent,
@@ -112,7 +116,6 @@ class AudioPanel extends StatelessWidget {
                   : null,
             ),
         ],
-
       ],
     );
   }
@@ -126,16 +129,17 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontMicro,
-            letterSpacing: trackingFor(context, 2.2),
-            fontWeight: FontWeight.w800,
-            color: skin.accentInk,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: LayoutSpec.fontMicro,
+        letterSpacing: trackingFor(context, 2.2),
+        fontWeight: FontWeight.w800,
+        color: skin.accentInk,
+      ),
+    ),
+  );
 }
 
 class _PanelRow extends StatelessWidget {
@@ -159,47 +163,48 @@ class _PanelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-        margin: const EdgeInsets.only(bottom: 8),          decoration: BoxDecoration(
-
-            color: skin.panel,
-            border: Border(left: BorderSide(color: skin.accent, width: 3)),
-          ),
-          padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),          child: Row(
-            children: [
-              Icon(icon, size: 20, color: skin.textSecondary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: LayoutSpec.fontLabel,
-                        fontWeight: FontWeight.w800,
-                        color: skin.textPrimary,
-                      ),
-                    ),
-                    if (blurb != null)
-                      Text(
-                        blurb!,
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontMicro,
-                          letterSpacing: trackingFor(context, 1.2),
-                          color: skin.textSecondary,
-                        ),
-                      ),
-                  ],
+    onTap: onTap,
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: skin.panel,
+        border: Border(left: BorderSide(color: skin.accent, width: 3)),
+      ),
+      padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: skin.textSecondary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: LayoutSpec.fontLabel,
+                    fontWeight: FontWeight.w800,
+                    color: skin.textPrimary,
+                  ),
                 ),
-              ),
-              if (trailing != null) trailing!,
-            ],
+                if (blurb != null)
+                  Text(
+                    blurb!,
+                    style: TextStyle(
+                      fontSize: LayoutSpec.fontMicro,
+                      letterSpacing: trackingFor(context, 1.2),
+                      color: skin.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-      );
+          if (trailing != null) trailing!,
+        ],
+      ),
+    ),
+  );
 }

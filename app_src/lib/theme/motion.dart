@@ -80,8 +80,8 @@ abstract final class Motion {
   /// answer for the device it is on.
   static Duration of(BuildContext context, Duration duration) =>
       (MediaQuery.maybeDisableAnimationsOf(context) ?? false)
-          ? Duration.zero
-          : duration;
+      ? Duration.zero
+      : duration;
 }
 
 /// The three curves. `easeOutBack` is gone from the app: it overshoots, and an

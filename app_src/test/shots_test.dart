@@ -47,15 +47,15 @@ final String _outRoot =
 /// Latin fixtures on purpose: the host has no CJK font to register, so a
 /// Japanese title would photograph as tofu and hide the type behind it.
 Track _t(int i) => Track(
-      id: 't$i',
-      title: 'Living With Determination',
-      artist: 'ATLUS Sound Team',
-      album: 'Persona 3 Reload',
-      duration: Duration(seconds: 180 + i * 7),
-      file: 't$i.opus',
-      cover: '',
-      gainDb: -3.0,
-    );
+  id: 't$i',
+  title: 'Living With Determination',
+  artist: 'ATLUS Sound Team',
+  album: 'Persona 3 Reload',
+  duration: Duration(seconds: 180 + i * 7),
+  file: 't$i.opus',
+  cover: '',
+  gainDb: -3.0,
+);
 
 List<Track> _library() => [for (var i = 0; i < 24; i++) _t(i)];
 
@@ -65,12 +65,14 @@ AppState _state({bool playing = false}) {
   for (var i = 0; i < 4; i++) {
     s.createPlaylist('Persona Mix $i');
   }
-  s.updateContext(const PlayContext(
-    band: ContextBand.evening,
-    whereabouts: Whereabouts.home,
-    sky: Sky.unknown,
-    localHour: 19,
-  ));
+  s.updateContext(
+    const PlayContext(
+      band: ContextBand.evening,
+      whereabouts: Whereabouts.home,
+      sky: Sky.unknown,
+      localHour: 19,
+    ),
+  );
   if (playing) s.playTrackNow('b');
   return s;
 }
@@ -115,12 +117,13 @@ Future<void> _loadFonts() async {
 Uint8List _cover() {
   final dir = Directory(r'C:\Users\Noah\Music\Sonarar\covers');
   if (dir.existsSync()) {
-    final files = dir
-        .listSync()
-        .whereType<File>()
-        .where((f) => f.path.toLowerCase().endsWith('.jpg'))
-        .toList()
-      ..sort((a, b) => a.path.compareTo(b.path));
+    final files =
+        dir
+            .listSync()
+            .whereType<File>()
+            .where((f) => f.path.toLowerCase().endsWith('.jpg'))
+            .toList()
+          ..sort((a, b) => a.path.compareTo(b.path));
     if (files.isNotEmpty) return files.first.readAsBytesSync();
   }
   return File('assets/brand/logo_mark.png').readAsBytesSync();
@@ -166,19 +169,24 @@ Future<void> _shootWidget(
   required AppState state,
 }) async {
   _size(tester, size);
-  await tester.pumpWidget(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    // The app's own theme, not Material's: a Switch, a Slider and an ink
-    // response all take their colours from it, and a bare MaterialApp would
-    // photograph the defaults instead — colours no phone ever shows.
-    theme: themeFor(state.uiSkin, layout: state.presentation),
-    home: Scaffold(body: child),
-  ));
+  await tester.pumpWidget(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      // The app's own theme, not Material's: a Switch, a Slider and an ink
+      // response all take their colours from it, and a bare MaterialApp would
+      // photograph the defaults instead — colours no phone ever shows.
+      theme: themeFor(state.uiSkin, layout: state.presentation),
+      home: Scaffold(body: child),
+    ),
+  );
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 400));
   await tester.pumpAndSettle();
 
-  await expectLater(find.byType(Scaffold), matchesGoldenFile(_shot(name, size)));
+  await expectLater(
+    find.byType(Scaffold),
+    matchesGoldenFile(_shot(name, size)),
+  );
 }
 
 Future<void> _shootShell(
@@ -191,11 +199,13 @@ Future<void> _shootShell(
 }) async {
   _size(tester, size);
 
-  await tester.pumpWidget(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: themeFor(state.uiSkin, layout: state.presentation),
-    home: HomeShell(state: state),
-  ));
+  await tester.pumpWidget(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: themeFor(state.uiSkin, layout: state.presentation),
+      home: HomeShell(state: state),
+    ),
+  );
   await tester.pump(const Duration(milliseconds: 50));
   HomeShellStateProbe.shellCall(tester, 'debugFinishLoading');
   for (var i = 0; i < 10; i++) {
@@ -203,10 +213,12 @@ Future<void> _shootShell(
   }
 
   if (tab != null) {
-    await tester.tap(find.descendant(
-      of: find.byType(TabBarView2),
-      matching: find.text(tab == 'library' ? 'LIBRARY' : 'SETTINGS'),
-    ));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(TabBarView2),
+        matching: find.text(tab == 'library' ? 'LIBRARY' : 'SETTINGS'),
+      ),
+    );
     await tester.pumpAndSettle();
   }
   if (openPlayer) {
@@ -239,10 +251,11 @@ void main() {
     // it, which would fail the test that merely looked at the screen.
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMessageHandler(
-      'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle',
-      // A pigeon success reply is a one-element list: the error slot, null.
-      (_) async => const StandardMessageCodec().encodeMessage(<Object?>[null]),
-    );
+          'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle',
+          // A pigeon success reply is a one-element list: the error slot, null.
+          (_) async =>
+              const StandardMessageCodec().encodeMessage(<Object?>[null]),
+        );
     await _loadFonts();
   });
 
@@ -254,12 +267,23 @@ void main() {
     });
 
     testWidgets('shell library $w', (tester) async {
-      await _shootShell(tester, 'shell_library', size, _state(), tab: 'library');
+      await _shootShell(
+        tester,
+        'shell_library',
+        size,
+        _state(),
+        tab: 'library',
+      );
     });
 
     testWidgets('shell settings $w', (tester) async {
-      await _shootShell(tester, 'shell_settings', size, _state(),
-          tab: 'settings');
+      await _shootShell(
+        tester,
+        'shell_settings',
+        size,
+        _state(),
+        tab: 'settings',
+      );
     });
 
     testWidgets('library empty $w', (tester) async {
@@ -268,15 +292,17 @@ void main() {
         tester,
         'library_empty',
         size,
-        LibraryScreen(view: LibraryScreenView(
-          tracks: const [],
-          coverPathFor: (_) => null,
-          skin: s.skin,
-          libraryRoot: '/storage/emulated/0/Music/Sonarar',
-          onChooseFolder: () {},
-          onFindMusic: () {},
-          playlists: PlaylistList(),
-        )),
+        LibraryScreen(
+          view: LibraryScreenView(
+            tracks: const [],
+            coverPathFor: (_) => null,
+            skin: s.skin,
+            libraryRoot: '/storage/emulated/0/Music/Sonarar',
+            onChooseFolder: () {},
+            onFindMusic: () {},
+            playlists: PlaylistList(),
+          ),
+        ),
         state: s,
       );
     });
@@ -284,19 +310,23 @@ void main() {
     testWidgets('library search $w', (tester) async {
       final s = _state();
       _size(tester, size);
-      await tester.pumpWidget(MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: themeFor(s.uiSkin, layout: s.presentation),
-        home: Scaffold(
-          body: LibraryScreen(view: LibraryScreenView(
-            tracks: _library(),
-            coverPathFor: (_) => null,
-            skin: s.skin,
-            onFindMusic: () {},
-            playlists: PlaylistList(),
-          )),
+      await tester.pumpWidget(
+        MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: themeFor(s.uiSkin, layout: s.presentation),
+          home: Scaffold(
+            body: LibraryScreen(
+              view: LibraryScreenView(
+                tracks: _library(),
+                coverPathFor: (_) => null,
+                skin: s.skin,
+                onFindMusic: () {},
+                playlists: PlaylistList(),
+              ),
+            ),
+          ),
         ),
-      ));
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       await tester.tap(find.byIcon(Icons.search_rounded));

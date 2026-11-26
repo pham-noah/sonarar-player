@@ -65,18 +65,21 @@ class _CoverButtonState extends State<CoverButton> {
                 ColoredBox(color: skin.panel)
               else
                 Image(
-
-                  image: ResizeImage(widget.cover!, width: (widget.size * 3).round()),
+                  image: ResizeImage(
+                    widget.cover!,
+                    width: (widget.size * 3).round(),
+                  ),
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => ColoredBox(color: skin.panel),
                 ),
 
-              if (show)
-                ColoredBox(color: Colors.black.withValues(alpha: 0.45)),
+              if (show) ColoredBox(color: Colors.black.withValues(alpha: 0.45)),
               if (show)
                 Center(
                   child: Icon(
-                    widget.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    widget.playing
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
                     size: widget.size * 0.34,
                     color: Colors.white,
                   ),

@@ -230,6 +230,7 @@
   "personalizeTheme": "主题",
   "personalizeAccent": "强调色",
   "personalizeAccentTheme": "主题强调色",
+  "stateSaveFailed": "无法保存更改，磁盘可能已满。",
   "personalizeThemesBuiltIn": "{count} 个内置 · 未使用",
   "@personalizeThemesBuiltIn": {
     "placeholders": {

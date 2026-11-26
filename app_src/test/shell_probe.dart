@@ -41,6 +41,8 @@ class HomeShellStateProbe {
         return d.debugOpenPlayer();
       case 'debugClosePlayer':
         return d.debugClosePlayer();
+      case 'debugSavePrefsNow':
+        return d.debugSavePrefsNow();
       default:
         throw ArgumentError('unknown shell member: $member');
     }

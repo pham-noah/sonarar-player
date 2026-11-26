@@ -129,16 +129,34 @@ class StateStores {
   Future<void> saveSnapshot(PlaybackSnapshot snap) =>
       _guard('save snapshot', () => snapshot.save(snap));
 
-  /// Runs one write and reports the failure instead of hiding it.
+  /// The write that could not land, if any, published so the shell can say so.
   ///
-  /// Everything saved here is state the user made — excluded tracks, loop
-  /// points, playlists — so a write that cannot land is the one failure worth
-  /// putting in front of them, named in [what]'s words.
+  /// Everything saved here is state the user made — a setting they changed, a
+  /// playlist they built, a loop point they marked. This class used to catch
+  /// and `debugPrint`, which reaches nobody in a release build: a full disk or
+  /// a read-only volume ate a whole session's work in silence. The shell listens
+  /// and speaks once per failure.
+  static final ValueNotifier<String?> writeFailure = ValueNotifier<String?>(null);
+
+  /// Arms the next write to fail, once, the way a full disk does.
+  ///
+  /// Tests arm it; the app never does. One shot so a test can fail a single
+  /// write and let every write after it through.
+  @visibleForTesting
+  static Future<void> Function()? debugFailNextWrite;
+
+  /// Runs one write, and publishes the failure instead of hiding it.
   static Future<void> _guard(String what, Future<void> Function() write) async {
     try {
+      final armed = debugFailNextWrite;
+      if (armed != null) {
+        debugFailNextWrite = null;
+        await armed();
+      }
       await write();
     } catch (e) {
       debugPrint('[Sonarar][STATE] $what failed: $e');
+      writeFailure.value = what;
     }
   }
 }

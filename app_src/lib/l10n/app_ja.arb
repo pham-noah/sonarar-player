@@ -230,6 +230,7 @@
   "personalizeTheme": "テーマ",
   "personalizeAccent": "アクセント",
   "personalizeAccentTheme": "テーマのアクセント",
+  "stateSaveFailed": "変更を保存できません。ディスクがいっぱいかもしれません。",
   "personalizeThemesBuiltIn": "{count} 個内蔵 · 未使用",
   "@personalizeThemesBuiltIn": {
     "placeholders": {

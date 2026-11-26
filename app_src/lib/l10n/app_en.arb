@@ -244,6 +244,7 @@
   "personalizeTheme": "THEME",
   "personalizeAccent": "ACCENT",
   "personalizeAccentTheme": "Theme accent",
+  "stateSaveFailed": "Couldn't save your changes — the disk may be full.",
   "personalizeThemesBuiltIn": "{count} built in · none worn",
   "@personalizeThemesBuiltIn": {
     "placeholders": {

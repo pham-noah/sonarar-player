@@ -230,6 +230,7 @@
   "personalizeTheme": "TEEMA",
   "personalizeAccent": "KOROSTUSVÄRI",
   "personalizeAccentTheme": "Teeman korostus",
+  "stateSaveFailed": "Muutoksia ei voi tallentaa — levy voi olla täynnä.",
   "personalizeThemesBuiltIn": "{count} sisäänrakennettu · ei käytössä",
   "@personalizeThemesBuiltIn": {
     "placeholders": {

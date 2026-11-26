@@ -430,6 +430,11 @@ class _HomeShellState extends State<HomeShell>
     return parts.length > 1 ? parts[1] : null;
   }
 
+  /// Writes the preferences as they stand, the way a settings change does, so
+  /// a test can make that one write fail on purpose.
+  @visibleForTesting
+  void debugSavePrefsNow() => _setPrefs(_prefs);
+
   void _setPrefs(AppPrefs next) {
     final visualiserWasOff = !_prefs.showVisualiser;
     final weatherWasOff = !_prefs.contextWeather;
@@ -1331,6 +1336,9 @@ class _HomeShellState extends State<HomeShell>
     // saved snapshot still have to hear about it.
     widget.state.queueChanges.addListener(_onStateChanged);
     _downloads.addListener(_onDownloadProblem);
+    // A save that could not land is the one state failure worth interrupting
+    // for: the user's own work, gone without a word.
+    StateStores.writeFailure.addListener(_onWriteFailure);
 
     final savedVolume = _resume?.volume;
     if (savedVolume != null) {
@@ -1519,6 +1527,7 @@ class _HomeShellState extends State<HomeShell>
   void dispose() {
     _disposed = true;
     _downloads.removeListener(_onDownloadProblem);
+    StateStores.writeFailure.removeListener(_onWriteFailure);
     _themeSession.dispose();
     _ticker.dispose();
     _player.removeListener(_onPlayerChanged);
@@ -2037,6 +2046,23 @@ class _HomeShellState extends State<HomeShell>
 
   /// A download that dies on a blocked folder otherwise only reaches the log,
   /// which is the one place nobody looks. Say it, and offer the fix.
+  String? _shownWriteFailure;
+
+  /// Says so once per failed write, the way a failed download is said once.
+  /// Repeating it on every keystroke of a settings change would be a nag; two
+  /// *different* writes failing both get a word.
+  void _onWriteFailure() {
+    final what = StateStores.writeFailure.value;
+    if (!mounted) return;
+    if (what == null) {
+      _shownWriteFailure = null;
+      return;
+    }
+    if (what == _shownWriteFailure) return;
+    _shownWriteFailure = what;
+    _toast(l10nOf(context).stateSaveFailed);
+  }
+
   void _onDownloadProblem() {
     final issue = _downloads.lastIssue;
     if (!mounted) return;

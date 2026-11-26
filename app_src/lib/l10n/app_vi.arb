@@ -230,6 +230,7 @@
   "personalizeTheme": "CHỦ ĐỀ",
   "personalizeAccent": "MÀU NHẤN",
   "personalizeAccentTheme": "Màu nhấn của giao diện",
+  "stateSaveFailed": "Không lưu được thay đổi — đĩa có thể đã đầy.",
   "personalizeThemesBuiltIn": "{count} có sẵn · chưa dùng",
   "@personalizeThemesBuiltIn": {
     "placeholders": {

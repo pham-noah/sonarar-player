@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/core/clock.dart';
+import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/main.dart';
 
 import 'shell_probe.dart';
@@ -218,6 +219,11 @@ void main() {
     for (var i = 0; i < 6; i++) {
       await tester.pump(const Duration(milliseconds: 200));
     }
+
+    final rect = tester.getRect(find.text(sentence));
+    expect(rect.bottom, lessThanOrEqualTo(860 - LayoutSpec.tabBarHeight),
+        reason: 'the toast ended at ${rect.bottom} on an 860-high screen; the tab '
+            'row is ${LayoutSpec.tabBarHeight} tall and the toast is sitting on it');
 
     expect(find.text(sentence), findsOneWidget,
         reason: 'the toast must name the track and say the file is missing — '

@@ -23,6 +23,7 @@ void _raise(
   String? actionLabel,
   Color? actionColor,
   VoidCallback? onAction,
+  double? clearance,
 }) {
   // Two ways to be buried: raised from inside a sheet or dialog, or raised by
   // a screen that now has one open on top of it (the shell's callbacks run in
@@ -34,6 +35,14 @@ void _raise(
   // shortened from here, so the one path that honours "no animations" is the
   // one this file draws.
   final still = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+  // A toast that sits on the bar is a toast that takes the bar's taps: for the
+  // four seconds an undo is up, the mini player and the tabs underneath it go
+  // dead. Screens below the shell read the height from the scope; the shell
+  // itself cannot (its own context is above the widget that publishes it, and a
+  // descendant does not exist when the call is made), so it passes the number.
+  final inset = clearance ?? ToastClearance.of(context);
+
   if (!still && route is! PopupRoute && !covered) {
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
@@ -45,6 +54,7 @@ void _raise(
             : Text(message, maxLines: maxLines, overflow: TextOverflow.ellipsis),
         duration: duration,
         behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.fromLTRB(12, 0, 12, inset + 12),
         action: actionLabel == null || onAction == null
             ? null
             : SnackBarAction(
@@ -57,6 +67,7 @@ void _raise(
   }
   _raiseInOverlay(
     context,
+    inset,
     _ToastCard(
       theme: Theme.of(context),
       message: message,
@@ -79,7 +90,12 @@ void _dismiss() {
   _current = null;
 }
 
-void _raiseInOverlay(BuildContext context, Widget content, Duration duration) {
+void _raiseInOverlay(
+  BuildContext context,
+  double bottomInset,
+  Widget content,
+  Duration duration,
+) {
   final overlay = Navigator.maybeOf(context, rootNavigator: true)?.overlay;
   if (overlay == null) return;
   _dismiss();
@@ -87,6 +103,7 @@ void _raiseInOverlay(BuildContext context, Widget content, Duration duration) {
   entry = OverlayEntry(
     builder: (_) => _ToastLayer(
       duration: duration,
+      bottomInset: bottomInset,
       onDone: () {
         if (identical(_current, entry)) _dismiss();
       },
@@ -97,12 +114,34 @@ void _raiseInOverlay(BuildContext context, Widget content, Duration duration) {
   overlay.insert(entry);
 }
 
+/// How much of the bottom of the screen a toast must keep clear.
+///
+/// The shell publishes the height of the bars it pins there — the mini player and
+/// the tab row — so a toast lands above them instead of on them. Anything shown
+/// outside the shell gets 0 and behaves as before.
+class ToastClearance extends InheritedWidget {
+  const ToastClearance({
+    super.key,
+    required this.height,
+    required super.child,
+  });
+
+  final double height;
+
+  static double of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ToastClearance>()?.height ?? 0;
+
+  @override
+  bool updateShouldNotify(ToastClearance oldWidget) => oldWidget.height != height;
+}
+
 /// A short confirmation with nothing to act on.
-void toast(BuildContext context, String message) {
+void toast(BuildContext context, String message, {double? clearance}) {
   _raise(
     context,
     message: message,
     duration: const Duration(milliseconds: 1400),
+    clearance: clearance,
   );
 }
 
@@ -110,12 +149,14 @@ void toastUndo(
   BuildContext context,
   Skin skin,
   String message,
-  VoidCallback undo,
-) {
+  VoidCallback undo, {
+  double? clearance,
+}) {
   _raise(
     context,
     message: message,
     duration: const Duration(seconds: 4),
+    clearance: clearance,
     maxLines: 1,
     // Was the English word in an app that ships five locales: a Finnish user
     // got a Finnish sentence with an English button under it.
@@ -130,8 +171,9 @@ void toastAction(
   Skin skin,
   String message,
   String label,
-  VoidCallback action,
-) {
+  VoidCallback action, {
+  double? clearance,
+}) {
   _raise(
     context,
     message: message,
@@ -140,6 +182,7 @@ void toastAction(
     actionLabel: label,
     actionColor: skin.accent,
     onAction: action,
+    clearance: clearance,
   );
 }
 
@@ -148,11 +191,15 @@ class _ToastLayer extends StatefulWidget {
     required this.child,
     required this.duration,
     required this.onDone,
+    required this.bottomInset,
   });
 
   final Widget child;
   final Duration duration;
   final VoidCallback onDone;
+
+  /// Pixels of the bottom of the screen occupied by the shell's bars.
+  final double bottomInset;
 
   @override
   State<_ToastLayer> createState() => _ToastLayerState();
@@ -205,7 +252,8 @@ class _ToastLayerState extends State<_ToastLayer>
     return Positioned(
       left: 0,
       right: 0,
-      bottom: 0,
+      // Above the bars, not on them. See `ToastClearance`.
+      bottom: widget.bottomInset,
       child: SafeArea(
         top: false,
         child: FadeTransition(

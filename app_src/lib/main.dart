@@ -2061,12 +2061,33 @@ class _HomeShellState extends State<HomeShell>
 
   void _toastAction(String message, String label, VoidCallback action) {
     if (!mounted) return;
-    toastAction(context, widget.state.uiSkin, message, label, action);
+    toastAction(context, widget.state.uiSkin, message, label, action,
+        clearance: _toastClearance);
   }
+
+  /// How tall the bars pinned to the bottom of the shell actually are.
+  ///
+  /// The mini player only counts when it is on screen: reserving its height with
+  /// nothing playing floats a toast a third of the way up the screen for no
+  /// reason.
+  double get _bottomBarsHeight {
+    final miniShowing = !_showPlayer.value && widget.state.currentTrack != null;
+    return LayoutSpec.tabBarHeight +
+        (miniShowing ? LayoutSpec.miniPlayerHeight : 0) +
+        MediaQuery.viewPaddingOf(context).bottom;
+  }
+
+  /// What a toast must keep clear, with air above the bars.
+  ///
+  /// The same number `_shellFrame` publishes through `ToastClearance`, computed
+  /// here because the shell's own context sits above the widget that publishes
+  /// it — a toast raised from the shell would otherwise read 0 and land on the
+  /// tab row.
+  double get _toastClearance => _bottomBarsHeight + 8;
 
   void _toast(String message) {
     if (!mounted) return;
-    toast(context, message);
+    toast(context, message, clearance: _toastClearance);
   }
 
   void _openLibraryManagement(Track track) {
@@ -3338,7 +3359,10 @@ class _HomeShellState extends State<HomeShell>
       ],
     );
 
-    return switch (chrome.shellFrame) {
+    // Every toast the shell raises lands above these bars rather than on them:
+    // the mini player and the tab row are the two things a thumb reaches for, and
+    // an undo bar pinned to the bottom edge takes their taps for four seconds.
+    final frame = switch (chrome.shellFrame) {
       ShellFrame.docked => Column(
           children: [
 
@@ -3388,6 +3412,13 @@ class _HomeShellState extends State<HomeShell>
           ],
         ),
     };
+
+    return ToastClearance(
+      // The bars, plus the system gesture inset the bars themselves are padded
+      // by, plus a little air so the toast does not touch them.
+      height: _bottomBarsHeight + 8,
+      child: frame,
+    );
   }
 
   void _selectTab(AppTab t) {

@@ -2,6 +2,35 @@
 
 Release notes for versions before 0.3.0 live on the [GitHub releases page](../../releases).
 
+## 0.3.9 — 2026-11-26
+
+0.3.8 went out before the last five moving things in the app were found. This
+release is that fix and nothing else, so the notes and the binary agree.
+
+### Fixed
+
+- **Five things still moved for a user who asked them not to.** The cover's
+  620ms slide-in, the panel's 180ms open, the row highlight's 120ms fade, the
+  lyrics' 420ms glide to the current line, and the stagger that holds a title
+  blank for 60ms while it swaps — that last one was the worst, because the slide
+  honoured Reduce Motion and the hold did not, so the row went blank and then
+  snapped in. All five ask `Motion` now, and the lyrics view takes its zero
+  answer through the `jump` path it already had.
+- **The toast's fade duration had two answers.** The controller carried a
+  literal 160ms while `didChangeDependencies` set it from `Motion`; the literal
+  is gone.
+- `test/motion_sweep_test.dart` keeps this countable: every numeric duration in
+  `lib/` must ask `Motion`, live in `theme/motion.dart`, or be listed with the
+  reason it is not motion — a timer, an audio ramp and how long a toast stays up
+  are time, not motion. A list entry whose code is gone fails the suite too.
+
+### Verified
+
+- `flutter analyze --fatal-infos`: 0 issues. `flutter test`: 2,305 passed,
+  4 skipped, 0 failed.
+- Removing the stagger's `Motion` call fails the swap test; restoring the 620ms
+  literal fails the sweep and names the line.
+
 ## 0.3.8 — 2026-11-26
 
 The UI pass. Every screen now has a name for every control, a duration for every

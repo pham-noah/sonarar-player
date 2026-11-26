@@ -229,6 +229,55 @@
   "personalizeBase": "NỀN",
   "personalizeTheme": "CHỦ ĐỀ",
   "personalizeAccent": "MÀU NHẤN",
+  "personalizeAccentTheme": "Màu nhấn của giao diện",
+  "personalizeThemesBuiltIn": "{count} có sẵn · chưa dùng",
+  "@personalizeThemesBuiltIn": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "personalizeThemesWearing": "{count} có sẵn · đang dùng {name}",
+  "@personalizeThemesWearing": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeThemeNameHint": "Bến cảng nửa đêm",
+  "@personalizeThemeNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeFolderNameHint": "Lái xe đêm",
+  "@personalizeFolderNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeSwatch": "{family}, {index}/{total}",
+  "@personalizeSwatch": {
+    "description": "Accessible name for one colour swatch: which palette and where in it.",
+    "placeholders": {
+      "family": {"type": "String"},
+      "index": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "personalizeMoveUp": "Chuyển {section} lên",
+  "@personalizeMoveUp": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeMoveDown": "Chuyển {section} xuống",
+  "@personalizeMoveDown": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeFocusCell": "Điểm lấy nét {index}/9",
+  "@personalizeFocusCell": {
+    "placeholders": {
+      "index": {"type": "int"}
+    }
+  },
   "personalizeFromPhoto": "TỪ ẢNH",
   "personalizePictureFor": "ẢNH CHO",
   "personalizeNoPicture": "KHÔNG CÓ ẢNH",

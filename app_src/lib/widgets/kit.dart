@@ -20,6 +20,7 @@ class KitRow extends StatelessWidget {
     this.icon,
     this.trailing,
     this.onTap,
+    this.toggled,
     this.below,
     this.dense = false,
     this.enabled = true,
@@ -34,6 +35,10 @@ class KitRow extends StatelessWidget {
   final IconData? icon;
   final Widget? trailing;
   final VoidCallback? onTap;
+
+  /// Set when the row *is* the switch, so it announces "on"/"off" as well as its
+  /// name. The knob itself is folded away in that case.
+  final bool? toggled;
 
   /// Content that needs the row's full width — a slider, a strip of choices.
   final Widget? below;
@@ -120,7 +125,7 @@ class KitRow extends StatelessWidget {
       ),
     );
 
-    return Padding(
+    final row = Padding(
       padding: const EdgeInsets.only(bottom: Space.xs),
       child: onTap == null
           ? body
@@ -132,6 +137,9 @@ class KitRow extends StatelessWidget {
               ),
             ),
     );
+    return toggled == null
+        ? row
+        : Semantics(toggled: toggled, child: row);
   }
 }
 
@@ -164,7 +172,14 @@ class KitToggle extends StatelessWidget {
     icon: icon,
     dense: dense,
     onTap: () => onChanged(!value),
-    trailing: KitSwitch(skin: skin, value: value, onChanged: onChanged),
+    toggled: value,
+    // The knob is folded into this row: it already has the name and the tap.
+    trailing: KitSwitch(
+      skin: skin,
+      value: value,
+      onChanged: onChanged,
+      folded: true,
+    ),
   );
 }
 
@@ -180,6 +195,7 @@ class KitSwitch extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.semanticLabel,
+    this.folded = false,
   });
 
   final Skin skin;
@@ -187,19 +203,26 @@ class KitSwitch extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
   final String? semanticLabel;
 
+  /// Give the switch's state to the control around it. A switch sitting inside
+  /// a row that already toggles is a second tap target with no name of its own —
+  /// it announced "on, switch" and nothing else, on every row in the app.
+  final bool folded;
+
   @override
   Widget build(BuildContext context) {
     final ink = SwitchInk.ofSkin(skin);
+    final knob = Switch(
+      value: value,
+      onChanged: onChanged,
+      trackColor: ink.track,
+      thumbColor: ink.thumb,
+      trackOutlineColor: ink.outline,
+    );
+    if (folded) return ExcludeSemantics(child: knob);
     return Semantics(
       label: semanticLabel,
       toggled: value,
-      child: Switch(
-        value: value,
-        onChanged: onChanged,
-        trackColor: ink.track,
-        thumbColor: ink.thumb,
-        trackOutlineColor: ink.outline,
-      ),
+      child: knob,
     );
   }
 }

@@ -243,6 +243,55 @@
   "personalizeBase": "BASE",
   "personalizeTheme": "THEME",
   "personalizeAccent": "ACCENT",
+  "personalizeAccentTheme": "Theme accent",
+  "personalizeThemesBuiltIn": "{count} built in · none worn",
+  "@personalizeThemesBuiltIn": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "personalizeThemesWearing": "{count} available · wearing {name}",
+  "@personalizeThemesWearing": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeThemeNameHint": "Midnight harbour",
+  "@personalizeThemeNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeFolderNameHint": "Night drives",
+  "@personalizeFolderNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeSwatch": "{family}, {index} of {total}",
+  "@personalizeSwatch": {
+    "description": "Accessible name for one colour swatch: which palette and where in it.",
+    "placeholders": {
+      "family": {"type": "String"},
+      "index": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "personalizeMoveUp": "Move {section} up",
+  "@personalizeMoveUp": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeMoveDown": "Move {section} down",
+  "@personalizeMoveDown": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeFocusCell": "Focus point {index} of 9",
+  "@personalizeFocusCell": {
+    "placeholders": {
+      "index": {"type": "int"}
+    }
+  },
   "personalizeFromPhoto": "FROM PHOTO",
   "personalizePictureFor": "PICTURE FOR",
   "personalizeNoPicture": "NO PICTURE",

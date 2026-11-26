@@ -132,20 +132,39 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).maybePop(),
-                        icon: Icon(
-                          Icons.arrow_back_rounded,
-                          color: skin.accentInk,
+                      // An arrow is not a name: without this the whole way out
+                      // of the screen announced as "button".
+                      Semantics(
+                        button: true,
+                        label: l10nOf(context).commonBack,
+                        excludeSemantics: true,
+                        onTap: () => Navigator.of(context).maybePop(),
+                        child: IconButton(
+                          onPressed: () => Navigator.of(context).maybePop(),
+                          icon: Icon(
+                            Icons.arrow_back_rounded,
+                            color: skin.accentInk,
+                          ),
                         ),
                       ),
-                      Text(
-                        l10nOf(context).settingsPersonalize,
-                        style: TextStyle(
-                          fontSize: LayoutSpec.fontBase,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: trackingFor(context, 1.6),
-                          color: skin.textPrimary,
+                      // A page title is one word in some locales and a long one in
+                      // others: Finnish at 130% asks for 0.2dp more than the row
+                      // has. Scaling it down keeps the word whole, which clipping
+                      // and an ellipsis do not.
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            l10nOf(context).settingsPersonalize,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: LayoutSpec.fontBase,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: trackingFor(context, 1.6),
+                              color: skin.textPrimary,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -270,7 +289,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
                     SectionBand(skin: skin, label: l10nOf(context).personalizeBase),
                     SizedBox(
-                      height: 46,
+                      height: 48,
                       child: ListView.separated(
                         key: const Key('base-row'),
                         scrollDirection: Axis.horizontal,
@@ -279,7 +298,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         itemBuilder: (_, i) {
                           if (i == 0) {
                             final onTheme = _p.base == null;
-                            return GestureDetector(
+                            return Semantics(
+                              button: true,
+                              selected: onTheme,
+                              excludeSemantics: true,
+                              onTap: () => _apply(_p.copyWith(clearBase: true)),
+                              label: l10nOf(context).personalizeTheme,
+                              child: GestureDetector(
                               key: const Key('base-theme'),
                               onTap: () => _apply(_p.copyWith(clearBase: true)),
                               child: Container(
@@ -304,15 +329,20 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   ).copyWith(letterSpacing: trackingFor(context, 1)),
                                 ),
                               ),
+                            ),
                             );
                           }
                           final colour = _bases[i - 1];
                           final picked = _p.base == colour.toARGB32();
-                          return GestureDetector(
+                          return _swatch(
+                            family: l10nOf(context).personalizeBase,
+                            index: i,
+                            total: _bases.length,
+                            picked: picked,
                             onTap: () =>
                                 _apply(_p.copyWith(base: colour.toARGB32())),
                             child: Container(
-                              width: 46,
+                              width: 48,
                               color: colour,
                               child: picked
                                   ? Icon(
@@ -338,7 +368,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     ),
                     const SizedBox(height: 8),
                     SizedBox(
-                      height: 46,
+                      height: 48,
                       child: ListView.separated(
                         key: const Key('accent-wheel'),
                         scrollDirection: Axis.horizontal,
@@ -348,7 +378,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                           if (i == 0) {
                             final onTheme =
                                 _p.accent.source == AccentSource.skin;
-                            return GestureDetector(
+                            return Semantics(
+                              button: true,
+                              selected: onTheme,
+                              excludeSemantics: true,
+                              onTap: () => _apply(
+                                _p.copyWith(accent: const AccentSpec()),
+                              ),
+                              // Named apart from the base row's chip: both read
+                              // THEME on screen, and "which of the two am I on"
+                              // is exactly what the selection state is for.
+                              label: l10nOf(context).personalizeAccentTheme,
+                              child: GestureDetector(
                               key: const Key('accent-theme'),
                               onTap: () => _apply(
                                 _p.copyWith(accent: const AccentSpec()),
@@ -375,13 +416,18 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   ).copyWith(letterSpacing: trackingFor(context, 1)),
                                 ),
                               ),
+                            ),
                             );
                           }
                           final colour = _swatches[i - 1];
                           final picked =
                               _p.accent.source == AccentSource.manual &&
                               _p.accent.value == colour.toARGB32();
-                          return GestureDetector(
+                          return _swatch(
+                            family: l10nOf(context).personalizeAccent,
+                            index: i,
+                            total: _swatches.length,
+                            picked: picked,
                             onTap: () => _apply(
                               _p.copyWith(
                                 accent: AccentSpec(
@@ -549,7 +595,12 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                         ),
                     ],
                     if (!_b.isSet) ...[
-                      Row(
+                      // Wrapped, not a Row: three chips at twice the text size want
+                      // 204dp more than the column has, and a clipped SWATCH is a
+                      // control the user cannot reach and cannot see is there.
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
                         children: [
                           _chip(
                             skin,
@@ -561,7 +612,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                                   : const BackdropFill(start: 0xFF16121C),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           _chip(
                             skin,
                             l10nOf(context).baseGradient,
@@ -574,7 +624,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           _chip(
                             skin,
                             l10nOf(context).baseSkin,
@@ -681,10 +730,16 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                     // The tab already says THEMES; a band repeating it wastes the one
                     // line that could tell you where you stand.
                     Text(
+                      // Localised: this line was built in English, so every
+                      // other language showed "12 BUILT IN · NONE WORN" in a
+                      // screen that is otherwise fully translated.
                       widget.state.preset == null
-                          ? '${widget.state.allPresets.length} BUILT IN · NONE WORN'
-                          : '${widget.state.allPresets.length} AVAILABLE · WEARING '
-                                '${capsFor(context, widget.state.preset!.name)}',
+                          ? l10nOf(context)
+                              .personalizeThemesBuiltIn(widget.state.allPresets.length)
+                          : l10nOf(context).personalizeThemesWearing(
+                              widget.state.allPresets.length,
+                              capsFor(context, widget.state.preset!.name),
+                            ),
                       style: TextStyle(
                         fontSize: LayoutSpec.fontFloor - 4,
                         fontWeight: FontWeight.w800,
@@ -829,7 +884,15 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(glass ? 14 : 4),
-      child: Container(
+      // A miniature is a picture of the app at its own size, not a second copy of
+      // the user's text setting: at 200% the rows inside this 216dp card wanted 29dp
+      // more than it has and painted an overflow marker over the sample, which is
+      // the one thing on this screen that is meant to show the result. Someone who
+      // scales their text up is not asking for a taller thumbnail.
+      child: MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.noScaling),
+        child: Container(
         height: 216,
         color: skin.background,
         child: Stack(
@@ -906,6 +969,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -1361,6 +1425,26 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     HomeSection.recap => l10nOf(context).recapTitle,
   };
 
+  /// One colour in a palette: which palette, where in it, and whether it is the
+  /// one in force. A bare `Container` inside a `ListView` reads as an unnamed
+  /// button, so the picker announced eighteen of them in a row with nothing to
+  /// tell one from the next and no way to hear which was current.
+  Widget _swatch({
+    required String family,
+    required int index,
+    required int total,
+    required bool picked,
+    required VoidCallback onTap,
+    required Widget child,
+  }) => Semantics(
+    button: true,
+    selected: picked,
+    onTap: onTap,
+    excludeSemantics: true,
+    label: l10nOf(context).personalizeSwatch(family, index, total),
+    child: GestureDetector(onTap: onTap, child: child),
+  );
+
   Widget _sectionRow(Skin skin, HomeSection section) {
     final order = _orderedSections();
     final index = order.indexOf(section);
@@ -1379,33 +1463,61 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               ),
             ),
           ),
-          IconButton(
-            onPressed: index <= 0
+          // Two arrows and a switch per row, and four rows: an arrow is not a
+          // name, and a switch on its own says "on" without saying what of.
+          Semantics(
+            button: true,
+            label: l10nOf(context).personalizeMoveUp(_sectionName(section)),
+            excludeSemantics: true,
+            onTap: index <= 0
                 ? null
                 : () => _apply(
                     _p.copyWith(home: _p.home.move(section, index - 1)),
                   ),
-            icon: Icon(
-              Icons.keyboard_arrow_up_rounded,
-              color: skin.textPrimary,
+            child: IconButton(
+              onPressed: index <= 0
+                  ? null
+                  : () => _apply(
+                      _p.copyWith(home: _p.home.move(section, index - 1)),
+                    ),
+              icon: Icon(
+                Icons.keyboard_arrow_up_rounded,
+                color: skin.textPrimary,
+              ),
             ),
           ),
-          IconButton(
-            onPressed: index < 0 || index >= order.length - 1
+          Semantics(
+            button: true,
+            label: l10nOf(context).personalizeMoveDown(_sectionName(section)),
+            excludeSemantics: true,
+            onTap: index < 0 || index >= order.length - 1
                 ? null
                 : () => _apply(
                     _p.copyWith(home: _p.home.move(section, index + 1)),
                   ),
-            icon: Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: skin.textPrimary,
+            child: IconButton(
+              onPressed: index < 0 || index >= order.length - 1
+                  ? null
+                  : () => _apply(
+                      _p.copyWith(home: _p.home.move(section, index + 1)),
+                    ),
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: skin.textPrimary,
+              ),
             ),
           ),
-          Switch(
-            value: !_p.home.hidden.contains(section),
-            activeThumbColor: skin.accent,
-            onChanged: (_) =>
-                _apply(_p.copyWith(home: _p.home.toggle(section))),
+          Semantics(
+            label: _sectionName(section),
+            toggled: !_p.home.hidden.contains(section),
+            child: ExcludeSemantics(
+              child: Switch(
+                value: !_p.home.hidden.contains(section),
+                activeThumbColor: skin.accent,
+                onChanged: (_) =>
+                    _apply(_p.copyWith(home: _p.home.toggle(section))),
+              ),
+            ),
           ),
         ],
       ),
@@ -1426,7 +1538,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           controller: controller,
           autofocus: true,
           style: TextStyle(color: _skin.textPrimary),
-          decoration: const InputDecoration(hintText: 'Midnight harbour'),
+          decoration: InputDecoration(
+            hintText: l10nOf(context).personalizeThemeNameHint,
+          ),
         ),
         actions: [
           TextButton(
@@ -1863,7 +1977,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           autofocus: true,
           style: TextStyle(color: _skin.textPrimary),
           decoration: InputDecoration(
-            hintText: 'Night drives',
+            hintText: l10nOf(context).personalizeFolderNameHint,
             hintStyle: TextStyle(color: _skin.textSecondary),
           ),
           onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),

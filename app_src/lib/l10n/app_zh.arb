@@ -229,6 +229,55 @@
   "personalizeBase": "底图",
   "personalizeTheme": "主题",
   "personalizeAccent": "强调色",
+  "personalizeAccentTheme": "主题强调色",
+  "personalizeThemesBuiltIn": "{count} 个内置 · 未使用",
+  "@personalizeThemesBuiltIn": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "personalizeThemesWearing": "{count} 个 · 正在使用 {name}",
+  "@personalizeThemesWearing": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeThemeNameHint": "午夜港湾",
+  "@personalizeThemeNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeFolderNameHint": "夜间驾驶",
+  "@personalizeFolderNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeSwatch": "{family}，第 {index}/{total} 个",
+  "@personalizeSwatch": {
+    "description": "Accessible name for one colour swatch: which palette and where in it.",
+    "placeholders": {
+      "family": {"type": "String"},
+      "index": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "personalizeMoveUp": "上移 {section}",
+  "@personalizeMoveUp": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeMoveDown": "下移 {section}",
+  "@personalizeMoveDown": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeFocusCell": "焦点位置 {index}/9",
+  "@personalizeFocusCell": {
+    "placeholders": {
+      "index": {"type": "int"}
+    }
+  },
   "personalizeFromPhoto": "取自照片",
   "personalizePictureFor": "图片用于",
   "personalizeNoPicture": "没有图片",

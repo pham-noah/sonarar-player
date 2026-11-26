@@ -229,6 +229,55 @@
   "personalizeBase": "ベース",
   "personalizeTheme": "テーマ",
   "personalizeAccent": "アクセント",
+  "personalizeAccentTheme": "テーマのアクセント",
+  "personalizeThemesBuiltIn": "{count} 個内蔵 · 未使用",
+  "@personalizeThemesBuiltIn": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "personalizeThemesWearing": "{count} 個 · {name} を使用中",
+  "@personalizeThemesWearing": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeThemeNameHint": "真夜中の港",
+  "@personalizeThemeNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeFolderNameHint": "夜のドライブ",
+  "@personalizeFolderNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeSwatch": "{family}、{index}/{total}",
+  "@personalizeSwatch": {
+    "description": "Accessible name for one colour swatch: which palette and where in it.",
+    "placeholders": {
+      "family": {"type": "String"},
+      "index": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "personalizeMoveUp": "{section} を上へ",
+  "@personalizeMoveUp": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeMoveDown": "{section} を下へ",
+  "@personalizeMoveDown": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeFocusCell": "フォーカス位置 {index}/9",
+  "@personalizeFocusCell": {
+    "placeholders": {
+      "index": {"type": "int"}
+    }
+  },
   "personalizeFromPhoto": "写真から",
   "personalizePictureFor": "使う写真",
   "personalizeNoPicture": "写真なし",

@@ -229,6 +229,55 @@
   "personalizeBase": "POHJA",
   "personalizeTheme": "TEEMA",
   "personalizeAccent": "KOROSTUSVÄRI",
+  "personalizeAccentTheme": "Teeman korostus",
+  "personalizeThemesBuiltIn": "{count} sisäänrakennettu · ei käytössä",
+  "@personalizeThemesBuiltIn": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "personalizeThemesWearing": "{count} saatavilla · käytössä {name}",
+  "@personalizeThemesWearing": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "personalizeThemeNameHint": "Keskiyön satama",
+  "@personalizeThemeNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeFolderNameHint": "Yöajot",
+  "@personalizeFolderNameHint": {
+    "description": "Example name shown greyed out in the field."
+  },
+  "personalizeSwatch": "{family}, {index}/{total}",
+  "@personalizeSwatch": {
+    "description": "Accessible name for one colour swatch: which palette and where in it.",
+    "placeholders": {
+      "family": {"type": "String"},
+      "index": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "personalizeMoveUp": "Siirrä {section} ylös",
+  "@personalizeMoveUp": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeMoveDown": "Siirrä {section} alas",
+  "@personalizeMoveDown": {
+    "placeholders": {
+      "section": {"type": "String"}
+    }
+  },
+  "personalizeFocusCell": "Tarkennuspiste {index}/9",
+  "@personalizeFocusCell": {
+    "placeholders": {
+      "index": {"type": "int"}
+    }
+  },
   "personalizeFromPhoto": "KUVASTA",
   "personalizePictureFor": "KUVA KOHDASSA",
   "personalizeNoPicture": "EI KUVAA",

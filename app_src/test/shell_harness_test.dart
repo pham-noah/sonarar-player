@@ -196,5 +196,32 @@ void main() {
     expect(tester.takeException(), isNull,
         reason: 'the async load path threw after boot — the lyrics null crash looked like this');
   });
-}
 
+  testWidgets('a track whose file is gone says why nothing started', (tester) async {
+    await _boot(tester);
+
+    const sentence = "Couldn't play Ghost File — its file is gone.";
+    expect(find.text(sentence), findsNothing,
+        reason: 'nothing has tried to play it yet');
+
+    // An SD card unmounted, a folder that moved: the row is still in the library
+    // and the file behind it is not. Until this, the load failed into a
+    // `debugPrint` and the transport simply went idle — from the library, tapping
+    // that row looked like tapping a dead pixel.
+    //
+    // The assertion is the whole sentence, not the track name: the row itself
+    // carries "Ghost File", so a looser match would pass on the list behind the
+    // toast.
+    //
+    // ignore: discarded_futures
+    HomeShellStateProbe.shellCall(tester, 'debugPlayMissingFile');
+    for (var i = 0; i < 6; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+
+    expect(find.text(sentence), findsOneWidget,
+        reason: 'the toast must name the track and say the file is missing — '
+            '"could not play" with no title is a message about a bug, and a '
+            'title with no reason sends the user back to press play again');
+  });
+}

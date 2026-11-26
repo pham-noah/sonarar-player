@@ -98,6 +98,11 @@
   "playerSleepOn": "Hẹn giờ ngủ đang bật — chạm để tắt",
   "playerSleep": "Hẹn giờ ngủ",
   "playerFileMissing": "Không tìm thấy tệp của bài này trên máy",
+  "playerCouldNotPlay": "Không phát được {title} — tệp đã mất.",
+  "@playerCouldNotPlay": {
+    "description": "Hiển thị khi không mở được bài hát và hàng đợi không còn bài nào để chuyển sang.",
+    "placeholders": {"title": {"type": "String"}}
+  },
   "playerWhyThisSongTitle": "VÌ SAO BÀI NÀY",
   "playerQueueTitle": "HÀNG ĐỢI",
   "playerAudio": "ÂM THANH",

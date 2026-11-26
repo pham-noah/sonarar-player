@@ -882,6 +882,25 @@ class _HomeShellState extends State<HomeShell>
   @visibleForTesting
   void debugSyncTicker() => _syncProgressTicker();
 
+  /// Test hook: play a track whose file is not on disk, through the real load
+  /// path and the real dead end. An unmounted card is the only way a user gets
+  /// here, and it cannot be arranged from a widget test any other way.
+  Future<bool> debugPlayMissingFile() {
+    final ghost = Track(
+      id: '__missing__',
+      title: 'Ghost File',
+      artist: 'Nobody',
+      album: 'Nowhere',
+      duration: const Duration(seconds: 200),
+      file: '__missing_file__.opus',
+      cover: '',
+      gainDb: null,
+    );
+    widget.state.attachLibrary([ghost]);
+    widget.state.playTrackNow(ghost.id);
+    return _loadCurrentTrack();
+  }
+
   @visibleForTesting
   void debugOpenPanel(PlayerPanel p) => setState(() => _panel = p);
 
@@ -1061,6 +1080,8 @@ class _HomeShellState extends State<HomeShell>
 
     // What to do about a failure is the shell's call: the loader reports, the
     // interface decides whether to step over the track or show it as missing.
+    var deadEnd = false;
+
     _shellChanged(() {
       _fileMissing = _loader.fileMissing;
       if (!ok) {
@@ -1078,6 +1099,11 @@ class _HomeShellState extends State<HomeShell>
             _loadCurrentTrack(autoPlay: _playing);
             return;
           }
+          // Nothing played and there is nothing after it to step to. The row the
+          // user tapped is a file that is not there any more — an unmounted card,
+          // a folder that moved — and until now the only sign was a line on the
+          // player screen they were not looking at.
+          deadEnd = true;
         }
       }
 
@@ -1085,6 +1111,13 @@ class _HomeShellState extends State<HomeShell>
       if (!ok) _player.setPlaying(false);
       _syncProgressTicker();
     });
+
+    if (deadEnd) {
+      final track = widget.state.currentTrack;
+      if (track != null) {
+        _toast(l10nOf(context).playerCouldNotPlay(track.title));
+      }
+    }
     return ok;
   }
 

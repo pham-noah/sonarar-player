@@ -98,6 +98,11 @@
   "playerSleepOn": "睡眠定时已开启——点击关闭",
   "playerSleep": "睡眠定时",
   "playerFileMissing": "设备上找不到该曲目的文件",
+  "playerCouldNotPlay": "无法播放《{title}》，文件已不在了。",
+  "@playerCouldNotPlay": {
+    "description": "曲目无法打开且队列中没有下一首时显示。",
+    "placeholders": {"title": {"type": "String"}}
+  },
   "playerWhyThisSongTitle": "为什么是这首",
   "playerQueueTitle": "队列",
   "playerAudio": "音频",

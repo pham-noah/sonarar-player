@@ -35,6 +35,8 @@ class HomeShellStateProbe {
         return d.debugSyncTicker();
       case 'debugFinishLoading':
         return d.debugFinishLoading();
+      case 'debugPlayMissingFile':
+        return d.debugPlayMissingFile();
       case 'debugOpenPlayer':
         return d.debugOpenPlayer();
       case 'debugClosePlayer':

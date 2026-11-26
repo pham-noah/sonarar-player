@@ -98,6 +98,11 @@
   "playerSleepOn": "Sleep timer on — tap to turn off",
   "playerSleep": "Sleep timer",
   "playerFileMissing": "Track file not found on this device",
+  "playerCouldNotPlay": "Couldn't play {title} — its file is gone.",
+  "@playerCouldNotPlay": {
+    "description": "What is said when a track could not be opened and there is nothing further in the\nqueue to step to. {title} is the track title.",
+    "placeholders": {"title": {"type": "String"}}
+  },
   "playerWhyThisSongTitle": "WHY THIS SONG",
   "playerQueueTitle": "QUEUE",
   "playerAudio": "AUDIO",

@@ -98,6 +98,11 @@
   "playerSleepOn": "スリープタイマーがオンです。タップで解除",
   "playerSleep": "スリープタイマー",
   "playerFileMissing": "この曲のファイルが端末にありません",
+  "playerCouldNotPlay": "{title} を再生できません。ファイルが見つかりません。",
+  "@playerCouldNotPlay": {
+    "description": "曲を開けず、次に進む曲もないときに表示する。",
+    "placeholders": {"title": {"type": "String"}}
+  },
   "playerWhyThisSongTitle": "この曲の理由",
   "playerQueueTitle": "キュー",
   "playerAudio": "オーディオ",

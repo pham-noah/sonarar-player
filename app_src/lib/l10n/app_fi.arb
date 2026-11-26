@@ -98,6 +98,11 @@
   "playerSleepOn": "Uniajastin päällä — napauta sammuttaaksesi",
   "playerSleep": "Uniajastin",
   "playerFileMissing": "Kappaleen tiedostoa ei löytynyt laitteelta",
+  "playerCouldNotPlay": "Ei voi toistaa: {title} — tiedosto on poissa.",
+  "@playerCouldNotPlay": {
+    "description": "Sanotaan, kun kappaletta ei voitu avata eikä jonossa ole seuraavaa.",
+    "placeholders": {"title": {"type": "String"}}
+  },
   "playerWhyThisSongTitle": "MIKSI TÄMÄ KAPPALE",
   "playerQueueTitle": "JONO",
   "playerAudio": "ÄÄNI",

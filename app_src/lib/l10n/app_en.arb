@@ -457,6 +457,31 @@
   "ytPlayThis": "Play this",
   "ytNotOfficialBadge": "Not an official release",
   "ytDownload": "Download to the library",
+  "ytSearchFailed": "Couldn't reach YouTube. Check the connection and try again.",
+  "@ytSearchFailed": {
+    "description": "Shown when a YouTube search throws. The exception itself stays in the diagnostics log."
+  },
+  "ytNoResults": "Nothing on YouTube for \"{query}\".",
+  "@ytNoResults": {
+    "description": "Shown under a finished search that returned no rows.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "ytClearSearch": "Clear the search",
+  "@ytClearSearch": {
+    "description": "Label for the icon that empties the search field."
+  },
+  "downloadCancel": "Cancel the download",
+  "@downloadCancel": {
+    "description": "Label for the control that stops a download or takes a waiting one out of the queue."
+  },
+  "downloadRetry": "Try the download again",
+  "@downloadRetry": {
+    "description": "Label for the control on a row whose download failed."
+  },
   "loopTitle": "LOOP",
   "loopIntroEnds": "INTRO ENDS",
   "loopStart": "LOOP START",

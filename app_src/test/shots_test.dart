@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/core/clock.dart';
+import 'package:sonarar/download/download_manager.dart';
+import 'package:sonarar/library/library_repository.dart';
 import 'package:sonarar/library/playlists.dart';
 import 'package:sonarar/library/track.dart';
 import 'package:sonarar/main.dart';
@@ -17,6 +19,8 @@ import 'package:sonarar/screens/library_screen.dart';
 import 'package:sonarar/screens/mini_player.dart';
 import 'package:sonarar/screens/player_screen.dart';
 import 'package:sonarar/screens/settings_screen.dart';
+import 'package:sonarar/screens/playlist_import_sheet.dart';
+import 'package:sonarar/screens/youtube_search_screen.dart';
 import 'package:sonarar/screens/tab_bar_view.dart';
 import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/theme/skin_policy.dart';
@@ -404,8 +408,73 @@ void main() {
         state: s,
       );
     });
+
+    // The download page. Its rows only exist after a search, and a search needs
+    // YouTube, so the page takes its results from a function: the shot is of the
+    // page a person downloads from, not of a spinner.
+    testWidgets('download page $w', (tester) async {
+      final s = _state();
+      await _shootWidget(
+        tester,
+        'download_quiet',
+        size,
+        _downloadPage(tester, s),
+        state: s,
+      );
+    });
+
+    testWidgets('download page results $w', (tester) async {
+      final s = _state();
+      final page = _downloadPage(tester, s);
+      await _shootWidget(tester, 'download_results', size, page, state: s);
+      await tester.enterText(find.byType(TextField), 'persona');
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.tap(find.byKey(const Key('search-submit')));
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile(_shot('download_rows', size)),
+      );
+    });
   }
 }
+
+/// A download page with plausible rows and no network.
+Widget _downloadPage(WidgetTester tester, AppState s) => YoutubeSearchScreen(
+  state: s,
+  repo: LibraryRepository(),
+  playlistStore: PlaylistSources(
+    File('${Directory.systemTemp.path}/sonarar_shots_playlists.json'),
+  ),
+  downloads: DownloadManager(
+    repo: LibraryRepository(),
+    downloadDirOf: () => Directory.systemTemp,
+    manifestOf: () => null,
+    downloadsAvailable: true,
+  ),
+  onPlay: (_) {},
+  search: (query) async => const [
+    SearchHit(
+      id: 'aaaaaaaaaaa',
+      title: 'Living With Determination',
+      channel: 'ATLUS Sound Team',
+      duration: Duration(seconds: 203),
+    ),
+    SearchHit(
+      id: 'bbbbbbbbbbb',
+      title: 'Mass Destruction - Lotus Juice Remix',
+      channel: 'ATLUS Sound Team - Topic',
+      duration: Duration(seconds: 231),
+    ),
+    SearchHit(
+      id: 'ccccccccccc',
+      title: 'Beneath the Mask (Instrumental)',
+      channel: 'Shoji Meguro',
+      duration: Duration(seconds: 296),
+    ),
+  ],
+);
 
 /// Writes the PNG and calls it a pass: a shot is evidence, not a claim.
 class _WriteOnlyComparator extends GoldenFileComparator {

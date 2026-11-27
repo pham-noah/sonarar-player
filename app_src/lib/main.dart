@@ -700,8 +700,18 @@ class _HomeShellState extends State<HomeShell>
     _loadCurrentTrack();
   }
 
-  Future<void> _refreshHomeRails() async {
-    final events = await _stores.playLog.read();
+  Future<void> _refreshHomeRails([List<PlayEvent>? from]) async {
+    final events = from ?? await _stores.playLog.read();
+    if (!mounted) return;
+    _lastEvents = events;
+    _applyRails(events);
+  }
+
+  /// Derives the rails from a log already in hand.
+  ///
+  /// The log file only grows, so asking it again for a play that is already in
+  /// memory costs a pass over up to four megabytes on the isolate that draws.
+  void _applyRails(List<PlayEvent> events) {
     final rails = deriveHomeRails(
       tracks: _repo.tracks,
       events: events,
@@ -714,13 +724,60 @@ class _HomeShellState extends State<HomeShell>
       _heavyRotation = rails.heavyRotation;
       _recapTracks = rails.recap;
       _newFromLibrary = rails.newFromLibrary;
-
-      _lastEvents = events;
     });
   }
 
-  List<PlaylistPlays> get _libraryPlaylists =>
-      rankPlaylistsByPlays(playlists: _genreLists, events: _lastEvents);
+  /// The log in memory, plus the one play that just happened.
+  ///
+  /// The file is written once and read once: everything downstream derives
+  /// from this list rather than going back to disk for a line it just wrote.
+  void _notePlay(PlayEvent event) {
+    _lastEvents = [..._lastEvents, event];
+    final counts = _playsByTrack;
+    if (counts != null) {
+      if (isCountedPlay(event)) {
+        counts[event.trackId] = (counts[event.trackId] ?? 0) + 1;
+      }
+      _playsByTrackSource = _lastEvents;
+    }
+  }
+
+  /// The same refresh, on the frame after the one being drawn now.
+  ///
+  /// A track change is a tap: the row's own state, the mini player and the
+  /// player all redraw from state that is already in memory, and none of it
+  /// comes from the rails. Refreshing ahead of that frame puts a walk over
+  /// every event ever playable in front of the one frame the tap is waiting
+  /// for.
+  void _refreshHomeRailsAfterFrame() {
+    final binding = WidgetsBinding.instance;
+    binding.addPostFrameCallback((_) {
+      if (mounted) _applyRails(_lastEvents);
+    });
+    binding.ensureVisualUpdate();
+  }
+
+  List<PlaylistPlays> get _libraryPlaylists => rankPlaylistsByPlays(
+        playlists: _genreLists,
+        events: _lastEvents,
+        counts: _playsByTrackCount,
+      );
+
+  /// Counted plays per track, held for as long as the log is the same list.
+  ///
+  /// The ranking runs inside build, so it ran on every notification — and the
+  /// expensive half of it walks every event ever recorded, which only grows.
+  Map<String, int>? _playsByTrack;
+  List<PlayEvent>? _playsByTrackSource;
+
+  Map<String, int> get _playsByTrackCount {
+    final events = _lastEvents;
+    if (_playsByTrack == null || !identical(events, _playsByTrackSource)) {
+      _playsByTrack = countPlaysByTrack(events);
+      _playsByTrackSource = events;
+    }
+    return _playsByTrack!;
+  }
 
   Playlist? get _mostRecentPlaylist {
     final all = widget.state.playlists.all;
@@ -1649,8 +1706,7 @@ class _HomeShellState extends State<HomeShell>
 
     if (_prefs.showVisualiser) unawaited(_loadSpectrum(next?.id));
 
-    // ignore: discarded_futures
-    _refreshHomeRails();
+    _refreshHomeRailsAfterFrame();
 
     // ignore: discarded_futures
     _loadLyrics();
@@ -2345,19 +2401,18 @@ class _HomeShellState extends State<HomeShell>
   Future<void> _appendThenRefresh(PlayEvent event) async {
     await _stores.playLog.append(event);
     if (!mounted) return;
-    // The event just landed on disk, and Archive, History and the Home rails
-    // all read this snapshot. Re-read it on every write, not when a screen
-    // opens, or a song played now is invisible until you open History.
-    final events = await _stores.playLog.read();
-    if (!mounted) return;
-    setState(() => _lastEvents = events);
-    await _refreshDerivedPlaylists();
-    await _refreshHomeRails();
+    // Archive, History and the Home rails all read this snapshot, so the event
+    // has to be in it the moment it lands — and it is: nothing else can have
+    // written to the log since boot, because playing a track is what writes to
+    // it. Adding the event here instead of re-reading the file removes three
+    // passes over up to four megabytes for one line we just wrote.
+    _notePlay(event);
+    await _refreshDerivedPlaylists(_lastEvents);
+    _applyRails(_lastEvents);
   }
 
-  Future<void> _refreshDerivedPlaylists() async {
-    final log = _stores.playLog;
-    final events = await log.read();
+  Future<void> _refreshDerivedPlaylists([List<PlayEvent>? from]) async {
+    final events = from ?? await _stores.playLog.read();
     if (!mounted) return;
     final lists = buildRediscovery(
       library: widget.state.library,

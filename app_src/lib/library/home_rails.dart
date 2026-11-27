@@ -26,15 +26,26 @@ typedef HomeRails = ({
 
 typedef PlaylistPlays = ({Playlist playlist, int plays});
 
-List<PlaylistPlays> rankPlaylistsByPlays({
-  required List<Playlist> playlists,
-  required List<PlayEvent> events,
-}) {
+/// How many counted plays each track has, over the whole log.
+///
+/// Separate from the ranking because the log grows with every listen and the
+/// ranking runs on every rebuild: a caller that rebuilds often can hold this
+/// map for as long as the log is unchanged and redo only the cheap part.
+Map<String, int> countPlaysByTrack(List<PlayEvent> events) {
   final playsByTrack = <String, int>{};
   for (final e in events) {
     if (!isCountedPlay(e)) continue;
     playsByTrack[e.trackId] = (playsByTrack[e.trackId] ?? 0) + 1;
   }
+  return playsByTrack;
+}
+
+List<PlaylistPlays> rankPlaylistsByPlays({
+  required List<Playlist> playlists,
+  required List<PlayEvent> events,
+  Map<String, int>? counts,
+}) {
+  final playsByTrack = counts ?? countPlaysByTrack(events);
 
   final ranked = <PlaylistPlays>[
     for (final p in playlists)

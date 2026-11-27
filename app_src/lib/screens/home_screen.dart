@@ -20,6 +20,7 @@ import '../theme/personalization.dart';
 import '../theme/skin.dart';
 import '../theme/tokens.dart';
 import '../widgets/art_scrim.dart';
+import '../widgets/panel_bodies.dart';
 
 enum HomeTab { home, quickPick, fromLibrary, genre, recap }
 /// Everything the home screen is handed, in one object.
@@ -146,6 +147,12 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.view});
 
   final HomeView view;
+
+  /// Static because [HomeScreen] is rebuilt as a new widget: the index belongs
+  /// to the library, not to the build, and [identical] on `allTracks` says when
+  /// the library itself changed.
+  static List<Track>? _indexedTracks;
+  static Map<String, Track> _trackIndex = const {};
 
   @override
   Widget build(BuildContext context) {
@@ -420,18 +427,20 @@ class HomeScreen extends StatelessWidget {
   Widget _playlistCover(Playlist p) {
     final first = tracksOf(p);
     final cover = first.isEmpty ? null : view.coverPathFor?.call(first.first);
+    // The stat lives in the cache, so this costs nothing on the next build.
+    final art = coverProviderFor(cover, width: 312);
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: view.skin.edge(0.28)),
       ),
-      child: (cover == null || !File(cover).existsSync())
+      child: art == null
           ? ColoredBox(
               color: view.skin.panel,
               child: Icon(Icons.queue_music_rounded, color: view.skin.accentDeep, size: 30),
             )
           // Full-size art in a small slot is a decode the UI never uses.
           : Image(
-              image: ResizeImage(FileImage(File(cover)), width: 312),
+              image: art,
               fit: BoxFit.cover,
             ),
     );
@@ -561,12 +570,7 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               width: 72,
               height: 72,
-              child: (cover == null || !File(cover).existsSync())
-                  ? ColoredBox(color: pal.surface)
-                  : Image(
-                      image: ResizeImage(FileImage(File(cover)), width: 216),
-                      fit: BoxFit.cover,
-                    ),
+              child: _coverFill(cover, 216, pal.surface),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -599,8 +603,15 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  /// One id index per library. [tracksOf] runs once per playlist card per
+  /// build, so an index rebuilt inside that loop costs playlists × tracks.
   List<Track> tracksOf(Playlist p) {
-    final byId = {for (final t in view.allTracks) t.id: t};
+    final all = view.allTracks;
+    if (!identical(_indexedTracks, all)) {
+      _indexedTracks = all;
+      _trackIndex = {for (final t in all) t.id: t};
+    }
+    final byId = _trackIndex;
     return [
       for (final id in p.trackIds)
         if (byId[id] != null) byId[id]!,
@@ -789,7 +800,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _QuickPickPager extends StatelessWidget {
+class _QuickPickPager extends StatefulWidget {
   const _QuickPickPager({
     required this.skin,
     required this.pool,
@@ -802,11 +813,37 @@ class _QuickPickPager extends StatelessWidget {
   final String? Function(Track)? coverPathFor;
   final void Function(Track)? onPlay;
 
+  @override
+  State<_QuickPickPager> createState() => _QuickPickPagerState();
+}
+
+class _QuickPickPagerState extends State<_QuickPickPager> {
   static const int _perPage = 4;
+
+  /// Shuffled once per pool, not once per build. Home rebuilds whenever the
+  /// player state changes, and a reshuffle under a finger already on its way
+  /// down swaps the card for a different track.
+  late List<Track> _shuffled = _shuffleOf(widget.pool);
+
+  static List<Track> _shuffleOf(List<Track> pool) => [...pool]..shuffle();
+
+  static bool _samePool(List<Track> a, List<Track> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].id != b[i].id) return false;
+    }
+    return true;
+  }
+
+  @override
+  void didUpdateWidget(_QuickPickPager old) {
+    super.didUpdateWidget(old);
+    if (!_samePool(old.pool, widget.pool)) _shuffled = _shuffleOf(widget.pool);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final shuffled = [...pool]..shuffle();
+    final shuffled = _shuffled;
     final pages = (shuffled.length / _perPage).ceil();
     if (pages == 0) return const SizedBox();
     return SizedBox(
@@ -821,10 +858,12 @@ class _QuickPickPager extends StatelessWidget {
                 SizedBox(
                   height: kQuickPickRowHeight,
                   child: _QuickPickRow(
-                    skin: skin,
+                    skin: widget.skin,
                     track: t,
-                    coverPath: coverPathFor?.call(t),
-                    onTap: onPlay == null ? null : () => onPlay!(t),
+                    coverPath: widget.coverPathFor?.call(t),
+                    onTap: widget.onPlay == null
+                        ? null
+                        : () => widget.onPlay!(t),
                   ),
                 ),
             ],
@@ -833,6 +872,16 @@ class _QuickPickPager extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A cover painted at the size it is drawn, or a flat panel when there is none.
+/// The existence stat is cached inside [coverProviderFor], so a row that
+/// rebuilds no longer touches the filesystem.
+Widget _coverFill(String? path, int width, Color fallback) {
+  final art = coverProviderFor(path, width: width);
+  return art == null
+      ? ColoredBox(color: fallback)
+      : Image(image: art, fit: BoxFit.cover);
 }
 
 const double kQuickPickRowHeight = 56;
@@ -861,12 +910,7 @@ class _QuickPickRow extends StatelessWidget {
           SizedBox(
             width: 44,
             height: 44,
-            child: (coverPath == null || !File(coverPath!).existsSync())
-                ? ColoredBox(color: skin.panel)
-                : Image(
-                    image: ResizeImage(FileImage(File(coverPath!)), width: 132),
-                    fit: BoxFit.cover,
-                  ),
+            child: _coverFill(coverPath, 132, skin.panel),
           ),
           const SizedBox(width: 12),
           Expanded(

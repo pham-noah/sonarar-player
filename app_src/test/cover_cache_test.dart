@@ -2,6 +2,7 @@ library;
 
 import 'dart:io';
 
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/widgets/panel_bodies.dart';
 
@@ -54,5 +55,24 @@ void main() {
         reason: 'the second lookup hit the filesystem again — the cache is not being read');
     expect(coverExistsCacheSize, afterFirst,
         reason: 'the cache grew on a repeat lookup');
+  });
+
+  test('a sized cover decodes at that size and still stats once', () {
+    final dir = Directory.systemTemp.createTempSync('sonarar-cover-');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final present = File('${dir.path}/cover.png')..writeAsBytesSync(const [1, 2, 3]);
+
+    clearCoverCache();
+    final sized = coverProviderFor(present.path, width: 132);
+    expect(sized, isA<ResizeImage>(),
+        reason: 'a 44 px row asked for the full-size decode');
+    expect((sized! as ResizeImage).width, 132,
+        reason: 'the resize did not carry the width the row paints at');
+
+    for (var i = 0; i < 200; i++) {
+      coverProviderFor(present.path, width: 132);
+    }
+    expect(coverExistsCacheSize, 1,
+        reason: 'asking for a size statted the file again');
   });
 }

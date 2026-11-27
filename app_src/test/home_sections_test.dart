@@ -201,4 +201,24 @@ void main() {
     }
     expect(small, isEmpty, reason: 'below the floor: $small');
   });
+
+  testWidgets('quick pick keeps its page when Home rebuilds', (tester) async {
+    final played = [for (var i = 0; i < 8; i++) _t(i)];
+    List<String> page() => tester
+        .widgetList<Text>(find.descendant(
+          of: find.byType(PageView),
+          matching: find.byType(Text),
+        ))
+        .map((w) => w.data ?? '')
+        .toList();
+
+    await _pump(tester, mostPlayed: played);
+    final first = page();
+    expect(first, isNotEmpty, reason: 'quick pick drew nothing to compare');
+
+    await _pump(tester, mostPlayed: played);
+    expect(page(), first,
+        reason: 'a rebuild reshuffled the cards: the track under a finger '
+            'already on its way down is now a different one');
+  });
 }

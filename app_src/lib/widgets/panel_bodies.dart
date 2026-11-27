@@ -220,13 +220,17 @@ final Map<String, bool> _coverExists = <String, bool>{};
 @visibleForTesting
 ImageProvider? Function(String path)? debugCoverProvider;
 
-ImageProvider? coverProviderFor(String? path) {
+/// The one place a cover path becomes an [ImageProvider]. The stat is the cost:
+/// a row that asks on every build used to stat on every build, so the answer is
+/// remembered per path and rows ask for the size they actually paint.
+ImageProvider? coverProviderFor(String? path, {int? width}) {
   if (path == null || path.isEmpty) return null;
   final override = debugCoverProvider;
   if (override != null) return override(path);
   final seen = _coverExists[path] ??= File(path).existsSync();
   if (!seen) return null;
-  return FileImage(File(path));
+  final file = FileImage(File(path));
+  return width == null ? file : ResizeImage.resizeIfNeeded(width, null, file);
 }
 
 @visibleForTesting

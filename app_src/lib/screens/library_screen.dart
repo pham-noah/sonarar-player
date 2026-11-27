@@ -1128,7 +1128,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
   List<Track> _tracksForOpen() {
     final pl = _openPlaylist;
     if (pl != null) {
-      final byId = {for (final t in view.tracks) t.id: t};
+      // The index is already held by this State: rebuilding it per build was
+      // an O(tracks) map allocation every time the open list repainted.
+      final byId = _tracksById;
       return [
         for (final id in pl.trackIds)
           if (byId[id] != null) byId[id]!,
@@ -2168,12 +2170,9 @@ class _TrackRowState extends State<_TrackRow> {
 
   Widget _cover() {
     const size = 56.0;
-    final path = coverPath;
     final button = CoverPlayButton(
       skin: skin,
-      cover: (path != null && path.isNotEmpty)
-          ? ResizeImage(FileImage(File(path)), width: (size * 3).round())
-          : null,
+      cover: coverProviderFor(coverPath, width: (size * 3).round()),
       size: size,
 
       fallbackIcon: Icons.music_note,

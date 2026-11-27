@@ -109,7 +109,7 @@ class _StaggerInState extends State<StaggerIn>
 
   @override
   Widget build(BuildContext context) {
-    final t = CurvedAnimation(parent: _c, curve: MotionCurve.arrival);
+    final t = _c.drive(CurveTween(curve: MotionCurve.arrival));
     return AnimatedBuilder(
       animation: t,
 

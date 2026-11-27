@@ -591,8 +591,9 @@ class _HomeShellState extends State<HomeShell>
       reverseTransitionDuration:
           Motion.of(context, widget.state.motion.tabTransition),
       transitionsBuilder: (_, animation, _, child) {
-        final curve =
-            CurvedAnimation(parent: animation, curve: motion.arrivalCurve);
+        // `drive` allocates no listener: a CurvedAnimation built here would
+        // hook itself to the route animation on every rebuild and never detach.
+        final curve = animation.drive(CurveTween(curve: motion.arrivalCurve));
         return FadeTransition(
           opacity: curve,
           child: SlideTransition(

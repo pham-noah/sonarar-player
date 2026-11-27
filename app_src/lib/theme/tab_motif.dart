@@ -144,9 +144,8 @@ class _TabArrivalViewState extends State<TabArrivalView>
 
   @override
   Widget build(BuildContext context) {
-    final t = CurvedAnimation(
-      parent: _c,
-      curve: widget.motion?.arrivalCurve ?? MotionCurve.arrival,
+    final t = _c.drive(
+      CurveTween(curve: widget.motion?.arrivalCurve ?? MotionCurve.arrival),
     );
 
     return AnimatedBuilder(

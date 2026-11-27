@@ -12,6 +12,7 @@ import 'package:sonarar/screens/playlist_import_sheet.dart';
 import 'package:sonarar/screens/youtube_search_screen.dart';
 import 'package:sonarar/theme/skin.dart';
 import 'package:sonarar/theme/skin_policy.dart';
+import 'package:ytdlp_flutter/ytdlp_flutter.dart';
 
 /// The build that fetches its engine offers it ONCE.
 ///
@@ -24,6 +25,9 @@ DownloadManager _manager({required bool engineReady}) => DownloadManager(
       downloadDirOf: () => Directory.systemTemp,
       manifestOf: () => File('${Directory.systemTemp.path}/manifest.json'),
       downloadsAvailable: engineReady,
+      // No plugin in a widget test: answer the probe the way a fresh lite
+      // install would.
+      capabilitiesOf: () async => const YtdlpCapabilities(engine: false),
     );
 
 Future<void> _pump(WidgetTester tester, {required bool engineReady}) async {
@@ -53,6 +57,9 @@ Future<void> _pump(WidgetTester tester, {required bool engineReady}) async {
     ),
   ));
   await tester.pump(const Duration(milliseconds: 50));
+  // The banner waits for the device to answer whether the engine is already
+  // there, so the offer never appears for an install that exists.
+  await tester.pumpAndSettle();
 }
 
 void main() {

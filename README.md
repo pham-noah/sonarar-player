@@ -114,8 +114,9 @@ The APK is unsigned unless `android/key.properties` (gitignored) names a `storeF
 `storePassword`, `keyAlias` and `keyPassword`. `--target-platform=android-arm64` is not optional: the
 default build packages two more ABIs that no phone runs.
 
-Releases ship the **lite** build, which downloads the engine on first use. Omit the define and the
-14 MB engine is packaged into the APK:
+Releases ship the **lite** build, which downloads the engine once, on first use — the payload lives in
+the app's private files and survives updates, so "set up downloads" is asked once per install, not once
+per release. Omit the define and the 14 MB engine is packaged into the APK:
 
 ```bash
 flutter build apk --release --target-platform=android-arm64 \

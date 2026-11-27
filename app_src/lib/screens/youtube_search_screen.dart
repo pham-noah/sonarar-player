@@ -347,6 +347,10 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     // manager has already gone quiet, so the row also has to follow the
     // library itself — that is the state the row is drawn from.
     widget.state.addListener(_onDownloadsChanged);
+    // An engine installed before the last update is still installed. Ask the
+    // device rather than offering the same 14 MB download again.
+    // ignore: discarded_futures
+    widget.downloads.probeEngine();
   }
 
   @override
@@ -378,6 +382,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         onImported: (_) => widget.onDownloaded?.call(''),
         onEnsurePlaylist: widget.onEnsurePlaylist,
         onAddToPlaylist: widget.onAddToPlaylist,
+        onPrepareEngine: () => widget.downloads.installEngine(),
       ),
     );
   }
@@ -647,8 +652,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
                       ),
                     ),
                   ),
-                if (widget.downloads.needsEngine ||
-                    widget.downloads.downloadsCompiledOut)
+                if (widget.downloads.downloadsCompiledOut ||
+                    (widget.downloads.needsEngine &&
+                        !widget.downloads.checkingEngine))
                   _setupBanner(skin),
                 Expanded(
                   child: ListView.builder(

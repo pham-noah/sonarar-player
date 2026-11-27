@@ -118,6 +118,7 @@ class DownloadManager extends ChangeNotifier {
     required this.manifestOf,
     this.onFiled,
     this.log,
+    this.capabilitiesOf,
     bool? downloadsAvailable,
   }) : _downloadsAvailable = downloadsAvailable ?? kDownloadsCompiledIn,
        // A build that was told it has no engine must not claim one, whatever the
@@ -126,6 +127,12 @@ class DownloadManager extends ChangeNotifier {
        _engineReady = downloadsAvailable ?? kDownloadsCompiledIn;
 
   final bool _downloadsAvailable;
+
+  /// How this manager asks the device what it actually has.
+  ///
+  /// Injected so a test can answer without a phone or a 14 MB install;
+  /// production asks the plugin.
+  final Future<YtdlpCapabilities> Function()? capabilitiesOf;
 
   /// Stage-by-stage trace. A native crash in yt-dlp leaves nothing behind but
   /// the last line written here, which is the whole point of it.
@@ -181,6 +188,42 @@ class DownloadManager extends ChangeNotifier {
 
   bool get installingEngine => _installing;
 
+  bool _probing = false;
+
+  /// True while the device is being asked whether the engine is already there.
+  /// The setup banner waits for the answer instead of promising a download that
+  /// is not needed.
+  bool get checkingEngine => _probing;
+
+  bool _probed = false;
+
+  /// Ask the plugin what is on the device, once per run.
+  ///
+  /// A lite build's engine unpacks into `noBackupFilesDir`, which an app update
+  /// keeps, and the plugin's marker is recorded in SharedPreferences, which an
+  /// update also keeps. "The engine is installed" is therefore a fact about the
+  /// phone, not about this launch — but it used to live only in memory, so every
+  /// cold start offered the same 14 MB download over again, and every update
+  /// looked like a fresh install.
+  Future<void> probeEngine() async {
+    if (_downloadsAvailable || _probed || _probing) return;
+    _probed = true;
+    _probing = true;
+    notifyListeners();
+    try {
+      final caps = await (capabilitiesOf?.call() ?? Ytdlp.capabilities());
+      _engineReady = caps.engine;
+      if (!caps.engine) _engineFailure = caps.engineError;
+    } catch (e) {
+      // A probe that cannot answer is not an answer: leave the engine as it was
+      // and let the user decide whether to install.
+      debugPrint('[Sonarar][DL] engine probe failed: $e');
+    } finally {
+      _probing = false;
+      notifyListeners();
+    }
+  }
+
   /// Why the last engine fetch failed, in the words of whatever failed.
   ///
   /// "It didn't work" was the whole of what a person could see before this, and the
@@ -205,9 +248,25 @@ class DownloadManager extends ChangeNotifier {
     _installing = true;
     notifyListeners();
     try {
+      // Ask the device before the network. An engine installed by an earlier run
+      // is still installed after an update, and 14 MB is a real cost to spend
+      // proving it.
+      YtdlpCapabilities? caps;
+      try {
+        caps = await (capabilitiesOf?.call() ?? Ytdlp.capabilities());
+      } catch (_) {
+        caps = null;
+      }
+      if (caps != null && caps.engine) {
+        _engineReady = true;
+        _probed = true;
+        log?.add('DL engine already installed');
+        return true;
+      }
+
       // Ask first: the archive is architecture-specific, and installing 14 MB of
       // the wrong interpreter fails at init with nothing useful to say.
-      final abi = (await Ytdlp.capabilities()).abi;
+      final abi = caps?.abi ?? (await Ytdlp.capabilities()).abi;
       final source = engineSourceFor(abi);
       if (source == null) {
         _engineFailure = 'no archive for $abi';

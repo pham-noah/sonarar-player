@@ -1,5 +1,6 @@
 library;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -1790,6 +1791,35 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     widget.onSaveTheme?.call(name);
   }
 
+  /// Deleting a saved look used to be one tap on an 18dp cross with nothing
+  /// between the tap and the loss. The name is in the question because that is
+  /// the only thing that tells two similar looks apart.
+  Future<void> _deleteTheme(ThemePreset preset) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _skin.panel,
+        title: Text(
+          l10nOf(context).libraryDeletePrompt(preset.name),
+          style: TextStyle(color: _skin.textPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10nOf(context).libraryCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10nOf(context).themeDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    widget.onDeleteTheme?.call(preset);
+    setState(() {});
+  }
+
   void _overrideTheme() {
     final name = widget.state.preset?.name;
     final done = widget.state.overrideActiveTheme();
@@ -1918,10 +1948,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
 
   Widget _themeRow(Skin skin, ThemePreset preset) {
     final active = widget.state.preset?.id == preset.id;
-    void deleteTheme() {
-      widget.onDeleteTheme?.call(preset);
-      setState(() {});
-    }
+    void deleteTheme() => unawaited(_deleteTheme(preset));
 
     Widget body = Container(
       // A row here is a button, not a label: at 42dp the name was readable and

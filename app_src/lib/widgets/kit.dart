@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme/skin.dart';
@@ -54,7 +55,12 @@ class KitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body = Container(
-      padding: EdgeInsets.fromLTRB(12, dense ? Space.xs : Space.sm, 12, dense ? Space.xs : Space.sm),
+      padding: EdgeInsets.fromLTRB(
+        12,
+        dense ? Space.xs : Space.sm,
+        12,
+        dense ? Space.xs : Space.sm,
+      ),
       decoration: BoxDecoration(
         color: skin.panel,
         border: Border(
@@ -65,8 +71,12 @@ class KitRow extends StatelessWidget {
           // `borderStrong` because a control's edge needs 3:1; the old
           // 22%-alpha hairline measured 1.77:1 and was effectively invisible.
           top: BorderSide(color: enabled ? skin.borderStrong : skin.edge(0.22)),
-          right: BorderSide(color: enabled ? skin.borderStrong : skin.edge(0.22)),
-          bottom: BorderSide(color: enabled ? skin.borderStrong : skin.edge(0.22)),
+          right: BorderSide(
+            color: enabled ? skin.borderStrong : skin.edge(0.22),
+          ),
+          bottom: BorderSide(
+            color: enabled ? skin.borderStrong : skin.edge(0.22),
+          ),
         ),
       ),
       child: Column(
@@ -76,7 +86,11 @@ class KitRow extends StatelessWidget {
           Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 18, color: enabled ? skin.accentInk : skin.textMuted),
+                Icon(
+                  icon,
+                  size: 18,
+                  color: enabled ? skin.accentInk : skin.textMuted,
+                ),
                 const SizedBox(width: Space.sm),
               ],
               Expanded(
@@ -101,11 +115,18 @@ class KitRow extends StatelessWidget {
                         note!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: Type.bodyBase(context,
-                                color: enabled ? skin.textSecondary : skin.textMuted)
-                            .copyWith(
-                          fontSize: math.max(LayoutSpec.fontMicro, labelSize - 4),
-                        ),
+                        style:
+                            Type.bodyBase(
+                              context,
+                              color: enabled
+                                  ? skin.textSecondary
+                                  : skin.textMuted,
+                            ).copyWith(
+                              fontSize: math.max(
+                                LayoutSpec.fontMicro,
+                                labelSize - 4,
+                              ),
+                            ),
                       ),
                     ],
                   ],
@@ -117,10 +138,7 @@ class KitRow extends StatelessWidget {
               ],
             ],
           ),
-          if (below != null) ...[
-            const SizedBox(height: Space.xxs),
-            below!,
-          ],
+          if (below != null) ...[const SizedBox(height: Space.xxs), below!],
         ],
       ),
     );
@@ -137,9 +155,7 @@ class KitRow extends StatelessWidget {
               ),
             ),
     );
-    return toggled == null
-        ? row
-        : Semantics(toggled: toggled, child: row);
+    return toggled == null ? row : Semantics(toggled: toggled, child: row);
   }
 }
 
@@ -219,11 +235,7 @@ class KitSwitch extends StatelessWidget {
       trackOutlineColor: ink.outline,
     );
     if (folded) return ExcludeSemantics(child: knob);
-    return Semantics(
-      label: semanticLabel,
-      toggled: value,
-      child: knob,
-    );
+    return Semantics(label: semanticLabel, toggled: value, child: knob);
   }
 }
 
@@ -314,43 +326,53 @@ class KitTabs<T> extends StatelessWidget {
                 padding: EdgeInsets.only(
                   right: i == entries.length - 1 ? 0 : 5,
                 ),
-                child: GestureDetector(
-                  key: keyBuilder?.call(entries[i].key),
+                child: Semantics(
+                  // The strip that splits the screen into pages: without a role
+                  // and a selected state a screen reader read "THEMES" as a
+                  // word and never said which page is showing.
+                  button: true,
+                  selected: entries[i].key == selected,
+                  label: entries[i].value,
+                  excludeSemantics: true,
                   onTap: () => onSelected(entries[i].key),
-                  behavior: HitTestBehavior.opaque,
-                  child: AnimatedContainer(
-                    duration: StateMotion.settle,
-                    curve: Curves.easeOut,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: entries[i].key == selected
-                          ? skin.accent
-                          : Colors.transparent,
-                      border: Border.all(
-                        // A control's edge, not a decoration: at 0.35 alpha
-                        // this border measured under 2:1 and the unselected
-                        // tabs read as empty space beside the selected one.
+                  child: GestureDetector(
+                    key: keyBuilder?.call(entries[i].key),
+                    onTap: () => onSelected(entries[i].key),
+                    behavior: HitTestBehavior.opaque,
+                    child: AnimatedContainer(
+                      duration: StateMotion.settle,
+                      curve: Curves.easeOut,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
                         color: entries[i].key == selected
                             ? skin.accent
-                            : skin.borderStrong,
-                      ),
-                      borderRadius: BorderRadius.circular(Corners.sm),
-                    ),
-                    // Three tabs share the width, so the longest label sets
-                    // what fits: Finnish "JÄRJESTELMÄ" was clipped mid-glyph
-                    // ("JÄRJESTEL") on a 320dp phone at every text size. A
-                    // scale-down of a few percent keeps the word whole; the
-                    // content under the tabs still follows the user's setting.
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        entries[i].value,
-                        maxLines: 1,
-                        style: Type.caps(
-                          context,
+                            : Colors.transparent,
+                        border: Border.all(
+                          // A control's edge, not a decoration: at 0.35 alpha
+                          // this border measured under 2:1 and the unselected
+                          // tabs read as empty space beside the selected one.
                           color: entries[i].key == selected
-                              ? skin.onAccent
-                              : skin.textMuted,
+                              ? skin.accent
+                              : skin.borderStrong,
+                        ),
+                        borderRadius: BorderRadius.circular(Corners.sm),
+                      ),
+                      // Three tabs share the width, so the longest label sets
+                      // what fits: Finnish "JÄRJESTELMÄ" was clipped mid-glyph
+                      // ("JÄRJESTEL") on a 320dp phone at every text size. A
+                      // scale-down of a few percent keeps the word whole; the
+                      // content under the tabs still follows the user's setting.
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          entries[i].value,
+                          maxLines: 1,
+                          style: Type.caps(
+                            context,
+                            color: entries[i].key == selected
+                                ? skin.onAccent
+                                : skin.textMuted,
+                          ),
                         ),
                       ),
                     ),
@@ -391,29 +413,39 @@ class KitSegment<T> extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(right: 4),
-              child: GestureDetector(
+              child: Semantics(
+                // GRID/LIST and the shape pickers: a chosen state that only
+                // existed as a fill colour is not a state a screen reader can
+                // read out.
+                button: true,
+                selected: entry.key == selected,
+                label: entry.value,
+                excludeSemantics: true,
                 onTap: () => onSelected(entry.key),
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  alignment: Alignment.center,
-                  constraints: BoxConstraints(minHeight: Space.tap),
-                  decoration: BoxDecoration(
-                    color: entry.key == selected ? skin.accent : skin.panel,
-                    border: Border.all(
-                      color: entry.key == selected
-                          ? skin.accent
-                          : skin.borderStrong,
+                child: GestureDetector(
+                  onTap: () => onSelected(entry.key),
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    alignment: Alignment.center,
+                    constraints: BoxConstraints(minHeight: Space.tap),
+                    decoration: BoxDecoration(
+                      color: entry.key == selected ? skin.accent : skin.panel,
+                      border: Border.all(
+                        color: entry.key == selected
+                            ? skin.accent
+                            : skin.borderStrong,
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    entry.value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Type.caps(
-                      context,
-                      color: entry.key == selected
-                          ? skin.onAccent
-                          : skin.textSecondary,
+                    child: Text(
+                      entry.value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Type.caps(
+                        context,
+                        color: entry.key == selected
+                            ? skin.onAccent
+                            : skin.textSecondary,
+                      ),
                     ),
                   ),
                 ),

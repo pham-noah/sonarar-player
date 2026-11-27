@@ -20,13 +20,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarar/core/app_state.dart';
 import 'package:sonarar/core/prefs.dart';
 import 'package:sonarar/screens/personalize_screen.dart';
+import 'package:sonarar/theme/skin.dart';
+import 'package:sonarar/theme/theme_preset.dart';
 
-Future<void> _open(WidgetTester tester, String tab) async {
+Future<AppState> _open(
+  WidgetTester tester,
+  String tab, {
+  AppState? withState,
+}) async {
   tester.view.physicalSize = const Size(412, 900) * 3;
   tester.view.devicePixelRatio = 3.0;
   addTearDown(tester.view.reset);
 
-  final state = AppState();
+  final state = withState ?? AppState();
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
@@ -34,11 +40,18 @@ Future<void> _open(WidgetTester tester, String tab) async {
           state: state,
           prefs: AppPrefs.initial,
           onPrefsChanged: (_) {},
-          // Wired as the app wires it: a screen with fewer buttons than the app
-          // passes in is a screen nobody can reach.
-          onSaveTheme: (_) {},
-          onApplyTheme: (_) {},
-          onDeleteTheme: (_) {},
+          // Wired as `main.dart` wires it. A stub that does nothing would let
+          // a broken delete pass: the screen calls back, and the callback is
+          // what actually removes the theme.
+          onSaveTheme: (name) => state.setUserPresets([
+            ...state.userPresets,
+            ThemePreset(id: name, name: name, skinId: SkinId.abyss),
+          ]),
+          onApplyTheme: state.applyPreset,
+          onDeleteTheme: (preset) => state.setUserPresets([
+            for (final p in state.userPresets)
+              if (p.id != preset.id) p,
+          ]),
         ),
       ),
     ),
@@ -49,6 +62,7 @@ Future<void> _open(WidgetTester tester, String tab) async {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
   }
+  return state;
 }
 
 /// Every `Semantics` widget with this label, as the data it would announce.
@@ -187,5 +201,64 @@ void main() {
     final middle = arrowsOf(rows[rows.length ~/ 2]);
     expect(middle.first.onPressed, isNotNull);
     expect(middle.last.onPressed, isNotNull);
+  });
+
+  testWidgets('the tabs say they are tabs, and which one is showing', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await _open(tester, 'art');
+
+    // By key, not by label: the art tab's place strip also has a tile named
+    // HOME, and a label is not an identity.
+    for (final tab in const ['themes', 'look', 'art', 'home']) {
+      final node = tester
+          .widget<Semantics>(
+            find
+                .ancestor(
+                  of: find.byKey(Key('personalize-tab-$tab')),
+                  matching: find.byType(Semantics),
+                )
+                .first,
+          )
+          .properties;
+      expect(node.label, isNotNull, reason: '$tab tab has no name');
+      expect(node.button, isTrue, reason: '$tab tab is not a button');
+      expect(
+        node.selected,
+        tab == 'art',
+        reason: 'the $tab tab is wrong about which page is showing',
+      );
+    }
+    handle.dispose();
+  });
+
+  testWidgets('deleting a saved theme asks first, and cancel keeps it', (
+    tester,
+  ) async {
+    final state = AppState()
+      ..setUserPresets(const [
+        ThemePreset(id: 'mine', name: 'Late Night', skinId: SkinId.abyss),
+      ]);
+    await _open(tester, 'themes', withState: state);
+
+    expect(find.text('Late Night'), findsOneWidget);
+
+    // Cancel: the theme is still there.
+    await tester.tap(find.bySemanticsLabel('Delete Late Night'));
+    await tester.pumpAndSettle();
+    expect(find.text('Delete "Late Night"'), findsOneWidget);
+    await tester.tap(find.text('CANCEL'));
+    await tester.pumpAndSettle();
+    expect(find.text('Late Night'), findsOneWidget);
+    expect(state.userPresets, hasLength(1));
+
+    // Confirm: it goes.
+    await tester.tap(find.bySemanticsLabel('Delete Late Night'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('DELETE'));
+    await tester.pumpAndSettle();
+    expect(state.userPresets, isEmpty);
+    expect(find.text('Late Night'), findsNothing);
   });
 }

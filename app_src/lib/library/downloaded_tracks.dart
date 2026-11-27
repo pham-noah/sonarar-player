@@ -190,6 +190,38 @@ Future<List<int>?> httpGetBytes(String url) async {
   }
 }
 
+/// POST a JSON body and read the answer as text — the playlist reader's
+/// continuation pages, which YouTube only serves over POST.
+Future<String?> httpPostString(String url, String body) async {
+  final client = HttpClient()
+    ..connectionTimeout = const Duration(seconds: 30)
+    ..idleTimeout = const Duration(seconds: 30);
+  try {
+    final req = await client.postUrl(Uri.parse(url));
+    req.headers.set('Content-Type', 'application/json');
+    req.headers.set('User-Agent', httpUserAgent);
+    req.add(utf8.encode(body));
+    final res = await req.close();
+    if (res.statusCode != 200) {
+      debugPrint('[Sonarar][PL] post $url -> ${res.statusCode}');
+      return null;
+    }
+    final bytes = await res.fold<List<int>>([], (a, b) => a..addAll(b));
+    return utf8.decode(bytes, allowMalformed: true);
+  } catch (e) {
+    debugPrint('[Sonarar][PL] post failed: $e');
+    return null;
+  } finally {
+    client.close(force: true);
+  }
+}
+
+/// The window's own UA. YouTube serves a bare client a different (older) payload
+/// and, for the browse endpoint, sometimes nothing at all.
+const String httpUserAgent =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+    '(KHTML, like Gecko) Chrome/120.0 Safari/537.36';
+
 String? progressLabel(YtdlpProgress p) {
   if (p.fraction != null) return '${(p.fraction! * 100).round()}%';
   final got = p.downloadedBytes;

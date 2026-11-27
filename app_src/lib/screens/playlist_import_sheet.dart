@@ -124,6 +124,7 @@ class PlaylistManagerSheet extends StatefulWidget {
     this.onImported,
     this.onEnsurePlaylist,
     this.onAddToPlaylist,
+    this.onPrepareEngine,
   });
 
   final Skin skin;
@@ -138,6 +139,10 @@ class PlaylistManagerSheet extends StatefulWidget {
   final Playlist Function(String name)? onEnsurePlaylist;
 
   final void Function(Playlist playlist, String trackId)? onAddToPlaylist;
+
+  /// Get the download engine ready, or say why not. Null in tests and in builds
+  /// that carry their own engine.
+  final Future<bool> Function()? onPrepareEngine;
 
   @override
   State<PlaylistManagerSheet> createState() => _PlaylistManagerSheetState();
@@ -252,15 +257,28 @@ class _PlaylistManagerSheetState extends State<PlaylistManagerSheet> {
     });
 
     try {
+      final prepared = widget.onPrepareEngine;
+      if (prepared != null && !await prepared()) {
+        if (mounted) {
+          setState(() => _status[key] =
+              l10nOf(context).downloadsSetupFailed);
+        }
+        return;
+      }
+
+      await ensureDownloadReady(widget.downloadDir);
+      await Ytdlp.init();
+
       final videos = await readPlaylistVideos(
         playlistId: src.playlistId,
         fetch: (url) async {
           final bytes = await httpGetBytes(url);
           return bytes == null ? null : utf8.decode(bytes, allowMalformed: true);
         },
+        // Past a hundred tracks the list is served page by page over POST. Without
+        // this the import quietly stopped at the hundredth video.
+        post: httpPostString,
       );
-      await ensureDownloadReady(widget.downloadDir);
-      await Ytdlp.init();
       final already = _alreadyHere();
       if (videos.isEmpty) {
         if (mounted) {

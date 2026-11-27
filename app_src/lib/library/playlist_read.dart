@@ -19,26 +19,45 @@ class PlaylistVideo {
   String get thumbnailUrl => 'https://i.ytimg.com/vi/$id/mqdefault.jpg';
 }
 
+/// A POST, for the continuation pages.
+///
+/// YouTube answers the browse endpoint 405 to anything but a POST, so a reader
+/// holding only [readPlaylistVideos]'s `fetch` could never see past the first
+/// hundred tracks — which is exactly what an imported playlist used to be.
+typedef PlaylistPost = Future<String?> Function(String url, String body);
+
 Future<List<PlaylistVideo>> readPlaylistVideos({
   required String playlistId,
   required Future<String?> Function(String url) fetch,
+  PlaylistPost? post,
   int max = 400,
 }) async {
   final out = <PlaylistVideo>[];
   final seen = <String>{};
+
+  var page = await fetch('https://www.youtube.com/playlist?list=$playlistId&hl=en');
+
+  // The page carries everything the next request needs: the key its own browse
+  // endpoint wants and the client version the rest of the payload is built for.
+  // A key pasted in here would be a secret in the repo, and a stale one.
+  final key = page == null ? null : _innertubeKeyIn(page);
+  final clientVersion = page == null ? null : _clientVersionIn(page);
+  final browseUrl = key == null
+      ? null
+      : 'https://www.youtube.com/youtubei/v1/browse?key=$key';
+
   String? continuation;
 
   while (out.length < max) {
-    final url = continuation == null
-        ? 'https://www.youtube.com/playlist?list=$playlistId&hl=en'
-        : 'https://www.youtube.com/youtubei/v1/browse?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
-    final body = await fetch(url);
-    if (body == null || body.isEmpty) break;
+    if (page == null || page.isEmpty) break;
 
-    final root = _initialDataIn(body) ?? _decodeJson(body);
+    final root = _initialDataIn(page) ?? _decodeJson(page);
     if (root == null) break;
 
-    final found = _videosIn(root);
+    final items = _playlistItemsIn(root);
+    if (items.isEmpty) break;
+
+    final found = _videosIn(items);
     if (found.isEmpty) break;
 
     var fresh = 0;
@@ -49,14 +68,103 @@ Future<List<PlaylistVideo>> readPlaylistVideos({
       }
     }
 
-    final next = _continuationIn(root);
+    final next = _continuationIn(items);
 
     if (fresh == 0 || next == null || next == continuation) break;
     continuation = next;
+
+    if (post == null || browseUrl == null || clientVersion == null) break;
+    page = await post(browseUrl, _browseBody(next, clientVersion));
   }
 
   return out;
 }
+
+/// The playlist's own rows — the one list in the payload that holds them.
+///
+/// Both a playlist page and every continuation page carry more than the
+/// playlist: sidebars and "recommended" shelves are full of eleven-character
+/// video ids that look exactly like tracks. Reading the whole document pulled
+/// videos in that were never in the list, so a 110-track playlist imported as
+/// 141. The rows live in one `itemSectionRenderer` on a page and in the appended
+/// continuation items on every page after it.
+List<Object?> _playlistItemsIn(Object? root) {
+  if (root is! Map) return const [];
+
+  final actions = root['onResponseReceivedActions'];
+  if (actions is List) {
+    for (final a in actions) {
+      if (a is! Map) continue;
+      for (final key in const [
+        'appendContinuationItemsAction',
+        'reloadContinuationItemsCommand',
+      ]) {
+        final append = a[key];
+        if (append is Map) {
+          final items = append['continuationItems'];
+          if (items is List && items.isNotEmpty) return items;
+        }
+      }
+    }
+  }
+
+  final sectionList = _firstMap(root, 'sectionListRenderer');
+  final sections = sectionList?['contents'];
+  if (sections is List) {
+    for (final s in sections) {
+      final items = _firstMap(s, 'itemSectionRenderer')?['contents'];
+      if (items is List && items.isNotEmpty) return items;
+    }
+  }
+
+  // An older payload shape: the rows are already renderers at the top level.
+  final renderers = _firstList(root, 'playlistVideoListRenderer');
+  if (renderers != null) return renderers;
+
+  return const [];
+}
+
+/// The first map under [node] that carries [key], depth first, in document order.
+Map<String, dynamic>? _firstMap(Object? node, String key) {
+  if (node is Map) {
+    final v = node[key];
+    if (v is Map) return Map<String, dynamic>.from(v);
+    for (final child in node.values) {
+      final hit = _firstMap(child, key);
+      if (hit != null) return hit;
+    }
+  } else if (node is List) {
+    for (final child in node) {
+      final hit = _firstMap(child, key);
+      if (hit != null) return hit;
+    }
+  }
+  return null;
+}
+
+/// The `contents` list of the first [key] renderer under [node].
+List<Object?>? _firstList(Object? node, String key) {
+  final renderer = _firstMap(node, key);
+  final contents = renderer?['contents'];
+  return contents is List ? contents : null;
+}
+
+String? _innertubeKeyIn(String html) =>
+    RegExp(r'"INNERTUBE_API_KEY"\s*:\s*"([^"]+)"').firstMatch(html)?.group(1);
+
+String? _clientVersionIn(String html) =>
+    RegExp(r'"INNERTUBE_CLIENT_VERSION"\s*:\s*"([^"]+)"').firstMatch(html)?.group(1);
+
+String _browseBody(String token, String clientVersion) => jsonEncode({
+  'context': {
+    'client': {
+      'clientName': 'WEB',
+      'clientVersion': clientVersion,
+      'hl': 'en',
+    },
+  },
+  'continuation': token,
+});
 
 List<PlaylistVideo> _videosIn(Object? node) {
   final modern = _lockupsIn(node);

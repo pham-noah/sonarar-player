@@ -276,6 +276,9 @@
   "personalizeHomeReset": "ĐẶT LẠI THỨ TỰ",
   "personalizeThemeOverrideNote": "OVERRIDE ghi giao diện này vào {name}, chủ đề bạn đang dùng. NEW THEME giữ lại giao diện này và tạo chủ đề mới từ nó.",
   "personalizeDeleteTheme": "Xoá {name}",
+  "scopeOwnPicture": "có ảnh riêng",
+  "personalizeWearTheme": "Dùng {name}",
+  "personalizePreview": "Bản xem trước của ứng dụng ở giao diện này",
   "personalizeRemovePicture": "Xoá ảnh này",
   "personalizeFrameOf": "KHUNG {at}/{total}",
   "@personalizeMoveDown": {

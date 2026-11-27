@@ -714,25 +714,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                   ],
                   if (_tab == PersonalizeTab.art) ...[
                     SectionBand(skin: skin, label: l10nOf(context).artFolders),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _button(
-                            skin,
-                            l10nOf(context).artRescan,
-                            _rescanArt,
-                            quiet: true,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _button(
-                            skin,
-                            l10nOf(context).personalizeAddPicture,
-                            _chooseImage,
-                          ),
-                        ),
-                      ],
+                    _button(
+                      skin,
+                      l10nOf(context).artRescan,
+                      _rescanArt,
+                      quiet: true,
                     ),
                     const SizedBox(height: 8),
                     for (final folder in widget.state.bundles)
@@ -796,6 +782,10 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
                               l10nOf(context).themeOverride,
                               _overrideTheme,
                               quiet: true,
+                              // Overriding means changing the theme you wear; with
+                              // none worn there is nothing to change, and the note
+                              // below said so while the button stayed bright.
+                              enabled: widget.state.preset != null,
                             ),
                           ),
                         ],
@@ -917,125 +907,137 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       ),
     );
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(glass ? 14 : 4),
-      // A miniature is a picture of the app at its own size, not a second copy of
-      // the user's text setting: at 200% the rows inside this 216dp card wanted 29dp
-      // more than it has and painted an overflow marker over the sample, which is
-      // the one thing on this screen that is meant to show the result. Someone who
-      // scales their text up is not asking for a taller thumbnail.
-      child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-        child: Container(
-          height: 216,
-          color: skin.background,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (art != null)
-                FramedArt(
-                  assetPath: art.assetPath,
-                  aspect: art.aspect,
-                  spec: art.spec,
-                  focus: widget.state.artFocus,
-                  cacheWidth: 720,
-                  burn: 1.0,
-                )
-              else if (_b.isSet && root != null)
-                PersonalBackdrop(root: root, spec: _b, skin: skin),
-              if (art != null) ArtScrim(color: skin.background),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+    return Semantics(
+      image: true,
+      label: l10nOf(context).personalizePreview,
+      // A picture of the app: the play glyph and the sample rows in it are
+      // painted, not offered. Announced as one image, none of it is a target.
+      child: ExcludeSemantics(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(glass ? 14 : 4),
+          // A miniature is a picture of the app at its own size, not a second copy of
+          // the user's text setting: at 200% the rows inside this 216dp card wanted 29dp
+          // more than it has and painted an overflow marker over the sample, which is
+          // the one thing on this screen that is meant to show the result. Someone who
+          // scales their text up is not asking for a taller thumbnail.
+          child: MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.noScaling),
+            child: Container(
+              height: 216,
+              color: skin.background,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (art != null)
+                    FramedArt(
+                      assetPath: art.assetPath,
+                      aspect: art.aspect,
+                      spec: art.spec,
+                      focus: widget.state.artFocus,
+                      cacheWidth: 720,
+                      burn: 1.0,
+                    )
+                  else if (_b.isSet && root != null)
+                    PersonalBackdrop(root: root, spec: _b, skin: skin),
+                  if (art != null) ArtScrim(color: skin.background),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  if (_tab == PersonalizeTab.home)
+                                    Text(
+                                      l10nOf(context).homeNow,
+                                      style: TextStyle(
+                                        fontSize: LayoutSpec.fontMicro,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: trackingFor(context, 1),
+                                        color: skin.textSecondary,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                color: skin.accent,
+                                borderRadius: BorderRadius.circular(radius),
+                              ),
+                              child: Icon(
+                                Icons.play_arrow_rounded,
+                                size: 15,
+                                color: skin.onAccent,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        if (_tab == PersonalizeTab.home) ...[
+                          // The picture is the page this tab edits: these rows are the
+                          // sections in the order they were put in, so an arrow moves
+                          // the name here instead of changing a number somewhere else.
+                          // A sample title would have sat still while the list beside
+                          // it changed, which reads as nothing happening.
+                          for (final section
+                              in _p.home.visible
+                                  .where((s) => s != HomeSection.now)
+                                  .take(2)) ...[
+                            row(
+                              _sectionName(section),
+                              null,
+                              key: ValueKey('preview-section-${section.name}'),
+                            ),
+                            const SizedBox(height: 4),
+                          ],
+                        ] else ...[
+                          row(
+                            l10nOf(context).personalizeSampleTitle,
+                            l10nOf(context).personalizeSampleArtist,
+                            lead: sonar,
+                          ),
+                          const SizedBox(height: 4),
+                          row(
+                            l10nOf(context).personalizeSampleSecond,
+                            '3:12',
+                            alpha: 0.55,
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: Row(
                             children: [
-                              const SizedBox(height: 4),
-                              if (_tab == PersonalizeTab.home)
-                                Text(
-                                  l10nOf(context).homeNow,
-                                  style: TextStyle(
-                                    fontSize: LayoutSpec.fontMicro,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: trackingFor(context, 1),
-                                    color: skin.textSecondary,
-                                  ),
+                              Expanded(
+                                flex: 4,
+                                child: Container(height: 3, color: skin.accent),
+                              ),
+                              Expanded(
+                                flex: 6,
+                                child: Container(
+                                  height: 3,
+                                  color: skin.edge(0.25),
                                 ),
+                              ),
                             ],
                           ),
                         ),
-                        Container(
-                          width: 22,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            color: skin.accent,
-                            borderRadius: BorderRadius.circular(radius),
-                          ),
-                          child: Icon(
-                            Icons.play_arrow_rounded,
-                            size: 15,
-                            color: skin.onAccent,
-                          ),
-                        ),
                       ],
                     ),
-                    const Spacer(),
-                    if (_tab == PersonalizeTab.home) ...[
-                      // The picture is the page this tab edits: these rows are the
-                      // sections in the order they were put in, so an arrow moves
-                      // the name here instead of changing a number somewhere else.
-                      // A sample title would have sat still while the list beside
-                      // it changed, which reads as nothing happening.
-                      for (final section
-                          in _p.home.visible
-                              .where((s) => s != HomeSection.now)
-                              .take(2)) ...[
-                        row(
-                          _sectionName(section),
-                          null,
-                          key: ValueKey('preview-section-${section.name}'),
-                        ),
-                        const SizedBox(height: 4),
-                      ],
-                    ] else ...[
-                      row(
-                        l10nOf(context).personalizeSampleTitle,
-                        l10nOf(context).personalizeSampleArtist,
-                        lead: sonar,
-                      ),
-                      const SizedBox(height: 4),
-                      row(
-                        l10nOf(context).personalizeSampleSecond,
-                        '3:12',
-                        alpha: 0.55,
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(2),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: Container(height: 3, color: skin.accent),
-                          ),
-                          Expanded(
-                            flex: 6,
-                            child: Container(height: 3, color: skin.edge(0.25)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -1192,9 +1194,13 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   /// One preview per place.
   Widget _scopeStrip(Skin skin) {
     return SizedBox(
-      height: 108,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
+      // Wrapped, not a scrolling row: five 104dp tiles wanted 568dp on a 412dp
+      // phone, so the fourth place sat half off the edge with its name cut
+      // mid-word and no sign there was a fifth. A place you cannot see is a
+      // place you cannot give a picture to.
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
           _scopeTile(skin, l10nOf(context).scopeEverywhere, null),
           for (final surface in SurfaceId.values)
@@ -1217,48 +1223,73 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
         ? null
         : widget.state.artByKey(wears.artKey!);
 
-    return GestureDetector(
-      key: Key('scope-${surface?.name ?? 'everywhere'}'),
+    return Semantics(
+      button: true,
+      selected: active,
+      label: own?.isSet == true
+          ? '$label, ${l10nOf(context).scopeOwnPicture}'
+          : label,
+      excludeSemantics: true,
       onTap: () => setState(() => _surface = surface),
-      child: Container(
-        width: 104,
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: active ? skin.accent : skin.edge(0.25),
-            width: active ? 2 : 1,
+      child: GestureDetector(
+        key: Key('scope-${surface?.name ?? 'everywhere'}'),
+        onTap: () => setState(() => _surface = surface),
+        child: Container(
+          width: 104,
+          height: 108,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: active ? skin.accent : skin.edge(0.25),
+              width: active ? 2 : 1,
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: ClipRect(
-                child: PersonalBackdrop(
-                  root: _root,
-                  spec: wears,
-                  skin: skin,
-                  art: art,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ClipRect(
+                  child: PersonalBackdrop(
+                    root: _root,
+                    spec: wears,
+                    skin: skin,
+                    art: art,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              surface == null
-                  ? label
-                  : (own?.isSet == true ? '• $label' : '↳ $label'),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: active ? skin.accentInk : skin.textSecondary,
-                fontSize: LayoutSpec.fontMicro,
-                fontWeight: FontWeight.w800,
-                letterSpacing: trackingFor(context, 0.4),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (own?.isSet == true) ...[
+                    Container(
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: skin.accent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                  Flexible(
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: active ? skin.accentInk : skin.textSecondary,
+                        fontSize: LayoutSpec.fontMicro,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: trackingFor(context, 0.4),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1685,7 +1716,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               onPressed: up,
               icon: Icon(
                 Icons.keyboard_arrow_up_rounded,
-                color: skin.textPrimary,
+                // The first row's arrow has nowhere to go; drawn at full
+                // strength it read as a control that did nothing.
+                color: up == null
+                    ? skin.textPrimary.withValues(alpha: 0.28)
+                    : skin.textPrimary,
               ),
             ),
           ),
@@ -1698,7 +1733,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               onPressed: down,
               icon: Icon(
                 Icons.keyboard_arrow_down_rounded,
-                color: skin.textPrimary,
+                color: down == null
+                    ? skin.textPrimary.withValues(alpha: 0.28)
+                    : skin.textPrimary,
               ),
             ),
           ),
@@ -1886,78 +1923,96 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
       setState(() {});
     }
 
-    return GestureDetector(
+    Widget body = Container(
+      // A row here is a button, not a label: at 42dp the name was readable and
+      // the row was a smaller target than anything else on the screen.
+      constraints: const BoxConstraints(minHeight: Space.tap),
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: active ? skin.accentAt(0.16) : skin.panel,
+        border: Border(
+          // One spine, one meaning: accent on the theme you are wearing,
+          // quiet grey on the rest. Six lime spines said nothing.
+          left: BorderSide(
+            color: active ? skin.accent : skin.edge(0.35),
+            width: 3,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          // A theme called Abyss or Crimson is a colour, and a name alone
+          // makes six of them a reading exercise. The swatch is the theme's
+          // own two colours: its ground and its accent.
+          _themeSwatch(skinFor(preset.skinId), active),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              preset.name,
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor,
+                fontWeight: FontWeight.w800,
+                color: skin.textPrimary,
+              ),
+            ),
+          ),
+          if (active)
+            Text(
+              l10nOf(context).themeWorn,
+              style: Type.caps(context, color: skin.accentInk),
+            )
+          else if (preset.builtIn)
+            Text(
+              l10nOf(context).themeBuiltIn,
+              style: TextStyle(
+                fontSize: LayoutSpec.fontFloor,
+                color: skin.textSecondary,
+              ),
+            )
+          else
+            // A saved theme is the only row here with a control that does
+            // something other than wear it, and it was a bare cross: unnamed
+            // to a screen reader and indistinguishable from closing the page.
+            Semantics(
+              button: true,
+              label: l10nOf(context).personalizeDeleteTheme(preset.name),
+              excludeSemantics: true,
+              onTap: () {
+                deleteTheme();
+              },
+              child: IconButton(
+                onPressed: () {
+                  deleteTheme();
+                },
+                icon: Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: skin.textSecondary,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+
+    // The row wears the theme; a saved one also keeps its own delete button, so
+    // the row's name is not excluded — the cross stays a separate target and a
+    // separate announcement.
+    return Semantics(
+      button: true,
+      selected: active,
+      label: l10nOf(context).personalizeWearTheme(preset.name),
       onTap: () {
         widget.onApplyTheme?.call(preset);
         setState(() {});
       },
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-        decoration: BoxDecoration(
-          color: active ? skin.accentAt(0.16) : skin.panel,
-          border: Border(
-            // One spine, one meaning: accent on the theme you are wearing,
-            // quiet grey on the rest. Six lime spines said nothing.
-            left: BorderSide(
-              color: active ? skin.accent : skin.edge(0.35),
-              width: 3,
-            ),
-          ),
-        ),
-        child: Row(
-          children: [
-            // A theme called Abyss or Crimson is a colour, and a name alone
-            // makes six of them a reading exercise. The swatch is the theme's
-            // own two colours: its ground and its accent.
-            _themeSwatch(skinFor(preset.skinId), active),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                preset.name,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontFloor,
-                  fontWeight: FontWeight.w800,
-                  color: skin.textPrimary,
-                ),
-              ),
-            ),
-            if (active)
-              Text(
-                l10nOf(context).themeWorn,
-                style: Type.caps(context, color: skin.accentInk),
-              )
-            else if (preset.builtIn)
-              Text(
-                l10nOf(context).themeBuiltIn,
-                style: TextStyle(
-                  fontSize: LayoutSpec.fontFloor,
-                  color: skin.textSecondary,
-                ),
-              )
-            else
-              // A saved theme is the only row here with a control that does
-              // something other than wear it, and it was a bare cross: unnamed
-              // to a screen reader and indistinguishable from closing the page.
-              Semantics(
-                button: true,
-                label: l10nOf(context).personalizeDeleteTheme(preset.name),
-                excludeSemantics: true,
-                onTap: () {
-                  deleteTheme();
-                },
-                child: IconButton(
-                  onPressed: () {
-                    deleteTheme();
-                  },
-                  icon: Icon(
-                    Icons.close_rounded,
-                    size: 18,
-                    color: skin.textSecondary,
-                  ),
-                ),
-              ),
-          ],
-        ),
+      child: GestureDetector(
+        onTap: () {
+          widget.onApplyTheme?.call(preset);
+          setState(() {});
+        },
+        behavior: HitTestBehavior.opaque,
+        child: body,
       ),
     );
   }
@@ -1989,31 +2044,41 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     String label,
     VoidCallback onTap, {
     bool quiet = false,
-  }) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 48),
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 12,
-        ), // Quiet means "not the main move", not "unavailable": it keeps full
-        // contrast, since a button that looks disabled has to be explained.
-        color: quiet ? skin.panel : skin.accent,
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          softWrap: false,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: LayoutSpec.fontFloor,
-            fontWeight: FontWeight.w800,
-            letterSpacing: trackingFor(context, 1.2),
-            color: quiet ? skin.textPrimary : skin.onAccent,
+    bool enabled = true,
+  }) => Semantics(
+    button: true,
+    enabled: enabled,
+    label: label,
+    excludeSemantics: true,
+    onTap: enabled ? onTap : null,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: GestureDetector(
+        onTap: enabled ? onTap : null,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: Space.tap),
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12), // Quiet means "not the main move", not "unavailable": it keeps full
+          // contrast, since a button that looks disabled has to be explained.
+          // `enabled: false` is the other case — a move that cannot happen yet —
+          // and it is drawn as such, because a note saying so under a button that
+          // still looks live is the note losing.
+          color: !enabled ? skin.panel : (quiet ? skin.panel : skin.accent),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: LayoutSpec.fontFloor,
+              fontWeight: FontWeight.w800,
+              letterSpacing: trackingFor(context, 1.2),
+              color: !enabled
+                  ? skin.textSecondary.withValues(alpha: 0.5)
+                  : (quiet ? skin.textPrimary : skin.onAccent),
+            ),
           ),
         ),
       ),
@@ -2361,25 +2426,32 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
     bool active,
     VoidCallback onTap, {
     bool marked = false,
-  }) => GestureDetector(
+  }) => Semantics(
+    button: true,
+    selected: active,
+    label: label,
+    excludeSemantics: true,
     onTap: onTap,
-    behavior: HitTestBehavior.opaque,
-    child: Container(
-      constraints: const BoxConstraints(minHeight: 44),
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: active ? skin.accent : skin.panel,
-        border: Border.all(
-          color: active ? skin.accent : skin.secondary(0.4),
-          width: marked && !active ? 2 : 1,
+    child: GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: Space.tap),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? skin.accent : skin.panel,
+          border: Border.all(
+            color: active ? skin.accent : skin.secondary(0.4),
+            width: marked && !active ? 2 : 1,
+          ),
         ),
-      ),
-      child: Text(
-        marked && !active ? '• $label' : label,
-        style: Type.caps(
-          context,
-          color: active ? skin.onAccent : skin.textPrimary,
+        child: Text(
+          marked && !active ? '• $label' : label,
+          style: Type.caps(
+            context,
+            color: active ? skin.onAccent : skin.textPrimary,
+          ),
         ),
       ),
     ),

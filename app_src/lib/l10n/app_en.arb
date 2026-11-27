@@ -324,6 +324,21 @@
     }
   },
   "personalizeDeleteTheme": "Delete {name}",
+  "personalizeWearTheme": "Wear {name}",
+  "@personalizeWearTheme": {
+    "description": "Accessible name for a theme row: picking it wears that theme. The row shows the name, this says what pressing it does.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "scopeOwnPicture": "has its own picture",
+  "@scopeOwnPicture": {
+    "description": "Read after a place name in Personalization's art tab when that place has a picture of its own instead of the shared one."
+  },
+  "personalizePreview": "A preview of the app in this look",
+  "@personalizePreview": {
+    "description": "Accessible name for the sample card at the top of Personalization. It is a picture of the app, not a control."
+  },
   "personalizeRemovePicture": "Remove this picture",
   "@personalizeRemovePicture": {
     "description": "Accessible name for the small cross on one picture of an art folder."

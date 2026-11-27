@@ -19,6 +19,9 @@ import 'package:sonarar/screens/library_screen.dart';
 import 'package:sonarar/screens/mini_player.dart';
 import 'package:sonarar/screens/player_screen.dart';
 import 'package:sonarar/screens/settings_screen.dart';
+import 'package:sonarar/core/prefs.dart';
+import 'package:sonarar/theme/layout.dart';
+import 'package:sonarar/screens/personalize_screen.dart';
 import 'package:sonarar/screens/playlist_import_sheet.dart';
 import 'package:sonarar/screens/youtube_search_screen.dart';
 import 'package:sonarar/screens/tab_bar_view.dart';
@@ -171,6 +174,7 @@ Future<void> _shootWidget(
   Size size,
   Widget child, {
   required AppState state,
+  Finder? finder,
 }) async {
   _size(tester, size);
   await tester.pumpWidget(
@@ -188,7 +192,7 @@ Future<void> _shootWidget(
   await tester.pumpAndSettle();
 
   await expectLater(
-    find.byType(Scaffold),
+    finder ?? find.byType(Scaffold),
     matchesGoldenFile(_shot(name, size)),
   );
 }
@@ -437,8 +441,46 @@ void main() {
         matchesGoldenFile(_shot('download_rows', size)),
       );
     });
+
+    // Personalization, one part per shot. The screen had no pictures at all,
+    // which is how a tab that had drifted from the rest went unnoticed.
+    for (final tab in const ['themes', 'look', 'art', 'home']) {
+      testWidgets('personalize $tab $w', (tester) async {
+        final s = _state();
+        await _shootWidget(
+          tester,
+          tab == 'themes' ? 'personalize_themes' : 'personalize_stage',
+          size,
+          _personalize(s),
+          state: s,
+          finder: find.byType(PersonalizeScreen),
+        );
+        if (tab == 'themes') return;
+        await tester.tap(find.byKey(Key('personalize-tab-$tab')));
+        await tester.pumpAndSettle();
+        await expectLater(
+          find.byType(PersonalizeScreen),
+          matchesGoldenFile(_shot('personalize_$tab', size)),
+        );
+      });
+    }
   }
 }
+
+Widget _personalize(AppState s) => PresentationScope(
+  presentation: s.presentation,
+  child: PersonalizeScreen(
+    state: s,
+    greeting: 'Evening',
+    prefs: AppPrefs.initial,
+    onPrefsChanged: (_) {},
+    // Wired as `main.dart` wires it: a screen shot without the buttons the app
+    // passes in is a picture of a page nobody sees.
+    onSaveTheme: (_) {},
+    onApplyTheme: (_) {},
+    onDeleteTheme: (_) {},
+  ),
+);
 
 /// A download page with plausible rows and no network.
 Widget _downloadPage(WidgetTester tester, AppState s) => YoutubeSearchScreen(

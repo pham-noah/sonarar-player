@@ -276,6 +276,9 @@
   "personalizeHomeReset": "恢复顺序",
   "personalizeThemeOverrideNote": "OVERRIDE 会将此外观写入你正在使用的主题 {name}。NEW THEME 会保留此外观并基于它新建一个主题。",
   "personalizeDeleteTheme": "删除 {name}",
+  "scopeOwnPicture": "有自己的图片",
+  "personalizeWearTheme": "使用{name}",
+  "personalizePreview": "此外观下的应用预览",
   "personalizeRemovePicture": "删除这张图片",
   "personalizeFrameOf": "帧 {at}/{total}",
   "@personalizeMoveDown": {

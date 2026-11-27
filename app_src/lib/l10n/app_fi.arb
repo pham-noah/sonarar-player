@@ -276,6 +276,9 @@
   "personalizeHomeReset": "PALAUTA JÄRJESTYS",
   "personalizeThemeOverrideNote": "OVERRIDE kirjoittaa tämän ilmeen teemaan {name}, jota käytät. NEW THEME pitää tämän ja aloittaa siitä uuden.",
   "personalizeDeleteTheme": "Poista {name}",
+  "scopeOwnPicture": "omalla kuvalla",
+  "personalizeWearTheme": "Käytä teemaa {name}",
+  "personalizePreview": "Esikatselu sovelluksesta tässä ilmeessä",
   "personalizeRemovePicture": "Poista tämä kuva",
   "personalizeFrameOf": "KEHYS {at}/{total}",
   "@personalizeMoveDown": {

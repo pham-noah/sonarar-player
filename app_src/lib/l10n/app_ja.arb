@@ -276,6 +276,9 @@
   "personalizeHomeReset": "並び順を戻す",
   "personalizeThemeOverrideNote": "OVERRIDE はこの見た目を、着ているテーマ「{name}」に書き込みます。NEW THEME はこれを保ったまま、そこから新しいテーマを作ります。",
   "personalizeDeleteTheme": "{name} を削除",
+  "scopeOwnPicture": "専用の画像あり",
+  "personalizeWearTheme": "「{name}」を使う",
+  "personalizePreview": "この見た目のアプリのプレビュー",
   "personalizeRemovePicture": "この画像を削除",
   "personalizeFrameOf": "フレーム {at}/{total}",
   "@personalizeMoveDown": {
